@@ -13,20 +13,17 @@ Created by: KiLL(-) & enV.3zer0
    Today enV.3zer0 is the current modder of Shifter and is currently helping out yet another programmer to join the history of Shifter.
 
 
-ShifterK 8-8-03 Updates
+ShifterK 8-9-03 Updates
 ------------------------------------------
-· Fixed a Bug with Builder Mode
-· Made it so !DA and !RA Commands work without practice mode
-· Increase the power of Wireguided Rockets
-· Added a AutoJugg Detection Script
+· Fixed a Bug with AutoJJ Detection
+· Decrease the Sticky Detection to be detected harder
+· Made it so you can O turret on Builder Mode
 
 Added Notes
 -----------
-I added a Auto-JJ Detection for this.
-Also I made it so that after 5 Global Cheat things, You are banned.
-You can customize this with the $Shifter::CheatBan = "true";
-In serverDefaults.cs
-
+I made it so AUto JJ detection only goes when you are jugg.
+Also I made it 20 repetitions in 5 seconds for sticky, and
+not 15 like it was.
 
 If you need help with running a server, please visit:
 Http://www.tribeshifter.com/k/howto.php

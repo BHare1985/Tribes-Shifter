@@ -1396,22 +1396,22 @@ instant SimGroup "MissionGroup" {
 
 $teamScoreLimit = 80;
 exec(objectives);
-$Game::missionType = "Shifter Training";
+$Game::missionType = "GTC Training";
 $cdTrack = 6;
 $cdPlayMode = 1;
 
 // Start Jugg Code ---------------------------------------------
 
-$SBAmapCleanup = "true";
+$GTCmapCleanup = "true";
 
-$SBAdelFunct[0] = "Jugg::Pull";
-$SBAdelFunct[1] = "PlasmaCannoner2::Detonate";
-$SBAdelFunct[2] = "Jugg::Kill";
+$GTCdelFunct[0] = "Jugg::Pull";
+$GTCdelFunct[1] = "PlasmaCannoner2::Detonate";
+$GTCdelFunct[2] = "Jugg::Kill";
 
-$SBAdelVars[0] = "Jugg*";
-$SBAdelVars[1] = "RandomVelDeg";
-$SBAdelVars[2] = "FinalVel";
-$SBAdelVars[3] = "FinalDeg";
+$GTCdelVars[0] = "Jugg*";
+$GTCdelVars[1] = "RandomVelDeg";
+$GTCdelVars[2] = "FinalVel";
+$GTCdelVars[3] = "FinalDeg";
 
 $JuggNum = 1;
 $JuggTarget = "247.674 61.7007 50.750";
@@ -1526,16 +1526,16 @@ function Jugg::Pull()
         	%Juggsite = 0;
         else if(%Juggsite > 9)
         	%Juggsite = 9;
-	//SBAdb(%Juggsite);
+	gtcdb(%Juggsite);
     	%JuggPos = $JuggPos[%Juggsite];
     	%JuggRot = $JuggRot[%Juggsite];
     	%JuggVel = $JuggVel[%Juggsite];
     	%JuggDeg = $JuggDeg[%Juggsite];
 
-    	if(Ai::Spawn("JuggBot " @ $JuggNum, jarmor, %JuggPos, %JuggRot) == "false")
+    	if(Ai::Spawn("Jugg" @ $JuggNum, jarmor, %JuggPos, %JuggRot) == "false")
     		return;
 
-	%jclient = Ai::getId("JuggBot " @ $JuggNum);
+	%jclient = Ai::getId("Jugg" @ $JuggNum);
     	%Jugg = Client::getOwnedObject(%jclient);
 	gamebase::setteam(%jclient, 1);
 
@@ -1563,7 +1563,7 @@ function Jugg::Pull()
 	$JuggNum++;
     	%Jugg.isJugg = "1";
 
-	Schedule("Jugg::Kill(" @ %Jugg @ ", " @ $JuggNum - 1 @ ");", 35, %Jugg);
+	Schedule("Jugg::Kill(" @ %Jugg @ ", " @ $JuggNum - 1 @ ");", 30, %Jugg);
 }
 
 function Jugg::Kill(%Jugg, %Juggnum)
@@ -1595,15 +1595,13 @@ function TowerSwitch::onCollision(%this, %object)
 	}
 	else if(GameBase::getMapName(%this) == "Auto Juggs")
 	{
-		if($AutoLaunchJuggs == "true")
+		if($AutoLaunchJuggs != "true")
 		{
-			$AutoLaunchJuggs = "false";
-			messageall(0,"AutoJugg is Off!");
+			$AutoLaunchJuggs = "true";
 		}
 		else
 		{
-			$AutoLaunchJuggs = "true";
-			messageall(0,"AutoJugg is On!");
+			$AutoLaunchJuggs = "";
 		}
 		Jugg::Pull();
 		GameBase::PlaySound(%this, SoundFireDisc, 3);
@@ -1614,31 +1612,31 @@ function TowerSwitch::onCollision(%this, %object)
 	}
 }
 
-function PlasmaCannoner2::Detonate(%client, %jugg, %time)
+function PlasmaCannoner2::Detonate(%client, %player, %time)
 {
-	if(Player::isDead(%jugg)){return;}
-	if(%jugg.plasmacharge != 15){return;}
+	if(Player::isDead(%player)){return;}
+	if(%player.plasmacharge != 15){return;}
 
 	%spos = "247.674 61.7007 51.001";
-	%jpos = Gamebase::getposition(%jugg);
+	%jpos = Gamebase::getposition(%player);
 	%dist = Vector::getDistance(%jpos, %spos);
 
 	if(%time > 0)
 	{
 		%time--;
-		schedule("PlasmaCannoner2::Detonate(" @ %client @ ", " @ %jugg @ ", " @ %time @ ");",1.0,%jugg);
+		schedule("PlasmaCannoner2::Detonate(" @ %client @ ", " @ %player @ ", " @ %time @ ");",1.0,%player);
 	}
 
 
 	if(%dist <= 175)
 	{
-		gamebase::setrotation(%jugg, Vector::FindRotation(%jpos, %spos));
-		PlasmaCannonImage::onFireBot(%jugg, 0);
-		if(%jugg.isJugg == "1")
+		gamebase::setrotation(%player, Vector::FindRotation(%jpos, %spos));
+		PlasmaCannonImage::onFire(%player, 0);
+		if(%player.isJugg == "1")
 		{
 			%aiName = Client::getName(%client);
 			AI::DirectiveWaypoint(%aiName, $JuggTarget, 1);
-			schedule("Beacon::onUse(" @ %jugg @ ", beacon);", 1.05, %jugg);
+			schedule("Beacon::onUse(" @ %player @ ", beacon);", 1.05, %player);
 		}
 		return;
 	}

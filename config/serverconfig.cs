@@ -10,7 +10,7 @@
 //                                    Orignal by: Emo
 //================================================================================
 
-$Server::HostName = "ShifterK 8-8-03";	// The name of your Server -- Default: ShifterK
+$Server::HostName = "ShifterK 8-9-03";	// The name of your Server -- Default: ShifterK
 $Server::MaxPlayers = "20"; 			// Max Players On Your Server -- Default: 20
 $Server::timeLimit = "240";			// Mission Time Limit In Minutes -- Default: 240
 $Server::Password = "";				// Server Main Password - One that is on when started
@@ -28,9 +28,9 @@ $Server::TeamDamageScale = "1";			// Team Damage On/Off -- Default: 1 (On)
 // 	 \n = New Line                  
 
 $Shifter::PublicNotice = "";				// This Message will be dispalyed every so ofter as players spawn, leave it null to disable
-$Server::Info 	= "<f3>___  _      _  ___ _     Welcome to ShifterK\n! __! ! !__  (_) !  _! ! !_ ___  __08_08_2003\n!__ ! ! '   !  ! ! !  _! !  _!/ -_) ! '_!  ! ! ! !\n!___! !_! !_! !_! !_!    !__!\___! !_!   ! ' <\nCreated by: KiLL(--) & env.3zer0   !_! !_!\n";
+$Server::Info 	= "<f3>___  _      _  ___ _     Welcome to ShifterK\n! __! ! !__  (_) !  _! ! !_ ___  __08_09_2003\n!__ ! ! '   !  ! ! !  _! !  _!/ -_) ! '_!  ! ! ! !\n!___! !_! !_! !_! !_!    !__!\___! !_!   ! ' <\nCreated by: KiLL(--) & env.3zer0   !_! !_!\n";
 // ^ This is the message displayed when you click info on the server
-$Server::JoinMOTD = "<f3>___  _      _  ___ _     Welcome to ShifterK\n! __! ! !__  (_) !  _! ! !_ ___  __08_08_2003\n!__ ! ! '   !  ! ! !  _! !  _!/ -_) ! '_!  ! ! ! !\n!___! !_! !_! !_! !_!    !__!\___! !_!   ! ' <\nCreated by: KiLL(--) & env.3zer0   !_! !_!\n";
+$Server::JoinMOTD = "<f3>___  _      _  ___ _     Welcome to ShifterK\n! __! ! !__  (_) !  _! ! !_ ___  __08_09_2003\n!__ ! ! '   !  ! ! !  _! !  _!/ -_) ! '_!  ! ! ! !\n!___! !_! !_! !_! !_!    !__!\___! !_!   ! ' <\nCreated by: KiLL(--) & env.3zer0   !_! !_!\n";
 // ^ This is what you see when you first join the server.
 $Server::MODInfo 	= "<f1>Welcome to ShifterK\n" @ $killa::newdate @ "\nCreated by: KiLL(--) & enV.3zer0\n<f2>www.tribeshifter.com/k/<f1>";
 // ^ This is what you see when the server is loading.

@@ -903,6 +903,7 @@ function resetOsicheat(){
 function remoteUseItem(%player,%type)
 {
 %clientId = Player::getClient(%player);	
+%armor = Player::getArmor(%clientId);
 		if(!$TimeStart[%clientId])
 		{
 		$TimeStart[%clientId] = getSimTime();	
@@ -915,6 +916,8 @@ function remoteUseItem(%player,%type)
 		%TimeBetweenDeploys[%clientId] = (%Timeofthisdeploy[%clientId] - $Timeoflastdeploy[%clientId]); // Count the Time bewteen deploys
 		//Messageall(0,Client::getname(%clientId)@" This deploy: "@%Timeofthisdeploy[%clientId]);
 		//Messageall(0,Client::getname(%clientId)@" Time Between: "@%TimeBetweenDeploys[%clientId]);
+		if(%armor == "jarmor")
+		{
 		if(%TimeBetweenDeploys[%clientId] > 3.11999 && %TimeBetweenDeploys[%clientId] < 3.8)
 		{
 		$JuggCount1[%clientId]="true";
@@ -936,7 +939,7 @@ function remoteUseItem(%player,%type)
 		
 		if($JuggCount1[%clientId]=="true" && $JuggCount2[%clientId]=="true" && $JuggCount3[%clientId]=="true" && %JuggTime[%clientId] < 0.5 && %JuggTime[%clientId] > 0.01)
 		{
-		Client::sendMessage(%clientId, 0, "This server Doesn't Allow Jugg-Jump Scripts~wteleport");
+		Client::sendMessage(%clientId, 0, "This server Doesn't Allow Jugg-Jump Scripts~wteleport2.wav");
 		centerprint(%clientId, "This server Doesn't Allow Jugg-Jump Scripts!", 5.0);
 		$warn[%clientId]++;
 		CheckOsiWarnings(%clientId);
@@ -953,6 +956,7 @@ function remoteUseItem(%player,%type)
 		$JuggCount2[%clientId]="";
 		$JuggCount3[%clientId]="";
 		$JuggStart[%clientId] = "";
+		}
 		}
 		//Messageall(0,Client::getname(%clientId)@" Last Deploy: "@$Timeoflastdeploy[%clientId]);
 			if(%TimeBetweenDeploys[%clientId] >0.50)							// If Time between deploys is more than half second
@@ -987,10 +991,10 @@ function remoteUseItem(%player,%type)
 					$RepeatedDeploytimes[%clientId]++;
 					//Messageall(0,(%Timeofthisdeploy[%clientId] - $TimeStart[%clientId]));
 					//echo(Client::getname(%clientId)@" Counted:"@$RepeatedDeploytimes[%clientId]);
-						if($RepeatedDeploytimes[%clientId] >= 15)
+						if($RepeatedDeploytimes[%clientId] >= 20)
 						{
 						$RepeatedDeploytimes[%clientId] = 0;
-						Client::sendMessage(%clientId, 0, "This server wont allow you to deploy that fast, slow down!~wteleport");
+						Client::sendMessage(%clientId, 0, "This server wont allow you to deploy that fast, slow down!~wteleport2.wav");
 						centerprint(%clientId, "This server wont allow you to deploy that fast, slow down!", 5.0);
 						$warn[%clientId]++;
 						CheckOsiWarnings(%clientId);
@@ -1081,7 +1085,7 @@ function CheckOsiWarnings(%clientId)
       		   if($Shifter::CheatBan == "true")
       		   {
       		   $CheatBan[%clientId]++;
-      		  	  if($CheatBan[%clientId] >= 5)
+      		  	  if($CheatBan[%clientId] = 5)
       		 	  {
       		 	  %ip = Client::getTransportAddress(%clientId);
       			  BanList::add(%ip, 1800);

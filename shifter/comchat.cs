@@ -32,7 +32,7 @@ return;
 else if(%talk == "!info" && $commands == "true")
 {
 Client::SendMessage(%client, 1, "___  _      _  ___ _     Welcome to ShifterK");
-Client::SendMessage(%client, 1, "! __! ! !__  (_) !  _! ! !_ ___  __08_08_2003");
+Client::SendMessage(%client, 1, "! __! ! !__  (_) !  _! ! !_ ___  __08_09_2003");
 Client::SendMessage(%client, 1, "!__ ! ! '   !  ! ! !  _! !  _!/ -_) ! '_!  ! ! ! !");
 Client::SendMessage(%client, 1, "!___! !_! !_! !_! !_!    !__!\___! !_!   ! ' <");
 Client::SendMessage(%client, 1, "Created by: KiLL(--) & env.3zer0   !_! !_!");

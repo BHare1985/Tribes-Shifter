@@ -10,7 +10,7 @@ function processMenuShifterKTabmenu(%clientId, %Choice)
 	}
 	else if (%Choice == "LastestUpdates")
 	{
-		%msg = "ShifterK 8-08-2003\nFixed a Bug with Builder Mode :: Made it so !DA and !RA Commands work without practice mode :: Increase the power of Wireguided Rockets :: Added a AutoJugg Detection Script";
+		%msg = "ShifterK 8-09-2003\nFixed a Bug with AutoJJ Detection :: Decrease the Sticky Detection to be detected harder :: Made it so you can O turret on Builder Mode";
 		//%msg2 = "";
 		//%msg3 = "Boosted up HyperBlaster a bit, Still worthless :: Decreased distance on blaster :: Added Private message system :: Added AFK message system :: Fixed EMP bug with Shocks :: Added Mute Options in Player Funcs";
 		//%msg4 = "Totally re-did the Equipment options :: Able to set or destroy on a Team rather than everything";
@@ -21,8 +21,9 @@ function processMenuShifterKTabmenu(%clientId, %Choice)
 		//
 		//
 		//
-		//
-		//
+		//ShifterK 8-08-2003
+		//------------------
+		//Fixed a Bug with Builder Mode :: Made it so !DA and !RA Commands work without practice mode :: Increase the power of Wireguided Rockets :: Added a AutoJugg Detection Script
 		//
 		//ShifterK 8-03-2003
 		//-------------------
