@@ -1,0 +1,13 @@
+$RecordedDeploy93 = "StaticShape DeployablePlatform 0 179.185 33.9392 53.5412 0 -0 -0.0433924";
+$RecordedDeploy94 = "StaticShape DeployablePlatform 0 179.184 33.9045 54.5372 0 -0 -0.0433924";
+$RecordedDeploy95 = "StaticShape DeployablePlatform 0 179.184 33.9045 54.5372 0 -0 -0.0433924";
+$RecordedDeploy96 = "StaticShape DeployablePlatform 0 179.184 33.9045 54.5372 0 -0 -0.0433924";
+$RecordedDeploy97 = "StaticShape DeployablePlatform 0 179.184 33.9045 54.5372 0 -0 -0.0433924";
+$RecordedDeploy98 = "StaticShape DeployablePlatform 0 179.184 33.9045 54.5372 0 -0 -0.0433924";
+$RecordedDeploy99 = "StaticShape DeployablePlatform 0 179.184 33.9045 54.5372 0 -0 -0.0433924";
+$RecordedDeploy100 = "Sensor DeployableMotionSensor 0 177.815 32.68 54.5372 0 0 2.34273";
+$RecordedDeploy101 = "Turret DeployableLaser 0 180.744 35.3156 54.5372 0 0 -0.742994";
+$RecordedDeploy102 = "Turret DeployableLaser 0 180.735 35.2795 54.5372 0 0 -0.750229";
+$RecordedDeploy103 = "Turret DeployableLaser 0 180.714 35.3242 54.5372 0 0 -0.730944";
+$RecordedDeploy104 = "Turret DeployableLaser 0 180.703 35.2896 54.5372 0 0 -0.737376";
+$NumberofRecordedDeploys = "104";

@@ -67,7 +67,8 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 		%shooterClient = Player::getClient(%object);
 	else %shooterClient = %object;
 	%damagedClient.lastdamager = %shooterClient;
-	%shootTeam = Client::getTeam(%shooterClient);	
+	%shootTeam = Client::getTeam(%shooterClient);
+	%object = Client::getOwnedObject(%damagedClient);
 	if(%type == $BulletDamageType || %type == $LaserDamageType || %type == $SniperDamageType)
 		%snipeType = 1; else %snipeType = 0;
 	if(%armor == "harmor" || %armor == "darmor" || %armor == "jarmor")
@@ -380,7 +381,8 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 						Player::blowUp(%this);
 						%value = %value * 10;
 						bottomprint(%clientId, "Your booster popped!");
-						GameBase::applyRadiusDamage($PlasmaDamageType, gamebase::getposition(%player), 3, 0.03, 2, %shooterClient); 
+						//GameBase::applyRadiusDamage($PlasmaDamageType, gamebase::getposition(%player), 3, 0.03, 2, %shooterClient); 
+						Armor::onBurn(%damagedClient, %this, %shooterClient);
 						%clientID.boostpop++;
 					}
 				}
@@ -392,7 +394,8 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 						Player::blowUp(%this);
 						%value = %value * 10;
 						bottomprint(%clientId, "Your booster popped!");
-						GameBase::applyRadiusDamage($PlasmaDamageType, gamebase::getposition(%player), 3, 0.03, 2, %shooterClient); 
+						//GameBase::applyRadiusDamage($PlasmaDamageType, gamebase::getposition(%player), 3, 0.03, 2, %shooterClient); 
+						Armor::onBurn(%damagedClient, %this, %shooterClient);
 						%clientID.boostpop++;
 					}
 				}
@@ -424,7 +427,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 		{
 			%rnd = floor(getRandom() * 10);
 			if(%rnd > 8)
-				Armor::onBurn(%damagedClient, %this);
+				Armor::onBurn(%damagedClient, %this, %shooterClient);
 		}
 
 		//================================== Sniper Shot Effects
@@ -1308,18 +1311,18 @@ function checkPlayerBlind(%clientId, %player)
 //		Client::sendMessage(%clientId,1,"You stop burning.");
 //	}			
 //}
-function Armor::onBurn(%client, %player)
+function Armor::onBurn(%client, %player, %shooter)
 {	
-	
+	//messageall(0,"shooter is "@%shooter);
 	if (!%player.onfire) 
 	{
-		Plasmafire(%player);
+		Plasmafire(%player, %shooter);
 		Client::sendMessage(%client,1,"You are on fire!");	
 	}
 	%player.onfire = 70;
 }
 
-function Plasmafire(%player)
+function Plasmafire(%player, %shooter)
 {
 	//plasmatic
 	if(Player::isDead(%player))
@@ -1340,19 +1343,14 @@ function Plasmafire(%player)
 		Projectile::spawnProjectile("JetSmoke", %trans, %player, %Vel); //transform, object, velocity vector, <projectile target (seeker)>
 			if  (Player::isDead(%player))
 			{
-				messageall(0, Client::getName(%client) @ " was incinerated.");
-				%client.scoreDeaths++;
-      				%client.score--;
-				Game::refreshClientScore(%client);
+				if(%shooter != 0)
+				Client::onKilled(%client, %shooter, Fire, %vertPos, %quadrant);
+				else
+				messageall(0,Client::getname(%client)@"'s Booster pooped.");
 				%player.onfire = 0;
-				if(%client.dueling)
-				{
-				%mybuddy = %client.engaged;
-				SBA::duelFinished(%client, %mybuddy);
-				}
 			}
 	if(%player.onfire)
-		schedule("PlasmaFire("@%player@");",0.1);
+		schedule("PlasmaFire("@%player@", "@%shooter@");",0.1);
 	else
 		Client::sendMessage(%client,1,"You Stopped Burning");
 	

@@ -33,28 +33,6 @@ function Observer::triggerUp(%client)
 	{
 		if(%client.firstConnect == "true")
 		{
-			if(%client.GettingInfo)
-			{
-				if(%client.GettingInfo < 8)
-				{
-					%client.GettingInfo++;
-					Shifter2K4Updates(%client);
-					return;
-				}
-				else 
-				{
-					%client.firstConnect = false;
-					%client.GettingInfo = "";
-					%client.observerMode = "";
-					Game::playerSpawn(%client, false);						
-				}
-			}
-			else
-			{			
-				%client.GettingInfo = 1;
-				Shifter2K4Updates(%client);
-				return;
-			}
 			
 		}
 		else

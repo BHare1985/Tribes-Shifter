@@ -325,7 +325,6 @@ function MortarImage::onFire(%player, %slot)
 		}		
 	}
 }
-
 function MDMDetonate(%client)
 {
  %obj = newObject("","Mine","MDMBlast");

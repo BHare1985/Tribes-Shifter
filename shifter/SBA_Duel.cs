@@ -72,12 +72,16 @@ function processMenuSBAduelResponse(%clientId, %opt)
 
 	if(%opt == "accept")
 	{
-		if(%clientId.observerMode == "observerOrbit" || %clientId.observerMode == "observerFly" || %clientId.observerMode == "dead" || %challenger.observerMode == "observerOrbit" || %challenger.observerMode == "observerFly" || %challenger.observerMode == "dead")
+		if(%clientId.observerMode == "observerOrbit" || %clientId.observerMode == "observerFly" || %clientId.observerMode == "dead")
 		{
-		Client::sendMessage(%clientId, 1, "Someone wasn't spawned when the challenge was accepted, try again.");
-		Client::sendMessage(%challenger, 1, "Someone wasn't spawned when the challenge was accepted, try again.");
-		SBA::SetupReset(%challenger);
-		SBA::SetupReset(%clientId);
+		Client::sendMessage(%clientId,0,"Please spawn and then accept the duel");
+		SBA::duelRespond(%clientId);
+		return;
+		}
+		if(%challenger.observerMode == "observerOrbit" || %challenger.observerMode == "observerFly" || %challenger.observerMode == "dead")
+		{
+		Client::sendMessage(%challenger,0,"Please spawn and then accept the duel");
+		SBA::duelRespond(%challenger);
 		return;
 		}
 		%eplayer = Client::getOwnedObject(%clientId);
@@ -106,6 +110,7 @@ function processMenuSBAduelResponse(%clientId, %opt)
 	{
 		%challenger.answered = %opt;
 		Client::sendMessage(%challenger, 1, "Your challenge has been Countered.");
+		Client::sendMessage(%clientId, 1, "Your challenge has been Countered.");
 		SBA::duelMenu(%clientId);
 	}
 	if(%opt == "ignore")
@@ -375,7 +380,7 @@ function SBA::duelSpawnSetup2(%clientId, %type, %rndpick)
 	else if (%type == "Chemeleon" || %rnd == "1")
 	{
 		$spawnBuyList[0, %client] = SpArmor;
-		$spawnBuyList[1, %client] = PlasmaGun;
+		$spawnBuyList[1, %client] = GrenadeLauncher;
 		$spawnBuyList[2, %client] = Disclauncher;
 		$spawnBuyList[3, %client] = BoomStick;
 		$spawnBuyList[4, %client] = TargetingLaser; 

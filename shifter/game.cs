@@ -434,10 +434,6 @@ function Game::playerSpawn(%clientId, %respawn)
   	{
 		if ($Shifter::WelcomeDelay > 0) bottomprint(%clientId, $Shifter::WelcomeMsg, $Shifter::WelcomeDelay);
    
-   		//if ($Shifter::Saveon)
-   		//{
-   			//LoadCharacter(%clientId);
-			//}
    	}
 	if(%spawnMarker)
 	{
@@ -1426,6 +1422,10 @@ function Client::onKilled(%playerId, %killerId, %damageType, %vertPos, %quadrant
 {
 	       %clientId = %playerId;
 		%client = %clientId;
+		if(%damageType == "Fire")
+		messageall(0, Client::getName(%client) @ " was burned to death by "@Client::getName(%killerId));
+		if(%damageType == "Satchel")
+		messageall(0, Client::getName(%killerId) @ " implanted "@Client::getName(%client)@" with a satcehl charge and incinerated him");
 		if(%clientId.dueling && %clientId.isSet)
 	{
 		if(%clientId.one == "true" || %clientId.two == "true")
@@ -1585,6 +1585,7 @@ function Client::onKilled(%playerId, %killerId, %damageType, %vertPos, %quadrant
 				{
 						bottomprint(%killerId,"<jc>\n-------------\nHEADSHOT!\n-------------\n",3.0);
 						DisallowBP(%killerId);
+						schedule("AllowBP("@%killerId@");", 5.0);
 						
 					if(%quadrant == "middle_front") //- Direct Head Shot
 					{
@@ -1835,8 +1836,6 @@ function NewMT()
 
 	$matchtrack::timecheck = 0;
 	export("$matchtrack::*", "config\\matchtrack.log", false);
-	$dlist = " ";
-	export("$dlist", "config\\dtrack.log", false);
 }
 
 function RecordMT()
@@ -1869,7 +1868,6 @@ function RecordMT()
 		export("$matchtrack::*", "config\\matchtrack.log", false);
 		$dlist = string::greplace($dlist, "  ", " ");
 		$dlist = string::greplace($dlist, " 0 ", " ");
-		export("$dlist", "config\\dtrack.log", true);
 	}
 }
 

@@ -5,7 +5,7 @@ $curVoteCount = 0;
 $Shifter::TKDefault = $Shifter::TeamKillOn;
 $pskin = $Shifter::PersonalSkin;
 $CPU::estimatedSpeed = 130803;
-$Shifter::Version = "v0.7";
+$Shifter::Version = "v0.8";
 $Server::Info = $Server::Info @ "\nRunning Shifter 2K4 " @ $Shifter::Version;
 $ModList = "Shifter 2K4";
 $Server::TourneyMode = false;
@@ -655,27 +655,8 @@ function Game::menuRequest(%clientId)
 
 	Client::addMenuItem(%clientId, %curItem++ @ "Voting Functions", "menurequest3");
 	%sel = %clientId.selClient;
-	if(%clientId == %sel || %clientId.ignored[%sel] || %clientId.engaged != "" || %clientId.observerMode == "observerOrbit" || %clientId.observerMode == "observerFly" || %clientId.observerMode == "dead" || %sel.ignored[%clientId] == "true" || %sel.noDuels == "true" || $NoDuelSupport == "true" || ($DspotOneTaken == "true" && $DspotTwoTaken == "true") || $server::tourneymode == "true") // workenv
-		{
-			if($DspotOneTaken == "true" && $DspotTwoTaken == "true")
-			if(%clientId.selClient)
-				Client::sendMessage(%clientId, -1, "Both Duel Slots Taken....Please Wait!");
-			if($NoDuelSupport == "true")
-			if(%clientId.selClient)
-				Client::sendMessage(%clientId, -1, "This map is NOT supported for dueling.");
-			if(%clientId.observerMode == "observerOrbit" || %clientId.observerMode == "observerFly" || %clientId.observerMode == "dead")
-			if(%clientId.selClient)
-				Client::sendMessage(%clientId, -1, "You're in a Observer mode, you can not Duel.");
-			if(%sel && %clientId == %sel)
-			Client::sendMessage(%clientId, -1, "You can not Duel yourself.");
-			if($server::tourneymode == "true")
-			if(%clientId.selClient)
-				Client::sendMessage(%clientId, -1, "You can not Duel in Tourneymode");
-		}
-		else{
 		if(%clientId.selClient)
 			Client::addMenuItem(%clientId, %curItem++ @ "Challenge to a Duel!", "SBADuelChallenge");
-		}
 		if(%clientId.noDuels)
 			Client::addMenuItem(%clientId, %curItem++ @ "Allow Duel Challenges.", "SBAduelAllow");
 		if(%clientId.ignored[%sel])
@@ -703,8 +684,38 @@ function processMenuOptions(%clientId, %option)
 	%weapon = Player::getMountedItem (%clientId, $WeaponSlot);
 	%pack = Player::getMountedItem (%clientId, $BackPackSlot);
 	%flag = Player::getMountedItem (%clientId, $FlagSlot);
+	%sel = %clientId.selClient;
 	if(%opt == "SBADuelChallenge")
 	{
+		if($DspotOneTaken == "true" && $DspotTwoTaken == "true")
+		{
+			Client::sendMessage(%clientId, -1, "Both Duel Slots Taken.");
+			client::sendMessage(%clientId, 1, "Please try again later.~waccess_denied.wav");
+			return;
+		}
+		if($NoDuelSupport == "true")
+		{
+			Client::sendMessage(%clientId, -1, "This map is NOT supported for dueling.");
+			client::sendMessage(%clientId, 1, "Please try again on another map.~waccess_denied.wav");
+			return;
+		}
+		if(%clientId.observerMode == "observerOrbit" || %clientId.observerMode == "observerFly" || %clientId.observerMode == "dead")
+		{
+			Client::sendMessage(%clientId, -1, "You're in a Observer mode, you can not Duel.");
+			client::sendMessage(%clientId, 1, "Please try again when Spawned.~waccess_denied.wav");
+			return;
+		}
+		if(%sel && %clientId == %sel)
+		{
+			Client::sendMessage(%clientId, -1, "You can not Duel yourself.");
+			return;
+		}
+		if($server::tourneymode == "true")
+		{
+			Client::sendMessage(%clientId, -1, "You can not Duel in Tourneymode");
+			client::sendMessage(%clientId, 1, "Please try again in Normal Mode.~waccess_denied.wav");
+			return;
+		}
 		if(%clientId.selclient.engaged == "true")
 		{
 			client::sendMessage(%clientId, 1, "Player has already been challenged");
@@ -1696,7 +1707,6 @@ function processMenuDSAAffirm(%clientId, %opt)
    {
 		if(%clientId.isSuperAdmin && %name != "ParoXsitiC")
 		{
-			echo(%name);
 			%cl = getWord(%opt, 1);
            		%cl.isAdmin = false;
 			%cl.isSuperAdmin = false;
@@ -1774,8 +1784,9 @@ function processMenuFAffirm(%clientId, %opt)
 		$Flag::ManualReturn = "True";
 		$Shifter::FlagReturnTime = "400";
 		Client::sendMessage(%clientId, 1, "Please Enter Server Password");
-  $ModList = "Shifter| k |MixScrim";
+  $ModList = "Shifter| 2K4 |MixScrim";
 }
+
 else if(%opt == "scrim" && %clientId.isAdmin)
    {
 
@@ -1788,7 +1799,7 @@ else if(%opt == "scrim" && %clientId.isAdmin)
 		$Flag::ManualReturn = "True";
 		$Shifter::FlagReturnTime = "400";
 		Client::sendMessage(%clientId, 1, "Please Enter Server Password");
-  $ModList = "Shifter| k |Scrim";
+  $ModList = "Shifter| 2K4 |Scrim";
 }
 	else if(%opt == "practice" && %clientId.isAdmin)
    {
@@ -1802,7 +1813,7 @@ else if(%opt == "scrim" && %clientId.isAdmin)
 		$Flag::ManualReturn = "True";
 		$Shifter::FlagReturnTime = "400";
 		Client::sendMessage(%clientId, 1, "Please Enter Server Password");
-  $ModList = "Shifter| K |Practice";
+  $ModList = "Shifter| 2K4 |Practice";
 	}
 	else if(%opt == "builder" && %clientId.isAdmin)
    {
@@ -1820,7 +1831,7 @@ else if(%opt == "scrim" && %clientId.isAdmin)
 		$Shifter::FlagReturnTime = "400";
 		messageAll(0, "You now have Full Access to Inventory Station, Press i, and Set your Faves!");
 		messageAll(2, "Builder mode - GO BUILD STUFF~wteleport2.wav");
-  $ModList = "Shifter| K |Builder";
+  $ModList = "Shifter| 2K4 |Builder";
 }
 }
 
@@ -1836,7 +1847,7 @@ function processMenuMAffirm(%clientId, %opt)
 	 	echo(" Server set to match configuration By " @ Client::getName(%clientId));
 	 	messageAll(0, Client::getName(%clientId) @ " set the server to match settings.");
 		$noFakeDeath = true;
-     	exec("matchConfig.cs");
+     		exec("matchConfig.cs");
 		$server::tourneymode = false;
 		$ceasefire = false;
 		$GameMode = Normal;
@@ -1846,7 +1857,7 @@ function processMenuMAffirm(%clientId, %opt)
 		$TeamItemMax[MFGLAmmo] = $Shifter::NukeLimit;
 		$Server::Info = $Server::Info @ "\nRunning Shifter 2K4 " @ $Shifter::Version;
 		if($dedicated)
-		if(!$noTabChange) $ModList = "Shifter| k |SBA";
+		if(!$noTabChange) $ModList = "Shifter| 2K4 |SBA";
 		$Server::MODInfo = $Server::MODInfo @ "\nRunning Shifter 2K4 " @ $Shifter::Version;
 		$match::ceaseFireBegin = true;
 		Server::storeData();

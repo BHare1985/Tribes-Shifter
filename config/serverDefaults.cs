@@ -76,12 +76,12 @@ $Shifter::BaseRepairRate = 0.025;		// How Fast Base Repairs itself - Repairgun =
 $Shifter::UnlimitedCapping = false;  		// Capping Out On/Off -- Default: False (Off)
 $Shifter::Capping = true;  			// Capping On/Off -- Default: True (On)
 $Server::JetEffect = false;  			// Different Jet Effects
-$Server::Smurf = false;//buggy			// Smurf Detection
+$Server::Smurf = true;//buggy			// Smurf Detection
 $Server::MuteSP = false;			// Mute Soundpacks
 $Server::SuicideCountasDeath = false;		// Do Suicides count as a death
-$Cheating::UsageCheck = true;  			// Scheduled Use Cheat Check On/Off -- Default: True (On)
+$Cheating::UsageCheck = false;  			// Scheduled Use Cheat Check On/Off -- Default: True (On)
 $Cheating::AutoJJCheck = true;  		// Auto JJ Cheat Check On/Off -- Default: True (on)
-$Cheating::Nofog = true;//buggy		// Spawn Bots under the Map to make fake Arrows
+$Cheating::Nofog = false;//buggy		// Spawn Bots under the Map to make fake Arrows
 $Cheating::NofogBots = "8";			// How many Orignal Bots do you want to start with
 $Cheating::NofogBotNames = "enV.3zer0 KiLL(--) GonzoTheClown GreyFlcn Plasmica Czar FuckingCheater NoFogLoser";
 // Make sure the above the names are the same as the number of Fogbots, 8 Names, 8 Bots

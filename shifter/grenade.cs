@@ -254,20 +254,22 @@ function Nukebomb::onCollision(%this,%obj)
 	%c = Player::getClient(%obj);
 	%playerTeam = GameBase::getTeam(%obj);
 	%teleTeam = GameBase::getTeam(%this);
-	
+	%data = GameBase::getDataName(%this);
 	%armor = Player::getArmor(%obj);
 	if (%armor == "earmor" || %armor == "efemale")
 	{
 		if(floor(getRandom() * 10) > 6)
 		{	
 			Client::sendMessage(%c,1,"OOPS! You cut the wrong wire...");
-			%data = GameBase::getDataName(%this);
 			GameBase::setDamageLevel(%this, %data.maxDamage);
 			return;
 		}
 		if(%this) deleteobject(%this);
 		Client::sendMessage(%c,1,"You disarm the Plastique Explosive.");
 	}  
+	else
+	GameBase::setDamageLevel(%this, %data.maxDamage);
+	
 }
 
 function Nukebomb::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)

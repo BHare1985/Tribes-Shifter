@@ -586,8 +586,6 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 					Client::sendMessage(%client,1,"No Offence Turreting!");
 					return;
 				}
-				//echo(%name);
-				echo(%datab);
 			}
 
 			%turret = newObject(%name,%type, %deploy,true);
@@ -595,6 +593,7 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 			GameBase::setTeam(%turret,%playerteam);
 			GameBase::setPosition(%turret,%pos);
 			GameBase::setRotation(%turret,%rot);
+			Deploy::Record(%type, %deploy, %playerteam, %pos, %rot);
 			Client::sendMessage(%client,0,"" @ %name @ " deployed");
 			//GameBase::startFadeIn(%turret);
 			playSound(SoundPickupBackpack,%pos);
@@ -625,7 +624,7 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 				Client::setOwnedObject(%client, %player);
 			}
 
-			deploy::record(%turret, %count, %playerteam, %pos, %rot);
+			//deploy::record(%turret, %count, %playerteam, %pos, %rot);
 			%player.deploytime = getSimTime() + $DPSAllowed;
 			return %turret;
 		}
@@ -693,28 +692,19 @@ function checkBOOM(%player, %target)
 	}
 	else
 	{
+		
+		%pclient = Player::getClient(%player);
+		%tclient = Player::getClient(%target);
 		Player::blowUp(%target);
 		GameBase::playSound(%target,explosion3,0);
-		Client::sendMessage(Player::getClient(%target),0,"BOOM!");
-		%tpos = getBoxCenter(%target);
-		GameBase::setDamageLevel(%target,10);
-		%tpos = vector::add(%tpos, "0 0 0");
-		%turret = newObject(SatchelPack,Turret, DeployableSatchel,true);
-		addToSet("MissionCleanup", %turret);
-		GameBase::setPosition(%turret,%tpos);
-		GameBase::setRotation(%turret,"0 0 0");
-		GameBase::setDamageLevel(%turret,0.5);
-		%tpos = vector::add(%tpos, "0 0 0.01");
-		%turret = newObject(SatchelPack,Turret, DeployableSatchel,true);
-		addToSet("MissionCleanup", %turret);
-		GameBase::setPosition(%turret,%tpos);
-		GameBase::setRotation(%turret,"0 0 0");
-		GameBase::setDamageLevel(%turret,0.5);
-		if(%target.dueling)
-		{
-		%mybuddy = %target.engaged;
-		SBA::duelFinished(%target, %mybuddy);
-		}
+		Client::sendMessage(%tclient ,0,"BOOM!");
+		%tpos = vector::add(getBoxCenter(%target), "0 0 0.01");
+		%satchel = newObject(SatchelPack,Turret, DeployableSatchel,true);
+		addToSet("MissionCleanup", %satchel);
+		GameBase::setPosition(%satchel,%tpos);
+		GameBase::setRotation(%satchel,"0 0 0");
+		GameBase::applyDamage(%target, $DebrisDamageType, 10, %tpos , "0 0 0", "0 0 0", %player);
+		GameBase::setDamageLevel(%satchel,0.5);
 	}
 }
 
@@ -1421,7 +1411,7 @@ function deploy::init()
 	for(%n = 0; getword(%check, %n) != -1; %n++) 	
 	{
 		%num = getword(%check, %n);
-		$dtemp[%n] = $deploy[%num];
+		$dtemp[%n] = $RecordedDeploy[%num];
 		$dlist = "";
 	}
 	echo("went n times" @ %n);
@@ -1459,23 +1449,67 @@ function deploy::init()
 				GameBase::setPosition(%turret,%pos);
 				GameBase::setRotation(%turret,%rot);
 				$TeamItemCount[%team @ "" @ %pack @ ""]++;
-				deploy::record(%turret, %pack, %team, %pos, %rot);
 			}
 		}
 	}
-	export("$dlist", "config\\dtrack.log", true);
+}
+function Deploy::Record(%type, %deploy, %playerteam, %pos, %rot)
+{
+	if($Recording == "true")
+	{
+		if(%deploy == "DeployableInvStation")
+		return;
+		if(!$NumberofRecordedDeploys)
+		$NumberofRecordedDeploys = 0;
+		$NumberofRecordedDeploys = $NumberofRecordedDeploys +1;
+		$RecordedDeploy[$NumberofRecordedDeploys] = %type @" "@ %deploy @" "@ %playerteam @" "@ %pos @" "@ %rot;
+	}
 }
 
-function deploy::record(%this, %pack, %team, %pos, %rot)
+function Deploy::OutputRecording(%Filename){
+		for( %num = 1; %num <= $NumberofRecordedDeploys; %num++ )
+		{
+			export("$RecordedDeploy"@ %num @"", "config\\"@%Filename@"_"@$missionName@"_RecordedDeployables.cs", true);
+			$RecordedDeploy[%num] = "";
+		}
+		export("$NumberofRecordedDeploys", "config\\"@%Filename@"_"@$missionName@"_RecordedDeployables.cs", true);
+		$NumberofRecordedDeploys = "";
+}
+function Deploy::OutputRecordingWithMenu(%Filename, %MenuName){
+		for( %num = 1; %num <= $NumberofRecordedDeploys; %num++ )
+		{
+			export("$RecordedDeploy"@ %num @"", "config\\"@%MenuName@"[MenuName]"@%Filename@"_"@$missionName@"_RecordedDeployables.cs", true);
+			$RecordedDeploy[%num] = "";
+		}
+		export("$NumberofRecordedDeploys", "config\\"@%MenuName@"[MenuName]"@%Filename@"_"@$missionName@"_RecordedDeployables.cs", true);
+		$NumberofRecordedDeploys = "";
+}
+
+function Deploy::SetRecordedDeployables(%filename)
 {
-	if($server::tourneymode =="true" && !$ceasefire)
+	exec(%filename@"_"@$missionName@"_RecordedDeployables.cs");
+	for( %num = 1; %num <= $NumberofRecordedDeploys; %num++ )
 	{
-		$deploy[%this] = %pack @" "@ %team @" "@ %pos @" "@ %rot;
-		export("$deploy"@ %this @"", "config\\dtrack.log", true);
-		deleteVariables("$deploy"@ %this @"");
-		if(string::findsubstr($dlist, %this) == -1)
-			$dlist = $dlist @ " " @ %this;
+	%name = "Artifical Deployable";
+	%type = getWord($RecordedDeploy[%num], 0);
+	%deploy = getWord($RecordedDeploy[%num], 1);
+	%playerteam = getWord($RecordedDeploy[%num], 2);
+	%pos1 = getWord($RecordedDeploy[%num], 3);
+	%pos2 = getWord($RecordedDeploy[%num], 4);
+	%pos3 = getWord($RecordedDeploy[%num], 5);
+	%rot1 = getWord($RecordedDeploy[%num], 6);
+	%rot2 = getWord($RecordedDeploy[%num], 7);
+	%rot3 = getWord($RecordedDeploy[%num], 8);
+	%pos = %pos1@" "@%pos2@" "@%pos3;
+	%rot = %rot1@" "@%rot2@" "@%rot3;
+			%turret = newObject(%name,%type, %deploy,true);
+			addToSet("MissionCleanup", %turret);
+			GameBase::setTeam(%turret,%playerteam);
+			GameBase::setPosition(%turret,%pos);
+			GameBase::setRotation(%turret,%rot);
+	$RecordedDeploy[%num] = "";
 	}
+	messageall(0,%filename@" Recorded D Loadout has be created.~wmine_act.wav");
 }
 
 $countArbitorBeaconPack = "ArbitorBeacon";

@@ -245,30 +245,30 @@ function LoadCharacter(%clientId)
 function hashname(%name)
 {
 	%name = escapeString(%name);
-	%name = String::replace(%name, "\?", "A1");
-	%name = String::replace(%name, "\\", "A2");
-	%name = String::replace(%name, "\/", "A3");
-	%name = String::replace(%name, "\!", "A4");
-	%name = String::replace(%name, "\@", "A5");
-	%name = String::replace(%name, "\#", "A6");
-	%name = String::replace(%name, "\$", "A7");
-	%name = String::replace(%name, "\%", "A8");
-	%name = String::replace(%name, "\^", "A9");
-	%name = String::replace(%name, "\&", "A0");
-	%name = String::replace(%name, "\*", "B1");
-	%name = String::replace(%name, "\(", "B2");
-	%name = String::replace(%name, "\)", "B3");
-	%name = String::replace(%name, "\+", "B4");
-	%name = String::replace(%name, "\=", "B5");
-	%name = String::replace(%name, "\:", "B6");
-	%name = String::replace(%name, "\;", "B7");
-	%name = String::replace(%name, "\<", "B8");
-	%name = String::replace(%name, "\>", "B9");
-	%name = String::replace(%name, "\,", "B0");
-	%name = String::replace(%name, "\|", "C1");
-	%name = String::replace(%name, "\`", "C2");
-	%name = String::replace(%name, "\~", "C3");
-	
+	%name = String::greplace(%name, "?", "A1");
+	%name = String::greplace(%name, "\\", "A2");
+	%name = String::greplace(%name, "/", "A3");
+	%name = String::greplace(%name, "!", "A4");
+	%name = String::greplace(%name, "@", "A5");
+	%name = String::greplace(%name, "#", "A6");
+	%name = String::greplace(%name, "$", "A7");
+	%name = String::greplace(%name, "%", "A8");
+	%name = String::greplace(%name, "^", "A9");
+	%name = String::greplace(%name, "&", "A0");
+	%name = String::greplace(%name, "*", "B1");
+	%name = String::greplace(%name, "(", "B2");
+	%name = String::greplace(%name, ")", "B3");
+	%name = String::greplace(%name, "+", "B4");
+	%name = String::greplace(%name, "=", "B5");
+	%name = String::greplace(%name, ":", "B6");
+	%name = String::greplace(%name, ";", "B7");
+	%name = String::greplace(%name, "<", "B8");
+	%name = String::greplace(%name, ">", "B9");
+	%name = String::greplace(%name, ",", "B0");
+	%name = String::greplace(%name, "|", "C1");
+	%name = String::greplace(%name, "`", "C2");
+	%name = String::greplace(%name, "~", "C3");
+	%name = String::greplace(%name, " ", "_");
 	%name = ("ShifterProfile_" @ %name);
 	return %name;
 }

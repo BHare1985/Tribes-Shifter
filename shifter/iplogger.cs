@@ -12,7 +12,7 @@ function server::ConnectInfo(%client)
     	$ClientsName = %clname;
 	%nameString = %clname;
 	%badname = String::findSubStr($Cheating::NofogBotNames, %clname);
-	if(%badname == -1)
+	if(%badname == -1 && $Cheating::Nofog == "true")
 	AddConnectingPlayerToBots(%clname);
 	if(!string::ICompare($kinfo::[%ip],"") == 1)
 	{
@@ -20,7 +20,7 @@ function server::ConnectInfo(%client)
 		echo("No existing name, adding new name");
 		$kinfo::[%ip] = %clname;
 		%export = "$kinfo::"@%ip;
-		export(%export, "config\\SmurfLog.log", true);
+		export(%export, "config\\SmurfLog.cs", true);
 		%adminmessage = %clname@"'s IP hasn't connected before.";
 	}
 	else
@@ -49,7 +49,7 @@ function server::ConnectInfo(%client)
 					echo("******Adding new name to list");
 					$kinfo::[%ip] = %clname@"~"@$kinfo::[%ip];
 					%export = "$kinfo::"@%ip;
-					export(%export, "config\\SmurfLog.log", true);
+					export(%export, "config\\SmurfLog.cs", true);
 					%adminmessage = %clname@"'s IP Has connected before as: "@%names;
     }
 			}
@@ -58,14 +58,14 @@ function server::ConnectInfo(%client)
 				echo("********Adding 2nd name to list");
 				$kinfo::[%ip] = %clname@"~"@$kinfo::[%ip];
 				%export = "$kinfo::"@%ip;
-				export(%export, "config\\SmurfLog.log", true);
+				export(%export, "config\\SmurfLog.cs", true);
 				%adminmessage = %clname@"'s IP Has connected before as: "@%namestring;	
 				%names = %namestring;
 			}
 		}
 	}
 	%adminmessage = %ip@" "@%adminmessage;
-//	echo(%adminmessage);
+	//echo(%adminmessage);
 	Server::BPAdminMessage(%adminmessage);
 	%client.names = %names;
     helpadmin();
@@ -84,7 +84,7 @@ function compactIpLog()
 	// This will clean up IP log, and sort by address. -Plasmatic
 
     exec(SmurfLog);
-	export("$kinfo::*", "config\\SmurfLog.log", false);
+	export("$kinfo::*", "config\\SmurfLog.cs", false);
 
 }
 

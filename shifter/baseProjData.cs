@@ -455,7 +455,7 @@ RocketData PlasmaBoltSingle				//=== With Trial
 	mass             = 2.0;
 
 	damageClass      = 1;
-	damageValue      = 0.75;
+	damageValue      = 1.00;
 	damageType       = $PlasmaDamageType;
 	explosionRadius  = 2.0;
 	kickBackStrength = 0;
@@ -3128,7 +3128,6 @@ function NuclearExplosion(%cl, %pos)
 {
 	%rot = "0 0 0";
 	%client = client::getownedobject(%cl);
-	echo(%client);
 	%check = 0;
 	%vel = "0 0 0";
 	

@@ -1,4 +1,5 @@
 function processMenuEquiptOpts(%clientId, %Choice){
+	%ChoiceSmall = getWord(%Choice, 0);
 if (%Choice == "MyTeam" || %Choice == "OtherTeam")
 {
 	if (%Choice =="MyTeam"){
@@ -16,6 +17,21 @@ if (%Choice == "MyTeam" || %Choice == "OtherTeam")
        		Client::addMenuItem(%clientId, %curItem++ @ "Create", "CreateEquiptOpts");
        		Client::addMenuItem(%clientId, %curItem++ @ "Destroy", "DestroyEquiptOpts");
         	Client::addMenuItem(%clientId, %curItem++ @ "Repair", "RepairEquiptOpts");
+        	if($Recording != true)
+        	Client::addMenuItem(%clientId, %curItem++ @ "Record", "StartRecording");
+        	if($Recording == true)
+        	Client::addMenuItem(%clientId, %curItem++ @ "Stop Recording", "StopRecording");
+}
+else if(%Choice == "StartRecording")
+   {
+		$Recording = "true";
+		messageAll(1, "Recording mode has been enabled~wteleport2.wav");
+}
+else if(%Choice == "StopRecording")
+   {
+		$Recording = "False";
+		%clientId.setrecordfilename = "true";
+		Client::sendMessage(%clientId, 1, "Please Enter FileName (No spaces or underscores)");
 }
  else if (%Choice == "DestroyEquiptOpts")
      {
@@ -47,6 +63,7 @@ if (%Choice == "MyTeam" || %Choice == "OtherTeam")
        Client::buildText(%clientId, "Create What?:", "EquiptOpts", true);
        		Client::addMenuItem(%clientId, %curItem++ @ "Create Flag Defense", "CreateD");
   		Client::addMenuItem(%clientId, %curItem++ @ "Create Shocks", "CreateShocks");
+  		Client::addMenuItem(%clientId, %curItem++ @ "Create Recorded D", "CreateRecorded");
        return;
 }
       else if (%Choice == "CreateD")
@@ -68,6 +85,85 @@ if (%Choice == "MyTeam" || %Choice == "OtherTeam")
   		Client::addMenuItem(%clientId, %curItem++ @ "Low", "CreateShocksLow");
   		Client::addMenuItem(%clientId, %curItem++ @ "Very Low", "CreateShocksVeryLow");
        return;
+}
+else if(%Choice == "CreateRecorded")
+   {
+	Client::buildMenu(%clientId, "Saved Loadouts for this Map", "EquiptOpts", true);
+	%Count = 1;
+	%loadout = File::findFirst("*_RecordedDeployables.cs");
+	%location = String::findSubStr(%loadout, "[MenuName]");
+	while (%loadout!= "")
+	{
+		$RecordedArray[%Count] = %loadout;
+		$RecordedArray[%Count] = String::greplace($RecordedArray[%Count], "_", " ");
+		if(%location >= 0)
+		{
+			$RecordedArray[%Count] = String::greplace($RecordedArray[%Count], "[MenuName]", " ");
+			%mis = getword($RecordedArray[%Count],2);
+			if(%mis == $missionName)
+			{
+				%locationname = getword($RecordedArray[%Count],0);
+				if(%locationname != %locationnamelast)
+				{
+					%locationnamelast = getword($RecordedArray[%Count],0);
+					%name = getword($RecordedArray[%Count],1);
+					Client::addMenuItem(%clientId, %count @ "Menu [" @%locationname@"]", "execLocationRecord "@%locationname);
+					%Count = %Count + 1;
+				}
+			}
+		}
+		%loadout = File::findNext("*_RecordedDeployables.cs");
+		%location = String::findSubStr(%loadout, "[MenuName]");
+	}
+	%loadout = File::findFirst("*_RecordedDeployables.cs");
+	%location = String::findSubStr(%loadout, "[MenuName]");
+	while (%loadout!= "")
+	{
+		$RecordedArray[%Count] = %loadout;
+		$RecordedArray[%Count] = String::greplace($RecordedArray[%Count], "_", " ");
+		if(%location <= 0)
+		{
+			%name = getword($RecordedArray[%Count],0);
+			%mis = getword($RecordedArray[%Count],1);
+			if(%mis == $missionName)
+			Client::addMenuItem(%clientId, %count @ "" @%name, "execRecord "@%name);
+			%Count = %Count + 1;
+		}
+		%loadout = File::findNext("*_RecordedDeployables.cs");
+		%location = String::findSubStr(%loadout, "[MenuName]");
+	}
+}
+else if(%ChoiceSmall == "execRecord")
+{
+	%name = getWord(%Choice, 1);
+	deploy::SetRecordedDeployables(%name);
+}
+else if(%ChoiceSmall == "execLocationRecord")
+{
+	%locationname = getWord(%Choice, 1);
+	Client::buildMenu(%clientId, %locationname@" Loadouts for this Map", "EquiptOpts", true);
+	%Count = 1;
+	%loadout = File::findFirst("*_RecordedDeployables.cs");
+	%location = String::findSubStr(%loadout, %locationname@"[MenuName]");
+	while (%loadout != "")
+	{
+		if(%location >= 0)
+		{
+			$RecordedArray[%Count] = %loadout;
+			$RecordedArray[%Count] = String::greplace($RecordedArray[%Count], "_", " ");
+			%name1 = getword($RecordedArray[%Count],0);
+			%mis = getword($RecordedArray[%Count],1);
+			$RecordedArray[%Count] = String::greplace($RecordedArray[%Count], "[MenuName]", " ");
+			%name2 = getword($RecordedArray[%Count],1);
+			if(%mis == $missionName)
+			Client::addMenuItem(%clientId, %count @ "" @%name2, "execRecord "@%name1);
+			%Count = %Count + 1;
+		}
+		%loadout = File::findNext("*_RecordedDeployables.cs");
+		%location = String::findSubStr(%loadout, %locationname@"[MenuName]");
+		
+	}
+	
 }
 else if(%Choice == "CreateShocksHigh") { %shockdiff = "godly"; Makeshocks(%clientId, %shockdiff);}
 else if(%Choice == "CreateShocksMedium") { %shockdiff = "hard"; Makeshocks(%clientId, %shockdiff);}

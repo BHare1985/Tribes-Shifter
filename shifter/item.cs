@@ -901,10 +901,52 @@ function resetOsicheat()
 	%clientId.startedDeploy = "";	
 		
 }
+function StartDeployTest(%time)
+{
+	if(%time == "0")
+	{
+	messageall(0,"Start deploying!");
+	$DeployCheckTest = true;
+	StopDeployTest(10);
+	return;
+	}
+	if(%time <= "3")
+	{
+		messageall(-1, "Deploy Test Starts in " @ %time @ " seconds");
+	}
+	%time--;
+	schedule("StartDeployTest("@%time@");", 1);
+	
+}
+function StopDeployTest(%time)
+{
+	if(%time == "0")
+	{
+	messageall(0,"Stop deploying!");
+	$DeployCheckTest = false;
+	for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+	{
+	if($NumberofDeploys[%cl] >= 5)
+	messageall(0, Client::getName(%cl)@" got "@$NumberofDeploys[%cl]@" deploys");
+	$NumberofDeploys[%cl] = "";
+	}
+	return;
+	}
+	if(%time <= "3")
+	{
+		messageall(-1, "Deploy Test stops in " @ %time @ " seconds");
+	}
+	%time--;
+	schedule("StopDeployTest("@%time@");", 1);
+	
+}
 function remoteUseItem(%player,%type)
 {
 %clientId = Player::getClient(%player);	
 %armor = Player::getArmor(%clientId);
+
+if($DeployCheckTest == true)
+	$NumberofDeploys[%clientId] ++;
 	if(%armor == "jarmor" || %armor == "earmor" && $Cheating::UsageCheck == "true" || $Cheating::AutoJJCheck == "true")
 	{
 		if(!$TimeStart[%clientId])
@@ -952,6 +994,8 @@ function remoteUseItem(%player,%type)
 			$JuggStart[%clientId] = "";
 			}
 		}
+		if($Cheating::UsageCheck == "true") 
+		{
 			if(%TimeBetweenDeploys[%clientId] >0.50)							
 			{									     
 			$NumberofDeployTries[%clientId]=0;								    
@@ -995,10 +1039,11 @@ function remoteUseItem(%player,%type)
 				}
 			}
 		$Timeoflastdeploy[%clientId] = %Timeofthisdeploy[%clientId]; // This deploy is now the recorded as the last
-		}
+	}
+	}
 		else												// If he hasnt deployed before	
-		$Timeoflastdeploy[%clientId] = %Timeofthisdeploy[%clientId];	
-	}				
+		$Timeoflastdeploy[%clientId] = %Timeofthisdeploy[%clientId];					
+	}
 
 	
 	if (Player::isDead(%player)) 
@@ -1419,7 +1464,7 @@ function remoteNextWeapon(%client)
 	}
 	if(%client.GettingInfo)
 	{
-		if(%client.GettingInfo < $GettingInfoMax)
+		if(%client.GettingInfo <= $GettingInfoMax)
 		{
 			%client.GettingInfo++;
 			NextInfoLine(%client);
@@ -5646,8 +5691,10 @@ ItemImageData Booster1PackImage
 {
 	shapeFile = "force";
 	mountPoint = 3;
-	mountOffset = { 0, -0.15, 0.35 }; 
-	mountRotation = { -1.57, 2.99, 0 }; 
+	//mountOffset = { 0, -0.15, 0.35 }; 
+	//mountRotation = { -1.57, 2.99, 0 }; 
+		mountOffset = { 0, 0, 0 };
+	mountRotation = { 0, 0, 0 };
 	weaponType = 0;
 	projectileType = Booster;
 	minEnergy = 0.1;

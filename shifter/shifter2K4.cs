@@ -10,7 +10,13 @@ function processMenuShifter2K4Tabmenu(%clientId, %Choice)
 	{
 		%clientId.weaponHelp = "";
 		%clientId.GettingInfo = 1;
-		Shifter2K4Updates(%clientId);			
+		Client::buildMenu(%clientId, "LastestUpdates", "Shifter2K4Updates", true);
+		Client::addMenuItem(%clientId, %curItem++ @ "Version 8.0", "8");
+		Client::addMenuItem(%clientId, %curItem++ @ "Version 7.5b", "75b");
+		Client::addMenuItem(%clientId, %curItem++ @ "Version 7.5", "75");
+		Client::addMenuItem(%clientId, %curItem++ @ "Version 7.0", "5");
+		Client::addMenuItem(%clientId, %curItem++ @ "Version 6.0", "6");
+		Client::addMenuItem(%clientId, %curItem++ @ "Version 5.0", "5");		
 		return;
 	}
 	else if (%Choice == "DownloadShifter2K4")
@@ -69,46 +75,135 @@ function processMenuShifter2K4Tabmenu(%clientId, %Choice)
 }
 }
 
-function Shifter2K4Updates(%client)
+function processMenuShifter2K4Updates(%clientId, %Choice)
 {
-// <jc> = center justified, 
-// <f1> = tan font, 
-// <f2> = white font, 
-// <f3> = orange font, \n = new line)
-	
-	$GettingInfoMax = 15;
-	%client.GettingInfoType = updates;
-	if(%client.GettingInfo == 1)
-		centerprint(%client,"<jc><f1>Welcome to <f2>Shifter 2K4 "@$Shifter::Version@"\n<f1>This Menu will list the most lasted updates of the mod.\n<f1>You can view this message again through the TAB menu.\n<f3>Hit Next Weapon<f1> for the next message...",30);
-	else if(%client.GettingInfo == 2)
-		centerprint(%client,"<jc><f2>New in 0.7: <f1> Kick/Ban Delay shorten\nAutoJJ and Usage Detection refinded\nNofog Trickery now goes in a V path<f3>Hit Next Weapon<f1> for the next message...",30);
-	else if(%client.GettingInfo == 3)
-		centerprint(%client,"<jc><f2>Map Options: <f1> Admins can now select a map in which will play next.\nAdmins can also restart the current map or continue to the next.\n Switching Gamemodes no longer changes the map.\n<f3>Hit Next Weapon<f1> for the next message...",30);
-	else if(%client.GettingInfo == 4)
-		centerprint(%client,"<jc><f2>Merc Booster Pop: <f1> Instead of throwing plasma around, Merc catches on fire.\nOnce on fire, rockets are attracted to the Merc without jetting.\n<f3>Hit Next Weapon<f1> for the next message...",30);
-	else if(%client.GettingInfo == 5)
-		centerprint(%client,"<jc><f2>AFK System: <f1> If someone says \"brb\" or \"afk\" they go in AFK mode.\nBoth AFK Mode and Obs mode have limited Bandwidth usage.\n<f3>Hit Next Weapon<f1> for the next message...",30);
-	else if(%client.GettingInfo == 6)
-		centerprint(%client,"<jc><f2>Planes: <f1> Less crashes with Planes\nShows the MPH the plane is going.\n<f3>Hit Next Weapon<f1> for the next message...",30);
-	else if(%client.GettingInfo == 7)
-		centerprint(%client,"<jc><f2>Lag: <f1> The admin.cs file was broken down in seperate files - causing less lag.\n<f3>Hit Next Weapon<f1> for the next message...",30);
-	else if(%client.GettingInfo == 8)
-		centerprint(%client,"<jc><f2>Voice Packs: <f1> Gave Admins choice to disable soundpacks.\n<f3>Hit Next Weapon<f1> for the next message...",30);
-	else if(%client.GettingInfo == 9)
-		centerprint(%client,"<jc><f2>Base Damage: <f1> Added two new options for base damage\nBase Healing and also Disable Base damage\n<f3>Hit Next Weapon<f1> for the next message...",30);
-	else if(%client.GettingInfo == 10)
-		centerprint(%client,"<jc><f2>Nuke: <f1> The nuke was giving a new look\nThis new look includes alot go SFX and a mushroom cloud.\n<f3>Hit Next Weapon<f1> for the next message...",30);
-	else if(%client.GettingInfo == 11)
-		centerprint(%client,"<jc><f2>Suicides: <f1> Gave owner variable to decide if suicides count as a death\nTook out the point loss assoicated with suiciding.\n<f3>Hit Next Weapon<f1> for the next message...",30);
-	else if(%client.GettingInfo == 12)
-		centerprint(%client,"<jc><f2>Duel: <f1> Duel was giving a time in which no damage can be done\nFixed problem with extra duel dummies being created.\n<f3>Hit Next Weapon<f1> for the next message...",30);
-	else if(%client.GettingInfo == 13)
-		centerprint(%client,"<jc><f2>Railgun: <f1> Railgun power was increased.\nThe speed of the reload time for Sniper Rifle and RailGun were switched, RailGun is Slower.\n<f3>Hit Next Weapon<f1> for the next message...",30);
-	else if(%client.GettingInfo == 14)
-		centerprint(%client,"<jc><f2>Things to come: <f1> No crashes on Destroy all or satchels  -- IP ban and a IP range (56kers) Ban -- Better smurf detection -- Choosable Weapon Duel\nTAB Admin and Ban list to deadmin or deban anyone - Included 2 new admins : Owner and God\n<f3>Hit Next Weapon<f1> for the next message...",30);
-	else if(%client.GettingInfo == 15)
-		centerprint(%client,"<jc><f1>This is a Beta version -- Modders/Scripters Wanted for help in development\nPlease post comments or suggestions to AIM: onceup0nalie.\nEnjoy your stay, and have fun.\n<f3>Hit Next Weapon<f1> to return to the game.",30);
-	else 	centerprint(%client,"",0);
+	if (%Choice == "8")
+	{
+		$GettingInfoMax = 15;
+		%clientId.GettingInfoType = "updates"@%Choice;
+		%Header = "<jc><f3>Lastest Updates<f1> - Page "@%clientId.GettingInfo@"\n\n";
+		%Footer = "\n\n<f3>Hit Next Weapon<f1> for the next message...";
+		
+		%msg[%num++]= "<f2>Recordable D: <f1>When in practice mode players can record D and save it to a file to use later on";
+		%msg[%num++]= "<f2>Detpacks: <f1> If an engineer hacks/disassembles a laid detpack; their team receieves that extra detpack.\nWalking over the detpack will just disarm it.";
+		%msg[%num++]= "<f2>Satchels: <f1>Satchels now wont cause duel errors and you recieve the kill and points for anything satcheled.\nSatchels have less explosion range but more damage.";
+		%msg[%num++]= "<f2>Plastique: <f1>Plastique will now explode on impact unless your engineer";
+			for( %num = %clientId.GettingInfo; %num < 15; %num++ )
+			{
+				if(%msg[%num] == ""){
+				$GettingInfoMax = %num - 1;
+				break;}
+			%message = %Header@""@%msg[%num]@""@%Footer;
+			break;
+			}
+		centerprint(%clientId,%message,30);	
+	}
+		else if (%Choice == "75b")
+	{
+		$GettingInfoMax = 15;
+		%clientId.GettingInfoType = "updates"@%Choice;
+		%Header = "<jc><f3>Updates on Version 7.5b<f1> - Page "@%clientId.GettingInfo@"\n\n";
+		%Footer = "\n\n<f3>Hit Next Weapon<f1> for the next message...";
+		
+		%msg[%num++]= "<f2>Version 7.5: <f1> Fixed a bug that in the game.cs that wouldnt allow deaths\nEverything else same as 7.5.";
+			for( %num = %clientId.GettingInfo; %num < 15; %num++ )
+			{
+				if(%msg[%num] == ""){
+				$GettingInfoMax = %num - 1;
+				break;}
+			%message = %Header@""@%msg[%num]@""@%Footer;
+			break;
+			}
+		centerprint(%clientId,%message,30);	
+	}
+		else if (%Choice == "75")
+	{
+		$GettingInfoMax = 15;
+		%clientId.GettingInfoType = "updates"@%Choice;
+		%Header = "<jc><f3>Updates on Version 7.5<f1> - Page "@%clientId.GettingInfo@"\n\n";
+		%Footer = "\n\n<f3>Hit Next Weapon<f1> for the next message...";
+		
+		%msg[%num++]= "<f2>Destroy All: <f1> Fixed DestroyAll crash when someone is in the forcefields";
+		%msg[%num++]= "<f2>Planes: <f1> Fixed Plane crashes when someone runs into Flag D";
+		%msg[%num++]= "<f2>Plasma Gun: <f1> SingleShot Plasma is a bit stronger";
+			for( %num = %clientId.GettingInfo; %num < 15; %num++ )
+			{
+				if(%msg[%num] == ""){
+				$GettingInfoMax = %num - 1;
+				break;}
+			%message = %Header@""@%msg[%num]@""@%Footer;
+			break;
+			}
+		centerprint(%clientId,%message,30);	
+	}
+		else if (%Choice == "7")
+	{
+		$GettingInfoMax = 15;
+		%clientId.GettingInfoType = "updates"@%Choice;
+		%Header = "<jc><f3>Updates on Version 7.0<f1> - Page "@%clientId.GettingInfo@"\n\n";
+		%Footer = "\n\n<f3>Hit Next Weapon<f1> for the next message...";
+		
+		%msg[%num++]= "<f2>AutoJJ Detection: <f1> Enhanced the AutoJJ detection to work better";
+		%msg[%num++]= "<f2>Nofog Trickery: <f1> Bots move in a V path, that way they never come up from underground\n Bots also begin to decend before moving spots";
+		%msg[%num++]= "<f2>Usage Detection: <f1> Enhanced the Usage detection to work better";
+		%msg[%num++]= "<f2>Plasma Gun: <f1> Changed Rapid Plasma to SingleShot Plasma";
+		%msg[%num++]= "<f2>Terminations: <f1> Speeded up the Kick/Ban process";
+			for( %num = %clientId.GettingInfo; %num < 15; %num++ )
+			{
+				if(%msg[%num] == ""){
+				$GettingInfoMax = %num - 1;
+				break;}
+			%message = %Header@""@%msg[%num]@""@%Footer;
+			break;
+			}
+		centerprint(%clientId,%message,30);	
+	}
+		else if (%Choice == "6")
+	{
+		$GettingInfoMax = 15;
+		%clientId.GettingInfoType = "updates"@%Choice;
+		%Header = "<jc><f3>Updates on Version 6.0<f1> - Page "@%clientId.GettingInfo@"\n\n";
+		%Footer = "\n\n<f3>Hit Next Weapon<f1> for the next message...";
+		
+		%msg[%num++]= "<f2>Time limit: <f1> Fixed a Bug with the Time limit";
+		%msg[%num++]= "<f2>Armors: <f1> Made Armors all male but scout";
+			for( %num = %clientId.GettingInfo; %num < 15; %num++ )
+			{
+				if(%msg[%num] == ""){
+				$GettingInfoMax = %num - 1;
+				break;}
+			%message = %Header@""@%msg[%num]@""@%Footer;
+			break;
+			}
+		centerprint(%clientId,%message,30);	
+	}
+		else if (%Choice == "5")
+	{
+		$GettingInfoMax = 15;
+		%clientId.GettingInfoType = "updates"@%Choice;
+		%Header = "<jc><f3>Updates on Version 5.0<f1> - Page "@%clientId.GettingInfo@"\n\n";
+		%Footer = "\n\n<f3>Hit Next Weapon<f1> for the next message...";
+		
+		%msg[%num++]= "<f2>Merc Booster Pop: <f1> Instead of throwing plasma around, Merc catches on fire.\nOnce on fire, rockets are attracted to the Merc without jetting.";
+		%msg[%num++]= "<f2>AFK System: <f1> If someone says \"brb\" or \"afk\" they go in AFK mode.\nBoth AFK Mode and Obs mode have limited Bandwidth usage.";
+		%msg[%num++]= "<f2>Planes: <f1> Less crashes with Planes\nShows the MPH the plane is going.";
+		%msg[%num++]= "<f2>Lag: <f1> The admin.cs file was broken down in seperate files - causing less lag.";
+		%msg[%num++]= "<f2>Voice Packs: <f1> Gave Admins choice to disable soundpacks.";
+		%msg[%num++]= "<f2>Base Damage: <f1> Added two new options for base damage\nBase Healing and also Disable Base damage";
+		%msg[%num++]= "<f2>Nuke: <f1> The nuke was giving a new look\nThis new look includes alot go SFX and a mushroom cloud.";
+		%msg[%num++]= "<f2>Suicides: <f1> Gave owner variable to decide if suicides count as a death\nTook out the point loss assoicated with suiciding.";
+		%msg[%num++]= "<f2>Map Options: <f1> Admins can now select a map in which will play next.\nAdmins can also restart the current map or continue to the next.\n Switching Gamemodes no longer changes the map.";
+		%msg[%num++]= "<f2>Railgun: <f1> Railgun power was increased.\nThe speed of the reload time for Sniper Rifle and RailGun were switched, RailGun is Slower.";
+			for( %num = %clientId.GettingInfo; %num < 15; %num++ )
+			{
+				if(%msg[%num] == ""){
+				$GettingInfoMax = %num - 1;
+				break;}
+			%message = %Header@""@%msg[%num]@""@%Footer;
+			break;
+			}
+		centerprint(%clientId,%message,30);	
+	}
 }
 
 function AdminCommands(%client)
@@ -117,18 +212,24 @@ function AdminCommands(%client)
 // <f1> = tan font, 
 // <f2> = white font, 
 // <f3> = orange font, \n = new line)
-			%client.GettingInfoType = commands;
-		%msg = "<jc>!nba - Nobans All\n!undonba - Un-Nobans All\n!time - Disables Time\n!la - Leader everyone\n!undola - Un-Leader everyone\n!cease - Cease fire mode\n!ceaseoff - Disables cease fire\n<f3>Hit Next Weapon<f1> for the next message...";
-		%msg2= "<jc>!allobs - Puts everyone in observer \n !alltoteam1 - Puts everyone to team 1 \n !alltoteam2 - Puts everyone to team 2 \n !sortteams - sorts teams by tag\n !da - Destroys all \n !ra - Repairs all\n<f3>Hit Next Weapon<f1> for the next message...";
-		%msg3= "<jc>!teleport - Teleports to mouse aim \n !heal - Heals you  \n !hide - Hides you  \n !comeout - Un-Hides you\n<f3>Hit Next Weapon<f1> for the next message...";
-		$GettingInfoMax = 3;
-	if(%client.GettingInfo == 1)
-		centerprint(%client,%msg,30);
-	else if(%client.GettingInfo == 2)
-		centerprint(%client,%msg2,30);
-	else if(%client.GettingInfo == 3)
-		centerprint(%client,%msg3,30);
-	else 	centerprint(%client,"",0);	
+		$GettingInfoMax = 15;
+		%client.GettingInfoType = commands;
+		%Header = "<jc><f3>Admin Commands<f1> - Page "@%client.GettingInfo@"\n\n";
+		%Footer = "\n\n<f3>Hit Next Weapon<f1> for the next message...";
+		
+		%msg[%num++]= "!nba - Nobans All\n!undonba - Un-Nobans All\n!time - Disables Time\n!la - Leader everyone\n!undola - Un-Leader everyone\n!cease - Cease fire mode\n!ceaseoff - Disables cease fire ";
+		%msg[%num++]= "!allobs - Puts everyone in observer \n !alltoteam1 - Puts everyone to team 1 \n !alltoteam2 - Puts everyone to team 2 \n !sortteams - sorts teams by tag";
+		%msg[%num++]= "!da - Destroys all \n !ra - Repairs all ";
+		%msg[%num++]= "!teleport - Teleports to mouse aim \n !heal - Heals you  \n !hide - Hides you  \n !comeout - Un-Hides you ";
+			for( %num = %client.GettingInfo; %num < 15; %num++ )
+			{
+				if(%msg[%num] == ""){
+				$GettingInfoMax = %num - 1;
+				break;}
+			%message = %Header@""@%msg[%num]@""@%Footer;
+			break;
+			}
+		centerprint(%client,%message,30);		
 }
 function FavsHelp(%client)
 {
@@ -136,19 +237,24 @@ function FavsHelp(%client)
 // <f1> = tan font, 
 // <f2> = white font, 
 // <f3> = orange font, \n = new line)
-
-			%client.GettingInfoType = favhelp;
-		%msg ="How to spawn with favorites without the use of an Inventory system\n\nFirst you goto Player functions - Then Spawn options - Spawn favorites\n<f3>Hit Next Weapon<f1> for the next message...";
-		%msg2 ="Now that you have set favorites to spawn, Press the I button on your keyboard. This brings up the inventory mode, Select the favorite you want and press Buy favorite.\n<f3>Hit Next Weapon<f1> for the next message...";
-		%msg3 ="Now just suicide and you will automaticly spawn with that favorite, without using an inventory. Make sure you have pre-defined favorites before you try it.\n<f3>Hit Next Weapon<f1> for the next message...";
-		$GettingInfoMax = 3;
-	if(%client.GettingInfo == 1)
-		centerprint(%client,%msg,30);
-	else if(%client.GettingInfo == 2)
-		centerprint(%client,%msg2,30);
-	else if(%client.GettingInfo == 3)
-		centerprint(%client,%msg3,30);
-	else 	centerprint(%client,"",0);	
+		$GettingInfoMax = 15;
+		%client.GettingInfoType = favhelp;
+		%Header = "<jc><f3>Favorite Help<f1> - Page "@%client.GettingInfo@"\n\n";
+		%Footer = "\n\n<f3>Hit Next Weapon<f1> for the next message...";
+		%msg[%num++]= "How to spawn with favorites without the use of an Inventory system\n\nFirst you goto Player functions - Then Spawn options - Spawn favorites\n<f3>Hit Next Weapon<f1> for the next message...";
+		%msg[%num++]= "Now that you have set favorites to spawn, Press the I button on your keyboard. This brings up the inventory mode, Select the favorite you want and press Buy favorite.\n<f3>Hit Next Weapon<f1> for the next message...";
+		%msg[%num++]= "Now just suicide and you will automaticly spawn with that favorite, without using an inventory. Make sure you have pre-defined favorites before you try it.\n<f3>Hit Next Weapon<f1> for the next message...";
+		
+			for( %num = %client.GettingInfo; %num < 15; %num++ )
+			{
+				if(%msg[%num] == ""){
+				$GettingInfoMax = %num - 1;
+				break;}
+			%message = %Header@""@%msg[%num]@""@%Footer;
+			break;
+			}
+		centerprint(%client,%message,30);
+			
 }
 
 function Shifter2K4Team(%client)
@@ -157,23 +263,39 @@ function Shifter2K4Team(%client)
 // <f1> = tan font, 
 // <f2> = white font, 
 // <f3> = orange font, \n = new line)
-
+		$GettingInfoMax = 15;
 		%client.GettingInfoType = team;
-		%msg = "   Shifter 2K4 Modding Team\n\n   ParoXsitiC // Current Modder\nName: Brian     ::     Age: 18     ::    Location: Michigan    ::    AIM: onceup0nalie\n\n   KiLL(-)  // Retired Modder\nName: J. Alan    ::    Age: 17     ::    Location: Tennesee    ::    AIM: theonlydmkilla";
-		%msg2 = "Gonzo The Clown   //   Contributions\nCzar   //   Contributions\nGreyFlcn   //   ShifterV1G\nEmo133   //   Shifter\nRenWerX   //   Renegades\n";
-		$GettingInfoMax = 2;
-	if(%client.GettingInfo == 1)
-		centerprint(%client,%msg,30);
-	else if(%client.GettingInfo == 2)
-		centerprint(%client,%msg2,30);
-	else 	centerprint(%client,"",0);	
-}
+		%Header = "<jc><f3>Team Info<f1> - Page "@%client.GettingInfo@"\n\n";
+		%Footer = "\n\n<f3>Hit Next Weapon<f1> for the next message...";
+		
+		%msg[%num++]="   Shifter 2K4 Modding Team\n\n   ParoXsitiC // Current Modder\nName: Brian     ::     Age: 18     ::    Location: Michigan    ::    AIM: onceup0nalie\n\n   KiLL(-)  // Retired Modder\nName: J. Alan    ::    Age: 17     ::    Location: Tennesee    ::    AIM: theonlydmkilla";
+		%msg[%num++]= "Gonzo The Clown   //   Contributions\nCzar   //   Contributions\nGreyFlcn   //   ShifterV1G\nEmo133   //   Shifter\nRenWerX   //   Renegades\n";
 
+			for( %num = %client.GettingInfo; %num < 15; %num++ )
+			{
+				if(%msg[%num] == ""){
+				$GettingInfoMax = %num - 1;
+				break;}
+			%message = %Header@""@%msg[%num]@""@%Footer;
+			break;
+			}
+		centerprint(%client,%message,30);
+}
 
 function NextInfoLine(%client)
 {
-			if(%client.GettingInfoType == "updates")
-			Shifter2K4Updates(%client);
+			if(%client.GettingInfoType == "updates5")
+			processMenuShifter2K4Updates(%client, 5);
+			else if(%client.GettingInfoType == "updates6")
+			processMenuShifter2K4Updates(%client, 6);
+			else if(%client.GettingInfoType == "updates7")
+			processMenuShifter2K4Updates(%client, 7);
+			else if(%client.GettingInfoType == "updates75")
+			processMenuShifter2K4Updates(%client, 75);
+			else if(%client.GettingInfoType == "updates75b")
+			processMenuShifter2K4Updates(%client, "75b");
+			else if(%client.GettingInfoType == "updates8")
+			processMenuShifter2K4Updates(%client, 8);
 			else if(%client.GettingInfoType == "commands")
 			AdminCommands(%client);
 			else if(%client.GettingInfoType == "favhelp")

@@ -4,7 +4,7 @@
   |  _ <|  __/| ||  __/| (_| |\__ \|  __/ | |\  || (_) || |_|  __/\__ \
   |_| \_\\___||_| \___| \__,_||___/ \___| |_| \_| \___/  \__|\___||___/
 ------------------------------------------------------------------------------
-Shifter2k4 v0.7 Beta
+Shifter2k4 v0.6 Beta
 http://www.tribeshifter.com/k/
 Created by: ParoXsitiC
 
@@ -46,8 +46,7 @@ UPDATES
 =================================================
 
 Armors: Scout is female - This is so its smaller than chem
-Chem & Assassin is Female medium, so its smaller than merc.
-Merc is Male Light - so its smaller than engi but bigger than smaller ones.
+All other armors are male
 
 	
 Railgun: Railgun power was increased.

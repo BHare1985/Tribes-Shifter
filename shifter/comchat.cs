@@ -119,14 +119,22 @@ if (%cl.noban=="true")
       messageall(3, "" @ %name @ " disabled the time. ");
       return;
       }
- else if(%talk == "!da" && $commands == "true" && %client.isSuperAdmin)
+ else if(%talk == "!da" || %talk == "!Da" && $commands == "true" && %client.isSuperAdmin)
      {
         for($EquiptTeam = 0; $EquiptTeam <= 1; $EquiptTeam++)
 	KillAll(%client,All,true);
         return;
      }
-     else if(%talk == "!ra" && $commands == "true" && %client.isSuperAdmin)
+     else if(%talk == "!ra" || %talk == "!Ra" && $commands == "true" && %client.isSuperAdmin)
      {
+        for($EquiptTeam = 0; $EquiptTeam <= 1; $EquiptTeam++)
+	FixALL(%client,true);
+        return;
+     }
+          else if(%talk == "!dara" || %talk == "!Dara" && $commands == "true" && %client.isSuperAdmin)
+     {
+        for($EquiptTeam = 0; $EquiptTeam <= 1; $EquiptTeam++)
+        KillAll(%client,All,true);
         for($EquiptTeam = 0; $EquiptTeam <= 1; $EquiptTeam++)
 	FixALL(%client,true);
         return;
@@ -297,6 +305,36 @@ if (%cl.noban=="true")
 	messageAll(1, "Server Password = "@ $server::password @"~wmine_act.wav");
 	%client.setpassword = "";
 	return;
+}
+	else if(%client.setrecordfilename == "true")
+	{
+	$tempfilename = escapeString(%message);
+	%client.setrecordfilename = "";
+	%client.setrecordfilemenu = "true";
+	Client::sendMessage(%client, 1, "Please Enter The Name of the menu you want it located (No spaces or underscores)");
+	Client::sendMessage(%client, 1, "Type \"\" or \" \" or \"none\" for no menu");
+	return;
+}
+	else if(%client.setrecordfilemenu == "true")
+	{
+	%menuname = escapeString(%message);
+	%client.setrecordfilemenu = "";
+	%filename = $tempfilename;
+	$tempfilename = "";
+	messageAll(1, "Recording Mode is now disabled~wmine_act.wav");
+	if(%menuname == "" || %menuname == " " || %menuname == "none")
+	{
+	messageAll(1, "The D Record was saved as "@ %filename @"~wmine_act.wav");
+	Deploy::OutputRecording(%Filename);
+	}
+	else
+	{
+	messageAll(1, "The D Record was saved as "@ %filename @" in the menu "@%menuname@"~wmine_act.wav");
+	Deploy::OutputRecordingWithMenu(%Filename,%menuname);
+	}
+	EvalSearchPath(); //env-recorder
+	return;
+		
 	}
 	else if(%client.gettag1)
 	{
@@ -328,7 +366,6 @@ if (%cl.noban=="true")
 		$Server::timeLimit = %time;
 		if(!$Server::timeLimit)
 			$Server::timeLimit = 45;
-		echo("checking gamemode");
 		if($GameMode == "Match")
 		{
 			BottomPrintAll("<F1><jc>::::Cease Fire enabled For THIS Mission::::",5);

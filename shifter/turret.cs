@@ -734,8 +734,6 @@ function DeployableSatchel::onDestroyed(%this)
 	GameBase::setRechargeRate(%this,0);
 	Turret::onDeactivate(%this);
 	GameBase::applyRadiusDamage($DebrisDamageType, getBoxCenter(%this),  5.2, 1.101, 305, %this);
-
-	//CalcRadiusDamage(%this,$DebrisDamageType,30,0.2,25,20,20,1.5,0.5,200,100);
   	$TeamItemCount[GameBase::getTeam(%this) @ "SatchelPack"]--;
 }
 

@@ -10,11 +10,11 @@
 //                                    Orignal by: Emo
 //================================================================================
 
-$Server::HostName = "Shifter 2K4 v0.7 WIP";	// The name of your Server -- Default: Shifter2K4
+$Server::HostName = "Shifter 2K4 v0.8";	// The name of your Server -- Default: Shifter2K4
 $Server::MaxPlayers = "20"; 			// Max Players On Your Server -- Default: 20
 $Server::timeLimit = "240";			// Mission Time Limit In Minutes -- Default: 240
 $Server::Password = "";				// Server Main Password - One that is on when started
-$Server::Password2 = "sbamatch";		// Server Password  - One that can be issued in-game -- Default: sbamatch
+$Server::Password2 = "locked";		// Server Password  - One that can be issued in-game -- Default: sbamatch
 $Server::TeamDamageScale = "1";			// Team Damage On/Off -- Default: 1 (On)
 
 

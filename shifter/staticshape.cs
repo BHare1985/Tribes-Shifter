@@ -435,30 +435,22 @@ StaticShapeData TreeShapeTwo { shapeFile = "tree2"; maxDamage = 10.0; isTransluc
 
 function ff::Open(%this, %delay)
 {
-	if(%this.originalpos == "")	
-	{
-		%this.originalpos = GameBase::getPosition(%this);
-		%this.isactive = false;
-	}
-	if(%this.isactive == false)
-	{
-		GameBase::startfadeout(%this);
-		%this.isactive = true;
-		schedule("ff::Open("@ %this @");",%delay);
-		%pos = %this.originalpos;
-		%newpos = Vector::add(%pos, "0 0 5000" );
-		GameBase::playSound(%this,ForceFieldOpen,0);
-		gamebase::setposition(%this, %newpos);
-	}
-	else
-	{
-		%this.isactive = false;
-		GameBase::setPosition(%this, %this.originalpos);
-		GameBase::startfadein(%this);
-		schedule("GameBase::playSound("@ %this @",ForceFieldClose,0);",0.35,%this);
-	}
+	GameBase::playSound(%this,ForceFieldOpen,0);
+	GameBase::startfadeout(%this);
+	%pos=GameBase::getPosition(%this);
+	%pos=Vector::add(%pos,"0 0 5000");
+	GameBase::setPosition(%this,%pos);
+	schedule("ff::Close("@%this@");",%delay);
 }
 
+function ff::Close(%this, %delay)
+{
+	%pos=GameBase::getPosition(%this);
+	%pos=Vector::add(%pos,"0 0 -5000");
+	GameBase::setPosition(%this,%pos);
+	GameBase::startfadein(%this);
+	schedule("GameBase::playSound("@ %this @",ForceFieldClose,0);",0.15,%this);
+}
 function HopOut(%obj)
 {
 	if(%obj.driver)
@@ -500,7 +492,7 @@ StaticShapeData DeployableForceField { shapeFile = "forcefield_3x4"; debrisId = 
 function DeployableForceField::onCollision(%this,%obj)
 {
 	if(getobjecttype(%obj) == "Flier")
-		BumpUp(%obj); //HopOut(%obj); //GameBase::setDamageLevel(%obj.vehicle, 10);
+		HopOut(%obj);
 	else if(GameBase::getDataName(%obj).shapefile == "rocket")
 		GameBase::setDamageLevel(%obj, 10);
 	else if(getObjectType(%obj) != "Player" || Player::isDead(%obj))
@@ -520,7 +512,7 @@ StaticShapeData LargeForceField { shapeFile = "forcefield"; debrisId = defaultDe
 function LargeForceField::onCollision(%this,%obj)
 {
 	if(getobjecttype(%obj) == "Flier")
-		BumpUp(%obj); //HopOut(%obj); //GameBase::setDamageLevel(%obj.vehicle, 10);
+		HopOut(%obj); //HopOut(%obj); //GameBase::setDamageLevel(%obj.vehicle, 10);
 	else if(GameBase::getDataName(%obj).shapefile == "rocket")
 		GameBase::setDamageLevel(%obj, 10);
 	else if(getObjectType(%obj) != "Player" || Player::isDead(%obj))
@@ -540,7 +532,7 @@ StaticShapeData LargeShockForceField { shapeFile = "forcefield"; debrisId = defa
 function LargeShockForceField::onCollision(%this,%obj)
 {
 	if(getobjecttype(%obj) == "Flier")
-		BumpUp(%obj); //HopOut(%obj); //GameBase::setDamageLevel(%obj.vehicle, 10);
+		HopOut(%obj); //HopOut(%obj); //GameBase::setDamageLevel(%obj.vehicle, 10);
 	else if(GameBase::getDataName(%obj).shapefile == "rocket")
 		GameBase::setDamageLevel(%obj, 10);
 	else if(getObjectType(%obj) != "Player" || Player::isDead(%obj))
@@ -578,7 +570,7 @@ StaticShapeData ShockFloor
 function ShockFloor::onCollision(%this,%obj)
 {
 	if(getobjecttype(%obj) == "Flier")
-		BumpUp(%obj); //GameBase::setDamageLevel(%obj.vehicle, 10);
+		HopOut(%obj); //GameBase::setDamageLevel(%obj.vehicle, 10);
 	else if(GameBase::getDataName(%obj).shapefile == "rocket")
 		GameBase::setDamageLevel(%obj, 10);
 	else if(getObjectType(%obj) != "Player" || Player::isDead(%obj))
@@ -609,7 +601,8 @@ function BlastWall::onDestroyed(%this)
 function BlastWall::onCollision(%this,%obj)
 {
 	if(getobjecttype(%obj) == "Flier")
-		BumpUp(%obj); //GameBase::setDamageLevel(%obj, 10);
+		//HopOut(%obj); //GameBase::setDamageLevel(%obj, 10);
+		HopOut(%obj);
 }
 
 //============================================================================ Blast Floor
@@ -622,12 +615,14 @@ function BlastFloor::onDestroyed(%this)
 
 function BlastWall2::onCollision(%this,%obj)
 {
+	if(getobjecttype(%obj) == "Flier")
+		HopOut(%obj); //GameBase::setDamageLevel(%obj, 10);
 }
 
 function BlastFloor::onCollision(%this,%obj)
 {
 	if(getobjecttype(%obj) == "Flier")
-		BumpUp(%obj);
+		HopOut(%obj);
 }
 
 //============================================================================ Blast Wall2

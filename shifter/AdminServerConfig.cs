@@ -42,9 +42,9 @@ function processMenuServerConfig(%clientId, %Choice)
  	  else
 	  Client::addMenuItem(%clientId, %curItem++ @ "Enable team damage", "TeamDamageSwitch");
 	  if ($Shifter::PlayerDamage == "true")
-	  Client::addMenuItem(%clientId, %curItem++ @ "Enable Player Damage", "PlayerDamageSwitch");
+	  Client::addMenuItem(%clientId, %curItem++ @ "Disable Player Damage", "PlayerDamageSwitch");
 	  else 
-	  Client::addMenuItem(%clientId, %curItem++ @ "Enable on Damage", "PlayerDamageSwitch");
+	  Client::addMenuItem(%clientId, %curItem++ @ "Enable Player Damage", "PlayerDamageSwitch");
  	  if($Shifter::SafeBase == "true")
 	  Client::addMenuItem(%clientId, %curItem++ @ "Enable gen/station damage", "BaseDamageSwitch");
 	  else 

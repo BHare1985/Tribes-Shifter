@@ -978,6 +978,7 @@ function Door::onBlocker(%this,%obj)
 
 function Door::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
 {
+	if(%value <= 0) return;	//plasmatic 2.3
 	%damageLevel = GameBase::getDamageLevel(%this);
 	%TDS= 1;
 	if(GameBase::getTeam(%this) == GameBase::getTeam(%object))

@@ -1,0 +1,13 @@
+$RecordedDeploy1 = "Turret DeployableRocket 0 305.793 114.998 54.8561 0 0 2.35542";
+$RecordedDeploy2 = "Turret DeployableRocket 0 299.332 122.801 54.8561 0 0 2.27683";
+$RecordedDeploy3 = "Turret DeployableRocket 0 319.397 117.335 54.8561 0 0 2.3161";
+$RecordedDeploy4 = "Turret DeployableRocket 0 303.706 136.071 54.8561 0 0 2.2268";
+$RecordedDeploy5 = "StaticShape DeployablePlatform 0 305.782 115.092 55.2671 0 -0 -3.11944";
+$RecordedDeploy6 = "StaticShape DeployablePlatform 0 299.415 122.812 55.2891 0 -0 1.24489";
+$RecordedDeploy7 = "StaticShape DeployablePlatform 0 299.411 122.79 55.2667 0 -0 1.38848";
+$RecordedDeploy8 = "StaticShape DeployablePlatform 0 305.8 115.09 55.2465 0 -0 -3.05054";
+$RecordedDeploy9 = "StaticShape DeployablePlatform 0 319.339 117.423 55.2596 0 -0 -2.56931";
+$RecordedDeploy10 = "StaticShape DeployablePlatform 0 303.786 136.073 55.2581 0 -0 0.899084";
+$RecordedDeploy11 = "StaticShape DeployablePlatform 0 319.339 117.326 55.2217 0 -0 -0.584706";
+$RecordedDeploy12 = "StaticShape DeployablePlatform 0 303.663 136.03 55.2478 0 -0 -0.767008";
+$NumberofRecordedDeploys = "12";
