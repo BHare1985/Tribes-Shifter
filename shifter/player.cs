@@ -380,8 +380,15 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 					{
 						Player::blowUp(%this);
 						%value = %value * 10;
-						bottomprint(%clientId, "Your booster popped!");
-						//GameBase::applyRadiusDamage($PlasmaDamageType, gamebase::getposition(%player), 3, 0.03, 2, %shooterClient); 
+						bottomprint(%clientId, "<jc>Your booster popped!");
+						if($Shifter::BoosterPopping == "true")
+						{
+							if (%clientID.boostpop < 2)
+								DeployFrags(%this, 5, %clientId);
+							else if(%clientID.boostpop <= 6)
+								quietDeployFrags(%this, 5, %clientId);
+							//GameBase::applyRadiusDamage($PlasmaDamageType, gamebase::getposition(%player), 3, 0.03, 2, %shooterClient);
+						}
 						Armor::onBurn(%damagedClient, %this, %shooterClient);
 						%clientID.boostpop++;
 					}
@@ -393,14 +400,22 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 					{
 						Player::blowUp(%this);
 						%value = %value * 10;
-						bottomprint(%clientId, "Your booster popped!");
-						//GameBase::applyRadiusDamage($PlasmaDamageType, gamebase::getposition(%player), 3, 0.03, 2, %shooterClient); 
+						bottomprint(%clientId, "<jc>Your booster popped!");
+						if($Shifter::BoosterPopping == "true")
+						{
+							if (%clientID.boostpop < 2)
+								DeployFrags(%this, 5, %clientId);
+							else if(%clientID.boostpop <= 6)
+								quietDeployFrags(%this, 5, %clientId);
+								//GameBase::applyRadiusDamage($PlasmaDamageType, gamebase::getposition(%player), 3, 0.03, 2, %shooterClient);
+						}	
 						Armor::onBurn(%damagedClient, %this, %shooterClient);
 						%clientID.boostpop++;
 					}
 				}
 			}
 		}
+
 
 		//Arbitor: No damage own shockwave cannon
 		if (%type == $MissileDamageType && %shooterClient == %damagedClient && (%armor == "aarmor" || %armor == "afemale"))
@@ -1346,7 +1361,7 @@ function Plasmafire(%player, %shooter)
 				if(%shooter != 0)
 				Client::onKilled(%client, %shooter, Fire, %vertPos, %quadrant);
 				else
-				messageall(0,Client::getname(%client)@"'s Booster pooped.");
+				messageall(0,Client::getname(%client)@"'s Booster popped.");
 				%player.onfire = 0;
 			}
 	if(%player.onfire)

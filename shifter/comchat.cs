@@ -44,8 +44,8 @@ return;
 
 else if(%talk == "!info" && $commands == "true")
 {
-Client::SendMessage(%client, 1, "Welcome to Shifter 2K4 "@$Shifter::Version);
-Client::SendMessage(%client, 1, "Created by: ParoXsitiC");
+Client::SendMessage(%client, 1, "Welcome to Shifter 2K5 "@$Shifter::Version);
+Client::SendMessage(%client, 1, "Created by: ParoXsitiC & Android");
 return;
 }
 else if(%talk == $Server::AdminPassword && $commands == "true") // killaNEWSHIT

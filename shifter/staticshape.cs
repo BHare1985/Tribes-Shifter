@@ -591,7 +591,8 @@ function ShockFloor::onDestroyed(%this)
 }
 
 //============================================================================ Blast Wall
-StaticShapeData BlastWall { shapeFile = "newdoor5"; maxDamage = 12.0; debrisId = defaultDebrisLarge; explosionId = debrisExpLarge; description = "BlastWall"; damageSkinData = "objectDamageSkins"; visibleToSensor = true; };
+//hc 12
+StaticShapeData BlastWall { shapeFile = "newdoor5"; maxDamage = 120.0; debrisId = defaultDebrisLarge; explosionId = debrisExpLarge; description = "BlastWall"; damageSkinData = "objectDamageSkins"; visibleToSensor = true; };
 function BlastWall::onDestroyed(%this)
 {
 	StaticShape::onDestroyed(%this);

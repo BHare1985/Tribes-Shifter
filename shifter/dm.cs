@@ -375,7 +375,7 @@ function Mission::init()
 	$DamageScale[larmor,	$EqualizerDamageType]	 = 0.9;$DamageScale[lfemale,	$EqualizerDamageType]	 = 0.9;
    $dieSeqCount = 0;
    if(!$noTabChange)
-		$ModList = "Shifter 2K4";
+		$ModList = "Shifter 2K5";
    //setup ai if any
    AI::setupAI();
 	DM::missionObjectives();

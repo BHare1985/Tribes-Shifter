@@ -4,7 +4,7 @@
 // for as this is what people expect from this MOD.
 //====================================================================
 
-
+$Shifter::BoosterPopping = true;	//== Booster Spray, may LAG server a bit
 $Shifter::AmmoBoom = True;		//== Players ammo can blow up when killed 
 $Shifter::Weapons = True;		//== Advanced Weapon Options On
 $Shifter::LockOn = True;		//== Stinger Missle Locks Available
@@ -38,7 +38,7 @@ $Shifter::NukeLimit = 15;		// -- Limit of Nukes per match
 $Shifter::HeadShot = 10;		//== Bonus for Head Shots
 $Shifter::KillTime = 120;		//== Starting timer for kill -vs- live time bonuses, the longer a player lives the higher the bonus. Bonus counting does not start UNTIL this many seconds after player spawns.
 // ================================================
-// 	Shifter K Variables
+// 	Shifter 2K5 Variables
 // ================================================
 $Shifter::noOTurrets = true;  			// Check Offensive Turrets On/Off -- Default: True (On)
 $Shifter::Newairbase = true; 			// Toggle New/Old Airbase -- Default: True (New)
@@ -62,7 +62,7 @@ $Server::PacketSize = "300";    		// Cable Modem rate, Mess with this alittle.
 
 
 // ================================================
-// 		New Shifter 2K4 Variables
+// 		New Shifter 2K5 Variables
 // ================================================
 
 $Flag::ManualReturn = "True";			// True -  Manaual Flag return || False - Auto Return
@@ -92,5 +92,3 @@ $Cheating::NofogBotNames = "enV.3zer0 KiLL(--) GonzoTheClown GreyFlcn Plasmica C
 // ================================================
 // This can be used for a Tag or a Name ban
 // If any client has this in their name, they are banned.
-$Server::NameBan[1] = "Lethed";			// A hypocritical idiot
-$Server::NameBan[2] = "=|ROS|=";		// The idiot's Clan

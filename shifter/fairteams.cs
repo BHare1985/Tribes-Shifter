@@ -206,14 +206,8 @@ if ($Shifter::FairTeams=="true")
 	$Shifter::FairTeams = "true";
 }	
 echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");
-echo("        ____   _      _  __   _                  ____   _  _  _  _");
-echo("       |  __| | |___ (_)|  | | |_  ____  _ __   |___  || |/ || || |");
-echo("       |_|__  |  _  || || |_ | __||  _ || '__|    __) || ' < | || |_");
-echo("        __| | | | | || ||  _|| |_ |  __|| |      /  __/|    ||__   _|");
-echo("       |____| |_| |_||_||_|  |___||___| |_|     |_____||_||_|   |_|");    
-echo("                                               ");
-echo("                        Loading Shifter 2K4 " @ $Shifter::Version @ "  ");
-echo("      Modded by: ParoXsitiC, KiLL(--), Plasmatic, Czar, Gonzo, and Grey");
+echo("                        Loading Shifter 2K5 " @ $Shifter::Version @ "  ");
+echo("      Modded by: ParoXsitiC, Android, KiLL(--), Plasmatic, Czar, Gonzo, and Grey");
 echo("");
 if($server::tourneymode == "true")
 echo("Tournament Mode is Enabled");

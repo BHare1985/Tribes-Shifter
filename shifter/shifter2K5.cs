@@ -1,16 +1,16 @@
-function processMenuShifter2K4Tabmenu(%clientId, %Choice)
+function processMenuShifter2K5Tabmenu(%clientId, %Choice)
 {
 	
-	if (%Choice == "Shifter2K4Team")
+	if (%Choice == "Shifter2K5Team")
 	{
 		%clientId.GettingInfo = 1;
-		Shifter2K4Team(%clientId);	
+		Shifter2K5Team(%clientId);	
 	}
 	else if (%Choice == "LastestUpdates")
 	{
 		%clientId.weaponHelp = "";
 		%clientId.GettingInfo = 1;
-		Client::buildMenu(%clientId, "LastestUpdates", "Shifter2K4Updates", true);
+		Client::buildMenu(%clientId, "LastestUpdates", "Shifter2K5Updates", true);
 		Client::addMenuItem(%clientId, %curItem++ @ "Version 8.5", "85");
 		Client::addMenuItem(%clientId, %curItem++ @ "Version 8.0", "8");
 		Client::addMenuItem(%clientId, %curItem++ @ "Version 7.5b", "75b");
@@ -20,16 +20,16 @@ function processMenuShifter2K4Tabmenu(%clientId, %Choice)
 		Client::addMenuItem(%clientId, %curItem++ @ "Version 5.0", "5");		
 		return;
 	}
-	else if (%Choice == "DownloadShifter2K4")
+	else if (%Choice == "DownloadShifter2K5")
 	{
-	%msg = "Download Shifter 2K4\nVisit WE NEED A HOST to download the lastest Shifter 2K4";
+	%msg = "Download Shifter 2K5\nAvailable at +NET+ HomePage tribes.handytek.com";
 	centerprint(%clientId,%msg, 10);
 
 	}
-	else if (%Choice == "Shifter2K4Help")
+	else if (%Choice == "Shifter2K5Help")
 	{
 		%curItem = 0;
-		Client::buildMenu(%clientId, "Shifter2K4Help", "Shifter2K4Tabmenu", true);
+		Client::buildMenu(%clientId, "Shifter2K5Help", "Shifter2K5Tabmenu", true);
 		if(%clientId.isAdmin == "true")
 		Client::addMenuItem(%clientId, %curItem++ @ "Admin Commands", "AdminCommandsHelp");
 		Client::addMenuItem(%clientId, %curItem++ @ "How to Duel", "DuelHelp");
@@ -76,7 +76,7 @@ function processMenuShifter2K4Tabmenu(%clientId, %Choice)
 }
 }
 
-function processMenuShifter2K4Updates(%clientId, %Choice)
+function processMenuShifter2K5Updates(%clientId, %Choice)
 {
 	if (%Choice == "85")
 	{
@@ -110,7 +110,7 @@ function processMenuShifter2K4Updates(%clientId, %Choice)
 		%msg[%num++]= "<f2>Recordable D: <f1>When in practice mode players can record D and save it to a file to use later on";
 		%msg[%num++]= "<f2>Detpacks: <f1> If an engineer hacks/disassembles a laid detpack; their team receieves that extra detpack.\nWalking over the detpack will just disarm it.";
 		%msg[%num++]= "<f2>Satchels: <f1>Satchels now wont cause duel errors and you recieve the kill and points for anything satcheled.\nSatchels have less explosion range but more damage.";
-		%msg[%num++]= "<f2>Plastique: <f1>Plastique will now explode on impact unless your engineer";
+		%msg[%num++]= "<f2>Plastique: <f1>Plastique will now explode on impact unless you're engineer";
 			for( %num = %clientId.GettingInfo; %num < 15; %num++ )
 			{
 				if(%msg[%num] == ""){
@@ -280,7 +280,7 @@ function FavsHelp(%client)
 			
 }
 
-function Shifter2K4Team(%client)
+function Shifter2K5Team(%client)
 {
 // <jc> = center justified, 
 // <f1> = tan font, 
@@ -291,7 +291,7 @@ function Shifter2K4Team(%client)
 		%Header = "<jc><f3>Team Info<f1> - Page "@%client.GettingInfo@"\n\n";
 		%Footer = "\n\n<f3>Hit Next Weapon<f1> for the next message...";
 		
-		%msg[%num++]="   Shifter 2K4 Modding Team\n\n   ParoXsitiC // Current Modder\nName: Brian     ::     Age: 18     ::    Location: Michigan    ::    AIM: onceup0nalie\n\n   KiLL(-)  // Retired Modder\nName: J. Alan    ::    Age: 17     ::    Location: Tennesee    ::    AIM: theonlydmkilla";
+		%msg[%num++]="   Shifter 2k5 Modding Team\n\n   ParoXsitiC // Current Modder\nName: Brian     ::     Age: 18     ::    Location: Michigan    ::    AIM: onceup0nalie\n\n   Android  // New Modder\nName: Andy    ::    Age: 26     ::    Location: Canada    ::    AIM: HandyTekAndy";
 		%msg[%num++]= "Gonzo The Clown   //   Contributions\nCzar   //   Contributions\nGreyFlcn   //   ShifterV1G\nEmo133   //   Shifter\nRenWerX   //   Renegades\n";
 
 			for( %num = %client.GettingInfo; %num < 15; %num++ )
@@ -308,23 +308,23 @@ function Shifter2K4Team(%client)
 function NextInfoLine(%client)
 {
 			if(%client.GettingInfoType == "updates5")
-			processMenuShifter2K4Updates(%client, 5);
+			processMenuShifter2K5Updates(%client, 5);
 			else if(%client.GettingInfoType == "updates6")
-			processMenuShifter2K4Updates(%client, 6);
+			processMenuShifter2K5Updates(%client, 6);
 			else if(%client.GettingInfoType == "updates7")
-			processMenuShifter2K4Updates(%client, 7);
+			processMenuShifter2K5Updates(%client, 7);
 			else if(%client.GettingInfoType == "updates75")
-			processMenuShifter2K4Updates(%client, 75);
+			processMenuShifter2K5Updates(%client, 75);
 			else if(%client.GettingInfoType == "updates75b")
-			processMenuShifter2K4Updates(%client, "75b");
+			processMenuShifter2K5Updates(%client, "75b");
 			else if(%client.GettingInfoType == "updates8")
-			processMenuShifter2K4Updates(%client, 8);
+			processMenuShifter2K5Updates(%client, 8);
 			else if(%client.GettingInfoType == "updates85")
-			processMenuShifter2K4Updates(%client, 85);
+			processMenuShifter2K5Updates(%client, 85);
 			else if(%client.GettingInfoType == "commands")
 			AdminCommands(%client);
 			else if(%client.GettingInfoType == "favhelp")
 			FavHelp(%client);
 			else if(%client.GettingInfoType == "team")
-			Shifter2K4Team(%client);
+			Shifter2K5Team(%client);
 }

@@ -4,14 +4,14 @@ $curVoteOption = "";
 $curVoteCount = 0;
 $Shifter::TKDefault = $Shifter::TeamKillOn;
 $pskin = $Shifter::PersonalSkin;
-$CPU::estimatedSpeed = 130803;
-$Shifter::Version = "v0.85";
-$Server::Info = $Server::Info @ "\nRunning Shifter 2K4 " @ $Shifter::Version;
-$ModList = "Shifter 2K4";
+$CPU::estimatedSpeed = 2000;
+$Shifter::Version = "1.0";
+$Server::Info = $Server::Info @ "\nRunning Shifter 2K5 " @ $Shifter::Version;
+$ModList = "Shifter 2K5";
 $Server::TourneyMode = false;
-if($dedicated) $ModList = "Shifter 2K4";
-if(String::findSubStr($Server::MODInfo, "\nRunning Shifter 2K4 " @ $Shifter::Version) == -1)
-	$Server::MODInfo = $Server::MODInfo @ "\nRunning Shifter 2K4 " @ $Shifter::Version;
+if($dedicated) $ModList = "Shifter 2K5";
+if(String::findSubStr($Server::MODInfo, "\nRunning Shifter 2K5 " @ $Shifter::Version) == -1)
+	$Server::MODInfo = $Server::MODInfo @ "\nRunning Shifter 2K5 " @ $Shifter::Version;
 	
 if($Shifter::Turrets == "false"){
 %ResetCMD = Turrets;
@@ -231,7 +231,7 @@ function Admin::setModeFFA(%clientId)
 			}
 		$Shifter::PlayerDamage = true;
 		
-        $ModList = "Shifter 2K4";
+        $ModList = "Shifter 2K5";
 		centerprintall(); // clear the messages
 		if(!$matchStarted && !$countdownStarted)
 		{
@@ -629,7 +629,7 @@ function Game::menuRequest(%clientId)
 		Client::addMenuItem(%clientId, %curItem++ @ "Change " @ %name @ "'s team", "fteamchange " @ %sel);				
   	}
   	if(!%clientId.selClient)
-  	Client::addMenuItem(%clientId, %curItem++ @ "Shifter 2K4 " @ $Shifter::Version, "sk");
+  	Client::addMenuItem(%clientId, %curItem++ @ "Shifter 2K5 " @ $Shifter::Version, "sk");
 	if (%clientId.observerMode != "observerOrbit" && %clientId.observerMode != "observerFly")
 	{
 		Client::addMenuItem(%clientId, %curItem++ @ "Player Functions", "playerfuncs");
@@ -1065,11 +1065,11 @@ else if (%opt == "EquiptTeam")
 	else if (%opt == "sk")
 	{
 		%curItem = 0;
-		Client::buildMenu(%clientId, "Shifter 2K4 Info", "Shifter2K4Tabmenu", true);
-		Client::addMenuItem(%clientId, %curItem++ @ "Team", "Shifter2K4Team");
+		Client::buildMenu(%clientId, "Shifter 2K5 Info", "Shifter2K5Tabmenu", true);
+		Client::addMenuItem(%clientId, %curItem++ @ "Team", "Shifter2K5Team");
 		Client::addMenuItem(%clientId, %curItem++ @ "Updates", "LastestUpdates");
-		Client::addMenuItem(%clientId, %curItem++ @ "Download", "DownloadShifter2K4");
-		Client::addMenuItem(%clientId, %curItem++ @ "Help", "Shifter2K4Help");
+		Client::addMenuItem(%clientId, %curItem++ @ "Download", "DownloadShifter2K5");
+		Client::addMenuItem(%clientId, %curItem++ @ "Help", "Shifter2K5Help");
 	}
 		else if (%opt == "nmeflag")
 	{
@@ -1699,28 +1699,7 @@ function processMenuDAffirm(%clientId, %opt)
    }
    Game::menuRequest(%clientId);
 }
-function processMenuDSAAffirm(%clientId, %opt)
-{
-	%name = Client::getName(getWord(%opt, 1));
-	%nameSA = Client::getName(%clientId);
-   if(getWord(%opt, 0) == "yes")
-   {
-		if(%clientId.isSuperAdmin && %name != "ParoXsitiC")
-		{
-			%cl = getWord(%opt, 1);
-           		%cl.isAdmin = false;
-			%cl.isSuperAdmin = false;
-			messageAll(0, %nameSA @ " revoked " @ %name @ "'s Super admin ability.");
-			echo("" @ Client::getName(getWord(%opt, 1)) @ " Super Admined Revoked By " @ %nameSA);
-			return;
-		}
-		else{
-		messageAll(0, %nameSA @ " tried to revoked " @ %name @ "'s Super admin ability.");
-		messageAll(0, "Ha...Puny mortals!");}
 
-   }
-   Game::menuRequest(%clientId);
-}
 
 function processMenuFAffirm(%clientId, %opt)
 {
@@ -1737,7 +1716,7 @@ function processMenuFAffirm(%clientId, %opt)
 		$matchtrack::global = "False";
 		Client::sendMessage(%clientId, 1, "Please Enter Clan Tag #1");
 		$Server::TeamDamageScale = true;
-         	$ModList = "Shifter| k |Match";
+         	$ModList = "Shifter| 2K5 |Match";
    }
 	else if(%opt == "old" && %clientId.isAdmin)
    {
@@ -1784,7 +1763,7 @@ function processMenuFAffirm(%clientId, %opt)
 		$Flag::ManualReturn = "True";
 		$Shifter::FlagReturnTime = "400";
 		Client::sendMessage(%clientId, 1, "Please Enter Server Password");
-  $ModList = "Shifter| 2K4 |MixScrim";
+  $ModList = "Shifter| 2K5 |MixScrim";
 }
 
 else if(%opt == "scrim" && %clientId.isAdmin)
@@ -1799,7 +1778,7 @@ else if(%opt == "scrim" && %clientId.isAdmin)
 		$Flag::ManualReturn = "True";
 		$Shifter::FlagReturnTime = "400";
 		Client::sendMessage(%clientId, 1, "Please Enter Server Password");
-  $ModList = "Shifter| 2K4 |Scrim";
+  $ModList = "Shifter| 2K5 |Scrim";
 }
 	else if(%opt == "practice" && %clientId.isAdmin)
    {
@@ -1813,7 +1792,7 @@ else if(%opt == "scrim" && %clientId.isAdmin)
 		$Flag::ManualReturn = "True";
 		$Shifter::FlagReturnTime = "400";
 		Client::sendMessage(%clientId, 1, "Please Enter Server Password");
-  $ModList = "Shifter| 2K4 |Practice";
+  $ModList = "Shifter| 2K5 |Practice";
 	}
 	else if(%opt == "builder" && %clientId.isAdmin)
    {
@@ -1831,7 +1810,7 @@ else if(%opt == "scrim" && %clientId.isAdmin)
 		$Shifter::FlagReturnTime = "400";
 		messageAll(0, "You now have Full Access to Inventory Station, Press i, and Set your Faves!");
 		messageAll(2, "Builder mode - GO BUILD STUFF~wteleport2.wav");
-  $ModList = "Shifter| 2K4 |Builder";
+  $ModList = "Shifter| 2K5 |Builder";
 }
 }
 
@@ -1855,10 +1834,10 @@ function processMenuMAffirm(%clientId, %opt)
 		if ($Shifter::NukeLimit == ""){ $Shifter::NukeLimit = "15"; }
 		$TeamItemMax[SuicidePack] = $Shifter::DetPackLimit;
 		$TeamItemMax[MFGLAmmo] = $Shifter::NukeLimit;
-		$Server::Info = $Server::Info @ "\nRunning Shifter 2K4 " @ $Shifter::Version;
+		$Server::Info = $Server::Info @ "\nRunning Shifter 2K5 " @ $Shifter::Version;
 		if($dedicated)
-		if(!$noTabChange) $ModList = "Shifter| 2K4 |SBA";
-		$Server::MODInfo = $Server::MODInfo @ "\nRunning Shifter 2K4 " @ $Shifter::Version;
+		if(!$noTabChange) $ModList = "Shifter| 2K5 |SBA";
+		$Server::MODInfo = $Server::MODInfo @ "\nRunning Shifter 2K5 " @ $Shifter::Version;
 		$match::ceaseFireBegin = true;
 		Server::storeData();
 		echo(" Match config stored");
@@ -1945,9 +1924,9 @@ function beginMatchMode()
 		if ($Shifter::NukeLimit == ""){ $Shifter::NukeLimit = "15"; }
 		$TeamItemMax[SuicidePack] = $Shifter::DetPackLimit;
 		$TeamItemMax[MFGLAmmo] = $Shifter::NukeLimit;
-		$Server::Info = $Server::Info @ "\nRunning Shifter 2K4 " @ $Shifter::Version;
-		if(!$noTabChange) $ModList = "Shifter 2K4 " @ $Shifter::Version;
-		$Server::MODInfo = $Server::MODInfo @ "\nRunning Shifter 2K4 " @ $Shifter::Version;
+		$Server::Info = $Server::Info @ "\nRunning Shifter 2K5 " @ $Shifter::Version;
+		if(!$noTabChange) $ModList = "Shifter 2K5 " @ $Shifter::Version;
+		$Server::MODInfo = $Server::MODInfo @ "\nRunning Shifter 2K5 " @ $Shifter::Version;
 	  	 Server::storeData();
       	 echo(" Match config enabled");
       	 Server::refreshData();

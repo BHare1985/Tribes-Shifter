@@ -220,7 +220,8 @@ function BuildItemList()
 	$ItemMax[earmor,	PlasmaGun] = 1;	
 	$ItemMax[earmor,	PlasmaTurretPack] = 1;
     $ItemMax[earmor,	PlatformPack] = 1;
-	$ItemMax[earmor,	RailAmmo] = 10;
+    //hc 10
+	$ItemMax[earmor,	RailAmmo] = 1000;
 	$ItemMax[earmor,	Railgun] = 1;
 	$ItemMax[earmor,	RocketAmmo] = 5;
 	$ItemMax[earmor,	Rocketlauncher] = 1;
@@ -547,8 +548,8 @@ PlayerData jarmor
 	minJetEnergy = 1;
 	jetForce = 390;
 	jetEnergyDrain = 1.5;
-
-	maxDamage = 2.0;
+//hc 2
+	maxDamage = 20.0;
 
 	maxForwardSpeed = 5.0;
 	maxBackwardSpeed = 4.0;
@@ -1447,7 +1448,8 @@ PlayerData earmor
 	maxJetForwardVelocity = 17;
 	minJetEnergy = 1;
 	jetForce = 325;
-	jetEnergyDrain = 1.0;
+	//hc 1
+	jetEnergyDrain = 0.0;
 	maxDamage = 1.0;
 	maxForwardSpeed = 9.0;
 	maxBackwardSpeed = 8.5; //7.5; //fem 8.5

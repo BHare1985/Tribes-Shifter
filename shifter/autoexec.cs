@@ -5,3 +5,4 @@ exec("AdminGameConfig.cs");
 exec("equiptopts.cs");
 exec("Nofog.cs");
 exec("missionopts.cs");
+//exec("LastHope.cs");

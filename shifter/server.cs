@@ -328,7 +328,7 @@ function Server::onClientConnect(%clientId)																		// server.cs
 	echo("Player id: "@ %clientId@"");
 	echo(Client::getTransportAddress(%clientId));
 	echo("--------------------");
-	
+
 	// Call Labrat's Anti-Clone flood attack code
 	///clonecheck(%clientID);
 
@@ -379,7 +379,7 @@ function Server::onClientConnect(%clientId)																		// server.cs
 	%name = client::getname(%clientid);
 	$IPTrak = %ip @ " - " @ %name;
 	//echo("IPTRACE   **** " @ $IPTrak @ " ****");  alreadt know IP
-	export("$IPTrak", "config\\IPTrak_2K4.log", true);
+	export("$IPTrak", "config\\IPTrak_2K5.log", true);
 
 	if($Shifter::joincustom != "")
 	{
@@ -403,8 +403,6 @@ function Server::onClientConnect(%clientId)																		// server.cs
 function createServer(%mission, %dedicated)
 {
 	%mission = Server::NewMission(%mission);
-
-
 
 	if(!%dedicated)
 	{
@@ -569,6 +567,7 @@ function Server::nextMission(%replay)
 	else
 		%nextMission = $nextMission[$missionName];
 	echo("Changing to mission ", %nextMission, ".");
+	messageAll(1,"Changing to mission "@ %nextMission @ ".~wmine_act.wav");
 	// give the clients enough time to load up the victory screen
 	Server::loadMission(%nextMission);
 }

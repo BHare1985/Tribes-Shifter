@@ -748,7 +748,7 @@ function Mission::init()
 	$DamageScale[larmor,	$PlasmaDamageType] = 1.0;$DamageScale[lfemale,	$PlasmaDamageType] = 1.0;
 	$DamageScale[larmor,	$EqualizerDamageType]	 = 1.0;$DamageScale[lfemale,	$EqualizerDamageType]	 = 1.0;
    if(!$noTabChange)
-		$ModList = "Shifter 2K4";
+		$ModList = "Shifter 2K5";
  	if($match::ceaseFireBegin)
 	{
 		$match::ceaseFireBegin = false;
@@ -939,7 +939,7 @@ function TowerSwitch::getObjectiveString(%this, %forTeam)
    {
        if($showon)
        {
-         return "<f2>Shifter\n<f3>      ____   _  __ _  _   \n<f3>     |___  || |/ || || |  \n<f3>       __) || ' < | || |_ \n<f3>      / __/ |    ||__   _|\n<f3>     |_____||_||_|   |_|   \n<f2>Shifter 2K4 Mission Complete\n<f2>Modded by: ParoXsitiC";
+         return "<f2>Shifter 2K5 Mission Complete\n<f2>Modded by: ParoXsitiC & Android";
 
       }
       if(%thisTeam == -1)

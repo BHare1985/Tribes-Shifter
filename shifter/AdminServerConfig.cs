@@ -57,6 +57,11 @@ function processMenuServerConfig(%clientId, %Choice)
 	  Client::addMenuItem(%clientId, %curItem++ @ "Disable out of area damage", "OutofAreaDamageSwitch");
 	  else 
 	  Client::addMenuItem(%clientId, %curItem++ @ "Enable out of area damage", "OutofAreaDamageSwitch");
+	  if($Shifter::BoosterPopping =="true")
+	  Client::addMenuItem(%clientId, %curItem++ @ "Disable Booster Pops", "BoosterPop");
+	  else 
+	  Client::addMenuItem(%clientId, %curItem++ @ "Enable Booster Pops", "BoosterPop");
+	
 	}
   }
        if(%Choice == "EnablePassword")
@@ -107,10 +112,10 @@ function processMenuServerConfig(%clientId, %Choice)
 		if ($Shifter::NukeLimit == ""){ $Shifter::NukeLimit = "15"; }
 		$TeamItemMax[SuicidePack] = $Shifter::DetPackLimit;
 		$TeamItemMax[MFGLAmmo] = $Shifter::NukeLimit;
-		$Server::Info = $Server::Info @ "\nRunning Shifter 2K4 " @ $Shifter::Version;
+		$Server::Info = $Server::Info @ "\nRunning Shifter 2K5 " @ $Shifter::Version;
 		//if($dedicated) 
-		if(!$noTabChange) $ModList = "Shifter 2K4";
-		$Server::MODInfo = $Server::MODInfo @ "\nRunning Shifter 2K4 " @ $Shifter::Version;
+		if(!$noTabChange) $ModList = "Shifter 2K5";
+		$Server::MODInfo = $Server::MODInfo @ "\nRunning Shifter 2K5 " @ $Shifter::Version;
 		Server::storeData();
 		echo(" Default config stored");
 		Server::refreshData();
@@ -397,6 +402,17 @@ function processMenuDamageMenu(%clientId, %Choice)
 		 ChangeVariabletoItsOpposite(%VariableName, $Shifter::NoOutside, %AdminName, %Msg);}
 		else if($Shifter::NoOutside == true){%Msg = "Disabled Out of Area Damage~wmine_act.wav";
 		 ChangeVariabletoItsOpposite(%VariableName, $Shifter::NoOutside, %AdminName, %Msg);}
+	}
+	else if(%Choice == "BoosterPop")
+ 	{
+  	  %adminName = Client::getName(%clientId);
+	  %VariableName = "$Shifter::BoosterPopping";
+		if($Shifter::BoosterPopping == false){%Msg = "Enabled Booster Pops~wmine_act.wav";
+		 ChangeVariabletoItsOpposite(%VariableName, $Shifter::BoosterPopping, %AdminName, %Msg);}
+		else if($Shifter::BoosterPopping == true){%Msg = "Disabled Booster Pops~wmine_act.wav";
+		 ChangeVariabletoItsOpposite(%VariableName, $Shifter::BoosterPopping, %AdminName, %Msg);}
+	  exec(player);
+	  messageall(0,"$Shifter::BoosterPopping is " @ $Shifter::BoosterPopping);
 	}
    }
 }

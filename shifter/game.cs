@@ -635,13 +635,6 @@ function Game::startMatch()																						// game.cs
 	dbecho ("Match Observer");
 	for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
 	{
-		if($Cheating::Nofog == "true")
-		{
-		%name = client::getName(%cl);
-		%badname = String::findSubStr($Cheating::NofogBotNames, %name);
-		if(%badname == -1)
-      		AddConnectingPlayerToBots(%name);
-      		}
 		if(%cl.observerMode == "pregame")
 		{
 			%cl.observerMode = "";
@@ -652,8 +645,6 @@ function Game::startMatch()																						// game.cs
 	dbecho ("Match Observer Done");
 
 	Game::checkTimeLimit();
-	if($Cheating::Nofog == "true")
-	HappyBreaker::CreateStuff();
 }
 
 

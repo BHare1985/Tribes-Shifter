@@ -1,20 +1,16 @@
 //=================================================================================
 // Serverconfig.cs
 //
-//     ___|   |     _)   _|  |                 ___ \   |  /  |  |
-//   \___ \   __ \   |  |    __|   _ \   __|      ) |  ' /   |  |
-//         |  | | |  |  __|  |     __/  |        __/   . \  ___ __|
-//   _____/  _| |_| _| _|   \__| \___| _|      _____| _|\_\    _|
-//                         Created by: ParoXsitiC
+//                         Created by: ParoXsitiC & Android
 //				Assisted by: Kill(--), Gonzo, Grey & Czar
 //                                    Orignal by: Emo
 //================================================================================
 
-$Server::HostName = "Shifter 2K4 v0.85";	// The name of your Server -- Default: Shifter2K4
-$Server::MaxPlayers = "20"; 			// Max Players On Your Server -- Default: 20
-$Server::timeLimit = "240";			// Mission Time Limit In Minutes -- Default: 240
+$Server::HostName = "Shifter 2K5";	// The name of your Server -- Default: Shifterv1G
+$Server::MaxPlayers = "16"; 			// Max Players On Your Server -- Default: 20
+$Server::timeLimit = "60";			// Mission Time Limit In Minutes -- Default: 240
 $Server::Password = "";				// Server Main Password - One that is on when started
-$Server::Password2 = "locked";		// Server Password  - One that can be issued in-game -- Default: sbamatch
+$Server::Password2 = "password";		// Server Password  - One that can be issued in-game -- Default: sbamatch
 $Server::TeamDamageScale = "1";			// Team Damage On/Off -- Default: 1 (On)
 
 
@@ -28,14 +24,14 @@ $Server::TeamDamageScale = "1";			// Team Damage On/Off -- Default: 1 (On)
 // 	 \n = New Line                  
 
 $Shifter::PublicNotice = "";				// This Message will be dispalyed every so ofter as players spawn, leave it null to disable
-$Server::Info 	= "<jc><f3>Welcome to Shifter2K4 "@$Shifter2K4::Version@"\nCreated by: ParoXsitiC\n";  
+$Server::Info 	= "<jc><f3>Shifter2K5 "@$Shifterv1G::Version@"\nCreated by: ParoXsitiC & Android\n";
 // ^ This is the message displayed when you click info on the server
-$Server::JoinMOTD = "<jc><f3>Welcome to Shifter2K4 "@$Shifter2K4::Version@"\nCreated by: ParoXsitiC\n"; 
+$Server::JoinMOTD = "<jc><f3>"@$Shifterv1G::Version@"\nCreated by: ParoXsitiC & Android\nCUSTOM FLAG MODELS ARE NO LONGER ALLOWED. HOWEVER, YOU WILL ONLY BE KICKED FOR A SHORT PERIOD FOR MODEL VIOLATIONS "; 
 // ^ This is what you see when you first join the server.
-$Server::MODInfo 	= "<jc><f1>Welcome to Shifter2K4\n" @$Shifter2K4::Version@ "\nCreated by: ParoXsitiC\n<f2>Webhost Needed!<f1>";
+$Server::MODInfo 	= "<jc><f0>Shifter2K5 <f2> ::  <f0>Created by:<f2> ParoXsitiC & Android\n<f2><f0>XXXClanTagHERE<f2>   XXXWebsiteHERE <f1>\nGamePlay Changes: <f2>BoosterPop Toggle <f1>-<f2> Match\Scrim Options";
 // ^ This is what you see when the server is loading.
-$Shifter::WelcomeMsg = "<jc><f2>Welcome to Shifter 2K4\nMOD: Shifter 2K4\nMission: <f1>" @ $missionName @ " <f0>Mission Type: <f1>" @ $Game::missionType @ "\n";
-$Shifter::WelcomeDelay = "20";  //== Amount in seconds that the message is shown. If "0" message will not be displayed.
+$Shifter::WelcomeMsg = "<jc><f2>Welcome to Shifter 2K5\nMOD: Shifter 2K5\nMission: <f0>" @ $missionName @ " <f1>Mission Type: <f0>" @ $Game::missionType @ "\n";
+$Shifter::WelcomeDelay = "30";  //== Amount in seconds that the message is shown. If "0" message will not be displayed.
 
 //============================================================================
 //                         Networking Options
@@ -44,33 +40,33 @@ $Server::FloodProtectionEnabled = "true";	// Check for chat flooding players
 $Server::HostPublicGame = "true";		// List your server with the master list.
 $Server::Port = "28001";			// Port To Run Server On
 $pref::noIpx = "true";				// Disallow IPX/SPX binding
-$Server::respawnTime = "2";			// Time after death to respawn.
-$TelnetPort = "21";				// Telnet port number
-$TelnetPassword = "DontYouWishYouKnew";		// Telnet password
+$Server::respawnTime = "1";			// Time after death to respawn.
+$TelnetPort = "28010";				// Telnet port number
+$TelnetPassword = "XXX";			// Telnet password
 $Console::LogMode = "0"; 	   		// save the console to a logfile, 1 for TRUE
-$Shifter::LocalNetMask = "IP:24.11.1";		//== Local IP's (Assuming you have a LAN connection to the server and are not worried about band width from connecting Lan players, You can increase the limit when a player from this IP Mask connects.
+$Shifter::LocalNetMask = "IP:107.5";	//== Local IP's (Assuming you have a LAN connection to the server and are not worried about band width from connecting Lan players, You can increase the limit when a player from this IP Mask connects.
 
 
 
 //============================================================================
 //                     Team Names and Default Skins
 //============================================================================
-$Server::teamName0 = "Opterons";		$Server::teamSkin0 = "cphoenix";
-$Server::teamName1 = "Itaniums";		$Server::teamSkin1 = "swolf";
-$Server::teamName2 = "Juggbots";		$Server::teamSkin2 = "beagle";
-$Server::teamName3 = "Juggbots";		$Server::teamSkin3 = "dsword";
-$Server::teamName4 = "Suckys";			$Server::teamSkin4 = "base";
+$Server::teamName0 = "Imperial Knights";	$Server::teamSkin0 = "cphoenix";
+$Server::teamName1 = "Blood Eagles";	$Server::teamSkin1 = "swolf";
+$Server::teamName2 = "Phoenix";		$Server::teamSkin2 = "beagle";
+$Server::teamName3 = "XXXX";		$Server::teamSkin3 = "dsword";
+$Server::teamName4 = "XXXXX";		$Server::teamSkin4 = "base";
 
 
 //============================================================================
 //                         Mission Settings
 //============================================================================
 $pref::LastMission = "CanyonCrusade";	//== Sets the Starting Mission if Random Start Missions are off.
-$Shifter::RandomMissions = True;	//== Random Missions on/off
-$Shifter::TeamJuggle = 3;		//== Juggles the teams every X missions
-$Server::warmupTime = "10";		//== Mission Start Time (Delay before missions starts)
+$Shifter::RandomMissions = False;	//== Random Missions on/off
+$Shifter::TeamJuggle = 1000;		//== Juggles the teams every X missions
+$Server::warmupTime = "20";		//== Mission Start Time (Delay before missions starts)
 $Shifter::RandomStart = False;		//== Start server with a Random mission
-$Shifter::Refresh = False;		//== Refresh the server after last player drops 
+$Shifter::Refresh = True; 		//== Refresh the server after last player drops 
 
 //============================================================================
 //                       Voting Varriables
@@ -79,7 +75,7 @@ $Server::MinVotes = "1";			// Minimum Votes to count
 $Server::MinVotesPct = "0.69999"; 		// Percentage of votes needed to pass a vote
 $Server::MinVoteTime = "45";			// Time a vote lasts
 $Server::VoteFailTime = "30";			// Length Of Votes if people are NOT voting.
-$Server::VoteWinMargin = "0.699999";		// Ratio of Yeh to Neh to win vote.
+$Server::VoteWinMargin = "0.699999";	// Ratio of Yeh to Neh to win vote.
 $Server::VotingTime = "20";			// Length Of Votes if people are voting.
 
 
@@ -92,8 +88,8 @@ $Shifter::FlagReturnTime = "400";
 //=========================================================================
 //                     Fair Teams Variables
 //=========================================================================
-$Shifter::KeepBalanced = False; //== Keep Balanced
-$Shifter::FairTeams = False; 	 //== Is Fair Teams Is On
+$Shifter::KeepBalanced = True; //== Keep Balanced
+$Shifter::FairTeams = True; 	 //== Is Fair Teams Is On
 $Shifter::FairCheck = "60"; 	 //== Number in seconds that Shifter will check the teams evenness and warn players
 $Shifter::FairEvens = "240"; 	 //== Number in seconds that Shifter will move the last connected player to the un even team.
 
@@ -107,8 +103,8 @@ $SHAntiTeamKillWarnKills 	= "5";         	//== Number Of Team Kills Before Playe
 $SHAntiTeamKillBanTime 		= "60"; 	//== Length Of Time In Seconds Player Is Banded For.
 $SHAntiTeamKillMaxKills 	= "10";		//== Maximum Team Kills Before Kicked - Banned.
 $SHAntiTeamKillProximity	= "50";        	//== Proximity Distance For Accidental Damage.
-$Shifter::TeamKillMsg = "You have been kick and banned for team killing, I hope you enjoyed it. Email:" @ $Shifter::emailAddress @ " for reinstatement.";
-$Shifter::emailAddress = "emo1313@dopplegangers.com";	//== Email address to show banned users for reinstatement
+$Shifter::TeamKillMsg = "You have been kicked and banned for team killing, I hope you enjoyed it. Email:" @ $Shifter::emailAddress @ " for reinstatement.";
+$Shifter::emailAddress = "XXX";	//== Email address to show banned users for reinstatement
 
 
 //===============================================================
@@ -116,17 +112,17 @@ $Shifter::emailAddress = "emo1313@dopplegangers.com";	//== Email address to show
 //===============================================================
 $Shifter::ScoreTracker = True;		//== Score Tracker = Warns then Kicks players for having bad scores.
 $Shifter::CheckScores = 30;		//== How often to check.
-$Shifter::WarnScore1 = "-10";		//== 1st Warning
-$Shifter::WarnScore2 = "-20";		//== 2nd Warning
-$Shifter::WarnScore3 = "-30";		//== 3rd Warning
+$Shifter::WarnScore1 = "-20";		//== 1st Warning
+$Shifter::WarnScore2 = "-40";		//== 2nd Warning
+$Shifter::WarnScore3 = "-60";		//== 3rd Warning
 $Shifter::WarnScoreFinal = "-100";	//== Kick Player For Crappy Score
 
 
 //===============================================================
 //                Automatic Admin Options
 //===============================================================
-$Server::AdminPassword = "Default2K4Password";  	   // This is the password people can say VIA chat to get admin
-$Server::SuperAdminPassword = "Default2K4SAPassword";      // This is the password people can say VIA chat to get superadmin
+$Server::AdminPassword = "tickle";  	   // This is the password people can say VIA chat to get admin
+$Server::SuperAdminPassword = "pickle";      // This is the password people can say VIA chat to get superadmin
 function AddSad(%name, %pass, %super, %ip)
 {
 	$Server::Admin["autoa", %name] = 1; 		// AutoAdmin? 1 = True
@@ -142,8 +138,7 @@ function AddSad(%name, %pass, %super, %ip)
 // Change the ONE to a ZERO, If you dont want them to be super
 // The password is only good when you dont have AutoAdmin.
 // Example: addsad("Name", "Password", Superadmin? 1=Yes 0=No, "IP ADDRESS");
-addsad("ParoXsitiC", "modder", 1, "12.245.248.179");  // This is AutoSuper Admin ParoXsitiC, Only if his IP matches.    
-addsad("ParoXsitiC", "modder", 0, ""); // This is AutoAdmin KiLL(--)->DgD>, Non-dependent of IP - Pass is: modder
+addsad("+NET+Android", "modder", 1, "70.25");
 
 // =================================================
 //                Scoring Variables
@@ -185,19 +180,20 @@ $Score::RepairObject = "1";     //== Repair Bonus. Base Points For Repair...
 
 $Server::CurrentMaster = "0";
 $Server::numMasters = "3";
-$Server::Master1 = "t1m1.masters.dynamix.com:28000 t1m2.masters.dynamix.com:28000 t1m3.masters.dynamix.com:28000";
+$Server::Master1 = "t1m1.masters.tribesmasterserver.com:28000 t1m1.pu.net:28000 t1m1.tribes0.com:28000 skbmaster.ath.cx:28000 kigen.ath.cx:28000 t1m1.masters.dynamix.com:28000";
+$Server::MasterAddressN0 = "t1m1.masters.tribesmasterserver.com:28000 t1m1.pu.net:28000 t1m1.tribes0.com:28000 skbmaster.ath.cx:28000 kigen.ath.cx:28000 t1m1.masters.dynamix.com:28000";
+$Server::MasterName0 = "US Tribes Master";
 $Server::Master2 = "IP:BROADCAST:28001";
 $Server::XLMaster1 = "IP:198.74.38.23:28000";
 $Server::XLMaster2 = "IP:Broadcast:28001";
-addsad("ParoXsitiC", "admin", 1, "");
-$Server::XLMasterN0 = "IP:209.67.28.148:28000";
-$Server::XLMasterN1 = "IP:209.1.233.139:28000";
-$Server::XLMasterN2 = "IP:198.74.40.68:28000";
+$Server::XLMasterN0 = "IP:66.39.167.52:28000";
+$Server::XLMasterN1 = "IP:209.223.236.114:28000";
+$Server::XLMasterN2 = "IP:173.26.99.132:28000";
+$Server::XLMasterN3 = "IP:216.249.100.66:28000";
+$Server::XLMasterN4 = "IP:75.126.191.58:28000";
 $Server::MasterAddress0 = "IP:tribes.dynamix.com:28000";
-$Server::MasterAddressN0 = "t1m1.masters.dynamix.com:28000 t1m2.masters.dynamix.com:28000 t1m3.masters.dynamix.com:28000";
 $Server::MasterAddressN1 = "t1ukm1.masters.dynamix.com:28000 t1ukm2.masters.dynamix.com:28000 t1ukm3.masters.dynamix.com:28000";
 $Server::MasterAddressN2 = "t1aum1.masters.dynamix.com:28000 t1aum2.masters.dynamix.com:28000 t1aum3.masters.dynamix.com:28000";
-$Server::MasterName0 = "Tribes Master";
 $Server::MasterName1 = "UK Tribes Master";
 $Server::MasterName2 = "Australian Tribes Master";
 //==========================================================
