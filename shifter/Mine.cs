@@ -518,6 +518,8 @@ function Telebeacon::onDestroyed(%this)
 {
 	%client = %this.deployer;
 	bottomprint(%client, "<jc><f2>Your TeleBeacon Has Been Destroyed!!!", 3);
+//	echo(%client.telebeacon);
+	//echo(%client);
 	%client.telepoint = "false";
 	%client.telebeacon = "false";
 	%client.teledisk = "false";

@@ -422,6 +422,27 @@ ExplosionData quietMortarExp
    radFactors = { 0.0, 1.0, 1.0 };
 };
 
+ExplosionData NukeCloudExp
+{
+   shapeName = "mortarex.dts";
+   //soundId   = shockExplosion;
+
+   faceCamera = true;
+   randomSpin = false;
+   //hasLight   = true;
+   lightRange = 8.0;
+
+   timeScale = 3.0;
+
+   timeZero = 0.0;
+   timeOne  = 0.500;
+
+   colors[0]  = { 0.0, 0.0, 0.0 };
+   colors[1]  = { 1.0, 1.0, 1.0 };
+   colors[2]  = { 1.0, 1.0, 1.0 };
+   radFactors = { 0.0, 1.0, 1.0 };
+};
+
 ExplosionData turretExp
 {
    shapeName = "fusionex.dts";
@@ -872,4 +893,46 @@ ExplosionData NukeWave
    colors[1]  = { 1.0, 1.0, 0.75 };
    colors[2]  = { 1.0, 1.0, 0.75 };
    radFactors = { 0.375, 1.0, 0.9 };
+};
+
+ExplosionData AnnihilationFlameExp
+{
+   shapeName = "plasmatrail.dts";
+
+   faceCamera = false;
+   randomSpin = false;
+   hasLight   = false;
+   lightRange = 3.0;
+
+   timeZero = 0.450;
+   timeOne  = 0.750;
+
+   colors[0]  = { 0.25, 0.25, 1.0 };
+   colors[1]  = { 0.25, 0.25, 1.0 };
+   colors[2]  = { 1.0, 1.0,  1.0 };
+   radFactors = { 1.0, 1.0,  1.0 };
+
+   shiftPosition = true;
+};
+
+ExplosionData smExp
+{
+   shapeName = "rsmoke.dts";
+   faceCamera = true;
+   randomSpin = true;
+   hasLight   = true;
+//   lightRange = 1.0;
+
+   lightRange = 0;
+   timeScale = 10;
+
+   timeZero = 0.100;
+   timeOne  = 0.900;
+
+   colors[0]  = { 0.0, 0.0, 0.0 };
+   colors[1]  = { 1.0, 1.0, 1.0 };
+   colors[2]  = { 1.0, 1.0, 1.0 };
+   radFactors = { 0.0, 1.0, 0.0 };
+
+   shiftPosition = True;
 };

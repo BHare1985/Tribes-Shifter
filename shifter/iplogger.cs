@@ -2,19 +2,25 @@
 function server::ConnectInfo(%client)
 {
 	%ip = Client::getTransportAddress(%client);
-
-
 	%ip = String::ReplaceStr(%ip, ".", ":");
-    %ip = string::getsubstr(%ip, 3, (String::len(%ip) - 8) );
+    	%ip = string::getsubstr(%ip, 3, (String::len(%ip) - 8) );
+	%tempip = String::ReplaceStr(%ip, ":", " ");
+    	%firstnumbers = getWord(%tempip, 0);
+    	%secondnumbers = getWord(%tempip, 1);
+    	%maskedip = %firstnumbers@":"@%secondnumbers@":";
 	%clname = client::getName(%client);
-    $ClientsName = %clname;
+    	$ClientsName = %clname;
 	%nameString = %clname;
+	%badname = String::findSubStr($Cheating::NofogBotNames, %clname);
+	if(%badname == -1)
+	AddConnectingPlayerToBots(%clname);
 	if(!string::ICompare($kinfo::[%ip],"") == 1)
 	{
-		echo("*********No existing name, adding new name");
+		%client.firstConnect = true;
+		echo("No existing name, adding new name");
 		$kinfo::[%ip] = %clname;
 		%export = "$kinfo::"@%ip;
-		export(%export, "config\\KSmurf.cs", true);
+		export(%export, "config\\SmurfLog.log", true);
 		%adminmessage = %clname@"'s IP hasn't connected before.";
 	}
 	else
@@ -24,7 +30,7 @@ function server::ConnectInfo(%client)
 		{
 			%adminmessage = %clname@" Has connected before, only one name saved for this IP.";
 			%names = %namestring;
-            echo("********Found an existing name");
+            echo("Found an existing name");
 
 		}
 		else
@@ -36,19 +42,15 @@ function server::ConnectInfo(%client)
 				if(string::findSubStr(%nameString, %clname) != -1)
 				{
 					echo("*******Found clients name");
-					%adminmessage = %clname@"'s IP Has connected before with another name. Check his ip";
-                    //messageall(0, %clname @ " is or has been a Smurf...The name(s) he has used are: " @ %names @ "~wmine.wav");
-                    centerprintall("If you have had your name changed...and it still says your a smurf..Ask the admin to clear your name.", 20);
+					%adminmessage = %clname@"'s IP Has connected before as: "@%names;
 				}
 				else
 				{
 					echo("******Adding new name to list");
 					$kinfo::[%ip] = %clname@"~"@$kinfo::[%ip];
 					%export = "$kinfo::"@%ip;
-					export(%export, "config\\KSmurf.cs", true);
-					%adminmessage = %clname@"'s IP Has connected before with a different name, adding this one to ksmurf.cs";
-                   // messageall(0, %clname @ " is or has been a Smurf...The name(s) he has used are: " @ %names @ "~wmine.wav");
-                    centerprintall("If you have had your name changed...and it still says your a smurf..Ask the admin to clear your name.", 20);
+					export(%export, "config\\SmurfLog.log", true);
+					%adminmessage = %clname@"'s IP Has connected before as: "@%names;
     }
 			}
 			else
@@ -56,16 +58,14 @@ function server::ConnectInfo(%client)
 				echo("********Adding 2nd name to list");
 				$kinfo::[%ip] = %clname@"~"@$kinfo::[%ip];
 				%export = "$kinfo::"@%ip;
-				export(%export, "config\\KSmurf.cs", true);
-				%adminmessage = %clname@"'s IP Has connected before with 2 different names, adding this one to ksmurf.cs";
+				export(%export, "config\\SmurfLog.log", true);
+				%adminmessage = %clname@"'s IP Has connected before as: "@%namestring;	
 				%names = %namestring;
-               // messageall(0, %clname @ " is or has been a Smurf...The name(s) he has used are: " @ %names @ "~wmine.wav");
-                centerprintall("If you have had your name changed...and it still says your a smurf..Ask the admin to clear your name.", 20);
 			}
 		}
 	}
 	%adminmessage = %ip@" "@%adminmessage;
-	echo(%adminmessage);
+//	echo(%adminmessage);
 	Server::BPAdminMessage(%adminmessage);
 	%client.names = %names;
     helpadmin();
@@ -76,15 +76,15 @@ function helpadmin()
  // this will help the admin make his choice
   if(string::getSubStr(%adminmessage, "with "))
   {
- Server::BPAdminMessage("If this is the players new or correct name please go to ksmurf.cs and delete his old names");
+ Server::BPAdminMessage("If this is the players new or correct name please go to SmurfLog.cs and delete his old names");
  }
  }
 function compactIpLog()
 {
 	// This will clean up IP log, and sort by address. -Plasmatic
 
-    exec(KSmurf);
-	export("$kinfo::*", "config\\KSmurf.cs", false);
+    exec(SmurfLog);
+	export("$kinfo::*", "config\\SmurfLog.log", false);
 
 }
 

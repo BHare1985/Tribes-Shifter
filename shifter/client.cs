@@ -464,7 +464,7 @@ function remoteMODInfo(%server, %modString)
       $ServerModInfo = %modString;
       if($ServerModInfo != "")
       {
-         Control::setValue(ModTextString, "<jc><f1>This Server Is Running ShifterK : WWW.Dopplegangers.com/Tribes\n<f0>" @ %modString);
+         Control::setValue(ModTextString, "<jc><f1>This Server Is Running Shifter 2K4 : WWW.Dopplegangers.com/Tribes\n<f0>" @ %modString);
       }
    }
 }

@@ -67,7 +67,7 @@ function remoteScoresOff(%clientId)
 
 function remoteToggleCommandMode(%clientId)
 {
-	if($Server::TourneyMode =="true" && (!$matchStarted || $matchStarting) || %clientId.duelcountdown == "true")
+	if($Server::TourneyMode =="true" && (!$matchStarted || $matchStarting) || %clientId.duelcountdown == "true" || %clientId.isAFK =="true")
 	{
 		bottomprint(%clientId, "<jc><f0>That command is only available when playing the match", 15);
 		return;
@@ -106,11 +106,8 @@ function remoteToggleObjectivesMode(%clientId)
 //========================================================================================== On Kill Self
 function remoteKill(%client)
 {
-//envduel-s
-		if(%client.dueling){
-		return;
-	}
-	//envduel-f
+	if(%client.dueling)
+	return;
 	if ($Shifter::SuicideTimer)
 		schedule("remoteKilldone(" @ %client @ ");", $Shifter::SuicideTimer, %client);
 	else
@@ -119,46 +116,41 @@ function remoteKill(%client)
 
 function remoteKilldone(%client)
 {
-	
-	if($Server::TourneyMode =="true" && $matchStarting)
-		return;
-
-	%player = Client::getOwnedObject(%client);
-	if(%player.BOOMtime || %client.poisonTime)
+   %player = Client::getOwnedObject(%client);
+   %armor = Player::getArmor(%client);
+	//======================================================================== Suicide Pack
+   if(%player != -1 && getObjectType(%player) == "Player" && !Player::isDead(%player))
+   {
+   	if($Server::TourneyMode =="true" && $matchStarting)
+	return;
+	else if(%player.BOOMtime || %client.poisonTime)
 	{
 		bottomprint(%client, "Ha! You can't suicide now - 5 Deaths have just been added.",5);
 		%client.scoreDeaths = (%client.scoreDeaths + 5);
 		playVoice(%client, "help");
 		return;
 	}
-	if(%client.isAFK == "true" || %client.possessing == "true" || %client.possessed == "true" || %client.dan == "true"){
+	else if(%client.isAFK == "true" || %client.possessing == "true" || %client.possessed == "true" || %client.dan == "true")
+	{
 		bottomprint(%client, "Ha! You can't suicide now",5);
 		playVoice(%client, "help");
 		return;
 	}
-
-	%armor = Player::getArmor(%client);
-	
-	if (%client.holo)
-	{	%holopl = Client::GetOwnedObject(%client);
+	else if (%client.holo)
+	{	
+	   %holopl = Client::GetOwnedObject(%client);
 		if(Player::isAiControlled(%client.holo))
-      {
-       remotekill(%client.holo);
-       }
-	else %client.holo = -1;
-
+     		 {
+      		 remotekill(%client.holo);
+      		 }
+		else %client.holo = -1;
 	}
-
-	if(%armor == parmor)
+	else if(%armor == parmor)
 	{
 	 	Client::sendMessage(%client,0,"Removing the curse of the penis will not be that easy!");
-		%rnd = floor(getRandom() * 30);	
-		%random = (%rnd + 10);
-		schedule("penisCurse(" @ %client @ ");", %random, %client);
+	 	playVoice(%client, "help");
+		return;
 	}
-	//======================================================================== Suicide Pack
-   if(%player != -1 && getObjectType(%player) == "Player" && !Player::isDead(%player))
-   {
 		if(Player::getMountedItem(%player,$BackpackSlot) == SuicidePack)
 		{
 			Player::unmountItem(%player,$BackpackSlot);	
@@ -185,10 +177,23 @@ function remoteKilldone(%client)
 		{
 			playNextAnim(%client);
 			Player::kill(%client);
+			if($Server::SuicideCountasDeath == "true")
 			Client::onKilled(%client,%client, $NukeDamageType, "torso", "front_left");
+			else
+			{
+			%playerGender = "his";
+			%ridx = floor(getRandom() * ($numDeathMsgs - 0.01));
+			%victimName = Client::getName(%client);
+			%oopsMsg = sprintf($deathMsg[-2, %ridx], %victimName, %playerGender);
+				for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+				{
+					if(%cl.MuteKill != "true")
+					Client::sendMessage(%cl, 0, %oopsMsg);
+				}
+			}
 		}
    }
-  	$animNumber = 25;
+  $animNumber = 25;
 }
 
 function remoteCmdrMountObject(%clientId, %objectIdx)

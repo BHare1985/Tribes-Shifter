@@ -569,9 +569,9 @@ function buyItem(%client,%item)
 					if (%buyarmor == "marmor" || %buyarmor == "mfemale")
 					{
 						Player::setItemCount	(%client, Booster1Pack,1);
-						Player::setItemCount	(%client, Booster2Pack,1);
+						//Player::setItemCount	(%client, Booster2Pack,1);
 						schedule ("Player::mountItem( " @ %client @ ", Booster1Pack,4);",0.3);
-						schedule ("Player::mountItem( " @ %client @ ", Booster2Pack,5);",0.3);
+						//schedule ("Player::mountItem( " @ %client @ ", Booster2Pack,5);",0.3);
 					}
 					else if (%buyarmor != "marmor" || %buyarmor != "mfemale")
 					{
@@ -904,15 +904,18 @@ function resetOsicheat()
 function remoteUseItem(%player,%type)
 {
 %clientId = Player::getClient(%player);	
-	if($Cheating::UsageCheck == "true" || $Cheating::AutoJJCheck == "true")
+%armor = Player::getArmor(%clientId);
+	if(%armor == "jarmor" || %armor == "earmor" && $Cheating::UsageCheck == "true" || $Cheating::AutoJJCheck == "true")
 	{
 		if(!$TimeStart[%clientId])
 		$TimeStart[%clientId] = getSimTime();						
-	%Timeofthisdeploy[%clientId] = getSimTime(); 
-	$NumberofDeployTries[%clientId]++;
+	  %Timeofthisdeploy[%clientId] = getSimTime(); 
+	  $NumberofDeployTries[%clientId]++;
 		if($Timeoflastdeploy[%clientId])
 		{							
 		%TimeBetweenDeploys[%clientId] = (%Timeofthisdeploy[%clientId] - $Timeoflastdeploy[%clientId]); // Count the Time bewteen deploys
+		if(%armor == "jarmor" && $Cheating::AutoJJCheck == "true") 
+		{	
 			if(%TimeBetweenDeploys[%clientId] > 3.11999 && %TimeBetweenDeploys[%clientId] < 3.8)
 			{
 			$JuggCount1[%clientId]="true";
@@ -928,13 +931,14 @@ function remoteUseItem(%player,%type)
 			%JuggTime[%clientId] = %JuggFinished[%clientId] - $JuggStart[%clientId];
 			if($JuggCount1[%clientId]=="true" && $JuggCount2[%clientId]=="true" && $JuggCount3[%clientId]=="true" && %JuggTime[%clientId] < 0.5 && %JuggTime[%clientId] > 0.01)
 			{
-				if($Cheating::AutoJJCheck == "true")
+				//messageall(0,"$Cheating::AutoJJCheck = "@$Cheating::AutoJJCheck);
+				if(%armor == "jarmor" && $Cheating::AutoJJCheck == "true")
 				{
 				Client::sendMessage(%clientId, 0, "This server Doesn't Allow Jugg-Jump Scripts~wteleport");
-				centerprint(%clientId, "This server Doesn't Allow Jugg-Jump Scripts!", 5.0);
+				centerprint(%clientId, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n<jc>This server Doesn't Allow Jugg-Jump Scripts!\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", 50.0);
 				$warn[%clientId]++;
-				CheckOsiWarnings(%clientId);
-				}
+				CheckOsiWarnings(%clientId, "is using a Auto Jugg-Jump Cheat");
+			}
 			$JuggCount1[%clientId]="";
 			$JuggCount2[%clientId]="";
 			$JuggCount3[%clientId]="";
@@ -947,6 +951,7 @@ function remoteUseItem(%player,%type)
 			$JuggCount3[%clientId]="";
 			$JuggStart[%clientId] = "";
 			}
+		}
 			if(%TimeBetweenDeploys[%clientId] >0.50)							
 			{									     
 			$NumberofDeployTries[%clientId]=0;								    
@@ -979,10 +984,12 @@ function remoteUseItem(%player,%type)
 					$RepeatedDeploytimes[%clientId] = 0;
 						if($Cheating::UsageCheck == "true")
 						{
-						Client::sendMessage(%clientId, 0, "This server wont allow you to deploy that fast, slow down!~wteleport");
-						centerprint(%clientId, "This server wont allow you to deploy that fast, slow down!", 5.0);
+						Client::sendMessage(%clientId, 0, " This server wont allow quickly repreated usage, slow down!~wteleport");
+						Client::sendMessage(%clientId, 0, " This server wont allow quickly repreated usage, slow down!~wteleport");
+						Client::sendMessage(%clientId, 0, " This server wont allow quickly repreated usage, slow down!~wteleport");
+						centerprint(%clientId, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n<jc> This server wont allow quickly repreated usage, slow down!\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", 50.0);
 						$warn[%clientId]++;
-						CheckOsiWarnings(%clientId);
+						CheckOsiWarnings(%clientId, "has just rapidly repreated various usages in a row");
 						}
 					}
 				}
@@ -1023,9 +1030,10 @@ else
        if(%clientId.deployCount >= %buttonpushesasec && %clientId.startedDeploy >= getSimTime())
        {
     
-                   centerprint(%clientId, "This server wont allow you to deploy that fast, slow down!", 5.0);
+                Client::sendMessage(%clientId, 0, "This server wont allow use of this script, its too fast, turn it off!~wteleport");
+		centerprint(%clientId, "<jc> This server wont allow use of this script, its too fast, turn it off!", 50.0);
                    $warn[%clientId]++;
-                   CheckOsiWarnings(%clientId);
+                   CheckOsiWarnings(%clientId, "is using a very rapid usage cheat");
       		   %clientId.deployCount = 0;
       		   %clientId.startedDeploy = "";
       		   
@@ -1063,11 +1071,12 @@ else
 	else if(!%player.charging)
 		Player::useItem(%player,%item);	
 }
-function CheckOsiWarnings(%clientId)
+function CheckOsiWarnings(%clientId,%msg)
 {
 	 if($warn[%clientId] >= 3)
 	 {
-      		   messageallexcept(%clientId,1, Client::getName(%clientId) @ " is using a cheat.~wteleport2.wav");
+      		   messageall(1, Client::getName(%clientId) @" "@%msg@".~wteleport2.wav");
+      		  // centerprintall("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n<jc>"@ Client::getName(%clientId) @" "@%msg@".\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",100);
       		   if($Cheating::Ban == "true")
       		   {
       		   $CheatBan[%clientId]++;
@@ -1401,12 +1410,21 @@ function remoteNextWeapon(%client)
 	%player = Client::getOwnedObject(%client);
  	%armor = Player::getArmor(%client);
  
- 	if (%armor == "parmor")
+ 	if (%armor == "parmor" || %client.isAFK == "true")
 		return;
 
 	if( !%client.observerMode == "" || $loadingMission == "true" || $matchStarted == "false" || %client.dead) 
 	{
 		return;
+	}
+	if(%client.GettingInfo)
+	{
+		if(%client.GettingInfo < $GettingInfoMax)
+		{
+			%client.GettingInfo++;
+			NextInfoLine(%client);
+			return;
+		}
 	}
 
 	%item = Player::getMountedItem(%client,$WeaponSlot);
@@ -1800,7 +1818,7 @@ ItemImageData FlagImage
 	mountRotation = { 0, 0, 0 };
 
 	lightType = 2;   // Pulsing
-	lightRadius = 4;
+	lightRadius = 5;
 	lightTime = 1.5;
 	lightColor = { 1, 1, 1};
 };
@@ -3093,7 +3111,7 @@ function AirBase::newDeploy(%team, %pPos, %pRot, %player, %client)
 	if($Server::tourneymode)
 	{
 		$TraxDeploy::ab[%num] = "AirBase "@ %team @" "@ %pPos @" "@ %pRot;
-		export("$TraxDeploy::ab*", "config\\MatchDeployed.cs", true);
+		export("$TraxDeploy::ab*", "config\\MatchDeployed.log", true);
 		deleteVariables("$TraxDeploy::ab*");
 		if(string::findsubstr($TraxList, "ab" @ %num) == -1)
 			$TraxList = $TraxList @ " ab" @ %num;
@@ -4157,7 +4175,7 @@ function EmplacementPack::specialdeploy(%team,%playerpos,%playerRot,%player)
 	if($server::tourneymode =="true" && !$ceasefire)
 	{
 		$deployem[%num] = "EmplacementPack "@ %team @" "@ %playerPos @" "@ %PlayerRot;
-		export("$deployem*", "config\\dtrack.cs", true);
+		export("$deployem*", "config\\dtrack.log", true);
 		deleteVariables("$deployem*");
 		if(string::findsubstr($dlist, "em" @ %num) == -1)
 			$dlist = $dlist @ " em" @ %num;
@@ -4608,7 +4626,7 @@ ItemImageData LasCannonImage
 	//projectileType = "UNDEFINED";
 	accuFire = true;
 	reloadTime = 0.1;
-	fireTime = 0.5;
+	fireTime = 0.49;
 	minEnergy = 10;
 	maxEnergy = 140;
 	lightType = 3;
@@ -4774,7 +4792,7 @@ ItemImageData PlasmaCannonImage
 	//projectileType = "Undefined";
 	accuFire = true;
 	reloadTime = 0.1;
-	fireTime = 0.5;
+	fireTime = 0.49;
 	minEnergy = 10;
 	maxEnergy = 140;
 	lightType = 3;
@@ -5573,13 +5591,63 @@ function JammerBeaconPack::deployShape(%player,%item)
 	deployable(%player,%item,"Turret","JammerBeacon",True,False,True,False,True,False,5,True,25,True, "JammerBeacon", "JammerBeaconPack");
 }
 
+ItemImageData HappyBreakerFlagImage 
+{ 
+   shapeFile = "flag"; 
+   mountPoint = 2; 
+   mountOffset = { 0, 0, -0.35 }; 
+   mountRotation = { 0, 0, 0 }; 
+   lightType = 2; // Pulsing 
+   lightRadius = 4; 
+   lightTime = 1.5; 
+   lightColor = { 1, 1, 1}; 
+}; 
+
+ItemData HappyBreakerFlag 
+{ 
+   description = "Flag"; 
+   shapeFile = "flag"; 
+   imageType = FlagImage; 
+   showInventory = false; 
+   shadowDetailMask = 4; 
+   validateShape = true; 
+   lightType = 2; // Pulsing 
+   lightRadius = 0.0; 
+   lightTime = 1.5; 
+   lightColor = { 1, 1, 1 }; 
+}; 
+
+TurretData HappyBreakerStand 
+{    
+   className = "Turret"; 
+   shapeFile = "camera"; 
+   maxDamage = 2500; 
+   maxEnergy = 10; 
+   speed = 20; 
+   speedModifier = 1.0; 
+   range = 0.0; 
+   sequenceSound[0] = { "deploy", SoundActivateMotionSensor }; 
+   visibleToSensor = true; 
+   shadowDetailMask = 4; 
+   castLOS = true; 
+   supression = false; 
+   supressable = false; 
+   mapFilter = 2; 
+   mapIcon = "M_camera"; 
+   debrisId = defaultDebrisSmall; 
+   FOV = 0.707; 
+   pinger = false; 
+   explosionId = debrisExpMedium; 
+   description = "HappyBreakerStand"; 
+}; 
+
 //================================================== Merc Booster Image
 ItemImageData Booster1PackImage
 {
 	shapeFile = "force";
 	mountPoint = 3;
-	mountOffset = { 0, 0, 0 };
-	mountRotation = { 0, 0, 0 };
+	mountOffset = { 0, -0.15, 0.35 }; 
+	mountRotation = { -1.57, 2.99, 0 }; 
 	weaponType = 0;
 	projectileType = Booster;
 	minEnergy = 0.1;
@@ -5587,7 +5655,7 @@ ItemImageData Booster1PackImage
 //	ammoType = BoosterAmmo;
 	accuFire = true;
 	reloadTime = 0.0;
-	fireTime = 0.25;
+	fireTime = 0.24;
 	lightType = 3;
 	lightRadius = 5;
 	lightTime = 2;
@@ -5628,7 +5696,7 @@ ItemImageData Booster2PackImage
 //	ammoType = BoosterAmmo;
 	accuFire = true;
 	reloadTime = 0.0;
-	fireTime = 0.25;
+	fireTime = 0.24;
 	lightType = 3;
 	lightRadius = 5;
 	lightTime = 2;
@@ -5827,7 +5895,7 @@ ItemImageData MortarImage0
 	projectileType = "MortarShell1";
 	accuFire = false;
 	reloadTime = 0.5;
-	fireTime = 1.0;
+	fireTime = 0.99;
 
 	lightType = 3;  // Weapon Fire
 	lightRadius = 3;
@@ -5865,7 +5933,7 @@ ItemImageData MortarImage1
 	projectileType = "EMPMortar";
 	accuFire = false;
 	reloadTime = 0.5;
-	fireTime = 1.0;
+	fireTime = 0.99;
 
 	lightType = 3;  // Weapon Fire
 	lightRadius = 3;
@@ -5903,7 +5971,7 @@ ItemImageData Mortar2Image
 	//projectileType = "Undefined";
 	accuFire = false;
 	reloadTime = 0.5;
-	fireTime = 1.0;
+	fireTime = 0.99;
 
 	lightType = 3;  // Weapon Fire
 	lightRadius = 3;

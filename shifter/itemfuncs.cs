@@ -108,10 +108,18 @@ function hackingItem(%target, %pTeam, %pName, %tName, %name, %team, %time, %clie
 				
 				if(%name == "False" && %shape == "MagCargo")
 				{
-				    	Client::sendMessage(%client,1,"You disarm the DetPack.");
-						%client.score = %client.score + 2;
+				    	Client::sendMessage(%client,1,"You disarmed the DetPack.");
+						%client.score = %client.score + 10;
 						Game::refreshClientScore(%client);
 						if(%target)deleteobject(%target);
+						 %team = Client::getTeam(%client);
+						 $TeamItemCount[%team @ "SuicidePack"] = $TeamItemCount[%team @ "SuicidePack"] - 1;
+						 %cl = %client;
+						 for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+						 {
+						if(Client::getTeam(%cl) == %team)
+						Client::sendMessage(%cl,1,"Your team disarmed a DetPack. You now have one extra detpack~wmine_act.wav");
+						}
 				}
 				else
 				{
@@ -178,6 +186,42 @@ function CheckForObjects(%pos, %l, %w, %h)
 	%Set = newObject("cfoset",SimSet);
 	%Mask = $SimPlayerObjectType|$StaticObjectType|$VehicleObjectType|$MineObjectType|$SimInteriorObjectType; //cloaks people, thiings, vehicles, mines, and the base itself
 
+	if (%l && %w && %h)
+	{
+		containerBoxFillSet(%Set, %Mask, %Pos, %l, %w, %h,0);
+	}
+	else
+	{
+		containerBoxFillSet(%Set, %Mask, %Pos, 25, 25, 25,0);	
+	}
+
+	%num = Group::objectCount(%Set);
+
+	for(%i; %i < %num; %i++)
+	{
+		%obj = Group::getObject(%Set, %i);
+
+		if (%obj != "-1")
+		{
+			if (getObjectType(%obj) == "Player")
+			{
+			}
+			else
+			{
+				if(%set)deleteobject(%set);
+				return False;
+			}
+		}
+	}
+	if(%set)deleteobject(%set);
+	return True;
+}
+
+function CheckForMA(%pos, %l, %w, %h)
+{
+	%Set = newObject("cfoset",SimSet);
+	//%Mask = $StaticObjectType|$VehicleObjectType|$SimInteriorObjectType|$SimTerrainObjectType; //cloaks people, thiings, vehicles, mines, and the base itself
+	%Mask = $StaticObjectType|$VehicleObjectType|$SimInteriorObjectType;
 	if (%l && %w && %h)
 	{
 		containerBoxFillSet(%Set, %Mask, %Pos, %l, %w, %h,0);
@@ -599,6 +643,10 @@ function satchelboom(%player, %target)
 	%tclient = Player::getClient(%target);
 	%pname = Client::getName(%pclient);
 	%tname = Client::getName(%tclient);
+	%targetsteam = Client::getTeam(%tclient);
+	%myteam = Client::getTeam(%pclient);
+	if(%myteam != %targetsteam) 
+	{
 	Client::sendMessage(%tclient,1,%pname @" Just Implanted a Satchel Charge on you.");
 	%tclient.score = %tclient.score - 5;
 	%tclient.scoreDeaths++;
@@ -616,6 +664,9 @@ function satchelboom(%player, %target)
 	%target.BOOMTime = 12;
 	checkBOOM(%player, %target);
 	checkBeep(%player, %target);
+	}
+	else if(%myteam == %targetsteam) 
+	Client::sendMessage(%pclient,1,"You can't implant satchels on Teammates");
 }
 
 function checkBeep(%player, %target)
@@ -653,15 +704,17 @@ function checkBOOM(%player, %target)
 		GameBase::setPosition(%turret,%tpos);
 		GameBase::setRotation(%turret,"0 0 0");
 		GameBase::setDamageLevel(%turret,0.5);
-
-
-
 		%tpos = vector::add(%tpos, "0 0 0.01");
 		%turret = newObject(SatchelPack,Turret, DeployableSatchel,true);
 		addToSet("MissionCleanup", %turret);
 		GameBase::setPosition(%turret,%tpos);
 		GameBase::setRotation(%turret,"0 0 0");
 		GameBase::setDamageLevel(%turret,0.5);
+		if(%target.dueling)
+		{
+		%mybuddy = %target.engaged;
+		SBA::duelFinished(%target, %mybuddy);
+		}
 	}
 }
 
@@ -1410,7 +1463,7 @@ function deploy::init()
 			}
 		}
 	}
-	export("$dlist", "config\\dtrack.cs", true);
+	export("$dlist", "config\\dtrack.log", true);
 }
 
 function deploy::record(%this, %pack, %team, %pos, %rot)
@@ -1418,7 +1471,7 @@ function deploy::record(%this, %pack, %team, %pos, %rot)
 	if($server::tourneymode =="true" && !$ceasefire)
 	{
 		$deploy[%this] = %pack @" "@ %team @" "@ %pos @" "@ %rot;
-		export("$deploy"@ %this @"", "config\\dtrack.cs", true);
+		export("$deploy"@ %this @"", "config\\dtrack.log", true);
 		deleteVariables("$deploy"@ %this @"");
 		if(string::findsubstr($dlist, %this) == -1)
 			$dlist = $dlist @ " " @ %this;

@@ -36,25 +36,59 @@ function StaticShape::onDestroyed(%this)
 }
 
 
-function StaticShape::onCollision(%this,%obj)
+function StaticShape::onCollision(%this,%object)
 {
-//	%data = GameBase::getDataName(%obj);
-//	if(%data.shapefile == "rocket")
-//	{
-//		if (%obj.missilegone != 1){%obj.missilegone = 1;}
-//		else{return;}	
-//		GameBase::setDamageLevel(%obj, 10);
-//		return;
-//	}	
-//	if ($debug) echo (" THIS =  " @ %this @ " DATA " @ GameBase::getDataName(%this).shapefile);
-//	if ($debug) echo (" OBJS =  " @ %obj @ " DATA " @ GameBase::getDataName(%obj).shapefile );
+	if(GameBase::getDamageState(%object) == Destroyed) 
+		return;
+		
+	%data = GameBase::getDataName(%object);
+	%velocity = vector::getdistance(Item::GetVelocity(%object),"0 0 0");
+	if($debug)
+		echo("!!Collision "@%data@" hitting "@GameBase::getDataName(%this)@" Vel. "@%velocity);
+						
+	if(getObjectType(%object) == Flier) 
+	{ 		
+		%damage = GameBase::getDamageLevel(%object) + %velocity/10;
+		GameBase::setDamageLevel(%object,%damage);
+		playSound(SoundFlierCrash,GameBase::getPosition(%object));
+		//echo("hitting static");
+	}
 }
 
 function StaticShape::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
 {
 	%damageLevel = GameBase::getDamageLevel(%this);
 	%dValue = %damageLevel + %value;
-   			
+	%client = Player::getClient(%object);
+	%name = GameBase::getDataName(%this);	
+	%data = %name.description;
+   	if($Shifter::SafeBase == "true" && (%name.className == Generator || %name.className == Station))
+		{
+		%centerPos = getBoxCenter(%this);
+		%sphereVec = findPointOnSphere(getBoxCenter(%object),%centerPos,%vec,%this);
+		%centerPosX = getWord(%centerPos,0);
+		%centerPosY = getWord(%centerPos,1);
+		%centerPosZ = getWord(%centerPos,2);
+
+		%pointX = getWord(%pos,0);
+		%pointY = getWord(%pos,1);
+		%pointZ = getWord(%pos,2);
+
+		%newVecX = %centerPosX - %pointX;
+		%newVecY = %centerPosY - %pointY;
+		%newVecZ = %centerPosZ - %pointZ;
+		%norm = Vector::normalize(%newVecX @ " " @ %newVecY @ " " @ %newVecZ);
+		%zOffset = (%pointZ-%centerPosZ) * 1.0 + 0.1;
+		GameBase::activateShield(%this,%sphereVec,0.1);
+		return;
+		}
+	else if(%object == "" && $type = -1)
+	{
+		%damageLevel = GameBase::getDamageLevel(%this);
+		%dValue = %damageLevel + %value;
+		GameBase::setDamageLevel(%this,%dValue);
+		return;	
+	}
    	if (%object != "0" && %object != -1)
    	{
    		if (gamebase::getownerclient(%object) != "-1")
@@ -285,7 +319,8 @@ function Generator::onDestroyed(%this)
 	if ($debug) echo ("Generator::onDestroyed - Start");
 	StaticShape::objectiveDestroyed(%this);
 	//dbecho ("Generator::onDestroyed - Finish");	
-	//DumpObjectTree(); echo ("Gen Up Adding to Tree...");
+	if($Shifter::PowerCheck == "true" || $Shifter::ComChat == "true")
+	DumpObjectTree();
 	calcRadiusDamage(%this, $DebrisDamageType, 2.5, 0.05, 25, 13, 3, 0.55, 0.30, 250, 170); 
 	if(%this > 3000)
 	{

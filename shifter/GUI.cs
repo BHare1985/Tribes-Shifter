@@ -191,7 +191,7 @@ if (isObject(BotHUD_Main))
    //export("pref::*", "config\\ClientPrefs.cs", False);
   	//export("Server::*", "config\\ServerPrefs.cs", False);
    //export("pref::lastMission", "config\\ServerPrefs.cs", True);
-   BanList::export("config\\banlist.cs");
+   BanList::export("config\\banlist.log");
 }
 
 //-----------------------------------------------

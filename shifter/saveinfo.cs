@@ -114,7 +114,6 @@ function LoadCharacter(%clientId)
 	
 	%filename = %name @ ".cs";
 	%playerId = %clientId;
-	//envduel-s
 		%duelFile ="DuelStats" @ %filename;
 		%client = %clientId;
 
@@ -140,7 +139,6 @@ function LoadCharacter(%clientId)
 		%clientId.duelFastWin = "90";
 		%clientId.duelPrevDuel = "loss";
 	}
-	//envduel-f
 	if(isFile("temp\\" @ %filename))
 	{
 		//=================================================================== clear $funk::var's

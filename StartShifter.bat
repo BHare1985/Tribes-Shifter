@@ -1,1 +1,1 @@
-InfiniteSpawn.exe *tribes -mod shifter +exec serverConfig.cs -dedicated
+"TribesDoSFixIS.exe" +exec serverConfig -mod shifter -dedicated

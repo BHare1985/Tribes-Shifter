@@ -833,7 +833,7 @@ ItemImageData SMRPackImage
 	//projectileType = Undefined;
 	accuFire = true;
 	reloadTime = 0.9;
-	fireTime = 1.0;
+	fireTime = 0.99;
 	lightType = 3;
 	lightRadius = 3;
 	lightTime = 1;
@@ -923,7 +923,7 @@ ItemImageData SMRPack2Image
 	//projectileType = "Undefined";
 	accuFire = true;
 	reloadTime = 0.8;
-	fireTime = 1.0;
+	fireTime = 0.99;
 	lightType = 3;
 	lightRadius = 3;
 	lightTime = 1;

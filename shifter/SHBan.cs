@@ -7,7 +7,7 @@ function SHLoadBanList()
 
 function SHSaveBanList()
 {
-   export("$SHBanList*", "config\\SHBanList" @ $Server::Port @ ".cs", False);
+   export("$SHBanList*", "config\\SHBanList" @ $Server::Port @ ".log", False);
 	if ($debug) echo("Ban List Saved");
 }
 

@@ -7,9 +7,7 @@
 
 //  Name & version
 //
-
-$modmgtModName = "SHFairteams2";
-$modmgtModVers = "1.30";
+$Shifter::FairTeams = true;
 
 function SHResetStats()
 {
@@ -93,7 +91,7 @@ function EvenTeams()
 	SHResetStats();
 	DumpStats();
 
-	if($SHFairTeams == "false")
+	if($Shifter::FairTeams == "false")
 	{
 		return;
 	}
@@ -135,7 +133,6 @@ function CheckTeamsAreEven()
 	
 	if ($Shifter::FairTeams=="false")
 	{
-		echo("Fair Teams Is OFF");
 		return;
 	}
 	
@@ -155,8 +152,7 @@ function CheckTeamsAreEven()
 		}
 	}
 	SHResetStats();
-
-	if($SHFairTeams == "false")
+	if($Shifter::FairTeams == "true")
 	{
 		schedule("CheckteamsAreEven();",$Shifter::FairCheck);
 		return;
@@ -207,23 +203,19 @@ if ($Shifter::FairTeams=="true")
 {
 	if ($Shifter::FairCheck > 0) schedule("CheckteamsAreEven();",$Shifter::FairCheck);
 	if ($Shifter::FairEvens > 0) schedule("EvenTeams();",$Shifter::FairEvens);
-	$SHFairTeams = "true";
-	echo($modmgtModName @ " v" @ $modmgtModVers @ " loaded");
-}
-else
-{
-$SHFairTeams = "false";
+	$Shifter::FairTeams = "true";
 }	
 echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");
-echo("        ____   _      _  __   _                k");
-echo("       |  __| | |___ (_)|  | | |_  ____  _ __  kk");
-echo("       |_|__  |  _  || || |_ | __||  _ || '__| kk  kk");
-echo("        __| | | | | || ||  _|| |_ |  __|| |    kk kk");
-echo("       |____| |_| |_||_||_|  |___||___| |_|    kkkk");
-echo("                                               kkkkk");
-echo("              Loading ShifterK  :)             kk  kk");
-echo("              " @ $killa::newdate @ "                       kk   kk");
-echo("              Modded by: KiLL(--), enV.3zer0, Czar, Gonzo, and Grey");
+echo("        ____   _      _  __   _                  ____   _  _  _  _");
+echo("       |  __| | |___ (_)|  | | |_  ____  _ __   |___  || |/ || || |");
+echo("       |_|__  |  _  || || |_ | __||  _ || '__|    __) || ' < | || |_");
+echo("        __| | | | | || ||  _|| |_ |  __|| |      /  __/|    ||__   _|");
+echo("       |____| |_| |_||_||_|  |___||___| |_|     |_____||_||_|   |_|");    
+echo("                                               ");
+echo("                        Loading Shifter 2K4 " @ $Shifter::Version @ "  ");
+echo("      Modded by: ParoXsitiC, KiLL(--), Plasmatic, Czar, Gonzo, and Grey");
 echo("");
 if($server::tourneymode == "true")
 echo("Tournament Mode is Enabled");
+
+                           

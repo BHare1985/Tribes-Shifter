@@ -7,7 +7,7 @@ ItemImageData BlasterImage
 
 	weaponType = 0; // Single Shot
 	reloadTime = 0;
-	fireTime = 0.250;
+	fireTime = 0.240;
 	minEnergy = 5;
 	maxEnergy = 6;
 
@@ -54,7 +54,7 @@ ItemImageData ChaingunImage
 	reloadTime = 0.001;
 	spinUpTime = 0.2;
 	spinDownTime = 3;
-	fireTime = 0.2;
+	fireTime = 0.19;
 
 	ammoType = BulletAmmo;
 	projectileType = ChaingunBullet1;
@@ -109,7 +109,7 @@ ItemImageData PlasmaGunImage
 	//projectileType = "Undefined";
 	accuFire = true;
 	reloadTime = 0.1;
-	fireTime = 0.5;
+	fireTime = 0.49;
 
 	lightType = 3;  // Weapon Fire
 	lightRadius = 3;
@@ -143,8 +143,7 @@ function PlasmaGunImage::onFire(%player, %slot)
 		else if (%playerId.Plasma == 1)
 		{
 			Player::decItemCount(%player,$WeaponAmmo[PlasmaGun],1);
-			Projectile::spawnProjectile("PlasmaBoltRapid",%trans,%player,%vel);
-			Projectile::spawnProjectile("PlasmaBoltRapid2",%trans,%player,%vel);
+			Projectile::spawnProjectile("PlasmaBoltSingle",%trans,%player,%vel);
 		}
 		else if (%playerId.Plasma == 2)
 		{
@@ -209,7 +208,7 @@ ItemImageData GrenadeLauncherImage
 	projectileType = GrenadeShell;
 	accuFire = false;
 	reloadTime = 0.5;
-	fireTime = 0.5;
+	fireTime = 0.49;
 
 	lightType = 3;
 	lightRadius = 3;
@@ -258,7 +257,7 @@ ItemImageData MortarImage
 	//projectileType = "Undefined";
 	accuFire = false;
 	reloadTime = 0.5;
-	fireTime = 1.0;
+	fireTime = 0.99;
 
 	lightType = 3;  // Weapon Fire
 	lightRadius = 3;
@@ -388,7 +387,7 @@ ItemImageData DiscLauncherImage
 	//projectileType = DiscShell1;
 	accuFire = true;
 	reloadTime = 0.25;
-	fireTime = 1.25;
+	fireTime = 1.24;
 	spinUpTime = 0.25;
 
 	//sfxFire = SoundFireDisc;
@@ -443,7 +442,7 @@ ItemImageData LaserRifleImage
 	projectileType = SniperLaser1;
 	accuFire = true;
 	reloadTime = 0.1;
-	fireTime = 0.5;
+	fireTime = 0.49;
 	minEnergy = 10;
 	maxEnergy = 60;
 
@@ -567,7 +566,7 @@ ItemImageData HyperBImage
 	mountPoint = 0;
 	weaponType = 0; // Single Shot
 	reloadTime = 0;
-	fireTime = 0.075;
+	fireTime = 0.065;
 	minEnergy = 5;
 	maxEnergy = 6;
 	projectileType = HyperBolt;
@@ -611,7 +610,7 @@ ItemImageData RocketImage
 	//projectileType = "Undefined";
 	accuFire = true;
 	reloadTime = 0.8;
-	fireTime = 1.0;
+	fireTime = 0.99;
 	lightType = 3;
 	lightRadius = 3;
 	lightTime = 1;
@@ -694,14 +693,16 @@ function RocketImage::onFire(%player, %slot)
 				%targetId = GameBase::getOwnerClient(%client.target);
 				%name = Client::getName(%targetId);
 				LockJawFire(%player, %client.target);
+
 			}
 		}
 		else if (%client.rocket == 3)
-		{
+		{	
 			Player::decItemCount(%player,$WeaponAmmo[RocketLauncher],1);
 			playSound(SoundMissileTurretFire,%pos);
 			%obj1 = (Projectile::spawnProjectile("GodHammerMortar",%trans,%player,%vel));
 			%obj1.deployer = %client;
+			
 		}
 	}
 	else
@@ -752,8 +753,8 @@ ItemImageData SniperRifleImage
 	ammoType = SniperAmmo;
 	projectileType = SniperRound1;
 	accuFire = true;
-	reloadTime = 1.5;
-	fireTime = 0.08; //blagh not 0.001
+	reloadTime = 1.0;
+	fireTime = 0.07; //blagh not 0.001
 
 	lightType = 3;
 	lightRadius = 6;
@@ -797,7 +798,7 @@ ItemImageData BoomStickImage
 	//projectileType = "Undefined";
 	weaponType = 0;
 	reloadTime = 0.5;
-	fireTime = 1.1;
+	fireTime = 1.0;
 	minEnergy = 5;
 	maxEnergy = 6;
 	accuFire = false;
@@ -903,7 +904,7 @@ ItemImageData SilencerImage
 	projectileType = SilencerBullet;
 	accuFire = true;
 	reloadTime = 0.10;
-	fireTime = 0.5;
+	fireTime = 0.49;
 	lightType = 3;
 	lightRadius = 6;
 	lightTime = 2;
@@ -936,7 +937,7 @@ ItemImageData ConCunImage
 	maxEnergy = 45;
 	projectileType = Shock;
 	accuFire = true;
-	fireTime = 0.9;
+	fireTime = 0.8;
 	sfxFire = SoundPlasmaTurretFire;
 	sfxActivate = SoundPickUpWeapon;
 	
@@ -976,8 +977,8 @@ ItemImageData RailgunImage
 	ammoType = RailAmmo;
 	projectileType = RailRound;
 	accuFire = true;
-	reloadTime = 0.2;
-	fireTime = 1.0;
+	reloadTime = 0.45;
+	fireTime = 0.99;
 	lightType = 3;  // Weapon Fire
 	lightRadius = 6;
 	lightTime = 2;
@@ -1070,7 +1071,7 @@ ItemImageData MfglImage
 	//projectileType = Undefined;
 	accuFire = true;
 	reloadTime = 0.5;
-	fireTime = 4.0;
+	fireTime = 3.9;
 	lightType = 3;  // Weapon Fire
 	lightRadius = 3;
 	lightTime = 1;
@@ -1205,7 +1206,7 @@ ItemImageData IonGunImage
 	projectileType = IonGunBolt;
 	accuFire = true;
 	reloadTime = 0.1;
-	fireTime = 0.1;
+	fireTime = 0.99;
 	lightType = 3;  // Weapon Fire
 	lightRadius = 6;
 	lightTime = 2;

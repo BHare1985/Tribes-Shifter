@@ -172,6 +172,30 @@ GrenadeData QuietNBlast
 	inheritedVelocityScale = 0.0;
 };
 
+GrenadeData NukeMortar
+{
+	explosionTag       = NukeCloudExp;
+	collideWithOwner   = True;
+	ownerGraceMS       = 250;
+	collisionRadius    = 0;
+	mass               = 5.0;
+	elasticity         = 0.0;
+
+	damageClass        = 1;
+	damageValue        = 100.0;
+	damageType         = $NukeDamageType;
+
+	explosionRadius    = 25;
+	kickBackStrength   = 1.0;
+	maxLevelFlightDist = 375;
+	totalTime          = 0.1;
+	liveTime           = 0.1;
+	projSpecialTime    = 0.01;
+	smokeName              = "plasmatrail.dts";
+
+	inheritedVelocityScale = 0.0;
+};
+
 GrenadeData NCloud
 {
 	explosionTag       = mortarExp;
@@ -244,7 +268,9 @@ MineData Suicidebomb
 
 function Suicidebomb::onAdd(%this)
 {        
-	schedule("NuclearExplosion(" @ %this @ ");",0.5,%this);
+	//schedule("NuclearExplosion(" @ %this @ ");",0.5,%this);
+	schedule("det("@ %this @".deployer, GameBase::GetPosition("@ %this @"));",0.5,%this);	
+	schedule("deleteobject(" @ %this @ ");",0.5,%this);
 	schedule("Mine::Detonate(" @ %this @ ");",0.5,%this);
 }
 
@@ -285,7 +311,7 @@ function det(%cl, %pos)
 {
 	%rot = "0 0 0";
 	%client = client::getownedobject(%cl);
-	echo(%client);
+//	echo(%client);
 	%check = 0;
 	%vel = "0 0 0";
 	
@@ -676,7 +702,7 @@ function DeployFrags(%this, %count, %player)
 	if(%client && %player)
 	{
 		%pos = gamebase::getposition(%this);
-		for(%i = 0; %i < 10; %i++)
+		for(%i = 0; %i < 5; %i++)
 		{
 			%frag = "Frag" @ (floor(getRandom()*3)+1);
 			%obj = newObject("","Mine", %frag);
@@ -715,7 +741,7 @@ function quietDeployFrags(%this, %count, %player)
 	if(%client && %player)
 	{
 		%pos = gamebase::getposition(%this);
-		for(%i = 0; %i < 10; %i++)
+		for(%i = 0; %i < 5; %i++)
 		{
 			%frag = "Frog" @ (floor(getRandom()*3)+1);
 			%obj = newObject("","Mine", %frag);
@@ -800,4 +826,84 @@ GrenadeData ModuleBomb
 
    inheritedVelocityScale = 0.01;
    smokeName              = "rsmoke.dts";
+};
+
+GrenadeData JetSmoke
+{
+   bulletShapeName    = "breath.dts";
+   explosionTag       = smExp;
+   collideWithOwner   = True;
+   ownerGraceMS       = 250;
+   collisionRadius    = 1.3;
+   mass               = 5.0;
+   elasticity         = 0.1;
+
+   damageClass        = 1;       // 0 impact, 1, radius
+   damageValue        = 0.3;
+   damageType         = $NullDamageType;
+
+   explosionRadius    = 0;
+   kickBackStrength   = 0.0;
+   maxLevelFlightDist = 0;
+   totalTime          = 0.01;    // special meaning for grenades...
+   liveTime           = 0.01;
+//   projSpecialTime    = 0.01;
+   projSpecialTime    = 0.5;
+
+   inheritedVelocityScale = 0.5;
+   smokeName              = "rsmoke.dts";
+};
+
+GrenadeData AnnihilationFlame
+{
+   bulletShapeName    = "plasmatrail.dts";
+   explosionTag       = AnnihilationFlameExp;
+   collideWithOwner   = True;
+   ownerGraceMS       = 250;
+   collisionRadius    = 0.2;
+   mass               = 1.0;
+   elasticity         = 0.45;
+
+   damageClass        = 1;
+   damageValue        = 0;
+   damageType         = false;
+
+   explosionRadius    = 0;
+   kickBackStrength   = 0;
+   maxLevelFlightDist = 0;
+   totalTime          = 0.01;    // special meaning for grenades...
+   liveTime           = 0.01;
+   projSpecialTime    = 0.05;
+
+   inheritedVelocityScale = 0.5;
+
+   smokeName              = "plasmatrail.dts";
+};
+//=========================================
+
+GrenadeData PlasmaShockJet
+{
+   bulletShapeName    = "bullet.dts";
+   explosionTag       = debrisExpSmall;
+   
+   collideWithOwner   = True;
+   ownerGraceMS       = 250;
+   collisionRadius    = 0.2;
+   mass               = 1.0;
+   elasticity         = 0.45;
+
+   damageClass        = 1;
+   damageValue        = 0.00675;//0.0125
+   damageType         = $JettingDamage;	//9/6/2003 8:21AM $EnergyDamageType;	//$PlasmaDamageType
+
+   explosionRadius    = 2.5;
+   kickBackStrength   = 0;
+   maxLevelFlightDist = 0;
+   totalTime          = 0.05;	//0.01// special meaning for grenades...
+   liveTime           = 0.05;	//0.01
+   projSpecialTime    = 0.05;
+
+   inheritedVelocityScale = 0.5;
+
+   smokeName              = "plasmatrail.dts";
 };

@@ -675,7 +675,7 @@ function ObjectiveMission::checkScoreLimit()
 
    for(%i = 0; %i < getNumTeams(); %i++)
 	if($TeamScore[%i] >= $TeamScoreLimit){
-			if( $Shifter::Capping == "true"){
+			if( $Shifter::UnlimitedCapping == "false"){
 			%done = true;}
 			 else{
          		%done = false;}
@@ -735,8 +735,8 @@ function Game::refreshClientScore(%clientId)
 function Mission::init()
 {
    //exec("weather.cs");
-   setClientScoreHeading("Player Name\t\x6FTeam\t\xA6Score\t\xCFPing\t\xEFPL\t\xFFTotalScore");   //xa6status
-   setTeamScoreHeading("Team Name\t\x6FPlayers\t\xD6Score");
+   setClientScoreHeading("Player Name\t\x6FTeam\t\xA6Score\t\xCFPing\t\xEFPL\t\xFFTotalScore");    //xa6status
+   setTeamScoreHeading("Team Name\t\x6FPlayers\t\xD6Captures");
 
    $firstTeamLine = 7;
    $server::deathmatch = false;
@@ -748,7 +748,7 @@ function Mission::init()
 	$DamageScale[larmor,	$PlasmaDamageType] = 1.0;$DamageScale[lfemale,	$PlasmaDamageType] = 1.0;
 	$DamageScale[larmor,	$EqualizerDamageType]	 = 1.0;$DamageScale[lfemale,	$EqualizerDamageType]	 = 1.0;
    if(!$noTabChange)
-		$ModList = "ShifterK";
+		$ModList = "Shifter 2K4";
  	if($match::ceaseFireBegin)
 	{
 		$match::ceaseFireBegin = false;
@@ -939,7 +939,8 @@ function TowerSwitch::getObjectiveString(%this, %forTeam)
    {
        if($showon)
        {
-         return "<f2>Shifter\n<f3>     k      \n<f3>     kk     \n<f3>     kk  kk \n<f3>     kk kk  \n<f3>     kkkk   \n<f3>     kkkkk  \n<f3>     kk kkk \n<f3>     kk  kkk\n<f2>Shifter K Mission Complete\n<f2>Modded by: KiLL(--), enV.3zer0";
+         return "<f2>Shifter\n<f3>      ____   _  __ _  _   \n<f3>     |___  || |/ || || |  \n<f3>       __) || ' < | || |_ \n<f3>      / __/ |    ||__   _|\n<f3>     |_____||_||_|   |_|   \n<f2>Shifter 2K4 Mission Complete\n<f2>Modded by: ParoXsitiC";
+
       }
       if(%thisTeam == -1)
          return "<Btowers_neutral.bmp>\nNo team claimed " @ %this.objectiveName @ ".";
@@ -1026,7 +1027,6 @@ function TowerSwitch::onCollision(%this, %object)
    $deltaTeamScore[%playerTeam] += %this.deltaTeamScore;
    $teamScore[%oldTeam] -= %this.scoreValue;
    $teamScore[%playerTeam] += %this.scoreValue;
-echo("1");
    if(%dropPoints != -1)
    {
       for(%i = 0; (%dropPoint = Group::getObject(%dropPoints, %i)) != -1; %i++)
@@ -1040,35 +1040,31 @@ echo("1");
    if(%oldTeam == -1)
    {
       MessageAll(0, %touchClientName @ " claimed " @ %this.objectiveName @ " for the " @ getTeamName(%playerTeam) @ " team!");
-      echo("2");
 			Messageall(1, "*********************************************************");
 			Messageall(-1, getTeamName(%playerteam) @ " Score  " @ $TeamScore[%playerTeam]);
 			Messageall(-1, getTeamName(%Enemyteam) @ " Score  " @ $TeamScore[%EnemyteamTeam]);
 			Messageall(1, "*********************************************************");
-			echo("3");
 
 		  //==================================================================================================== Score For Initial Capture
 	      %playerClient.score = (%playerClient.score + $Score::InitialObj);
 		  if ($ScoresOn) bottomprint(%playerClient, "Score +" @ $Score::InitialObj @ " = " @ %playerClient.score @ " Total Score");
  	}
    else
-   {echo("4");
+   {
       if(%this.objectiveLine)
       {
 				MessageAll(0, %touchClientName @ " captured " @ %this.objectiveName @ " from the " @ getTeamName(%oldTeam) @ " team!");
 				Messageall(1, "*********************************************************");
-				echo("5");
 				echo($TeamScore[%oldTeam]);
 				Messageall(-1, getTeamName(%playerteam) @ " Score  " @ $TeamScore[%playerTeam]);
 				Messageall(-1, getTeamName(%oldTeam) @ " Score  " @ $TeamScore[%oldTeam]);
-				echo("6");
 				echo($TeamScore[%oldTeam]);
 				Messageall(1, "*********************************************************");
 		 %this.numSwitchTeams++;	
 
 		 //======================================================================================================== Score For Capture From
          %playerClient.score = (%playerClient.score + $Score::CaptureObj);	  
-	     echo("7");if ($ScoresOn) bottomprint(%playerClient, "Score +" @ $Score::CaptureObj @ " = " @ %playerClient.score @ " Total Score");
+	     if ($ScoresOn) bottomprint(%playerClient, "Score +" @ $Score::CaptureObj @ " = " @ %playerClient.score @ " Total Score");
 
 			schedule("TowerSwitch::timeLimitCheckPoints(" @ %this @ "," @ %playerClient @ "," @ %this.numSwitchTeams @ ");",60);
       }
@@ -1328,7 +1324,7 @@ function Flag::onDrop(%player, %type)
    }
 
 
-	if ($Shifter::FlagNoReturn)
+	if ($Flag::ManualReturn=="true")
 	{
 		schedule("Flag::checkReturn(" @ %flag @ ", " @ %flag.pickupSequence @ ");", $Shifter::FlagReturnTime);	
         	TeamMessages(1, %flagTeam, "You MUST Return Your Flag!!!", -2, "", "Get the " @ getTeamName(%flagTeam) @ " flag!!!");
@@ -1474,8 +1470,9 @@ function Flag::onCollision(%this, %object)
 	%carriedflag = %object.carryFlag;
 	%carriedflagteam = GameBase::getTeam(%carriedFlag);
 	%carrierflag = Player::getMountedItem(%object, $FlagSlot);
-
-
+	if(%playerClient.isAFK == "true" || $Shifter::Capping == "false")
+	return;
+	
 
 	if(%playerClient.inflyer && %playerClient.driver)
 	{	
@@ -1502,7 +1499,7 @@ function Flag::onCollision(%this, %object)
 	{
 		if(!%this.atHome)             //======= The flag isn't home! so return it.
 		{
-			if ($Shifter::FlagNoReturn != "True") //=================================== If No Flag Return Is Not True Flag Returns Normally
+			if ($Flag::ManualReturn != "True") //=================================== If No Flag Return Is Not True Flag Returns Normally
 			{
 				echo ("*** Flag Returned On Contact By " @ %touchClientName @ " - " @ %playerClient);
 
@@ -1539,7 +1536,7 @@ function Flag::onCollision(%this, %object)
 				%object.carryFlag = %this;
 				Flag::setWaypoint(%playerClient, %this);
 
-				schedule("Objective::AutoReturn(" @ %this @ ");", 120); //== Returns Flag If Player Still Holds It.
+				schedule("Objective::AutoReturn(" @ %this @ ");", $Flag::TimeTeamcanHold); //== Returns Flag If Player Still Holds It.
 				return;
 			}
 		}
@@ -1558,7 +1555,7 @@ function Flag::onCollision(%this, %object)
 					%flag = %object.carryFlag;
 					%flag.atHome = true;
 					%flag.carrier = -1;
-                    if($Shifter::Capping) {
+                    if($Shifter::UnlimitedCapping == "false") {
 					%flag.caps[%playerTeam]++;
 					%flag.enemyCaps++; }
                      else
@@ -1639,7 +1636,6 @@ function Flag::onCollision(%this, %object)
 					GameBase::startFadeIn(%this);
 					%this.fadeOut= "";
 				}
-				
 				if(%flagTeam != -1)
 				{
 					MessageAllExcept(%playerClient, 0, %touchClientName @ " took the " @ getTeamName(%flagTeam) @ " flag! ~wflag1.wav");
@@ -1647,7 +1643,7 @@ function Flag::onCollision(%this, %object)
 					TeamMessages(1, %playerTeam, "Your team has the " @ getTeamName(%flagTeam) @ " flag.", %flagTeam, "Your team's flag has been taken.");
 					echo("" @ %touchClientName @ " took the " @ getTeamName(%flagTeam) @ " flag!");
 
-    }
+  				  }
 				else
 				{
 					%hteam = %this.holdingTeam;

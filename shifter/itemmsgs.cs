@@ -11,7 +11,7 @@ function PlasmaGun::onUse(%player,%item)
 	if(!%client.Plasma || %client.Plasma == 0)
 		bottomprint(%client, "<jc><f2>Using Plasma Gun - Standard", 2);
 	else if(%client.Plasma == 1)
-		bottomprint(%client, "<jc><f2>Using Plasma Gun - Rapid Fire", 2);
+		bottomprint(%client, "<jc><f2>Using Plasma Gun - Single Shot", 2);
 	else if (%client.Plasma == 2)
 		bottomprint(%client, "<jc><f2>Using Plasma Gun - Spread Fire", 2);
 }

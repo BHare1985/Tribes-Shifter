@@ -437,6 +437,51 @@ function Vehicle::onAdd(%this)
 		GameBase::setRechargeRate (%this, 25);
 		GameBase::setMapName (%this, "Vehicle");
 	}
+	vehicle::ImpactCheck(%this);
+}
+
+// a lil something to check for collisions with nasty crashy stuff... -plasmatic 2.2
+// this tests for collisions with statics - Blastwalls, platforms, etc..
+function vehicle::ImpactCheck(%this)
+{
+	if(GameBase::getDamageState(%this) == Destroyed) 
+		return;	
+		
+	%control = GameBase::getControlClient(%this);
+	if(%control != -1)
+	{	
+		%vel = Item::getVelocity(%this);
+		%velocity = vector::getdistance(%vel,"0 0 0");
+		bottomprint(%control,"<jc>Velocity = "@%velocity>>0.1@" mph",2);
+		%data = GameBase::getDataName(%this);
+		%shape = %data.shapeFile;
+		if(%shape != camera && %shape != rocket)
+		{
+			if(%velocity > 0.75)
+			{		
+				
+				%check = 5 + %velocity/5;	
+				if(GameBase::getLOSInfo(%this,%check,"0.15 0 0"))	//look up a lil...
+				{
+					%object = getObjectType($Los::Object);
+						// GetLOSInfo sets the following globals:
+						// 	los::position
+						// 	los::normal
+						// 	los::object		
+					if(%object == StaticShape)
+					{
+						//	if(%control != -1)
+						//		bottomprint(%control,"<jc>IMPACT?! "@%object@" Velocity = "@%velocity,5);		
+						echo(%this@" "@%shape@" "@%control@" IMPACT?! "@%object@" killing vehicle -error");
+						GameBase::setDamageLevel(%this,2);	
+					}
+				}
+				//echo("check vehicle impact. vel ="@%velocity@" check= "@%check);
+			}
+			
+		}
+	}
+	schedule("vehicle::ImpactCheck("@%this@");",0.1);	
 }
 
 function Vehicle::onCollision (%this, %object)
@@ -937,7 +982,9 @@ function Vehicle::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
 {
 	%data1 = GameBase::getDataName(%object);
 	%data2 = GameBase::getDataName(%this);
-
+%data = GameBase::getDataName(%this);
+		%velocity = vector::getdistance(%vec,"0 0 0");		
+		echo("!!Vehicle::onDamage "@%this@" damaged by "@GameBase::getDataName(%object)@" object ="@%object@" Vel. "@%velocity@" type ="@%type@" pos="@%pos@" vec="@%vec@" mom="@%mom);
 	%value *= $damageScale[GameBase::getDataName(%this), %type];
 
 	%data = GameBase::getDataName(%this);
@@ -949,6 +996,10 @@ function Vehicle::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
 
 	if (%type == "-1")
 		StaticShape::onDamage(%this,%type,%value,%pos,%vec,%mom,%object);
+		%control = GameBase::getControlClient(%this);
+		echo(%this@" "@GameBase::getDataName(%this)@" cl# "@%control@" IMPACT!!  %value ="@%value);
+		if(%Value == 0)
+		%Value = 0.05;
 	else
 		StaticShape::shieldDamage(%this,%type,%value,%pos,%vec,%mom,%object);
 }

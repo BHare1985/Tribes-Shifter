@@ -219,7 +219,7 @@ function remoteweapon_plasma_regular(%clientId)
 function remoteweapon_plasma_rapid(%clientId)
 {
 	%clientId.Plasma = 1;
-	schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Rapid-Bold Plasma Selected.\", 3);", 0.01);
+	schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Single-Shot Plasma Selected.\", 3);", 0.01);
 
 }
 function remoteweapon_plasma_multi(%clientId)

@@ -445,50 +445,32 @@ BulletData PlasmaBoltMulti
 };
 
 
-//======================================================================== Plasma Bolt Rapid
-BulletData PlasmaBoltRapid
+//======================================================================== Plasma Bolt Single
+
+RocketData PlasmaBoltSingle				//=== With Trial
 {
-	bulletShapeName    = "plasmabolt.dts";
-	explosionTag       = plasmaExp;
+	bulletShapeName  = "plasmabolt.dts";
+   	explosionTag       = plasmaExp;
+	collisionRadius  = 0.0;
+	mass             = 2.0;
 
-	damageClass        = 1;
-	damageValue        = 0.30;
-	damageType         = $PlasmaDamageType;
-	explosionRadius    = 1.3;
+	damageClass      = 1;
+	damageValue      = 0.75;
+	damageType       = $PlasmaDamageType;
+	explosionRadius  = 2.0;
+	kickBackStrength = 0;
+	
+	 muzzleVelocity   = 75.0;
+   	terminalVelocity = 100.0;
+   	acceleration     = 5.0;
 
-	muzzleVelocity     = 120.0;
-	totalTime          = 2.0;
-	liveTime           = 0.1;
-	lightRange         = 3.0;
-	lightColor         = { 1, 1, 0 };
-	inheritedVelocityScale = 0.3;
-	isVisible          = True;
-
-	soundId = SoundJetLight;
+  	 totalTime        = 6.5;
+   	liveTime         = 8.0;
+	lightRange       = 1.0;
+	lightColor       = { 1, 1, 0 };
+	inheritedVelocityScale = 0.0;
+	soundId = SoundJetHeavy;
 };
-
-//======================================================================== Plasma Bolt Rapid2
-BulletData PlasmaBoltRapid2
-{
-	bulletShapeName    = "plasmabolt.dts";
-	explosionTag       = plasmaExp;
-
-	damageClass        = 1;
-	damageValue        = 0.35;
-	damageType         = $PlasmaDamageType;
-	explosionRadius    = 1.3;
-
-	muzzleVelocity     = 120.0;
-	totalTime          = 2.0;
-	liveTime           = 1.3;
-	lightRange         = 3.0;
-	lightColor         = { 1, 1, 0 };
-	inheritedVelocityScale = 0.3;
-	isVisible          = True;
-
-	soundId = SoundJetLight;
-};
-
 //======================================================================== Booster Fire
 RocketData Booster
 {
@@ -877,7 +859,7 @@ RocketData RailRound
    mass             = 2.0;
 
    damageClass      = 0;
-   damageValue      = 0.80;
+   damageValue      = 1.10;
    damageType       = $BulletDamageType;
 
    explosionRadius  = 0.3;
@@ -1598,7 +1580,8 @@ function FgcShell::onAdd(%this)
 
 function FgcShell::Deploy(%this)
 {
-	schedule("NuclearExplosion(" @ %this @ ");",3.0,%this);
+	schedule("NuclearExplosion("@ %this @".deployer, GameBase::GetPosition("@ %this @"));",3.0,%this);
+	schedule("deleteobject(" @ %this @ ");",3.0,%this);
 }
 
 //========================================================================
@@ -3141,10 +3124,334 @@ function LockJaw(%client, %targetId)
 //================================================================================================
 //						Special Functions
 //================================================================================================
-function NuclearExplosion(%this)
+function NuclearExplosion(%cl, %pos)
 {
-	det(%this.deployer, GameBase::GetPosition(%this));	
-	deleteobject(%this);	
+	%rot = "0 0 0";
+	%client = client::getownedobject(%cl);
+	echo(%client);
+	%check = 0;
+	%vel = "0 0 0";
+	
+	%Set = newObject("nukeset",SimSet);
+	%Mask = $SimPlayerObjectType|$StaticObjectType|$VehicleObjectType|$MineObjectType|$SimInteriorObjectType;
+	containerBoxFillSet(%Set, %Mask, %Pos, 40, 40, 40, 40);
+	%num = Group::objectCount(%Set);
+	for(%i; %i < %num; %i++)
+	{
+		%obj = Group::getObject(%Set, %i);
+		GameBase::applyDamage(%obj, $NukeDamageType, 1.75, GameBase::getPosition(%obj), "0 0 0", "0 0 0", %client);		
+	}
+	deleteobject(%set);
+
+	%pos1 = %pos;
+	%dir = (Vector::getfromrot(%rot));	
+	%trans1 = (%rot @ " " @ %dir @ " " @ %rot);
+
+	%obj = newObject("","Mine","NRing1"); 
+	GameBase::throw(%obj,%cl,0,false);
+	addToSet("MissionCleanup", %obj);
+	%padd = "0 0 2.0";%pos = Vector::add(%pos1, %padd);
+	GameBase::setPosition(%obj, %pos); 	
+
+	%obj = newObject("","Mine","NRing1"); 
+	GameBase::throw(%obj,%cl,0,false);
+	addToSet("MissionCleanup", %obj);
+	%padd = "0 0 10.0";%pos = Vector::add(%pos1, %padd);
+	GameBase::setPosition(%obj, %pos); 	
+
+	%obj = newObject("","Mine","NRing1"); 
+	GameBase::throw(%obj,%cl,0,false);
+	addToSet("MissionCleanup", %obj);
+	%padd = "0 0 35.0";%pos = Vector::add(%pos1, %padd);
+	GameBase::setPosition(%obj, %pos); 	
+
+	%padd = "0 0 2.0";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(NBaseLight, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");", 0.01,%check);
+
+	%padd = "0 0 2.0";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(NBase, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");",0.1,%check);
+ 	
+	%padd = "0 0 25.0";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(QuietNBlast, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");",0.1,%check);
+
+	%padd = "0 0 35.0";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(NBlast, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");",0.1,%check);
+	
+	%padd = "0 0 45.0";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(QuietNBlast, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");",0.1,%check);
+
+	%padd = "0 0 65";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(NRing, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");",0.2,%check);
+
+	%padd = "0 0 4.0";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(NRing, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",0.2,%check);
+
+	%padd = "0 0 8.0";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(QuietNRing, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",0.2,%check);
+	
+	%padd = "0 0 10.0";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(NBlast, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");",0.3,%check);
+	
+	%padd = "0 0 3.0";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(QuietNRing, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",1.1,%check);
+	
+		%sizeofcirle = 20;
+                %heightofcircle = 60;
+                %firstpoints = ((%sizeofcirle)*0.75);
+                %secondpoints = ((%sizeofcirle)*0.90);
+                %thirdpoints = ((%sizeofcirle)*0.45);   
+                %startingtime = 0.30;
+                %increasedtime = 0.70;
+                
+                %padd = "0 0 3"; %pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+                                             
+                %padd = ""@%sizeofcirle@" 0 "@%heightofcircle@""; %pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+                %padd = "-"@%sizeofcirle@" 0 "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "0 "@%sizeofcirle@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "0 -"@%sizeofcirle@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%firstpoints@" -"@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%firstpoints@" "@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%firstpoints@" "@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%firstpoints@" -"@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+                 
+                 
+                 
+                  %startingtime = %startingtime + %increasedtime;
+                 
+                 
+                 %sizeofcirle = 30;
+                %heightofcircle = 80;
+                %firstpoints = ((%sizeofcirle)*0.75);
+                %secondpoints = ((%sizeofcirle)*0.90);
+                %thirdpoints = ((%sizeofcirle)*0.45);   
+                                             
+                %padd = ""@%sizeofcirle@" 0 "@%heightofcircle@""; %pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+                %padd = "-"@%sizeofcirle@" 0 "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "0 "@%sizeofcirle@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "0 -"@%sizeofcirle@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%firstpoints@" -"@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%firstpoints@" "@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%firstpoints@" "@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%firstpoints@" -"@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%secondpoints@" -"@%thirdpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%secondpoints@" "@%thirdpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%secondpoints@" -"@%thirdpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%secondpoints@" "@%thirdpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%thirdpoints@" -"@%secondpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%thirdpoints@" "@%secondpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%thirdpoints@" -"@%secondpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%thirdpoints@" "@%secondpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+                 
+                  %startingtime = %startingtime + %increasedtime +0.50;
+                 
+                %sizeofcirle = 45;
+                %heightofcircle = 90;
+                %firstpoints = ((%sizeofcirle)*0.75);
+                %secondpoints = ((%sizeofcirle)*0.90);
+                %thirdpoints = ((%sizeofcirle)*0.45);   
+                                             
+                %padd = ""@%sizeofcirle@" 0 "@%heightofcircle@""; %pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+                %padd = "-"@%sizeofcirle@" 0 "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "0 "@%sizeofcirle@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "0 -"@%sizeofcirle@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%firstpoints@" -"@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%firstpoints@" "@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%firstpoints@" "@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%firstpoints@" -"@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%secondpoints@" -"@%thirdpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%secondpoints@" "@%thirdpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%secondpoints@" -"@%thirdpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%secondpoints@" "@%thirdpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%thirdpoints@" -"@%secondpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%thirdpoints@" "@%secondpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%thirdpoints@" -"@%secondpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%thirdpoints@" "@%secondpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+                 
+                %sizeofcirle = 25;
+                %heightofcircle = 90;
+                %firstpoints = ((%sizeofcirle)*0.75);
+                %secondpoints = ((%sizeofcirle)*0.90);
+                %thirdpoints = ((%sizeofcirle)*0.45);   
+                                             
+                %padd = ""@%sizeofcirle@" 0 "@%heightofcircle@""; %pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+                %padd = "-"@%sizeofcirle@" 0 "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "0 "@%sizeofcirle@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "0 -"@%sizeofcirle@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%firstpoints@" -"@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%firstpoints@" "@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%firstpoints@" "@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%firstpoints@" -"@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%secondpoints@" -"@%thirdpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%secondpoints@" "@%thirdpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%secondpoints@" -"@%thirdpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+
+                 
+                %startingtime = %startingtime + %increasedtime;
+                %sizeofcirle = 35;
+                %heightofcircle = 110;
+                %firstpoints = ((%sizeofcirle)*0.75);
+                %secondpoints = ((%sizeofcirle)*0.90);
+                %thirdpoints = ((%sizeofcirle)*0.45);   
+                                             
+                %padd = ""@%sizeofcirle@" 0 "@%heightofcircle@""; %pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+                %padd = "-"@%sizeofcirle@" 0 "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "0 "@%sizeofcirle@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "0 -"@%sizeofcirle@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%firstpoints@" -"@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%firstpoints@" "@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%firstpoints@" "@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%firstpoints@" -"@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%secondpoints@" -"@%thirdpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%secondpoints@" "@%thirdpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%secondpoints@" -"@%thirdpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%secondpoints@" "@%thirdpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%thirdpoints@" -"@%secondpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%thirdpoints@" "@%secondpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%thirdpoints@" -"@%secondpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%thirdpoints@" "@%secondpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+                 
+                 
+                  %sizeofcirle = 18;
+                %heightofcircle = 110;
+                %firstpoints = ((%sizeofcirle)*0.75);
+                %secondpoints = ((%sizeofcirle)*0.90);
+                %thirdpoints = ((%sizeofcirle)*0.45);   
+                                             
+                %padd = ""@%sizeofcirle@" 0 "@%heightofcircle@""; %pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+                %padd = "-"@%sizeofcirle@" 0 "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "0 "@%sizeofcirle@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "0 -"@%sizeofcirle@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%firstpoints@" -"@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%firstpoints@" "@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%firstpoints@" "@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%firstpoints@" -"@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%secondpoints@" -"@%thirdpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%secondpoints@" "@%thirdpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%secondpoints@" -"@%thirdpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%secondpoints@" "@%thirdpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%thirdpoints@" -"@%secondpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%thirdpoints@" "@%secondpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%thirdpoints@" -"@%secondpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%thirdpoints@" "@%secondpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+	
+	
+	
+              
+                 
+                 
+                  %startingtime = %startingtime + %increasedtime;
+                 
+                  %sizeofcirle = 15;
+                %heightofcircle = 120;
+                %firstpoints = ((%sizeofcirle)*0.75);
+                %secondpoints = ((%sizeofcirle)*0.90);
+                %thirdpoints = ((%sizeofcirle)*0.45);   
+                                             
+                %padd = ""@%sizeofcirle@" 0 "@%heightofcircle@""; %pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+                %padd = "-"@%sizeofcirle@" 0 "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "0 "@%sizeofcirle@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "0 -"@%sizeofcirle@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%firstpoints@" -"@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%firstpoints@" "@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = "-"@%firstpoints@" "@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+		%padd = ""@%firstpoints@" -"@%firstpoints@" "@%heightofcircle@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+		 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",%startingtime,%check);
+	
+	
+		%padd = "0 0 "@%heightofcircle+3@"";%pos = Vector::add(%pos1, %padd); %trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+                 schedule ("Projectile::spawnProjectile(NukeMortar, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 50\");",%startingtime,%check);
+	
 }
 
 

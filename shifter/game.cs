@@ -61,7 +61,7 @@ if ($Shifter::ObjScore == "False" && $Shifter::PlrScore == "False")
 //================================================== Globals
 
 if ($Shifter::TeamDamage != false)
-	$Server::TeamDamageScale = 1;
+	$Server::TeamDamageScale = true;
 
 $MODInfo = $Server::MODInfo;
 
@@ -183,10 +183,98 @@ $TestCheats = 0;
 $AutoRespawn = 0;
 
 //===============================================================================================================
+function DumpObjectTree()
+{
+	//echo ("DUMPING OBJECT TREE");
+	
+	%c = 0;
+	$PObjList = 0;
+	
+	for(%team=0;%team < 9;%team++)
+	{
+		%count[%team] = 0;
+		%counts[%team] = 0;
+	}
+		
+	for(%object = 8200; (%object < 9300); %object++)
+	{
+		if (GameBase::getDataName(%object) != "")
+		{
+			%name = GameBase::getDataName(%object);
+			%team = GameBase::getTeam(%object);		  
+			%objtype = getObjectType(%object);
+			%objname = (GameBase::getDataName(%object));
+
+			if (%objtype != "" && %team != "-1")
+			{
+				%tc = %count[%team];
+				%ts = %counts[%team];
+				if (%objname == "Generator")		{$PObj[%tc,%team] = %object;} //echo ("Gen "@ %team @ " " @ %tc); %count[%team]++;}
+				else if (%objname == "SolarPanel")	{$PObj[%tc,%team] = %object;} //echo ("Sol "@ %team @ " " @ %tc); %count[%team]++;}
+				else if (%objname == "PortGenerator")	{$PObj[%tc,%team] = %object;} //echo ("PGn "@ %team @ " " @ %tc); %count[%team]++;}
+
+				if (%objname == "PulseSensor")			{$SObj[%ts,%team] = %object;} //echo ("LRd "@ %team @ " " @ %ts); %counts[%team]++;}
+				else if (%objname == "MediumPulseSensor")	{$SObj[%ts,%team] = %object;} //echo ("SRd "@ %team @ " " @ %ts); %counts[%team]++;}
+				else if (%objname == "DeployablePulseSensor")	{$SObj[%ts,%team] = %object;} //echo ("DRd "@ %team @ " " @ %ts); %counts[%team]++;}
+			}
+		}
+	}
+	
+	schedule ("DumpObjectTree();", 360);
+}
+function IsNetWorkDown(%t)
+{
+	if ($debug) echo ("Checking Team " @ %t);
+		
+	for (%tc = 0; $SObj[%tc,%t] != ""; %tc++)
+	{
+		%object = $SObj[%tc,%t];
+		if (GameBase::getDamageState(%object) == "Enabled")
+		{
+			//echo ("Team " @ %t @ "'s network is up. ");
+			return True;
+		}
+	}
+	
+	if (!%tc || %tc < 1)
+	{
+		//echo ("Team " @ %t @ " has no sensors to check. ");
+		return True;
+	}
+	//echo ("Team " @ %t @ "'s sensors are down.");
+	return False;
+}
+function IsPowerDown(%t)
+{
+	if($Shifter::PowerCheck == "false")
+	return;
+	//echo ("Checking Team " @ %t);
+	
+	if(!$matchStarted || $matchStarting)
+		return True;
+	
+	for (%tc = 0; $PObj[%tc,%t] != ""; %tc++)
+	{
+		%object = $PObj[%tc,%t];
+		if (GameBase::getDamageState(%object) == "Enabled")
+		{
+			//echo ("Team " @ %t @ "'s power is up. ");
+			return True;
+		}
+	}
+	
+	if (!%tc || %tc < 1)
+	{
+		//echo ("Team " @ %t @ " has no power units to check. ");
+		return True;
+	}
+	//echo ("Team " @ %t @ "'s power is down ");
+	return False;
+}
+
 function Game::playerSpawned(%pl, %clientId, %armor)
 {
 	%item = Player::getMountedItem(%player,$WeaponSlot);
-//envduel-s 
 	if(%clientId.dueling)
 	{
 		echo("GameMSG   ====   SPAWN " @ %name @ " - Duel");
@@ -195,7 +283,6 @@ function Game::playerSpawned(%pl, %clientId, %armor)
 		return false;
 			
 	}
-	//envduel-f
     GameBase::startFadeIn(%clientId);
     dbecho ("============================ Spawning Player");
 	dbecho ("PL - " @ %pl @ "");
@@ -210,23 +297,22 @@ function Game::playerSpawned(%pl, %clientId, %armor)
 	}
 	
 	%clientId.spawntime = getsimtime();
+	//if($Shifter::PowerCheck == "true")
 	//%power = IsPowerDown(gamebase::getteam(%clientId));
-	//echo ("POWER = " @ %power);
-
 	//=================================================================== Custom Spawn Settings
-	//== Spawn Notifications Added By Ascain.
 	
-	//if ($Shifter::PowerCheck != "False" && !%power)
-	//{
-	//	dbecho ("SPAWN - Power down - standard");
-	//	standardSpawnList(%clientId);
-	//	schedule ("bottomprint( " @ %clientId @ ", \"<jc><f2>You have spawned in standard armor, YOUR POWER IS DOWN!!!\", 10);" ,3);
-	//	
-	//	if (Game::playerSetSpawned(%pl, %clientId, %armor))
-	//		return true;
-	//	return false;
-	//}else
-	if (%clientId.spawntype == "standard")
+	if ($Shifter::PowerCheck == "true" && !IsPowerDown(gamebase::getteam(%clientId)))
+	{
+		dbecho ("SPAWN - Power down - standard");
+		standardSpawnList(%clientId);
+		Client::sendMessage(%clientId, 0, "Your Power is down - Standard armor");
+		schedule ("bottomprint( " @ %clientId @ ", \"<jc><f2>You have spawned in standard armor, Your Power is down!\", 10);" ,3);
+		
+		if (Game::playerSetSpawned(%pl, %clientId, %armor))
+			return true;
+		return false;
+	}
+	else if (%clientId.spawntype == "standard")
 	{
 		dbecho ("SPAWN - Normal Standard");
 		standardSpawnList(%clientId);
@@ -360,7 +446,6 @@ function Game::playerSpawn(%clientId, %respawn)
 	 	%clientId.observermode = "";
 
 	   	if(%spawnMarker == -1){%spawnPos = "0 0 300";%spawnRot = "0 0 0";}
-	   //envduel-s	
 	 if(%clientId.dueling)
 		{
 			if(%clientId.one == "true")
@@ -391,7 +476,6 @@ function Game::playerSpawn(%clientId, %respawn)
 			%spawnPos = GameBase::getPosition(%spawnMarker);
 			%spawnRot = GameBase::getRotation(%spawnMarker);
 		}
-		//envduel-f
 	   	if(!String::ICompare(Client::getGender(%clientId), "Male"))
 	   		%armor = "larmor";
 	   	else
@@ -537,13 +621,14 @@ function Game::startMatch()																						// game.cs
 {
 	$matchStarted = true;
 	$missionStartTime = getSimTime();
-	
+	if($Shifter::BaseHeal == true)
+	AutoRepair($Shifter::BaseRepairRate);
 	messageAll(0, "Match started.");
+	if($Shifter::PowerCheck == "true" || $Shifter::ComChat == "true")
+	DumpObjectTree();
 	Game::resetScores();	
 	if($server::tourneymode =="true" && !$ceasefire) initMT();
-		//envjibberish-s
 	echo("Map: " @ $missionName @ "");
-	//envjibberish-f
 	%numTeams = getNumTeams();
 	for(%i = 0; %i < %numTeams; %i = %i + 1)
 	{
@@ -554,6 +639,13 @@ function Game::startMatch()																						// game.cs
 	dbecho ("Match Observer");
 	for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
 	{
+		if($Cheating::Nofog == "true")
+		{
+		%name = client::getName(%cl);
+		%badname = String::findSubStr($Cheating::NofogBotNames, %name);
+		if(%badname == -1)
+      		AddConnectingPlayerToBots(%name);
+      		}
 		if(%cl.observerMode == "pregame")
 		{
 			%cl.observerMode = "";
@@ -564,6 +656,8 @@ function Game::startMatch()																						// game.cs
 	dbecho ("Match Observer Done");
 
 	Game::checkTimeLimit();
+	if($Cheating::Nofog == "true")
+	HappyBreaker::CreateStuff();
 }
 
 
@@ -677,7 +771,7 @@ function Game::initialMissionDrop(%clientId)
      	{
        	%clientId.observerMode = "observerOrbit";
        	%clientId.guiLock = "";
-	 		Observer::jump(%clientId);
+	 Observer::jump(%clientId);
          	return;
      	}
      	%numTeams = getNumTeams();
@@ -1332,7 +1426,6 @@ function Client::onKilled(%playerId, %killerId, %damageType, %vertPos, %quadrant
 {
 	       %clientId = %playerId;
 		%client = %clientId;
-		//envduel-s
 		if(%clientId.dueling && %clientId.isSet)
 	{
 		if(%clientId.one == "true" || %clientId.two == "true")
@@ -1362,11 +1455,9 @@ function Client::onKilled(%playerId, %killerId, %damageType, %vertPos, %quadrant
 			$oldSpawn[%i, %killerId] = "";
 		}
 	}
-	//envduel-f
 	%score = 0;
 	%playerId.lascharge = "";
 	%playerId.charging = "";
-	//envjibberish-s
 	if (Client::getName(%playerId) == "")
 			%PlayerName = "Unnamed";
 		else
@@ -1379,7 +1470,6 @@ function Client::onKilled(%playerId, %killerId, %damageType, %vertPos, %quadrant
 		echo(""@ escapeString(%PlayerName) @" Suicided.");
 	else
 		echo(""@ escapeString(%KillerName) @" Killed "@ escapeString(%PlayerName) @"");  
-		//envjibberish-f
 
 	dbecho ("*** Player " @ %playerId);
 	dbecho ("*** Killer " @ %killerId);
@@ -1420,21 +1510,15 @@ function Client::onKilled(%playerId, %killerId, %damageType, %vertPos, %quadrant
 		%oopsMsg = sprintf($deathMsg[-2, %ridx], %victimName, %playerGender);
 		for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
 		{
-			if(%cl.MuteKill != "true")
+		if(%cl.MuteKill != "true")
 		Client::sendMessage(%cl, 0, %oopsMsg);
 		}
-		//killmsg messageAll(0, , $DeathMessageMask);
 		%playerId.scoreDeaths++;
 
 		if (%killedflag)
 		{
 			%playerId.score = (%playerId.score - $Score::FlagDef);
 			if ($ScoreOn) bottomprint(%playerId,"You had the Flag. Your score reduced to " @ %playerId.score @ " Due To Suicide.",3);  
-		}
-		else
-		{
-			%playerId.score--;
-			if ($ScoreOn) bottomprint(%playerId,"Your score reduced to " @ %playerId.score @ " Due To Suicide <-1 Point>.",3);
 		}
 
 		Game::refreshClientScore(%playerId);
@@ -1499,6 +1583,9 @@ function Client::onKilled(%playerId, %killerId, %damageType, %vertPos, %quadrant
 
 				if (%vertPos == "head" && (%damagetype == $SniperDamageType || %damagetype == $LaserDamageType || %damagetype == $BulletDamageType) )
 				{
+						bottomprint(%killerId,"<jc>\n-------------\nHEADSHOT!\n-------------\n",3.0);
+						DisallowBP(%killerId);
+						
 					if(%quadrant == "middle_front") //- Direct Head Shot
 					{
 						%msg = "HEAD SHOT";
@@ -1545,7 +1632,7 @@ function Client::onKilled(%playerId, %killerId, %damageType, %vertPos, %quadrant
 			}
 			else
 			{
-				if ($ScoreOn) bottomprint(%killerId, "Score +" @ %score @ " = " @ %killerId.score @ " Total Score " @ %msg @ ".");
+				if ($ScoreOn && %killerId.noBP != "true") bottomprint(%killerId, "Score +" @ %score @ " = " @ %killerId.score @ " Total Score " @ %msg @ ".");
    			}
 
    			//====================================== Refresh Scores		 
@@ -1747,9 +1834,9 @@ function NewMT()
 	$matchtrack::time = $server::timelimit;
 
 	$matchtrack::timecheck = 0;
-	export("$matchtrack::*", "config\\matchtrack.cs", false);
+	export("$matchtrack::*", "config\\matchtrack.log", false);
 	$dlist = " ";
-	export("$dlist", "config\\dtrack.cs", false);
+	export("$dlist", "config\\dtrack.log", false);
 }
 
 function RecordMT()
@@ -1779,10 +1866,10 @@ function RecordMT()
 		$matchtrack::mission = $missionName;
 		$matchtrack::pass = $server::password;
 		//$matchtrack::tourneymode = $server::tourneymode;
-		export("$matchtrack::*", "config\\matchtrack.cs", false);
+		export("$matchtrack::*", "config\\matchtrack.log", false);
 		$dlist = string::greplace($dlist, "  ", " ");
 		$dlist = string::greplace($dlist, " 0 ", " ");
-		export("$dlist", "config\\dtrack.cs", true);
+		export("$dlist", "config\\dtrack.log", true);
 	}
 }
 
@@ -1859,4 +1946,4 @@ function SortTeams()
 		}
 
 }
- }
+}

@@ -52,7 +52,7 @@ if (%Choice == "MyTeam" || %Choice == "OtherTeam")
       else if (%Choice == "CreateD")
      {
      %curItem = 0;
-       Client::buildText(%clientId, "Which Side Do you want blastwalls on?:", "EquiptOpts", true);
+       Client::buildText(%clientId, "Which Direction you want blastwalls?:", "EquiptOpts", true);
        		Client::addMenuItem(%clientId, %curItem++ @ "North", "CreateDNorth");
   		Client::addMenuItem(%clientId, %curItem++ @ "South", "CreateDSouth");
   		Client::addMenuItem(%clientId, %curItem++ @ "East", "CreateDEast");

@@ -1,1 +1,1 @@
-enV.3zer0 and Kill(-)'s version of shifter, called Shifter K
+ParoXsitiC's Shifter 2K4 which is derived off Shifter K

@@ -31,8 +31,37 @@ function Observer::triggerUp(%client)
 	}
 	else if(%client.observerMode == "justJoined")
 	{
-		%client.observerMode = "";
-		Game::playerSpawn(%client, false);
+		if(%client.firstConnect == "true")
+		{
+			if(%client.GettingInfo)
+			{
+				if(%client.GettingInfo < 8)
+				{
+					%client.GettingInfo++;
+					Shifter2K4Updates(%client);
+					return;
+				}
+				else 
+				{
+					%client.firstConnect = false;
+					%client.GettingInfo = "";
+					%client.observerMode = "";
+					Game::playerSpawn(%client, false);						
+				}
+			}
+			else
+			{			
+				%client.GettingInfo = 1;
+				Shifter2K4Updates(%client);
+				return;
+			}
+			
+		}
+		else
+		{	
+			%client.observerMode = "";
+			Game::playerSpawn(%client, false);
+		}
 	}
 	else if(%client.observerMode == "pregame" && $Server::TourneyMode)
 	{

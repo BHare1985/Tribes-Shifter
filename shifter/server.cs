@@ -4,7 +4,6 @@
 
 
 //==== TribeStat Scoring.cs
-
 function TribeStat_GetTeams()
 {
 	echo("//TS");
@@ -345,7 +344,7 @@ function Server::onClientConnect(%clientId)																		// server.cs
 		{
 			if (String::findSubStr(%name,%checkname) >= 0)
 			{
-				schedule("KickPlayer(" @ %clientId @ ",\"You name or tag has been banned.\");", 40, %clientId);
+				schedule("KickPlayer(" @ %clientId @ ",\"Your name or tag has been banned.\");", 40, %clientId);
 				%clientkick = 1;
 			}
 		}
@@ -364,7 +363,7 @@ function Server::onClientConnect(%clientId)																		// server.cs
 
 	if($Shifter::LocalNetMask != "" && String::findSubStr(%addr,$Shifter::LocalNetMask) == 0)
 	{
-		echo (" Local Player Connected - Increasing Client Ammount");
+		dbecho ("Local Player Connected - Increasing Client Ammount");
 		%clientId.addr = %addr;
 		$Server::MaxPlayers++; 		
 	}
@@ -380,7 +379,7 @@ function Server::onClientConnect(%clientId)																		// server.cs
 	%name = client::getname(%clientid);
 	$IPTrak = %ip @ " - " @ %name;
 	//echo("IPTRACE   **** " @ $IPTrak @ " ****");  alreadt know IP
-	export("$IPTrak", "config\\IPTrak_k.cs", true);
+	export("$IPTrak", "config\\IPTrak_2K4.log", true);
 
 	if($Shifter::joincustom != "")
 	{
@@ -397,7 +396,8 @@ function Server::onClientConnect(%clientId)																		// server.cs
 		$Client::info[%clientId, %i] = "";
 
 	Game::onPlayerConnected(%clientId);
-     //server::ConnectInfo(%clientId);
+	if($Server::Smurf == "true")
+        server::ConnectInfo(%clientId);
 }
 
 function createServer(%mission, %dedicated)
@@ -408,11 +408,9 @@ function createServer(%mission, %dedicated)
 
 	if(!%dedicated)
 	{
-		//envlogo-s
 		cursorOn(MainWindow);
 		GuiLoadContentCtrl(MainWindow, "gui\\Loading.gui");
 		renderCanvas(MainWindow);
-		//envlogo-f
 		deleteServer();
 		purgeResources();
 		newServer();
@@ -561,63 +559,43 @@ function Server::newMission(%mission)
 
 function Server::nextMission(%replay)
 {
-	if($Shifter::RandomMissions)
-	{
-		%rnd = floor(getRandom() * ($TotalMissions));
-		
-		if ($MissionName == $TotalCTFMaps[%rnd])
-		{
-			%nextMission = $TotalCTFMaps[1];
-			$pref::LastMission = $TotalCTFMaps[1];
-		}
-		else
-		{
-			%nextMission = $TotalCTFMaps[%rnd];
-			$pref::LastMission = $TotalCTFMaps[%rnd];
-		}
-		
-		$Server::LastMissionNum = (floor($TotalCTFMaps *getrandom() ));
-
-		for (%i=0; %i < 10; %i++)
-		{
-			if (%nextmission == $pastmission[%i] && $TotalCTFMaps > 10)
-			{
-				Server::nextMission();
-				return;
-			}
-		}
-		if ($TotalCTFMaps > 10)
-		{
-			for (%i=10; %i >= 0; %i--)
-			{
-				if (%i == 0)
-					$pastmission[0] = %nextmission;
-				else
-					$pastmission[%i] = $pastmission[%i - 1];
-			}
-		}
-	}
+	if(%replay || $Server::TourneyMode)
+		%nextMission = $missionName;
+	else if($nextMap != "")
+  	{
+  		%nextMission = $nextMap;
+  		$nextMap = "";
+  	}		
 	else
-	{
 		%nextMission = $nextMission[$missionName];
-	}
-
-	if (%nextMission == "")
-	{
-		Server::nextMission();
-		return;
-	}
-	//****if($ceasefire == false && $server::tourneymode == true)
-	//****NewMT();
-	//greygrey
-	//$dlist = " ";
-	//if($server::tourneymode == "true")
-	//	export($dlist, "config\\dtrack.cs", true);
-	export("pref::*", "config\\ClientPrefs.cs", False);
-	//****export("Server::*", "config\\ServerPrefs.cs", False);
-	//****export("$Shifter::*", "config\\ServerPrefs.cs", true);
-	//echo(" Changing to mission ", %nextMission, ".");
+	echo("Changing to mission ", %nextMission, ".");
+	// give the clients enough time to load up the victory screen
 	Server::loadMission(%nextMission);
+}
+function nextmap(%clientId)
+{
+		%AdminName = Client::getName(%clientId);
+		
+	if(%clientId)
+		messageAll(0,%AdminName@ " started the next mission.~wCapturedTower.wav");
+	else
+		messageAll(0, "Starting next Mission.");
+	echo("GAME: Starting next map.");
+	$timeLimitReached = true;
+	Server::nextMission();
+}
+
+function replaymap(%clientId)
+{
+		%AdminName = Client::getName(%clientId);
+	
+	if(%clientId)
+		messageAll(0,%AdminName@ " restarted the mission.~wCapturedTower.wav");
+	else
+		messageAll(0, "Restarting Mission");
+	echo("GAME: restarting map.");
+	$timeLimitReached = true;
+	Server::nextMission(true);
 }
 function remoteCycleMission(%clientId)
 {
@@ -668,10 +646,10 @@ function remoteCGADone(%playerId)
 
 function Server::loadMission(%missionName, %immed)
 {  
-    if($Smurfiplogger)
+    if($Server::Smurf == true)
 	{
         exec(iplogger);
-		exec(KSmurf);
+	exec(SmurfLog);
   	}
  
     if($loadingMission)
@@ -698,7 +676,6 @@ function Server::loadMission(%missionName, %immed)
 	$missionName = %missionName;
 	$missionFile = %missionFile;
 	$prevNumTeams = getNumTeams();
-	//envlogo-s
 		if(!$KfirstRunDone)
 	{
 		$KfirstRunDone = true;
@@ -709,7 +686,6 @@ function Server::loadMission(%missionName, %immed)
 		deleteObject("MissionCleanup");
 		deleteObject("ConsoleScheduler");
 	}
-	//envlogo-f
 	resetOsicheat();
 	resetPlayerManager();
 	resetGhostManagers();
@@ -732,9 +708,7 @@ function Server::loadMission(%missionName, %immed)
 function Server::finishMissionLoad()
 {
    	$loadingMission = false;
-   	//envduel-s
    	$NoDuelSupport = "";
-   	//envduel-f
 	$TestMissionType = "";
    	// instant off of the manager
    	setInstantGroup(0);
@@ -775,9 +749,7 @@ function Server::finishMissionLoad()
 	
 	Mission::init(); 		//-- Init for next mission
 	Mission::reinitData();		//-- Init Items
-	//envduel-s
 	SBA::duelSpawnsPos();
-	//envduel-f
    if($prevNumTeams != getNumTeams())
   	{
 		// loop thru clients and setTeam to -1;
@@ -863,6 +835,17 @@ function centerprint(%clientId, %msg, %timeout)
    if(%timeout == "")
       %timeout = 5;
    remoteEval(%clientId, "CP", %msg, %timeout);
+}
+
+function DisallowBP(%clientId)
+{
+	%clientId.noBP = true;
+}
+
+function AllowBP(%clientId)
+{
+	%clientId.noBP = false;
+	// exec(game);
 }
 
 function bottomprint(%clientId, %msg, %timeout)
@@ -1046,11 +1029,11 @@ function KickPlayer(%clientId,%msg)
 	GameBase::setRotation(%clientId, "0 0 " @ %rotZ); 
 	%forceDir = Vector::getFromRot(GameBase::getRotation(%clientId),20,2000); 
 	Player::applyImpulse(%clientId,%forceDir); 
-	schedule("Client::sendMessage("@%clientId@", 1,\"~wmale3.wbye.wav\");", 4.5);
-	schedule("Client::sendMessage("@%clientId@", 1,\"~wmale3.wdsgst2.wav\");", 5.5);
+	schedule("Client::sendMessage("@%clientId@", 1,\"~wmale3.wbye.wav\");", 0.5);
+	schedule("Client::sendMessage("@%clientId@", 1,\"~wmale3.wdsgst2.wav\");", 1.5);
 	if($Shifter::KickMessage != "")
-		centerprint(%clientId, "<jc><f1>"@$Shifter::KickMessage, 10);
-	schedule ("Net::Kick(" @ %clientId @ ", \"" @ %msg @ "\");",8);
+	centerprint(%clientId, "<jc><f1>"@$Shifter::KickMessage, 10);
+	schedule ("Net::Kick(" @ %clientId @ ", \"" @ %msg @ "\");",3);
 	
 }
 

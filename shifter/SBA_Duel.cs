@@ -72,6 +72,14 @@ function processMenuSBAduelResponse(%clientId, %opt)
 
 	if(%opt == "accept")
 	{
+		if(%clientId.observerMode == "observerOrbit" || %clientId.observerMode == "observerFly" || %clientId.observerMode == "dead" || %challenger.observerMode == "observerOrbit" || %challenger.observerMode == "observerFly" || %challenger.observerMode == "dead")
+		{
+		Client::sendMessage(%clientId, 1, "Someone wasn't spawned when the challenge was accepted, try again.");
+		Client::sendMessage(%challenger, 1, "Someone wasn't spawned when the challenge was accepted, try again.");
+		SBA::SetupReset(%challenger);
+		SBA::SetupReset(%clientId);
+		return;
+		}
 		%eplayer = Client::getOwnedObject(%clientId);
 		%cplayer = Client::getOwnedObject(%challenger);
 		%clientname = Client::getName(%clientId);
@@ -97,6 +105,7 @@ function processMenuSBAduelResponse(%clientId, %opt)
 	if(%opt == "counter")
 	{
 		%challenger.answered = %opt;
+		Client::sendMessage(%challenger, 1, "Your challenge has been Countered.");
 		SBA::duelMenu(%clientId);
 	}
 	if(%opt == "ignore")
@@ -181,11 +190,15 @@ function SBA::duelCountdown(%clientId, %enemy, %cplayer, %eplayer, %time)
 			%enemy.duelcountdown = false;
 		client::sendmessage(%clientId, 1, "FIGHT!!!~wduelfight.wav");
 		client::sendmessage(%enemy, 1, "FIGHT!!!~wduelfight.wav");
+		remoteEval(%clientId, "BP", "<jc>FIGHT!!!", 6);
+		remoteEval(%enemy, "BP", "<jc>FIGHT!!!", 6);
 		SBA::duelStart(%clientId, %enemy, %cplayer, %eplayer);
 		return;
 	}
 	if(%time == "10" || %time <= "3")
 	{
+		remoteEval(%clientId, "BP", "<jc>Duel Starts in " @ %time @ " seconds", 6);
+		remoteEval(%enemy, "BP", "<jc>Duel Starts in " @ %time @ " seconds", 6);
 		client::sendmessage(%clientId, -1, "Duel Starts in " @ %time @ " seconds");
 		client::sendmessage(%enemy, -1, "Duel Starts in " @ %time @ " seconds");
 	%clientId.rings = "";
@@ -214,7 +227,10 @@ function SBA::duelStart(%clientId, %enemy, %cplayer, %eplayer)
 	%enemy.duelStart = getsimtime();
 	%clientId.isSet = "true";
 	%enemy.isSet = "true";
+	$SBA::DuelCanHurt = "false";
+	schedule("SBA::DuelStartDamage();",$Duel::DamageDelay);
 }
+function SBA::DuelStartDamage(){$SBA::DuelCanHurt = "true";}
 
 function SBA::duelFinished(%clientId, %winner)
 {
@@ -226,6 +242,7 @@ function SBA::duelFinished(%clientId, %winner)
 function SBA::duelScoring(%clientId, %winner)
 {
 	%duelTT = (%winner.dfinish - %winner.duelStart);
+	%duelTT = String::getSubStr(%duelTT, 0, 4);
 	%winner.duelPrevDuel = "win";
 	%clientId.duelLastDuel = "loss";
 	%winner.duelKills++;
@@ -243,20 +260,17 @@ function SBA::duelScoring(%clientId, %winner)
 		%winner.duelFastWin = %duelTT;
 
 	SBA::duelSaveStats(%clientId);
-
 	schedule("client::sendMessage(" @ %winner @ ", 1, \"You are Victorious!!!\");",1.0);
 	%losername = client::getName(%clientId);
 	%winnername = client::getName(%winner);
-	messageall(0,""@%winnername@" Defeated "@%losername@" in "@%duelTT@" Seconds!");
-      			                        schedule("remoteKill(" @ %winner @ ");", 3.0);
-
-		   	//Player::blowUp(%player);
-		   	//GameBase::applyDamage(%player,$DamageTypeFlash, 5.0,GameBase::getPosition(%this),"0 0 0","0 0 0",%player);
-			//GameBase::applyRadiusDamage($DamageTypeFlash, getBoxCenter(%player), 20, 20, 30, %player);
-
+	DisallowBP(%winner);
+	schedule("AllowBP("@%winner@");", 5.0);
+	centerprint(%winner, "<jc>You are Victorious\nYou Defeated "@%losername@" in "@%duelTT@" Seconds!", 5.0);
+	centerprint(%clientId, "<jc>You were Defeated by "@%winnername@" in "@%duelTT@" Seconds!", 5.0);
+	schedule("Player::blowUp("@%winner@");", 3.0);
+	schedule("Player::kill("@%winner@");", 3.0);
 	SBA::duelSaveStats(%winner);
 }
-
 function SBA::duelSaveStats(%clientId)
 {
 	if($Client::info[%clientId, 5] == "")
@@ -275,7 +289,7 @@ function SBA::duelSaveStats(%clientId)
 		$funk::dvar["[\"" @ %name @ "\", 0, 5]"] = %clientId.duelLastDuel;
 		$funk::dvar["[\"" @ %name @ "\", password]"] = %clientId.infoPassW;
 	
-		export("funk::dvar[\"" @ %name @ "\",*", "config\\DuelStats" @ %name @ ".cs", false);
+		export("funk::dvar[\"" @ %name @ "\",*", "config\\DuelStats" @ %name @ ".log", false);
 	}
 	SBA::SetupReset(%clientId);
 }

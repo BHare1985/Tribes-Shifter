@@ -101,7 +101,8 @@ setPlayChatMenu("vOffense");
 		addPlayTeamChat("hHit deck", "Hit the deck!", hitdeck);
 		addPlayTeamChat("eRegroup", "Regroup.", regroup);
 		addPlayTeamChat("vCover me", "Cover me!", coverme);
-		addPlayTeamChat("gGoing offense", "Going offense.", ono);
+		addPlayTeamChat("gGoing offense", "Defensive player Going offense.", bsclr2);
+		addPlayTeamChat("lLasers Destroyed", "I have destoyed their Lasers", destur);
 		addPlayTeamChat("zAPC ready", "APC ready to go... waiting for passengers.", waitpas);
 
 setPlayChatMenu("tTarget");
@@ -124,6 +125,11 @@ setPlayChatMenu("dDefense");
 		addPlayTeamChat("tBase Taken", "Base is taken.", basetkn);
 		addPlayTeamChat("cBase Clear", "Base is secured.", bsclr2);
 		addPlayTeamChat("qIs Base Clear?", "Is our base clear?", isbsclr);
+		addPlayTeamChat("oD is Weak", "Our flag D looks weak, can I get some help?.", whurystn);
+		addPlayTeamChat("lDeploy Lasers", "Can someone deploy Lasers?.", wdeptur);
+		addPlayTeamChat("jDeploy Jammer", "They are MCS'ing. Can anyone deploy a jammer?", wdepjamr);
+		addPlayTeamChat("pDetPack Laid", "They just laid of Detpack, Disarm it!", wmoveout);
+		addPlayTeamChat("hDread Nedded", "I need Dreadnaught cover!", needdef);
 
 setPlayChatMenu("fFlag");
 		addPlayTeamChat("gFlag gone", "Our flag is not in the base!", flgtkn1);

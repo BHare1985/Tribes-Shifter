@@ -1,0 +1,19 @@
+Okay, Tribes DOS Fix is like infinite spawn but its better. It hides the tribes server windows to your task bar and also prevents DoS attacks to your server. In order to use it correctly you need to make a shortcut to the TribesDoSFixIS.exe.
+
+Right click on TribesDoSFixIS.exe
+goto Create Shortcut
+A new icon will appear then righ click on it
+Select properties
+In the target list it should say something like
+"C:\2K4 Server\TribesDoSFixIS.exe"
+
+The you just add 
++exec serverConfig -mod shifter2K4 -dedicated
+to the target, marking the target
+
+"C:\2K4 Server\TribesDoSFixIS.exe"+exec serverConfig -mod shifter2K4 -dedicated
+
+Then run that shortcut instead of the .bat file. 
+
+If you need help with this AIM me at
+onceup0nalie 

@@ -57,6 +57,7 @@ function Sensor::onDisabled(%this)
 
 function Sensor::onDestroyed(%this)
 {
+	DumpObjectTree();
 		StaticShape::objectiveDestroyed(%this);
 
 	%this.shieldStrength = 0;

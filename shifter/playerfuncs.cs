@@ -28,6 +28,12 @@ function processMenuPlayerFuncs(%clientId, %Choice)
 		Client::addMenuItem(%clientId, %curItem++ @ "Mute Team", "MuteTeam");
 		else
 		Client::addMenuItem(%clientId, %curItem++ @ "Un-Mute Team", "MuteTeam");
+		if(%clientId.isAdmin){
+		if($Server::MuteSP != "true")
+		Client::addMenuItem(%clientId, %curItem++ @ "Mute SoundPacks", "MuteSound");
+		else
+		Client::addMenuItem(%clientId, %curItem++ @ "Un-Mute SoundPacks", "MuteSound");	
+		}
 	}
 	else if(%Choice == "MuteKill"){
 		if(%ClientId.MuteKill != "true")
@@ -51,6 +57,14 @@ function processMenuPlayerFuncs(%clientId, %Choice)
 		%ClientId.MuteTeam = true;
 		else
 		%ClientId.MuteTeam = false;
+	}
+	else if(%Choice == "MuteSound"){
+		if($Server::MuteSP != "true"){
+		$Server::MuteSP  = true;
+		messageAll(0, "All SoundPacks muted by " @ Client::getName(%clientId) @ "."); }
+		else{
+		$Server::MuteSP = false;
+		messageAll(0, "All SoundPacks un-muted by " @ Client::getName(%clientId) @ ".");}
 	}
 	else if(%Choice == "MuteKpack"){
 		if(%ClientId.MuteKpack != "true")
@@ -203,18 +217,18 @@ function processMenuPlayerFuncs(%clientId, %Choice)
 		return;
 	}
 	
-	else if (%opt == "cleartelepoint")
+	else if (%Choice == "cleartelepoint")
 	{
-		%clientID.telepoint = "False";
-		if(%clientID.telebeacon)
+		%clientId.telepoint = "False";
+		if(%clientId.telebeacon)
 		{
-			deleteobject(%clientID.telebeacon);
-			%clientID.telebeacon = "False";
+			deleteobject(%clientId.telebeacon);
+			%clientId.telebeacon = "False";
 		}
-		if(%clientID.teledisk)
+		if(%clientId.teledisk)
 		{
-			deleteobject(%clientID.teledisk);
-			%clientID.teledisk = "False";
+			deleteobject(%clientId.teledisk);
+			%clientId.teledisk = "False";
 		}		
 		return;
 	}
@@ -300,7 +314,7 @@ function processMenuPlayerFuncs(%clientId, %Choice)
   		%curItem = 0;
   		Client::buildMenu(%clientId, "Plasma Options", "PlayerFuncs", true);
   		Client::addMenuItem(%clientId, %curItem++ @ "Standard Fire", "weapon_plasma_regular");
-  		Client::addMenuItem(%clientId, %curItem++ @ "Rapid Fire", "weapon_plasma_rapid");
+  		Client::addMenuItem(%clientId, %curItem++ @ "Single Fire", "weapon_plasma_rapid");
   		Client::addMenuItem(%clientId, %curItem++ @ "Multi Fire", "weapon_plasma_multi");
   		return;
 	}
@@ -741,7 +755,7 @@ function processMenuPlayerFuncs(%clientId, %Choice)
 	else if (%Choice == "weapon_plasma_rapid")
 	{
 		%clientId.Plasma = 1;
-		bottomprint(%clientId, "<jc><f1>Rapid-Bold Plasma Selected.", 3);
+		bottomprint(%clientId, "<jc><f1>Single-Shot Plasma Selected.", 3);
    	return;
 	}
 	else if (%Choice == "weapon_plasma_multi")

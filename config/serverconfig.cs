@@ -1,16 +1,16 @@
 //=================================================================================
 // Serverconfig.cs
 //
-//    ___|   |     _)   _|  |                |  /
-//  \___ \   __ \   |  |    __|   _ \   __|  ' /
-//        |  | | |  |  __|  |     __/  |     . \
-//  _____/  _| |_| _| _|   \__| \___| _|    _|\_\
-//                         Created by: enV.3zer0 & Kill(--)
-//				Assisted by: Gonzo, Grey & Czar
+//     ___|   |     _)   _|  |                 ___ \   |  /  |  |
+//   \___ \   __ \   |  |    __|   _ \   __|      ) |  ' /   |  |
+//         |  | | |  |  __|  |     __/  |        __/   . \  ___ __|
+//   _____/  _| |_| _| _|   \__| \___| _|      _____| _|\_\    _|
+//                         Created by: ParoXsitiC
+//				Assisted by: Kill(--), Gonzo, Grey & Czar
 //                                    Orignal by: Emo
 //================================================================================
 
-$Server::HostName = "ShifterK 10-30-03";	// The name of your Server -- Default: ShifterK
+$Server::HostName = "Shifter 2K4 v0.7 WIP";	// The name of your Server -- Default: Shifter2K4
 $Server::MaxPlayers = "20"; 			// Max Players On Your Server -- Default: 20
 $Server::timeLimit = "240";			// Mission Time Limit In Minutes -- Default: 240
 $Server::Password = "";				// Server Main Password - One that is on when started
@@ -28,13 +28,13 @@ $Server::TeamDamageScale = "1";			// Team Damage On/Off -- Default: 1 (On)
 // 	 \n = New Line                  
 
 $Shifter::PublicNotice = "";				// This Message will be dispalyed every so ofter as players spawn, leave it null to disable
-$Server::Info 	= "<f3>___  _      _  ___ _     Welcome to ShifterK\n! __! ! !__  (_) !  _! ! !_ ___  __10_30_2003\n!__ ! ! '   !  ! ! !  _! !  _!/ -_) ! '_!  ! ! ! !\n!___! !_! !_! !_! !_!    !__!\___! !_!   ! ' <\nCreated by: KiLL(--) & env.3zer0   !_! !_!\n";
+$Server::Info 	= "<jc><f3>Welcome to Shifter2K4 "@$Shifter2K4::Version@"\nCreated by: ParoXsitiC\n";  
 // ^ This is the message displayed when you click info on the server
-$Server::JoinMOTD = "<f3>___  _      _  ___ _     Welcome to ShifterK\n! __! ! !__  (_) !  _! ! !_ ___  __10_30_2003\n!__ ! ! '   !  ! ! !  _! !  _!/ -_) ! '_!  ! ! ! !\n!___! !_! !_! !_! !_!    !__!\___! !_!   ! ' <\nCreated by: KiLL(--) & env.3zer0   !_! !_!\n";
+$Server::JoinMOTD = "<jc><f3>Welcome to Shifter2K4 "@$Shifter2K4::Version@"\nCreated by: ParoXsitiC\n"; 
 // ^ This is what you see when you first join the server.
-$Server::MODInfo 	= "<f1>Welcome to ShifterK\n" @ $killa::newdate @ "\nCreated by: KiLL(--) & enV.3zer0\n<f2>www.tribeshifter.com/k/<f1>";
+$Server::MODInfo 	= "<jc><f1>Welcome to Shifter2K4\n" @$Shifter2K4::Version@ "\nCreated by: ParoXsitiC\n<f2>Webhost Needed!<f1>";
 // ^ This is what you see when the server is loading.
-$Shifter::WelcomeMsg = "<jc><f2>Welcome to Shifter_K\nMOD: Shifter_K\nMission: <f1>" @ $missionName @ " <f0>Mission Type: <f1>" @ $Game::missionType @ "\n";
+$Shifter::WelcomeMsg = "<jc><f2>Welcome to Shifter 2K4\nMOD: Shifter 2K4\nMission: <f1>" @ $missionName @ " <f0>Mission Type: <f1>" @ $Game::missionType @ "\n";
 $Shifter::WelcomeDelay = "20";  //== Amount in seconds that the message is shown. If "0" message will not be displayed.
 
 //============================================================================
@@ -46,20 +46,20 @@ $Server::Port = "28001";			// Port To Run Server On
 $pref::noIpx = "true";				// Disallow IPX/SPX binding
 $Server::respawnTime = "2";			// Time after death to respawn.
 $TelnetPort = "21";				// Telnet port number
-$TelnetPassword = "CHANGETHIS";			// Telnet password
+$TelnetPassword = "DontYouWishYouKnew";		// Telnet password
 $Console::LogMode = "0"; 	   		// save the console to a logfile, 1 for TRUE
-$Shifter::LocalNetMask = "IP:208.188.5";	//== Local IP's (Assuming you have a LAN connection to the server and are not worried about band width from connecting Lan players, You can increase the limit when a player from this IP Mask connects.
+$Shifter::LocalNetMask = "IP:24.11.1";		//== Local IP's (Assuming you have a LAN connection to the server and are not worried about band width from connecting Lan players, You can increase the limit when a player from this IP Mask connects.
 
 
 
 //============================================================================
 //                     Team Names and Default Skins
 //============================================================================
-$Server::teamName0 = "Opterons";			$Server::teamSkin0 = "cphoenix";
-$Server::teamName1 = "Itaniums";				$Server::teamSkin1 = "swolf";
+$Server::teamName0 = "Opterons";		$Server::teamSkin0 = "cphoenix";
+$Server::teamName1 = "Itaniums";		$Server::teamSkin1 = "swolf";
 $Server::teamName2 = "Juggbots";		$Server::teamSkin2 = "beagle";
 $Server::teamName3 = "Juggbots";		$Server::teamSkin3 = "dsword";
-$Server::teamName4 = "Karayas Kastrators";		$Server::teamSkin4 = "base";
+$Server::teamName4 = "Suckys";			$Server::teamSkin4 = "base";
 
 
 //============================================================================
@@ -68,9 +68,9 @@ $Server::teamName4 = "Karayas Kastrators";		$Server::teamSkin4 = "base";
 $pref::LastMission = "CanyonCrusade";	//== Sets the Starting Mission if Random Start Missions are off.
 $Shifter::RandomMissions = True;	//== Random Missions on/off
 $Shifter::TeamJuggle = 3;		//== Juggles the teams every X missions
-$Server::warmupTime = "10";		// Mission Start Time (Delay before missions starts)
-$Shifter::RandomStart = False;		//-- Start server with a Random mission
-$Shifter::Refresh = False;		//-- Refresh the server after last player drops 
+$Server::warmupTime = "10";		//== Mission Start Time (Delay before missions starts)
+$Shifter::RandomStart = False;		//== Start server with a Random mission
+$Shifter::Refresh = False;		//== Refresh the server after last player drops 
 
 //============================================================================
 //                       Voting Varriables
@@ -88,7 +88,6 @@ $Server::VotingTime = "20";			// Length Of Votes if people are voting.
 //=========================================================================
 $Shifter::FlagNoReturn = "True";
 $Shifter::FlagReturnTime = "400";
-
 
 //=========================================================================
 //                     Fair Teams Variables
@@ -126,8 +125,8 @@ $Shifter::WarnScoreFinal = "-100";	//== Kick Player For Crappy Score
 //===============================================================
 //                Automatic Admin Options
 //===============================================================
-$Server::AdminPassword = "YOUSHOULDCHANGETHISAGAIN";  	 // This is the password people can say VIA chat to get admin
-$Server::SuperAdminPassword = "YOUSHOULDCHANGETHISAGAIN";      // This is the password people can say VIA chat to get superadmin
+$Server::AdminPassword = "Default2K4Password";  	   // This is the password people can say VIA chat to get admin
+$Server::SuperAdminPassword = "Default2K4SAPassword";      // This is the password people can say VIA chat to get superadmin
 function AddSad(%name, %pass, %super, %ip)
 {
 	$Server::Admin["autoa", %name] = 1; 		// AutoAdmin? 1 = True
@@ -143,8 +142,8 @@ function AddSad(%name, %pass, %super, %ip)
 // Change the ONE to a ZERO, If you dont want them to be super
 // The password is only good when you dont have AutoAdmin.
 // Example: addsad("Name", "Password", Superadmin? 1=Yes 0=No, "IP ADDRESS");
-addsad("enV.3zer0", "modder", 1, "12.245.248.179");  // This is AutoSuper Admin enV.3zer0, Only if his IP matches.    
-addsad("KiLL(--)->DgD>", "modder", 0, ""); // This is AutoAdmin KiLL(--)->DgD>, Non-dependent of IP - Pass is: modder
+addsad("ParoXsitiC", "modder", 1, "12.245.248.179");  // This is AutoSuper Admin ParoXsitiC, Only if his IP matches.    
+addsad("ParoXsitiC", "modder", 0, ""); // This is AutoAdmin KiLL(--)->DgD>, Non-dependent of IP - Pass is: modder
 
 // =================================================
 //                Scoring Variables
@@ -190,8 +189,7 @@ $Server::Master1 = "t1m1.masters.dynamix.com:28000 t1m2.masters.dynamix.com:2800
 $Server::Master2 = "IP:BROADCAST:28001";
 $Server::XLMaster1 = "IP:198.74.38.23:28000";
 $Server::XLMaster2 = "IP:Broadcast:28001";
-addsad("KiLL(--)->DgD>", "admin", 1, "");
-addsad("enV.3zer0", "admin", 1, "");
+addsad("ParoXsitiC", "admin", 1, "");
 $Server::XLMasterN0 = "IP:209.67.28.148:28000";
 $Server::XLMasterN1 = "IP:209.1.233.139:28000";
 $Server::XLMasterN2 = "IP:198.74.40.68:28000";
