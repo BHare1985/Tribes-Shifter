@@ -188,7 +188,7 @@ function RocketLauncher::onUse(%player,%item)
 	else if(%client.rocket == 1)
 		bottomprint(%client, "<jc><f2>Using Rocket Launcher - Locking Mode", 2);
 	else if(%client.rocket == 2)
-		bottomprint(%client, "<jc><f2>Using Rocket Launcher - HeatSeeker Mode", 2);
+		bottomprint(%client, "<jc><f2>Using Rocket Launcher - HeatLocker Mode", 2);
 	else if(%client.rocket == 3)
 		bottomprint(%client, "<jc><f2>Using Rocket Launcher - WireGuided Mode", 2);
 }

@@ -537,7 +537,7 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 				else
 					%otrange = 200;
 				%plRange = Vector::getDistance(%playerpos, %flagpos[%nmeteam]);
-				if(%plRange < %otrange && $GameMode != "Builder")
+				if(%plRange < %otrange)
 				{
 					Client::sendMessage(%client,1,"No Offence Turreting!");
 					return;

@@ -12,18 +12,37 @@ Created by: KiLL(-) & enV.3zer0
    Finally in 2003, KiLL(-) decided to make some changes and fix some problems of the left off mod. After a little while a interested gamer, enV.3zer0. He  decided to help out KiLL(-) and that become the first official team of Shifter. KiLL(-) felt that ShifterK was safe in the hands of his new partner and decided to help out Tribes 2 Shifter. 
    Today enV.3zer0 is the current modder of Shifter and is currently helping out yet another programmer to join the history of Shifter.
 
-
-ShifterK 8-9-03 Updates
+ShifterK 10-30-03 Updates
 ------------------------------------------
-· Fixed a Bug with AutoJJ Detection
-· Decrease the Sticky Detection to be detected harder
-· Made it so you can O turret on Builder Mode
+Weaken Blaster
+Satchels are weaker but more range 
+Fixed Save info
+Gave a 30 second on possess
+Added FlightPack For Assassin
+Turned off Usage cheat by default - Less cheat sayings - wont accuse you - Less Lag
 
-Added Notes
------------
-I made it so AUto JJ detection only goes when you are jugg.
-Also I made it 20 repetitions in 5 seconds for sticky, and
-not 15 like it was.
+ShifterK 9-11-03 Updates
+------------------------------------------
+Fixed Hyper blaster
+
+ShifterK 8-15-03 Updates
+------------------------------------------
+· Added 3 new variables for cheating.
+
+$Cheating::Ban = "false";			
+ 	Ban anyone who brings up the cheat message 5 times
+$Cheating::DeployCheck = true;  		
+ 	Deploy Cheat Check On/Off -- Default: True (On)
+$Cheating::UsageCheck = true;  			
+ 	Scheduled Use Cheat Check On/Off -- Default: True (On)
+$Cheating::AutoJJCheck = false;  		
+	Auto JJ Cheat Check On/Off -- Default: False (Off)
+
+· Replace HeatSeeker with HeatLock - A mix between LockJaw and HeatSeeker.
+	This announces to the player when he locks onto the target
+	It also warns the target when a player locks on
+	if the player fires while the target is jetting, a lockjawed missiles tracks him
+
 
 If you need help with running a server, please visit:
 Http://www.tribeshifter.com/k/howto.php

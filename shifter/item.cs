@@ -895,83 +895,68 @@ if($Cheating::DeployCheck == "true")
 $DPSCheat = 0.075;
 else
 $DPSCheat = 0.000001;
-function resetOsicheat(){
-	for(%clientId = Client::getFirst(); %clientId != -1; %clientId = Client::getNext(%clientId)){
+function resetOsicheat()
+{
+	for(%clientId = Client::getFirst(); %clientId != -1; %clientId = Client::getNext(%clientId))
 	%clientId.startedDeploy = "";	
-	}
-	}
+		
+}
 function remoteUseItem(%player,%type)
 {
 %clientId = Player::getClient(%player);	
-%armor = Player::getArmor(%clientId);
+	if($Cheating::UsageCheck == "true" || $Cheating::AutoJJCheck == "true")
+	{
 		if(!$TimeStart[%clientId])
-		{
-		$TimeStart[%clientId] = getSimTime();	
-		//Messageall(0,Client::getname(%clientId)@" Time Started: "@$TimeStart[%clientId]);
-		}					
+		$TimeStart[%clientId] = getSimTime();						
 	%Timeofthisdeploy[%clientId] = getSimTime(); 
 	$NumberofDeployTries[%clientId]++;
 		if($Timeoflastdeploy[%clientId])
-		{ 							
+		{							
 		%TimeBetweenDeploys[%clientId] = (%Timeofthisdeploy[%clientId] - $Timeoflastdeploy[%clientId]); // Count the Time bewteen deploys
-		//Messageall(0,Client::getname(%clientId)@" This deploy: "@%Timeofthisdeploy[%clientId]);
-		//Messageall(0,Client::getname(%clientId)@" Time Between: "@%TimeBetweenDeploys[%clientId]);
-		if(%armor == "jarmor")
-		{
-		if(%TimeBetweenDeploys[%clientId] > 3.11999 && %TimeBetweenDeploys[%clientId] < 3.8)
-		{
-		$JuggCount1[%clientId]="true";
-		$JuggStart[%clientId] = getSimTime();
-		//Messageall(0,"Bam1");
-		}
-		if(%TimeBetweenDeploys[%clientId] > 0.179999 && %TimeBetweenDeploys[%clientId] < 0.27999 && $JuggCount1[%clientId]=="true")
-		{
-		$JuggCount2[%clientId]="true";
-		//Messageall(0,"Bam2");
-		}
-		if(%TimeBetweenDeploys[%clientId] > 0.059999 && %TimeBetweenDeploys[%clientId] < 0.17 && $JuggCount2[%clientId]=="true")
-		{
-		$JuggCount3[%clientId]="true";
-		%JuggFinished[%clientId] = getSimTime();
-		//Messageall(0,"Bam3");
-		}
-		%JuggTime[%clientId] = %JuggFinished[%clientId] - $JuggStart[%clientId];
-		
-		if($JuggCount1[%clientId]=="true" && $JuggCount2[%clientId]=="true" && $JuggCount3[%clientId]=="true" && %JuggTime[%clientId] < 0.5 && %JuggTime[%clientId] > 0.01)
-		{
-		Client::sendMessage(%clientId, 0, "This server Doesn't Allow Jugg-Jump Scripts~wteleport2.wav");
-		centerprint(%clientId, "This server Doesn't Allow Jugg-Jump Scripts!", 5.0);
-		$warn[%clientId]++;
-		CheckOsiWarnings(%clientId);
-		
-		//Messageall(0, %JuggTime @"");
-		$JuggCount1[%clientId]="";
-		$JuggCount2[%clientId]="";
-		$JuggCount3[%clientId]="";
-		$JuggStart[%clientId] = "";
-		}
-		else if(%JuggTime > 0.5)
-		{
-		$JuggCount1[%clientId]="";
-		$JuggCount2[%clientId]="";
-		$JuggCount3[%clientId]="";
-		$JuggStart[%clientId] = "";
-		}
-		}
-		//Messageall(0,Client::getname(%clientId)@" Last Deploy: "@$Timeoflastdeploy[%clientId]);
-			if(%TimeBetweenDeploys[%clientId] >0.50)							// If Time between deploys is more than half second
-			{									       //Reset Timer
-			$NumberofDeployTries[%clientId]=0;								       //Reset deploy tries
+			if(%TimeBetweenDeploys[%clientId] > 3.11999 && %TimeBetweenDeploys[%clientId] < 3.8)
+			{
+			$JuggCount1[%clientId]="true";
+			$JuggStart[%clientId] = getSimTime();
+			}
+			if(%TimeBetweenDeploys[%clientId] > 0.179999 && %TimeBetweenDeploys[%clientId] < 0.27999 && $JuggCount1[%clientId]=="true")
+			$JuggCount2[%clientId]="true";
+			if(%TimeBetweenDeploys[%clientId] > 0.059999 && %TimeBetweenDeploys[%clientId] < 0.17 && $JuggCount2[%clientId]=="true")
+			{
+			$JuggCount3[%clientId]="true";
+			%JuggFinished[%clientId] = getSimTime();
+			}
+			%JuggTime[%clientId] = %JuggFinished[%clientId] - $JuggStart[%clientId];
+			if($JuggCount1[%clientId]=="true" && $JuggCount2[%clientId]=="true" && $JuggCount3[%clientId]=="true" && %JuggTime[%clientId] < 0.5 && %JuggTime[%clientId] > 0.01)
+			{
+				if($Cheating::AutoJJCheck == "true")
+				{
+				Client::sendMessage(%clientId, 0, "This server Doesn't Allow Jugg-Jump Scripts~wteleport");
+				centerprint(%clientId, "This server Doesn't Allow Jugg-Jump Scripts!", 5.0);
+				$warn[%clientId]++;
+				CheckOsiWarnings(%clientId);
+				}
+			$JuggCount1[%clientId]="";
+			$JuggCount2[%clientId]="";
+			$JuggCount3[%clientId]="";
+			$JuggStart[%clientId] = "";
+			}
+			else if(%JuggTime > 0.5)
+			{
+			$JuggCount1[%clientId]="";
+			$JuggCount2[%clientId]="";
+			$JuggCount3[%clientId]="";
+			$JuggStart[%clientId] = "";
+			}
+			if(%TimeBetweenDeploys[%clientId] >0.50)							
+			{									     
+			$NumberofDeployTries[%clientId]=0;								    
 			%TimeBetweenDeploys[%clientId] =0;
 			$TotalTimeBetweenDeploys[%clientId] = 0;
 			$TimeFinished[%clientId] = $Timeoflastdeploy[%clientId];
-			//Messageall(0,Client::getname(%clientId)@" Finished Time: "@$TimeFinished[%clientId]);
 			$DeployTime[%clientId] = ($TimeFinished[%clientId] - $TimeStart[%clientId]);
-			if($DeployTime[%clientId] <0)
-			$DeployTime[%clientId] = 0;
-			//Messageall(0,Client::getname(%clientId)@" Deploy Time: "@$DeployTime[%clientId]);
+				if($DeployTime[%clientId] <0)
+				$DeployTime[%clientId] = 0;
 			$TotalTimeofDeploy[%clientId] = $TotalTimeofDeploy[%clientId] + $DeployTime[%clientId];
-			//Messageall(0,Client::getname(%clientId)@" Total Time: "@$TotalTimeofDeploy[%clientId]);
 			$TimeStart[%clientId] = "";
 				if($TotalTimeofDeploy[%clientId] > 5)
 				{
@@ -980,33 +965,34 @@ function remoteUseItem(%player,%type)
 				$RepeatedDeploytimes[%clientId] = 0;
 				}
 			}
-			$TotalTimeBetweenDeploys[%clientId] = $TotalTimeBetweenDeploys[%clientId] + %TimeBetweenDeploys[%clientId];
-			%AverageTimeBetweenDeploys[%clientId] = ($TotalTimeBetweenDeploys[%clientId]/$NumberofDeployTries[%clientId]);
-			%LowAverageTimeBetweenDeploys[%clientId]= (%AverageTimeBetweenDeploys[%clientId] -0.01);
-			%HighAverageTimeBetweenDeploys[%clientId]= (%AverageTimeBetweenDeploys[%clientId] +0.01);
-				if($TotalTimeofDeploy[%clientId] <= 5)
+		$TotalTimeBetweenDeploys[%clientId] = $TotalTimeBetweenDeploys[%clientId] + %TimeBetweenDeploys[%clientId];
+		%AverageTimeBetweenDeploys[%clientId] = ($TotalTimeBetweenDeploys[%clientId]/$NumberofDeployTries[%clientId]);
+		%LowAverageTimeBetweenDeploys[%clientId]= (%AverageTimeBetweenDeploys[%clientId] -0.01);
+		%HighAverageTimeBetweenDeploys[%clientId]= (%AverageTimeBetweenDeploys[%clientId] +0.01);
+			if($TotalTimeofDeploy[%clientId] <= 5)
+			{
+				if(%LowAverageTimeBetweenDeploys[%clientId] < %TimeBetweenDeploys[%clientId] && %TimeBetweenDeploys[%clientId] < %HighAverageTimeBetweenDeploys[%clientId] && $NumberofDeployTries[%clientId] > 5)
 				{
-					if(%LowAverageTimeBetweenDeploys[%clientId] < %TimeBetweenDeploys[%clientId] && %TimeBetweenDeploys[%clientId] < %HighAverageTimeBetweenDeploys[%clientId] && $NumberofDeployTries[%clientId] > 5)
+				$RepeatedDeploytimes[%clientId]++;
+					if($RepeatedDeploytimes[%clientId] >= 15)
 					{
-					$RepeatedDeploytimes[%clientId]++;
-					//Messageall(0,(%Timeofthisdeploy[%clientId] - $TimeStart[%clientId]));
-					//echo(Client::getname(%clientId)@" Counted:"@$RepeatedDeploytimes[%clientId]);
-						if($RepeatedDeploytimes[%clientId] >= 20)
+					$RepeatedDeploytimes[%clientId] = 0;
+						if($Cheating::UsageCheck == "true")
 						{
-						$RepeatedDeploytimes[%clientId] = 0;
-						Client::sendMessage(%clientId, 0, "This server wont allow you to deploy that fast, slow down!~wteleport2.wav");
+						Client::sendMessage(%clientId, 0, "This server wont allow you to deploy that fast, slow down!~wteleport");
 						centerprint(%clientId, "This server wont allow you to deploy that fast, slow down!", 5.0);
 						$warn[%clientId]++;
 						CheckOsiWarnings(%clientId);
 						}
 					}
 				}
+			}
 		$Timeoflastdeploy[%clientId] = %Timeofthisdeploy[%clientId]; // This deploy is now the recorded as the last
 		}
-		else												// If he hasnt deployed before
-		{ 	
-		$Timeoflastdeploy[%clientId] = %Timeofthisdeploy[%clientId];					
-		}
+		else												// If he hasnt deployed before	
+		$Timeoflastdeploy[%clientId] = %Timeofthisdeploy[%clientId];	
+	}				
+
 	
 	if (Player::isDead(%player)) 
 		return;
@@ -1082,10 +1068,10 @@ function CheckOsiWarnings(%clientId)
 	 if($warn[%clientId] >= 3)
 	 {
       		   messageallexcept(%clientId,1, Client::getName(%clientId) @ " is using a cheat.~wteleport2.wav");
-      		   if($Shifter::CheatBan == "true")
+      		   if($Cheating::Ban == "true")
       		   {
       		   $CheatBan[%clientId]++;
-      		  	  if($CheatBan[%clientId] = 5)
+      		  	  if($CheatBan[%clientId] >= 5)
       		 	  {
       		 	  %ip = Client::getTransportAddress(%clientId);
       			  BanList::add(%ip, 1800);

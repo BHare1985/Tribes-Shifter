@@ -307,7 +307,7 @@ BulletData BlasterBolt1
    explosionTag       = blasterExp;
 
    damageClass        = 0;
-   damageValue        = 0.300;
+   damageValue        = 0.200;
    damageType         = $BlasterDamageType;
 
    muzzleVelocity     = 200.0;
@@ -329,7 +329,7 @@ BulletData HyperBolt
    explosionTag       = hblasterExp;
 
    damageClass        = 0;
-   damageValue        = 0.2;
+   damageValue        = 0.075;
    damageType         = $HBlasterDamageType;
 
    muzzleVelocity     = 200.0;
@@ -2982,98 +2982,161 @@ LightningData LockJaw
 function LockJaw::damageTarget(%target, %timeSlice, %damPerSec, %enDrainPerSec, %pos, %vec, %mom, %player)
 {
   %client = Player::getClient(%player);
-	if ((!%client.target || %client.target == "-1" || %client.target == %player) && %client.lj)
-	{
+	//This is HeatSeeker Code if ((!%client.target || %client.target == "-1" || %client.target == %player) && %client.lj)
+	//This is HeatSeeker Code {
+	if (!%client.target || %client.target == "-1" || %client.target == %player)
 		%client.target = %target; 
-		if(%client.lj)deleteobject(%client.lj);
-		%client.lj = 0;
-		%type = getObjectType(%target);
-		%tarmor = Player::getArmor(%target);
-		if (gamebase::getteam(%target) == gamebase::getteam(%player))
+		%name = GameBase::getDataName(%target);
+	%team = GameBase::getTeam(%target);
+	%pTeam = GameBase::getTeam(%player);
+	%pName = Client::getName(%client);
+  	%type = getObjectType(%target);
+
+	if (%type == "Player" || %type == "Flier" || %type == "Turret")
+	{}
+	else
+	{
+		schedule("bottomprint(" @ %client @ ", \"<jc><f1>Lock Failed, No Targetable Object!\", 3);", 0);
+		schedule("Client::sendMessage(" @ %client @ ",1,\"Lock Failed, No Targetable Object!~waccess_denied.wav\");",0);
+		%client.target = -1;
+		return;
+	}
+
+	if (!%client.target || %client.target == "-1" || %client.target == %player)
+	{
+		schedule("bottomprint(" @ %client @ ", \"<jc><f1>No Lock, Attempting To Acquire!\", 3);", 0);
+		schedule("Client::sendMessage(" @ %client @ ",1,\"No Lock, Attempting To Acquire!~waccess_denied.wav\");",0);
+		%client.target = -1;
+		Player::trigger(%player,$SlotWeapons,false);
+		return;
+	}
+	if (%client.target != "-1")
+	{
+		if (gamebase::getteam(%client.target) == gamebase::getteam(%player))
 		{
-			bottomprint(%client, "<jc><f1>Lock Failed, Can Not Target Friendlies!", 3);
-			Client::sendMessage(%client,1,"Lock Failed, Can Not Target Friendlies!~waccess_denied.wav");
+			schedule("bottomprint(" @ %client @ ", \"<jc><f1>Lock Failed, Can Not Target Friendlies!\", 3);", 0);
+			schedule("Client::sendMessage(" @ %client @ ",1,\"Lock Failed, Can Not Target Friendlies!~waccess_denied.wav\");",0);
 			%client.target = -1;
+			return;
 		}
-		else if (%type == "Flier")
-		{
-			Client::sendMessage(%client,1,"**Lock Aquired - Active For Next 15 Seconds!!!~wmine_act.wav");			
-			bottomprint(%client, "<jc><f1>Lock Aquired - Active For Next 15 Seconds! - Fire Now To Launch!", 3);
-			playSound(TargetingMissile,GameBase::getPosition(%player));
-			Player::trigger(%player,$WeaponSlot,false);
-			%pilot = %target.clLastMount;
-			//%client.target = %pilot; 
-			if(%pilot.driver) LockjawWarn(%client, %pilot);
-			schedule("bottomprint(" @ %client @ ", \"<jc><f1>Lost Heat Lock!\", 3);", 15);
-			schedule(%client @ ".target = -1;", 15);
-			echo(%client.target);
-		}
-		else if(%type == "Player" && %tarmor != "spyarmor" && %tarmor != "spyfemale")
-		{	
-			LockjawWarn(%client, %target);
-			Client::sendMessage(%client,1,"** HeatLock Aquired - Active For Next 15 Seconds!!!~wmine_act.wav");			
-			bottomprint(%client, "<jc><f1>Heat Lock Aquired - Active For Next 15 Seconds! - Fire Now To Launch!", 3);
-			playSound(TargetingMissile,GameBase::getPosition(%player));
-			Player::trigger(%player,$WeaponSlot,false);
-			schedule(%client @ ".target = -1;", 15);
-			schedule("bottomprint(" @ %client @ ", \"<jc><f1>Lost Heat Lock!\", 3);", 15);
-		}
-		else
-		{
-			bottomprint(%client, "<jc><f1>Lock Failed, No Targetable Object!", 3);
-			Client::sendMessage(%client,1,"Lock Failed, No Targetable Object!~waccess_denied.wav");
-			%client.target = -1;
-		}
-	}	
+		schedule("Client::sendMessage(" @ %client @ ",1,\"** HeatLocker Aquired - Active For Next 10 Seconds!!!~wmine_act.wav\");",0);
+		schedule("bottomprint(" @ %client @ ", \"<jc><f1>HeatLocker Aquired - Active For Next 10 Seconds! - Fire Now To Launch!\", 3);", 0);
+		schedule("bottomprint(" @ %client @ ", \"<jc><f1>HeatLocker Lost Lock!\", 3);", 10);
+		schedule("" @ %client @ ".target = \"-1\";", 10);
+		schedule ("playSound(TargetingMissile,GameBase::getPosition(" @ %player @ "));",0);
+		Player::trigger(%player,$SlotWeapons,false);
+		%targetid = Player::getClient(%target);
+		LockJaw(%client,%targetId);
+	}
+		//This is HeatSeeker Code if(%client.lj)deleteobject(%client.lj);
+		//This is HeatSeeker Code %client.lj = 0;
+		//This is HeatSeeker Code %type = getObjectType(%target);
+		//This is HeatSeeker Code %tarmor = Player::getArmor(%target);
+		//This is HeatSeeker Code if (gamebase::getteam(%target) == gamebase::getteam(%player))
+		//This is HeatSeeker Code {
+		//This is HeatSeeker Code 	bottomprint(%client, "<jc><f1>Lock Failed, Can Not Target Friendlies!", 3);
+		//This is HeatSeeker Code 	Client::sendMessage(%client,1,"Lock Failed, Can Not Target Friendlies!~waccess_denied.wav");
+		//This is HeatSeeker Code 	%client.target = -1;
+		//This is HeatSeeker Code }
+		//This is HeatSeeker Code else if (%type == "Flier")
+		//This is HeatSeeker Code {
+		//This is HeatSeeker Code 	Client::sendMessage(%client,1,"**Lock Aquired - Active For Next 15 Seconds!!!~wmine_act.wav");			
+		//This is HeatSeeker Code 	bottomprint(%client, "<jc><f1>Lock Aquired - Active For Next 15 Seconds! - Fire Now To Launch!", 3);
+		//This is HeatSeeker Code 	playSound(TargetingMissile,GameBase::getPosition(%player));
+		//This is HeatSeeker Code 	Player::trigger(%player,$WeaponSlot,false);
+		//This is HeatSeeker Code 	%pilot = %target.clLastMount;
+		//This is HeatSeeker Code 	//%client.target = %pilot; 
+		//This is HeatSeeker Code 	if(%pilot.driver) LockjawWarn(%client, %pilot);
+		//This is HeatSeeker Code 	schedule("bottomprint(" @ %client @ ", \"<jc><f1>Lost Heat Lock!\", 3);", 15);
+		//This is HeatSeeker Code 	schedule(%client @ ".target = -1;", 15);
+		//This is HeatSeeker Code 	echo(%client.target);
+		//This is HeatSeeker Code }
+		//This is HeatSeeker Code else if(%type == "Player" && %tarmor != "spyarmor" && %tarmor != "spyfemale")
+		//This is HeatSeeker Code {	
+		//This is HeatSeeker Code 	LockjawWarn(%client, %target);
+		//This is HeatSeeker Code 	Client::sendMessage(%client,1,"** HeatLock Aquired - Active For Next 15 Seconds!!!~wmine_act.wav");			
+		//This is HeatSeeker Code 	bottomprint(%client, "<jc><f1>Heat Lock Aquired - Active For Next 15 Seconds! - Fire Now To Launch!", 3);
+		//This is HeatSeeker Code 	playSound(TargetingMissile,GameBase::getPosition(%player));
+		//This is HeatSeeker Code 	Player::trigger(%player,$WeaponSlot,false);
+		//This is HeatSeeker Code 	schedule(%client @ ".target = -1;", 15);
+		//This is HeatSeeker Code 	schedule("bottomprint(" @ %client @ ", \"<jc><f1>Lost Heat Lock!\", 3);", 15);
+		//This is HeatSeeker Code }
+		//This is HeatSeeker Code else
+		//This is HeatSeeker Code {
+		//This is HeatSeeker Code 	bottomprint(%client, "<jc><f1>Lock Failed, No Targetable Object!", 3);
+		//This is HeatSeeker Code 	Client::sendMessage(%client,1,"Lock Failed, No Targetable Object!~waccess_denied.wav");
+		//This is HeatSeeker Code 	%client.target = -1;
+		//This is HeatSeeker Code }
+	//This is HeatSeeker Code}	
 }
+function LockJaw::onAcquire(%this, %player, %target){}
 
-
-function LockJawFire(%player, %target, %rnd)
+function LockJawFire(%player, %target) //This is HeatSeeker Code , %rnd)
 {
 
 	%client = Player::getClient(%player);
 
-	if (getObjectType(%target) == "Player")
-	{
+	//This is HeatSeeker Code if (getObjectType(%target) == "Player")
+	//This is HeatSeeker Code {
 		if(GameBase::virtual(%target, "getHeatFactor") >= 0.5)
 		{
-			%targetid = Player::getClient(%target);
-			LockJawWarn(%client, %targetID);
-			Player::decItemCount(%player,$WeaponAmmo[RocketLauncher],1);
-			%trans = GameBase::getMuzzleTransform(%player);
-			%vel = Item::getVelocity(%player);	
-			$targetingmissile = %client.target;
-			Projectile::spawnProjectile("MiniMissileTracker",%trans,%player,%vel,%target);
-			%pos = GameBase::getPosition(%player);
-			playSound(SoundMissileTurretFire,%pos);
-			playSound(SoundMissileTurretFire,%pos);
-		}
-	}
-	if (getObjectType(%target) == "Flier")
-	{
 		%targetid = Player::getClient(%target);
-		%pilot = %target.clLastMount;
-		if(%pilot.driver) LockjawWarn(%client, %pilot);
+		//This is HeatSeeker Code 	LockJawWarn(%client, %targetID);
+		
 		Player::decItemCount(%player,$WeaponAmmo[RocketLauncher],1);
 		%trans = GameBase::getMuzzleTransform(%player);
 		%vel = Item::getVelocity(%player);	
 		$targetingmissile = %client.target;
+		//LockJaw(%client, %targetID);
 		Projectile::spawnProjectile("MiniMissileTracker",%trans,%player,%vel,%target);
 		%pos = GameBase::getPosition(%player);
+	 	playSound(SoundMissileTurretFire,%pos);
 		playSound(SoundMissileTurretFire,%pos);
-		playSound(SoundMissileTurretFire,%pos);
+	}
+	else
+	schedule("Client::sendMessage(" @ %client @ ",1,\"** No Heat was Detected - Failure to execute~waccess_denied.wav\");",0);
+	
+	//This is HeatSeeker Code }
+	//This is HeatSeeker Code if (getObjectType(%target) == "Flier")
+	//This is HeatSeeker Code {
+	//This is HeatSeeker Code 	%targetid = Player::getClient(%target);
+	//This is HeatSeeker Code 	%pilot = %target.clLastMount;
+	//This is HeatSeeker Code 	if(%pilot.driver) LockjawWarn(%client, %pilot);
+	//This is HeatSeeker Code 	Player::decItemCount(%player,$WeaponAmmo[RocketLauncher],1);
+	//This is HeatSeeker Code 	%trans = GameBase::getMuzzleTransform(%player);
+	//This is HeatSeeker Code 	%vel = Item::getVelocity(%player);	
+	//This is HeatSeeker Code 	$targetingmissile = %client.target;
+	//This is HeatSeeker Code 	Projectile::spawnProjectile("MiniMissileTracker",%trans,%player,%vel,%target);
+	//This is HeatSeeker Code 	%pos = GameBase::getPosition(%player);
+	//This is HeatSeeker Code 	playSound(SoundMissileTurretFire,%pos);
+	//This is HeatSeeker Code 	playSound(SoundMissileTurretFire,%pos);
+	//This is HeatSeeker Code }
+}
+function LockJaw::onRelease(%this, %player)
+{
+	%client = Player::getClient(%player);
+	%object = %player.target;
+}
+
+function LockJaw(%client, %targetId)
+{
+	if(%targetId)
+	{
+		%name = Client::getName(%client);
+		Client::sendMessage(%targetId,0,"** WARNING ** - " @ %name @ " has you in HeatLocker!!!~waccess_denied.wav");
+		schedule("Client::sendMessage(" @ %targetId @ ",0,\"~waccess_denied.wav\");",0.5);
 	}
 }
 
-function LockJawWarn(%clientId, %targetId) 
-{
-	if(%targetId) 
-	{
-		%name = Client::getName(%clientId);
-		Client::sendMessage(%targetId,0,"** WARNING ** - " @ %name @ " is tracking your heat signature!!~waccess_denied.wav");
-		schedule("Client::sendMessage(" @ %targetId @ ",0,\"~~waccess_denied.wav\");",0.5);//access_denied.wav
-	}
-} 
+//This is HeatSeeker Codefunction LockJawWarn(%clientId, %targetId) 
+//This is HeatSeeker Code{
+//This is HeatSeeker Code	if(%targetId) 
+//This is HeatSeeker Code	{
+//This is HeatSeeker Code		%name = Client::getName(%clientId);
+//This is HeatSeeker Code		Client::sendMessage(%targetId,0,"** WARNING ** - " @ %name @ " is tracking your heat signature!!~waccess_denied.wav");
+//This is HeatSeeker Code		schedule("Client::sendMessage(" @ %targetId @ ",0,\"~~waccess_denied.wav\");",0.5);//access_denied.wav
+//This is HeatSeeker Code	}
+//This is HeatSeeker Code} 
 
 //================================================================================================
 //						Special Functions

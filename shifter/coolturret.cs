@@ -616,7 +616,7 @@ function EmpProj::onFire(%this)
 function GasProj::onFire(%this)
 {
 	if (GameBase::setDamageLevel(%this, 10))
-		if ($debug) echo ("BOOM");
+	if ($debug) echo ("BOOM");
 }
 function SpyPodProj::onFire(%this)
 {

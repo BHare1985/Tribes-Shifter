@@ -35,6 +35,11 @@ function processMenuPlayerFuncs(%clientId, %Choice)
 		else
 		%ClientId.MuteKill = false;
 	}
+	else if(%Choice == "saveinfo")
+	{
+		SaveCharacter(%clientId);
+		return;
+	}
 	else if(%Choice == "MuteGlobal"){
 		if(%ClientId.MuteGlobal != "true")
 		%ClientId.MuteGlobal = true;
@@ -286,7 +291,7 @@ function processMenuPlayerFuncs(%clientId, %Choice)
   		Client::addMenuItem(%clientId, %curItem++ @ "Standard Stinger", "weapon_rocket1");
   		Client::addMenuItem(%clientId, %curItem++ @ "Locking Stinger", "weapon_rocket2");
 		if ($Shifter::LockOn)
-	  		Client::addMenuItem(%clientId, %curItem++ @ "Heat Seeker", "weapon_rocket3");
+	  		Client::addMenuItem(%clientId, %curItem++ @ "Lock Jaw", "weapon_rocket3");
   		Client::addMenuItem(%clientId, %curItem++ @ "Wire Guided", "weapon_rocket4");
   		return;
 	}

@@ -664,7 +664,7 @@ TurretData DeployableSatchel
 	className = "Turret";
 	shapeFile = "grenammo";
 	//projectileType = "Undefined";
-	maxDamage = 0.01;
+	maxDamage = 0.001;
 	maxEnergy = 75;
 	minGunEnergy = 10;
 	maxGunEnergy = 60;
@@ -725,7 +725,7 @@ function DeployableSatchel::onEndSequence(%this,%thread)
 
 function DeployableSatchel::onControl(%this)
 {
-	GameBase::applyRadiusDamage($DebrisDamageType, getBoxCenter(%this), 1.101, 5.2, 305, %this);
+	GameBase::applyRadiusDamage($DebrisDamageType, getBoxCenter(%this), 5.2, 1.101, 305, %this);
 }
 
 function DeployableSatchel::onDestroyed(%this)
@@ -733,7 +733,7 @@ function DeployableSatchel::onDestroyed(%this)
 	%this.shieldStrength = 0;
 	GameBase::setRechargeRate(%this,0);
 	Turret::onDeactivate(%this);
-	GameBase::applyRadiusDamage($DebrisDamageType, getBoxCenter(%this), 1.101, 5.2, 305, %this);
+	GameBase::applyRadiusDamage($DebrisDamageType, getBoxCenter(%this),  5.2, 1.101, 305, %this);
 
 	//CalcRadiusDamage(%this,$DebrisDamageType,30,0.2,25,20,20,1.5,0.5,200,100);
   	$TeamItemCount[GameBase::getTeam(%this) @ "SatchelPack"]--;

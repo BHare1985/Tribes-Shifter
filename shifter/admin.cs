@@ -5,7 +5,7 @@ $curVoteCount = 0;
 $Shifter::TKDefault = $Shifter::TeamKillOn;
 $pskin = $Shifter::PersonalSkin;
 $CPU::estimatedSpeed = 130803;
-$killa::newdate = "08-09-2003";
+$killa::newdate = "10-30-2003";
 $Server::Info = $Server::Info @ "\nRunning ShifterK " @ $killa::newdate;
 $ModList = "ShifterK";
 $Server::TourneyMode = false;
@@ -1703,12 +1703,16 @@ if (%opt == "playerfuncs")
 		%clientId.possessing = true;
 		echo(Client::getName(%sel) @ " is being Mind Melded by " @ Client::getName(%clientId));
 		MessageAllExcept(%sel , 0, Client::getName(%sel) @ " has been possessed by " @ Client::getName(%clientId) @ ".~wteleport2.wav"); 
-		Client::sendMessage(%sel ,1,"You're being Mind Melded by " @ Client::getName(%clientId)@"!~wteleport2.wav"); 	
+		Client::sendMessage(%sel ,1,"You're being Mind Melded by " @ Client::getName(%clientId)@"!~wteleport2.wav");
+		%time = 30;
+		Client::sendMessage(%clientId ,1,"You have "@%time@" Seconds left before Possessing is over.~wteleport2.wav");
+		Client::sendMessage(%sel,1,"You have "@%time@" Seconds left before Possessing is over.~wteleport2.wav");  
+		possessedtime(%clientId,%sel,%time); 	
 	} 
 	else if(%opt == "unposs") {
 		%sel = %clientId.selClient;
 		Client::setControlObject(%clientId, %clientId);
-        Client::setControlObject(%sel, %sel);
+       		Client::setControlObject(%sel, %sel);
 		%sel.possessed = false;
 		%sel.possby = "";
 		%clientId.possessing = false;
@@ -2571,3 +2575,31 @@ function Items::Off(%MaxCMD){
     }
     %MaxCMD = "";
 }
+
+function possessedtime(%clientId,%sel,%time)
+{
+	echo(%clientId);
+	echo(%sel);
+	echo(%time);
+	if(%time >= "1")
+	{
+	%time--;
+	schedule("possessedtime("@%clientId@","@%sel@","@%time@");",1.0);
+	}
+		if(%time == "10" || %time <= "5" && %time != "0")
+		Client::sendMessage(%clientId ,1,"You have "@%time@" Seconds left before Possessing is over.~wteleport2.wav"); 
+		Client::sendMessage(%sel,1,"You have "@%time@" Seconds left before Possessing is over.~wteleport2.wav"); 
+		if(%time <= "0")
+		{
+		%time = 30;
+		Client::setControlObject(%clientId, %clientId);
+       		Client::setControlObject(%sel, %sel);
+		%sel.possessed = false;
+		%sel.possby = "";
+		%clientId.possessing = false;
+		%clientId.poss = "";
+		MessageAllExcept(%sel, 0, Client::getName(%sel) @ " has been released of his Mind Meld by " @ Client::getName(%clientId) @ ".~wteleport2.wav"); 
+		Client::sendMessage(%sel ,1,"You have been freed of your Mind Meld by " @ Client::getName(%clientId)@".~wteleport2.wav"); 
+		}
+}	
+	

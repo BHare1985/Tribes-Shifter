@@ -10,7 +10,7 @@ function processMenuShifterKTabmenu(%clientId, %Choice)
 	}
 	else if (%Choice == "LastestUpdates")
 	{
-		%msg = "ShifterK 8-09-2003\nFixed a Bug with AutoJJ Detection :: Decrease the Sticky Detection to be detected harder :: Made it so you can O turret on Builder Mode";
+		%msg = "ShifterK 10-30-2003\nWeaken Blaster - Satchels are weaker but more range - \nFixed Save info - Gave a 30 second on possess\n Added FlightPack For Assassin";
 		//%msg2 = "";
 		//%msg3 = "Boosted up HyperBlaster a bit, Still worthless :: Decreased distance on blaster :: Added Private message system :: Added AFK message system :: Fixed EMP bug with Shocks :: Added Mute Options in Player Funcs";
 		//%msg4 = "Totally re-did the Equipment options :: Able to set or destroy on a Team rather than everything";
@@ -18,8 +18,13 @@ function processMenuShifterKTabmenu(%clientId, %Choice)
 		centerprint(%clientId,%msg, 20);
 		schedule("centerprint(" @ %clientId @ ",\"" @ %msg2@ "\", 20);", 20);
 		//schedule("centerprint(" @ %clientId @ ",\"" @ %msg3@ "\", 10);", 20);
+		//ShifterK 8-15-2003
+		//------------------
+		//%msg = "ShifterK 8-15-2003\nMade a New rocket - HeatLocker, Works like Lockjaw and Heatseeker  ::  Made Variables for Cheats, including to turn them on or off";
 		//
-		//
+		//ShifterK 8-09-2003
+		//------------------
+		//Fixed a Bug with AutoJJ Detection :: Decrease the Sticky Detection to be detected harder :: Made it so you can O turret on Builder Mode";
 		//
 		//ShifterK 8-08-2003
 		//------------------

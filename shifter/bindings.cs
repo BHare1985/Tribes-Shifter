@@ -193,13 +193,13 @@ function remoteweapon_rocket3(%clientId)
 		{
 			%clientId.rocket = 2;
 			%clientId.target = -1;
-			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>HeatSeeker Initiated. Target Lock Lost.\", 3);", 0.01);
+			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>HeatLocker Initiated. Target Lock Lost.\", 3);", 0.01);
 		}
 		else
 		{
 			%clientId.target = -1;
 			%clientId.rocket = 2;
-			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>HeatSeeker Initiated. Fire To Acquire Target.\", 3);", 0.01);
+			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>HeatLocker Initiated. Fire To Acquire Target.\", 3);", 0.01);
 		}
 	}
 }

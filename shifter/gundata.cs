@@ -677,14 +677,17 @@ function RocketImage::onFire(%player, %slot)
 				playSound(SoundMissileTurretFire,%pos);
 			}		
 		}
-		else if (%client.rocket == 2)			//== Heat-Seeker Rocket
+		else if (%client.rocket == 2)			//== Lock-Jaw Rocket
 		{	
 			if (!%client.target || %client.target == "-1" || %client.target == %player)
 			{	
+				//This is HeatSeeker Code %fired = (Projectile::spawnProjectile("LockJaw",%trans,%player,%vel));
+				//This is HeatSeeker Code %client.lj = %fired;
+				//This is HeatSeeker Code schedule ("deleteobject(" @ %fired @ "); %client.lj = false;",0.05,%client.lj);
 				%fired = (Projectile::spawnProjectile("LockJaw",%trans,%player,%vel));
-				%client.lj = %fired;
-				schedule ("deleteobject(" @ %fired @ "); %client.lj = false;",0.05,%client.lj);
+				schedule("deleteobject(" @ %fired @ ");",0.05);
 				Player::trigger(%player,$WeaponSlot,false);
+				return;
 			}
 			else if (%client.target != "-1")
 			{	$targeting = %player;

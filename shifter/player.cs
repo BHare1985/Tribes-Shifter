@@ -377,10 +377,10 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 						%value = %value * 10;
 						bottomprint(%clientId, "Your booster popped!");
 						if (%clientID.boostpop < 2)
-							DeployFrags(%this, 5, %clientId);
+							DeployFrags(%this, 1, %clientId);
 						else if(%clientID.boostpop <= 5)
-							quietDeployFrags(%this, 5, %clientId);
-						GameBase::applyRadiusDamage($PlasmaDamageType, gamebase::getposition(%player), 5, 0.02, 2, %shooterClient); 
+							quietDeployFrags(%this, 1, %clientId);
+						GameBase::applyRadiusDamage($PlasmaDamageType, gamebase::getposition(%player), 3, 0.02, 2, %shooterClient); 
 						GameBase::applyDamage(%player, $PlasmaDamageType, 5.2, "0 0 0", "0 0 0", "0 0 0", %shooterClient);
 						%clientID.boostpop++;
 					}
@@ -395,10 +395,10 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 						%value = %value * 10;
 						bottomprint(%clientId, "Your booster popped!");
 						if (%clientID.boostpop < 2)
-							DeployFrags(%this, 5, %clientId);
+							DeployFrags(%this, 1, %clientId);
 						else if(%clientID.boostpop <= 6)
-							quietDeployFrags(%this, 5, %clientId);
-						GameBase::applyRadiusDamage($PlasmaDamageType, gamebase::getposition(%player), 5, 0.02, 2, %shooterClient); 
+							quietDeployFrags(%this, 1, %clientId);
+						GameBase::applyRadiusDamage($PlasmaDamageType, gamebase::getposition(%player), 3, 0.02, 2, %shooterClient); 
 						GameBase::applyDamage(%player, $PlasmaDamageType, 5.2, "0 0 0", "0 0 0", "0 0 0", %shooterClient);
 						%clientID.boostpop++;
 					}

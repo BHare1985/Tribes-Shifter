@@ -170,7 +170,7 @@ function SBA::duelPlayersReady(%clientId, %enemy)
  	Client::setControlObject(%enemy, Client::getObserverCamera(%enemy));
  	Observer::setOrbitObject(%clientId, %cplayer, 5, 5, 5);                
  	Observer::setOrbitObject(%enemy, %eplayer, 5, 5, 5);
-	SBA::duelCountdown(%clientId, %enemy, %cplayer, %eplayer, 12);
+	SBA::duelCountdown(%clientId, %enemy, %cplayer, %eplayer, 4); // 10-31 changed to 12 to 6
 }
 
 function SBA::duelCountdown(%clientId, %enemy, %cplayer, %eplayer, %time)
@@ -184,7 +184,7 @@ function SBA::duelCountdown(%clientId, %enemy, %cplayer, %eplayer, %time)
 		SBA::duelStart(%clientId, %enemy, %cplayer, %eplayer);
 		return;
 	}
-	if(%time == "10" || %time <= "5")
+	if(%time == "10" || %time <= "3")
 	{
 		client::sendmessage(%clientId, -1, "Duel Starts in " @ %time @ " seconds");
 		client::sendmessage(%enemy, -1, "Duel Starts in " @ %time @ " seconds");
@@ -346,7 +346,7 @@ function SBA::duelSpawnSetup2(%clientId, %type, %rndpick)
 		$spawnBuyList[2, %client] = Disclauncher;
 		$spawnBuyList[3, %client] = SniperRifle;
 		$spawnBuyList[4, %client] = TargetingLaser; 
-		$spawnBuyList[5, %client] = EnergyPack; 
+		$spawnBuyList[5, %client] = FlightPack; 
 		$spawnBuyList[6, %client] = RepairKit; 
 		$spawnBuyList[7, %client] = mineammo; 
 		$spawnBuyList[8, %client] = Grenade;

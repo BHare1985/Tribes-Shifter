@@ -251,6 +251,7 @@ function BuildItemList()
 	$ItemMax[larmor,	HoloPack] = 1;
 	$ItemMax[larmor,	LaserRifle] = 1;
 	$ItemMax[larmor,	MineAmmo] = 3;
+	$ItemMax[larmor,	FlightPack] = 1;
 	$ItemMax[larmor,	PlasmaAmmo] = 30;
 	$ItemMax[larmor,	PlasmaGun] = 1;
 	$ItemMax[larmor,	RailAmmo] = 10;
