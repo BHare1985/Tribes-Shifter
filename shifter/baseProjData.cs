@@ -20,12 +20,12 @@ $ShellDamageType       = 21;
 $CloakDamageType       = 22;
 $NukeDamageType        = 23;
 $FlameDamageTpye       = 24;	
-$KamikazeDamageType    = 25;
-$AntiMatterDamageType  = 26;
+$LRifleDamageType		  = 25;
+$RifleDamageType  	  = 26;
 $EqualizerDamageType   = 27;
 $OverDoseDamageTpye    = 28;
 $IDamageType	        = 29;
-$TargetingDamageTpye	  = 30;
+$TargetingDamageType	  = 30;
 $BoomStickDamageType	  = 31;
 $HBlasterDamageType	  = 32;
 $MDMDamageType	  		  = 33;
@@ -796,10 +796,11 @@ function TurretMissile::updateTargetPercentage(%target)
 
 function rocketDodge(%target)
 {
-	%tp = GameBase::virtual(%target, "getHeatFactor");
-	//%pack = Player::getMountedItem(%target,$BackpackSlot);
-	//if(%pack == flightpack || %pack == DeployableSensorJammerPack || %pack == SensorJammerPack || %pack == CloakingDevice)
-	//	%tp = 0;
+	%armor = Player::getArmor(%target);
+	if(%armor == "spyarmor" || %armor == "spyfemale")
+		%tp = 0;
+	else
+		%tp = GameBase::virtual(%target, "getHeatFactor");
 	return %tp;
 }
 
@@ -987,6 +988,11 @@ SeekingMissileData StingerMissileTracker
 	inheritedVelocityScale = 0.5;
 	soundId = SoundJetHeavy;
 };
+function StingerMissileTracker::updateTargetPercentage(%target)
+{
+	return rocketDodge(%target);
+}
+
 
 //======================================================================== Locking Missle 
 SeekingMissileData JuggStingerMissileTracker 
@@ -1030,7 +1036,7 @@ RocketData StingerMissile
    mass            = 2.0;
 
    damageClass      = 1;       // 0 impact, 1, radius
-   damageValue      = 0.55;
+   damageValue      = 0.5;
    damageType       = $ExplosionDamageType;
 
    explosionRadius  = 12.5;
@@ -1409,7 +1415,7 @@ GrenadeData DelayMortarShell
 
    explosionRadius    = 20.0;
    kickBackStrength   = 150.0;
-   maxLevelFlightDist = 425; //475
+   maxLevelFlightDist = 475; //425; //475
    totalTime          = 30.0;
    liveTime           = 10.0;
    projSpecialTime    = 0.09;
@@ -1533,21 +1539,21 @@ GrenadeData FlameBurst
     	explosionTag = flamerExp;//plasmaExp;
  	collideWithOwner = True;
  	ownerGraceMS = 50;
- 	collisionRadius = 10.0;
- 	mass = 5.0;
+ 	collisionRadius = 0.2;
+ 	mass = 1.0;
  	elasticity = 0.1;
  	damageClass = 1;
  	damageValue = 0.30;
  	damageType = $ElectricityDamageType;
  	explosionRadius = 5.0;
  	kickBackStrength = 0.1;
- 	maxLevelFlightDist = 75;
- 	totalTime = 4.0;
+ 	maxLevelFlightDist = 100;
+ 	totalTime = 6.0;
  	liveTime = 0.02;
  	projSpecialTime = 0.01;
  	lightRange = 2.0;
 	lightColor = { 1, 1, 0 }; 
- 	inheritedVelocityScale = 1.5;
+ 	inheritedVelocityScale = 0.5; //1.5;
  	smokeName = "plasmatrail.dts";
  	soundId = SoundJetLight;
  };
@@ -1596,10 +1602,10 @@ function FgcShell::Deploy(%this)
 
 //======================================================= Sniper Rifle Laser
 
-if($stronglaser)
+//if($weaklaser)
+//	%lasdam = 0.01;
+//else
 	%lasdam = 0.02;
-else
-	%lasdam = 0.01;
 
 if($redlaser)
 	%lascolor = "laserPulse.bmp";
@@ -1613,7 +1619,7 @@ else
 
 LaserData sniperLaser1
 {
-   laserBitmapName   = %lascolor;
+   laserBitmapName   = "lightningNew.bmp";
    hitName           = "laserhit.dts";
 
    damageConversion  = %lasdam;
@@ -1634,7 +1640,7 @@ LaserData TurretLaser
    hitName           = "laserhit.dts";
 
    damageConversion  = 0.01;
-   baseDamageType    = $TurretLaserDamageType;
+   baseDamageType    = $LaserDamageType;
 
    beamTime          = 0.5;
 
@@ -1821,6 +1827,7 @@ LightningData turretCharge
 
 	damageType       = $gravdamagetype; // $ElectricityDamageType; //
    coneAngle        = 35.0;
+
 //   damagePerSec      = 0.06;
 //  energyDrainPerSec = 60.0;
 //	damagePerSec      = 0.0;
@@ -2257,6 +2264,10 @@ function HackBolt::onAcquire(%this, %player, %target)
 				{
 					Client::sendMessage(%client,0,"You can not hack another player.");
 				}
+				if(%name == "False" && %shape == "magcargo")
+				{
+					Client::sendMessage(%client,0,"Disarming the Nuke Pack. Please wait...");
+				}
 				else
 				{
 					Client::sendMessage(%client,0,"It is not possible to hack in to a " @ %name);
@@ -2265,7 +2276,7 @@ function HackBolt::onAcquire(%this, %player, %target)
 			}
 			else
 			{
-				if(%name == "False" && %shape == "magcargo")
+				if(%name == "False" && %shape == "MagCargo")
 				{
 					Client::sendMessage(%client,0,"Disarming the Nuke Pack. Please wait...");
 				}
@@ -2274,7 +2285,6 @@ function HackBolt::onAcquire(%this, %player, %target)
 					Client::sendMessage(%client,0,"Hacking " @ %name @ ". Please wait...");
 				}
 
-				$hacking[%client] = "true";
 				$hacking[%client] = "true";
 				
 				if ($debug) echo ("Orgin Team = " @ $origTeam[%target]);
@@ -2978,6 +2988,7 @@ function LockJaw::damageTarget(%target, %timeSlice, %damPerSec, %enDrainPerSec, 
 		if(%client.lj)deleteobject(%client.lj);
 		%client.lj = 0;
 		%type = getObjectType(%target);
+		%tarmor = Player::getArmor(%target);
 		if (gamebase::getteam(%target) == gamebase::getteam(%player))
 		{
 			bottomprint(%client, "<jc><f1>Lock Failed, Can Not Target Friendlies!", 3);
@@ -2997,33 +3008,15 @@ function LockJaw::damageTarget(%target, %timeSlice, %damPerSec, %enDrainPerSec, 
 			schedule(%client @ ".target = -1;", 15);
 			echo(%client.target);
 		}
-		else if(%type == "Player")
+		else if(%type == "Player" && %tarmor != "spyarmor" && %tarmor != "spyfemale")
 		{	
-			%pack =Player::getMountedItem(%target,$BackpackSlot);
-
-			//if(%pack == DeployableSensorJammerPack || %pack == SensorJammerPack || Player::getSensorSupression(%target) > 19)
-			//{
-			//	bottomprint(%client, "<jc><f1>Lock Failed, Target Jammed!", 3);
-			//	Client::sendMessage(%client,1,"Lock Failed, Target Jammed!~waccess_denied.wav");
-			//	%client.target = -1;
-			//}
-			//else
-			//if (GameBase::virtual(%target, "getHeatFactor") <= 0.5)
-			//{
-			//	bottomprint(%client, "<jc><f1>Lock Failed, No Heat Source!", 3);
-			//	Client::sendMessage(%client,1,"Lock Failed, No Heat Source!~waccess_denied.wav");
-			//	%client.target = -1;
-			//}
-			//else
-			//{
-				LockjawWarn(%client, %target);
-				Client::sendMessage(%client,1,"** HeatLock Aquired - Active For Next 15 Seconds!!!~wmine_act.wav");			
-				bottomprint(%client, "<jc><f1>Heat Lock Aquired - Active For Next 15 Seconds! - Fire Now To Launch!", 3);
-				playSound(TargetingMissile,GameBase::getPosition(%player));
-				Player::trigger(%player,$WeaponSlot,false);
-				schedule(%client @ ".target = -1;", 15);
-				schedule("bottomprint(" @ %client @ ", \"<jc><f1>Lost Heat Lock!\", 3);", 15);
-			//}
+			LockjawWarn(%client, %target);
+			Client::sendMessage(%client,1,"** HeatLock Aquired - Active For Next 15 Seconds!!!~wmine_act.wav");			
+			bottomprint(%client, "<jc><f1>Heat Lock Aquired - Active For Next 15 Seconds! - Fire Now To Launch!", 3);
+			playSound(TargetingMissile,GameBase::getPosition(%player));
+			Player::trigger(%player,$WeaponSlot,false);
+			schedule(%client @ ".target = -1;", 15);
+			schedule("bottomprint(" @ %client @ ", \"<jc><f1>Lost Heat Lock!\", 3);", 15);
 		}
 		else
 		{

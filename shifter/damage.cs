@@ -37,7 +37,7 @@ function InitDamageRatios()
 	for(%k = 0; %k < 32; %k++)
 	{
 		%thing = %damageId[%k];
-		for(%i = -1; %i < 34; %i++)
+		for(%i = -1; %i < 35; %i++)
 			$DamageScale[%thing, %i] = 1.0;
 		$DamageScale[%thing,	$CloakDamageType] = 0.0;
 		$DamageScale[%thing, $GravDamageType]	= 0.1;
@@ -53,22 +53,16 @@ function CopyDamageRatio(%armor1, %armor2)
 
 //===== Arbitor Armor
 $DamageScale[aarmor,	$BlasterDamageType] 	= 0.5;
-$DamageScale[aarmor,	$DebrisDamageType] 	= 1.2;
+//$DamageScale[aarmor,	$DebrisDamageType] 	= 1.2;
 $DamageScale[aarmor,	$ElectricityDamageType] = 0.2;
-$DamageScale[aarmor,	$EnergyDamageType] 	= 0.3;
-$DamageScale[aarmor,	$EqualizerDamageType] 	= 1.2;
+$DamageScale[aarmor,	$EnergyDamageType] 	= 0.1;//0.3;
 $DamageScale[aarmor,	$FlashDamageType] 	= 0.5;
 $DamageScale[aarmor,	$IDamageType] 	 	= 0.7;
 $DamageScale[aarmor,	$ImpactDamageType] 	= 0.4;
 $DamageScale[aarmor,	$LandingDamageType] 	= 0.1;
-$DamageScale[aarmor,	$LaserDamageType] 	= 0.5;
+$DamageScale[aarmor,	$LaserDamageType] 	= 0.1;//0.5;
+$DamageScale[aarmor,	$Laser2DamageType] 	= 0.5;
 $DamageScale[aarmor,	$MissileDamageType] 	= 0.9;
-$DamageScale[aarmor,	$MortarDamageType] 	= 1.5;
-$DamageScale[aarmor,	$NukeDamageType] 	= 1.3;
-$DamageScale[aarmor,	$MDMDamageType] 	= 1.3;
-$DamageScale[aarmor,	$ShellDamageType] 	= 1.2;
-$DamageScale[aarmor,	$ShrapnelDamageType] 	= 1.2;
-$DamageScale[aarmor,	$SniperDamageType] 	= 1.2;
 CopyDamageRatio(aarmor, afemale);
 
 //===== Goliath Armor
@@ -79,6 +73,7 @@ $DamageScale[barmor,	$EqualizerDamageType] 	 = 1.1;
 $DamageScale[barmor,	$ExplosionDamageType] = 0.5;
 $DamageScale[barmor,	$IDamageType] 	 = 0.7;
 $DamageScale[barmor,	$LaserDamageType] = 1.2;
+$DamageScale[barmor,	$Laser2DamageType] = 1.2;
 $DamageScale[barmor,	$MineDamageType] = 0.5;
 $DamageScale[barmor,	$MissileDamageType] = 0.5;
 $DamageScale[barmor,	$MortarDamageType] = 0.5;
@@ -99,6 +94,7 @@ $DamageScale[darmor,	$IDamageType] 	 = 0.7;
 $DamageScale[darmor,	$ImpactDamageType] = 0.8;
 $DamageScale[darmor,	$LandingDamageType] = 0.8;
 $DamageScale[darmor,	$LaserDamageType] = 0.6;
+$DamageScale[darmor,	$Laser2DamageType] = 0.6;
 $DamageScale[darmor,	$MineDamageType] = 0.8;
 $DamageScale[darmor,	$MissileDamageType] = 0.6;
 $DamageScale[darmor,	$MortarDamageType] = 0.7;
@@ -129,6 +125,7 @@ $DamageScale[larmor,	$EnergyDamageType] = 1.3;
 $DamageScale[larmor,	$IDamageType]	 = 0.7;
 $DamageScale[larmor,	$MineDamageType] = 1.2;
 $DamageScale[larmor,	$MortarDamageType] = 1.3;
+//$DamageScale[larmor,	$LaserDamageType] 	= 0.1;
 $DamageScale[larmor,	$ShrapnelDamageType] = 1.2;
 CopyDamageRatio(larmor, lfemale);
 
@@ -187,6 +184,7 @@ $DamageScale[jarmor,	$IDamageType] 	 = 0.7;
 $DamageScale[jarmor,	$ImpactDamageType] = 0.5;
 $DamageScale[jarmor,	$LandingDamageType] = 0.2;
 $DamageScale[jarmor,	$LaserDamageType] = 0.5;
+$DamageScale[jarmor,	$Laser2DamageType] = 0.5;
 $DamageScale[jarmor,	$MortarDamageType] = 1.2;
 $DamageScale[jarmor,	$PlasmaDamageType] = 2.0;
 $DamageScale[jarmor,	$BoomStickDamageType] 	= 1.2;
@@ -207,6 +205,7 @@ $DamageScale[parmor,	$IDamageType]  	 	= 0.0;
 $DamageScale[parmor,	$ImpactDamageType] 	= 0.0;
 $DamageScale[parmor,	$LandingDamageType] 	= 0.0;
 $DamageScale[parmor,	$LaserDamageType] 	= 0.0;
+$DamageScale[parmor,	$Laser2DamageType] 	= 0.0;
 $DamageScale[parmor,	$MineDamageType] 	= 0.0;
 $DamageScale[parmor,	$MissileDamageType] 	= 0.0;
 $DamageScale[parmor,	$MortarDamageType] 	= 0.0;
@@ -223,6 +222,7 @@ $DamageScale[parmor,	$HBlasterDamageType] 	= 0.0;
 
 $DamageScale[Scout,	$BulletDamageType] 	= 1.6;
 $DamageScale[Scout,	$SniperDamageType] 	= 1.6;
+$DamageScale[Scout,	$Laser2DamageType] 	= 1.6;
 
 $DamageScale[LAPC,	$ImpactDamageType] 	= 0.8;
 

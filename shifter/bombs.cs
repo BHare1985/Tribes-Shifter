@@ -244,8 +244,7 @@ MineData Suicidebomb
 
 function Suicidebomb::onAdd(%this)
 {        
-	//greyflcn, only the shockwave
-	//schedule("NuclearExplosion(" @ %this @ ");",0.5,%this);
+	schedule("NuclearExplosion(" @ %this @ ");",0.5,%this);
 	schedule("Mine::Detonate(" @ %this @ ");",0.5,%this);
 }
 
@@ -401,10 +400,7 @@ function Suicidebomb2::onCollision(%this,%obj)
 	%armor = Player::getArmor(%obj);
 	if (%armor == "earmor" || %armor == "efemale")
 	{
-		%g = Player::getMountedItem(%obj,$WeaponSlot);
-		if(%g == Fixit || %g == DisIt || %g == HackIt)
-		{}
-		else	if(floor(getRandom() * 12) < 5)
+		if(floor(getRandom() * 12) < 5)
 		{	
 		   Client::sendMessage(%c,1,"OOPS! You cut the wrong wire...");
 			Mine::Detonate(%this);

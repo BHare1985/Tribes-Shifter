@@ -271,7 +271,7 @@ function Game::playerSetSpawned(%pl, %clientId, %armor)
 		if (%clientId.spawnnum > 1)
 		{
 			dbecho ("*** Server Public Announce");
-			centerprint (%clientId, "<jc>" @ $Shifter::PublicNotice @ "",4);
+			bottomprint (%clientId, "<jc>" @ $Shifter::PublicNotice @ "",4);
 			%clientId.spawnnum = 0;
 		}
 		dbecho ("*** Server Public Announce - END");
@@ -1560,8 +1560,11 @@ function NewMT()
 	$MatchTrack::NapM1	= 0;
 	$MatchTrack::BooM1	= 0;
 	$MatchTrack::SpyPod1	= 0;
+	if($server::timelimit)
+		$server::timelimit = 45;
 
 	$matchtrack::time = $server::timelimit;
+
 	$matchtrack::timecheck = 0;
 	export("$matchtrack::*", "config\\matchtrack.cs", false);
 	$dlist = " ";

@@ -108,8 +108,8 @@ function DeployableStation::onDestroyed(%this)
 	else if( %stationName == DeployableAmmoStation) 
 	{
 		$dlist = string::greplace($dlist, %this, "");
-		echo("Killing Ammo:" @ %this);
-		echo($dlist);		
+		//echo("Killing Ammo:" @ %this);
+		//echo($dlist);		
 		$TeamItemCount[GameBase::getTeam(%this) @ "DeployableAmmoPack"]--;
 	}
 	calcRadiusDamage(%this, $DebrisDamageType, 2.5, 0.05, 25, 13, 2, 0.30, 0.1, 200, 100);
@@ -119,9 +119,11 @@ function DeployableStation::onDestroyed(%this)
 
 function DeployableStation::onCollision(%this, %object)
 {
+
+	if (getObjectType(%object) != "Player" || Player::isAIControlled(%object) || Player::isDead(%object) || isPlayerBusy(%object))
+		return;
+	//{
 	%obj = getObjectType(%object);
-	if (%obj == "Player") 
-	{
 		if (Player::isAIControlled(%object))
 			return;
 		if (Player::isDead(%object))
@@ -168,5 +170,5 @@ function DeployableStation::onCollision(%this, %object)
 				}
 			}
 		}
-	}
+	//}
 }

@@ -734,7 +734,7 @@ function Mission::init()
    $firstTeamLine = 7;
    $server::deathmatch = false;
    $firstObjectiveLine = $firstTeamLine + getNumTeams() + 1;
-	$ItemMax[larmor,	ShieldPack] = 0;	$ItemMax[lfemale,	ShieldPack] = 0;
+//	$ItemMax[larmor,	ShieldPack] = 0;	$ItemMax[lfemale,	ShieldPack] = 0;
 	$ItemMax[larmor,	Chaingun] = 0;	$ItemMax[lfemale,	Chaingun] = 0;
 	$ItemMax[larmor,	BulletAmmo] = 0;	$ItemMax[lfemale,	BulletAmmo] = 0;
 	$DamageScale[larmor,	$ShrapnelDamageType] = 1.2;	$DamageScale[lfemale,	$ShrapnelDamageType] = 1.2;

@@ -24,9 +24,9 @@ function LoadModule(%client,%this,%modNum,%ammo,%shield)
 //===================================================================================================================
 //											Flyer Data
 //===================================================================================================================
-FlierData Scout{ explosionId = flashExpLarge; debrisId = flashDebrisLarge; className = "Vehicle"; shapeFile = "flyer"; shieldShapeName = "shield_medium"; mass = 9.0; drag = 1.0; density = 1.2; maxBank = 1.2; maxPitch = 100; maxSpeed = 108; minSpeed = -15; lift = 1.10; maxAlt = 1550; maxVertical = 12; maxDamage = 0.8; damageLevel = {1.0, 1.0}; maxEnergy = 100; accel = 2.925; groundDamageScale = 1.0; reloadDelay = 0.2; repairRate = 0.1; damageSound = SoundFlierCrash; ramDamage = 1.5; ramDamageType = -1; mapFilter = 2; mapIcon = "M_vehicle"; visibleToSensor = true; shadowDetailMask = 2; mountSound = SoundFlyerMount; dismountSound = SoundFlyerDismount; idleSound = SoundFlyerIdle; moveSound = SoundFlyerActive; visibleDriver = true; driverPose = 22; }; // projectileType = "Undefined";  projectileType = "Undefined";
-FlierData LAPC { explosionId = flashExpLarge; debrisId = flashDebrisLarge; className = "Vehicle"; shapeFile = "hover_apc_sml"; shieldShapeName = "shield_large"; mass = 22.0; drag = 1.2; density = 1.2; maxBank = 0.9; maxPitch = 1.5; maxSpeed = 108; minSpeed = -5; lift = 0.75; maxAlt = 1550; maxVertical = 9; maxDamage = 1.9; damageLevel = {1.0, 1.0}; destroyDamage = 1.5; maxEnergy = 100; accel = 1.01675; groundDamageScale = 0.50; repairRate = 0; ramDamage = 25; ramDamageType = -1; mapFilter = 2; mapIcon = "M_vehicle"; reloadDelay = 4.0; damageSound = SoundTankCrash; visibleToSensor = true; shadowDetailMask = 2; mountSound = SoundFlyerMount; dismountSound = SoundFlyerDismount; idleSound = SoundFlyerIdle; moveSound = SoundFlyerActive; visibleDriver = true; driverPose = 23; }; //projectileType = Undefined;
-FlierData HAPC { explosionId = flashExpLarge; debrisId = flashDebrisLarge; className = "Vehicle"; shapeFile = "hover_apc"; shieldShapeName = "shield_large"; mass = 25.0; drag = 1.6; density = 1.2; maxBank = 0.8; maxPitch = 1.5; maxSpeed = 116.8; minSpeed = -15; lift = 0.35; maxAlt = 1550; maxVertical = 6; maxDamage = 2.2; damageLevel = {1.0, 1.0}; maxEnergy = 100; accel = 0.855; groundDamageScale = 0.5; reloadDelay = 4.0; repairRate = 0; ramDamage = 30; ramDamageType = -1; mapFilter = 2; mapIcon = "M_vehicle"; fireSound = SoundFireFlierRocket; reloadDelay = 3.0; damageSound = SoundTankCrash; visibleToSensor = true; shadowDetailMask = 2; mountSound = SoundFlyerMount; dismountSound = SoundFlyerDismount; idleSound = SoundFlyerIdle; moveSound = SoundFlyerActive; visibleDriver = true; driverPose = 23; }; //projectileType = Undefined;
+FlierData Scout{ explosionId = flashExpLarge; debrisId = flashDebrisLarge; className = "Vehicle"; shapeFile = "flyer"; shieldShapeName = "shield_medium"; mass = 9.0; drag = 1.0; density = 1.2; maxBank = 1.2; maxPitch = 100.0; maxSpeed = 70; minSpeed = -15; lift = 1.10; maxAlt = 1550; maxVertical = 12; maxDamage = 0.8; damageLevel = {1.0, 1.0}; maxEnergy = 100; accel = 1.2; groundDamageScale = 1.0; reloadDelay = 0.2; repairRate = 0.1; damageSound = SoundFlierCrash; ramDamage = 1.5; ramDamageType = -1; mapFilter = 2; mapIcon = "M_vehicle"; visibleToSensor = true; shadowDetailMask = 2; mountSound = SoundFlyerMount; dismountSound = SoundFlyerDismount; idleSound = SoundFlyerIdle; moveSound = SoundFlyerActive; visibleDriver = true; driverPose = 22; }; // projectileType = "Undefined";  projectileType = "Undefined";
+FlierData LAPC { explosionId = flashExpLarge; debrisId = flashDebrisLarge; className = "Vehicle"; shapeFile = "hover_apc_sml"; shieldShapeName = "shield_large"; mass = 22.0; drag = 1.2; density = 1.2; maxBank = 0.8; maxPitch = 100.0; maxSpeed = 65; minSpeed = -5; lift = 0.75; maxAlt = 1550; maxVertical = 9; maxDamage = 1.9; damageLevel = {1.0, 1.0}; destroyDamage = 1.5; maxEnergy = 100; accel = 0.7; groundDamageScale = 0.50; repairRate = 0; ramDamage = 20.0; ramDamageType = -1; mapFilter = 2; mapIcon = "M_vehicle"; reloadDelay = 4.0; damageSound = SoundTankCrash; visibleToSensor = true; shadowDetailMask = 2; mountSound = SoundFlyerMount; dismountSound = SoundFlyerDismount; idleSound = SoundFlyerIdle; moveSound = SoundFlyerActive; visibleDriver = true; driverPose = 23; }; //projectileType = Undefined;
+FlierData HAPC { explosionId = flashExpLarge; debrisId = flashDebrisLarge; className = "Vehicle"; shapeFile = "hover_apc"; shieldShapeName = "shield_large"; mass = 25.0; drag = 1.6; density = 1.2; maxBank = 0.7; maxPitch = 100.0; maxSpeed = 60; minSpeed = -15; lift = 0.35; maxAlt = 1550; maxVertical = 6; maxDamage = 2.2; damageLevel = {1.0, 1.0}; maxEnergy = 100; accel = 0.40; groundDamageScale = 0.125; reloadDelay = 4.0; repairRate = 0; ramDamage = 20.0; ramDamageType = -1; mapFilter = 2; mapIcon = "M_vehicle"; fireSound = SoundFireFlierRocket; reloadDelay = 3.0; damageSound = SoundTankCrash; visibleToSensor = true; shadowDetailMask = 2; mountSound = SoundFlyerMount; dismountSound = SoundFlyerDismount; idleSound = SoundFlyerIdle; moveSound = SoundFlyerActive; visibleDriver = true; driverPose = 23; }; //projectileType = Undefined;
 
 //===================================================================================================================
 //											Scout
@@ -154,7 +154,7 @@ function Scout::OnFire(%this)
 	{
 		%vel = item::getvelocity(%this);		
 		%dir = Vector::getfromrot(%rot);
-		%fastdir = Vector::getfromrot(%rot, 6.0);
+		%fastdir = Vector::getfromrot(%rot, 8.0);
 		%pos0 = Vector::add(%pos, %fastdir);
 		%padding = "0 0 1";
 		%pos1 = Vector::add(%pos0, %padding);
@@ -869,7 +869,7 @@ function Vehicle::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
 
 	%value *= $damageScale[GameBase::getDataName(%this), %type];
 
-	if (%type == "-1")
+	if (%type == "-1" || %type == "20")
 		StaticShape::onDamage(%this,%type,%value,%pos,%vec,%mom,%object);
 	else
 		StaticShape::shieldDamage(%this,%type,%value,%pos,%vec,%mom,%object);

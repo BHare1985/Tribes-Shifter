@@ -647,7 +647,8 @@ function RocketImage::onFire(%player, %slot)
 			{
 				%object = getObjectType($los::object);
 				%targetId = GameBase::getOwnerClient($los::object);
-				if(%object == "Player")
+				%tarmor = Player::getArmor($los::object);
+				if(%object == "Player" && (%tarmor != "spyarmor" && %tarmor != "spyfemale"))
 				{			 
 					%name = Client::getName(%targetId);
 					Tracker(%client,%targetId);

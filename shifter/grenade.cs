@@ -258,10 +258,7 @@ function Nukebomb::onCollision(%this,%obj)
 	%armor = Player::getArmor(%obj);
 	if (%armor == "earmor" || %armor == "efemale")
 	{
-		%g = Player::getMountedItem(%obj,$WeaponSlot);
-		if(%g == Fixit || %g == DisIt || %g == HackIt)
-		{}
-		else if(floor(getRandom() * 10) > 6)
+		if(floor(getRandom() * 10) > 6)
 		{	
 			Client::sendMessage(%c,1,"OOPS! You cut the wrong wire...");
 			%data = GameBase::getDataName(%this);

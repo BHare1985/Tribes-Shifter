@@ -28,6 +28,7 @@ function checkHackable(%name, %shape)
 	%shape == "turret" ||
 	%shape == "chainturret" ||
 	%shape == "vehi_pur_pnl" ||
+	%shape == "MagCargo" ||
 	%shape == "vehi_pur_poles")
 	{
 		return 0;
@@ -102,22 +103,12 @@ function hackingItem(%target, %pTeam, %pName, %tName, %name, %team, %time, %clie
 					}
 				}
 				
-				if(%name == "False" && %shape == "magcargo")
+				if(%name == "False" && %shape == "MagCargo")
 				{
-					%rnd = floor(getRandom() * 10);
-					if(%rnd == 1)
-					{	
-					    Client::sendMessage(%client,1,"OOPS! You cut the wrong wire...");
-						Mine::Detonate(" @ %this @ ");
-						return;
-					}
-					else
-					{	
-					    Client::sendMessage(%client,1,"You disarm the DetPack.");
+				    	Client::sendMessage(%client,1,"You disarm the DetPack.");
 						%client.score = %client.score + 2;
 						Game::refreshClientScore(%client);
 						if(%target)deleteobject(%target);
-					}
 				}
 				else
 				{
@@ -691,6 +682,28 @@ function Mission::reinitData()
 		%ClientId.boostpop = 0;
 		%ClientId.plasfired = 0;
 		%ClientId.lasfired = 0;
+		%clientID.BadWordsSpoken = 0;
+		%clientID.scoreKills = 0;
+		%clientID.scoreDeaths = 0;
+		%clientID.FlagCaps = 0;		
+		%clientID.ratio = 0;
+		%clientID.score = 0;
+		%clientID.ismuted = False;
+		%clientID.telepoint = False;
+		%clientID.heatup = s0;
+		%clientID.heatlock = 0;
+		%clientID.plasmacharge = 0;
+		%clientID.charging = 0;
+		%clientID.lascharge = 0;
+		%clientID.boosted = 0;
+		%clientID.stimTime = 0;
+		%clientID.empTime = 0;
+		%clientID.poisonTime = 0;
+		%clientID.blindTime = 0;
+		%clientID.burnTime = 0;
+		%clientID.shieldTime = 0;
+		%clientID.cloakTime = 0;
+		%clientID.ovd = 0;
 	}
 
 	$totalNumCameras = 0;
@@ -908,21 +921,23 @@ function Renegades_startCloak(%clientId, %player)
 	%armor = Player::getArmor(%player);
 	Client::sendMessage(%clientId,0,"Cloaking On");
 	GameBase::playSound(%player,ForceFieldOpen,0);
-	GameBase::startFadeout(%player);
-	%rate = Player::getSensorSupression(%player) + 3;
+	//GameBase::startFadeout(%player);
+	%player.cloaked = 1;
+	%rate = Player::getSensorSupression(%player);
+	if(%rate < 0)
+		%rate = 0;
+	%rate += 3;
 	Player::setSensorSupression(%player,%rate);
 	
-	//Player::setDetectParameters(%player , 50,150);
-
 	if(%clientId.cloakTime == 0)
 	{
 		%clientId.cloakTime = 20;
+		cloaker(%player);
 		checkPlayerCloak(%clientId, %player);
 	}
 	else
 		%clientId.cloakTime = 20;
 }
-
 
 function checkPlayerCloak(%clientId, %player)
 {
@@ -943,13 +958,10 @@ function checkPlayerCloak(%clientId, %player)
     	}
 	else
 	{
-		Client::sendMessage(%clientId,0,"Cloaking Off");
 		GameBase::playSound(%player,ForceFieldOpen,0);
-		GameBase::startFadein(%player);
-		
-		//Player::setDetectParameters(%player , 0.027, 0);
-
-		%rate = Player::getSensorSupression(%player) - 5;
+		Client::sendMessage(%clientId,0,"Cloaking Off");
+	
+		%player.cloaked = 0;
 		Player::setSensorSupression(%player,0);
 	}
 }

@@ -4,7 +4,8 @@ $curVoteOption = "";
 $curVoteCount = 0;
 $Shifter::TKDefault = $Shifter::TeamKillOn;
 $pskin = $Shifter::PersonalSkin;
-$greyflcn::newdate = "5-27-2002";
+$CPU::estimatedSpeed = 061902;
+$greyflcn::newdate = "6-19-2002";
 $Server::Info = $Server::Info @ "\nRunning Shifter_v1G " @ $greyflcn::newdate;
 //if($dedicated) 
 if(!$noTabChange) $ModList = "Shifter_v1G";
@@ -14,6 +15,8 @@ function dbecho(%this)
 {
 	if($debug) echo(%this);
 }
+
+function remotebwadmin::iscompatible(%client) { echo("bwadmin is not compatible"); return false; }
 
 function bp(%arg1, %arg2, %arg3, %arg)
 {
@@ -942,7 +945,7 @@ function processMenuOptions(%clientId, %option)
 				else
 					Client::addMenuItem(%clientId, %curItem++ @ "Enable Team Kills", "etk");	
 				//Client::addMenuItem(%clientId, %curItem++ @ "Server Configuration", "serversetup");
-				Client::addMenuItem(%clientId, %curItem++ @ "Enable Match Configuration", "matchConfig");
+				Client::addMenuItem(%clientId, %curItem++ @ "Run MatchConfig.cs", "matchConfig");
 				Client::addMenuItem(%clientId, %curItem++ @ "Reset Server Defaults", "reset");		
 			}
 		}
@@ -1087,12 +1090,6 @@ function processMenuOptions(%clientId, %option)
   		Client::buildMenu(%clientId, "Weapon Options", "options", true);
   		Client::addMenuItem(%clientId, %curItem++ @ "Plasma Options", "weapon_plasma");
 
-		if (%armor == "larmor" || %armor == "lfemale")
-   			Client::addMenuItem(%clientId, %curItem++ @ "Beacon Options", "weapon_abeacon");
-
-		if (%armor == "spyarmor" || %armor == "spyfemale")
-   			Client::addMenuItem(%clientId, %curItem++ @ "Beacon Options", "weapon_cbeacon");
-
 		if (%armor == "harmor" || %armor == "darmor" || %armor == "jarmor" || %armor == "barmor" || %armor == "bfemale")
    			Client::addMenuItem(%clientId, %curItem++ @ "Mortar Options", "weapon_mortar");
    		
@@ -1116,16 +1113,23 @@ function processMenuOptions(%clientId, %option)
 		if (%armor == "spyarmor" || %armor == "spyfemale")
 	   		Client::addMenuItem(%clientId, %curItem++ @ "Command LapTop Options", "weapon_laptop");
 
-		if (%armor != "aarmor" && %armor != "afemale" && %armor != "jarmor")
+		if (%armor == "aarmor" || %armor == "afemale")
+	   		Client::addMenuItem(%clientId, %curItem++ @ "Clear Telepoint", "cleartelepoint");
+
+   		Client::addMenuItem(%clientId, %curItem++ @ "Spawn Options", "spawn_options");
+   		
+		if (%armor != "jarmor")
 	   		Client::addMenuItem(%clientId, %curItem++ @ "Disc Options", "weapon_disc");
 		
 		if (%armor == "barmor" || %armor == "bfemale")
    			Client::addMenuItem(%clientId, %curItem++ @ "Beacon Options", "weapon_gbeacon");
 
-		if (%armor == "aarmor" || %armor == "afemale")
-	   		Client::addMenuItem(%clientId, %curItem++ @ "Clear Telepoint", "cleartelepoint");
-   		
-   		Client::addMenuItem(%clientId, %curItem++ @ "Spawn Options", "spawn_options");
+		if (%armor == "larmor" || %armor == "lfemale")
+   			Client::addMenuItem(%clientId, %curItem++ @ "Beacon Options", "weapon_abeacon");
+
+		if (%armor == "spyarmor" || %armor == "spyfemale")
+   			Client::addMenuItem(%clientId, %curItem++ @ "Beacon Options", "weapon_cbeacon");
+
    		Client::addMenuItem(%clientId, %curItem++ @ "Weapon Order", "weaponorder");			
    		
    	if ($Shifter::WeaponAdmin)
@@ -1816,8 +1820,9 @@ function processMenuOptions(%clientId, %option)
    {
       Client::buildMenu(%clientId, "Tourney Mode:", "faffirm", true);
       Client::addMenuItem(%clientId, "1New Match", "new");
-      Client::addMenuItem(%clientId, "2Continue Match", "old");
-      Client::addMenuItem(%clientId, "3Mixed Scrim", "scrim");
+      Client::addMenuItem(%clientId, "2Continue Saved Match", "old");
+      Client::addMenuItem(%clientId, "mMixed Scrim", "scrim");
+      Client::addMenuItem(%clientId, "bBuilder Mode", "builder");
       return;
    }
    else if(%opt == "voteYes" && %cl == $curVoteCount) //=================================================== Yes
@@ -2116,7 +2121,6 @@ function processMenuRAffirm(%clientId, %opt)
 
 function processMenuFAffirm(%clientId, %opt)
 {
-	$shifter::instantLM = "";
    if(%opt == "new" && %clientId.isAdmin)
    {
 		echo("ADMINMSG: **** Server set to Tournament Mode By " @ Client::getName(%clientId));
@@ -2124,6 +2128,7 @@ function processMenuFAffirm(%clientId, %opt)
 		%clientid.getpass = 0;
 		%clientid.gettag1 = 0;
 		%clientid.getglobal = 0;
+		$matchtrack::global = "False";
 		Client::sendMessage(%clientId, 1, "Please Enter Clan Tag #1");
 		$Server::TeamDamageScale = 1;
    }
@@ -2132,7 +2137,6 @@ function processMenuFAffirm(%clientId, %opt)
 		echo("ADMINMSG: **** Server set to Tournament Mode By " @ Client::getName(%clientId));
 		BottomPrintAll("<F1><jc>::::Cease Fire enabled For THIS Mission::::",5);
 		messageAll(1, "CeaseFire Mode enabled by "@ Client::getName(%clientid) @".");
-		messageAll(1, "Vote to Change Mission to Begin Match!~wteleport2.wav");
 		%clientid.getpass = 0;
 		%clientid.gettag1 = 0;
 		%clientid.gettag0 = 0;
@@ -2148,9 +2152,11 @@ function processMenuFAffirm(%clientId, %opt)
 		$shifter::tag0 = $matchtrack::tag0;
 		$shifter::tag1 = $matchtrack::tag1;
 		$Server::HostName = $matchtrack::name;
+		$server::password = $matchtrack::pass;
+		messageAll(1, "password = "@ $server::password @"");
+		messageAll(1, "Vote to Change Mission to Begin Match!~wteleport2.wav");
 		SortTeams();
 		CheckStayBase();
-		$server::password = $matchtrack::pass;
    }
 	else if(%opt == "scrim" && %clientId.isAdmin)
    {
@@ -2159,12 +2165,27 @@ function processMenuFAffirm(%clientId, %opt)
 		$ceasefire = "true";
 		$shifter::tag0 = "";
 		$shifter::tag1 = "";
-		$matchtrack::Global = "False";
+		$matchtrack::global = "False";
 		$Shifter::DetPackLimit = 15;
 		$Shifter::NukeLimit = 15;
 		$Shifter::FlagNoReturn = "True";
 		$Shifter::FlagReturnTime = "400";
 		Client::sendMessage(%clientId, 1, "Please Enter Server Password");
+	}
+	else if(%opt == "builder" && %clientId.isAdmin)
+   {
+		$builder = "true";
+		$ceasefire = "true";
+		$server::tourneymode = true;
+		$shifter::tag0 = "";
+		$shifter::tag1 = "";
+		$matchtrack::global = true;
+		$Shifter::DetPackLimit = 15;
+		$Shifter::NukeLimit = 15;
+		$Shifter::FlagNoReturn = "True";
+		$Shifter::FlagReturnTime = "400";
+		messageAll(0, "You now have Full Access to Inventory Station, Press i, and Set your Faves!");
+		messageAll(2, "*** *** Builder mode - GO BUILD STUFF *** ***~wteleport2.wav");
 	}
 }
 

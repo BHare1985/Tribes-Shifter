@@ -47,13 +47,13 @@ function Observer::triggerUp(%client)
 			for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
 			{
 				if(%cl.notready == "true")
-					remoteEval(%cl, "BP", %msg, 2);
+					remoteEval(%cl, "CP", %msg, 2);
 			}
 
 			if(%client.notreadyCount < 1)
-				bottomprint(%client, "<f1><jc>Waiting for match start (FIRE if not ready).", 0);
+				centerprint(%client, "<f1><jc>Waiting for match start (FIRE if not ready).", 0);
 			else 
-				bottomprint(%client, "<f1><jc>Waiting for match start.", 0);
+				centerprint(%client, "<f1><jc>Waiting for match start.", 0);
 		}
 		else
 		{
@@ -62,7 +62,7 @@ function Observer::triggerUp(%client)
 			{
 				%client.notready = true;
 				MessageAll(0, Client::getName(%client) @ " is NOT READY.");
-				bottomprint(%client, "<f1><jc>Press FIRE when ready.", 0);
+				centerprint(%client, "<f1><jc>Press FIRE when ready.", 0);
 			}
 			return;
 		}

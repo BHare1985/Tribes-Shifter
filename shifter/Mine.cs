@@ -320,21 +320,20 @@ MineData ShockMine
 	explosionRadius = 10.0;
 	damageValue = 0.25;
 	damageType = $MortarDamageType;
-	kickBackStrength = 500;
-	triggerRadius = 1.0;
+	kickBackStrength = 1000;
+	triggerRadius = 2.0;
 	maxDamage = 2.0;
 };
 
 function ShockMine::onAdd(%this)
 {
-	
+	GameBase::setActive(%this,true);
 	%data = GameBase::getDataName(%this);
 	schedule("GameBase::startFadeOut(" @ %this @ ");",8.0,%this);
-
 }
 function ShockMine::onCollision(%this,%obj)
 {
-	if( mine::triggered(%this, %object) )
+	if( mine::triggered(%this, %obj) )
 		GameBase::setDamageLevel(%this, 10);
 }
 

@@ -439,14 +439,14 @@ function SensorJammerPackImage::onDeactivate(%player,%imageSlot)
 	Player::trigger(%player,$BackpackSlot,false);
 }
 
-//======================================================================== Cloacking Device
+//======================================================================== Cloaking Device
 
 ItemImageData CloakingDeviceImage
 {
 	shapeFile = "sensorjampack";
 	mountPoint = 2;
 	weaponType = 2;  // Sustained
-	maxEnergy = 10;  // Energy used/sec for sustained weapons
+	maxEnergy = 9;  // Energy used/sec for sustained weapons
 	sfxFire = SoundJammerOn;
   	mountOffset = { 0, -0.05, 0 };
   	mountRotation = { 0, 0, 0 };
@@ -458,7 +458,7 @@ ItemData CloakingDevice
 	description = "Cloaking Device";
 	shapeFile = "sensorjampack";
 	className = "Backpack";
-	heading = "cBackpacks";
+	heading = "kBackpacks";
 	shadowDetailMask = 4;
 	imageType = CloakingDeviceimage;
 	price = 600;
@@ -469,41 +469,30 @@ ItemData CloakingDevice
 
 function CloakingDeviceImage::onActivate(%player,%imageSlot)
 {
-	%armor = Player::getArmor(%player);
-	if ((%armor != "aarmor") && (%armor != "afemale"))
-	{
-		GameBase::startFadeout(%player);
-		Client::sendMessage(Player::getClient(%player),0,"Cloaking Device On");
-		%rate = Player::getSensorSupression(%player) + 5;
-		Player::setSensorSupression(%player,%rate);
-	}
-	else
-	{
-		%obj = newObject("","Mine","CloakBlast");
-		addToSet("MissionCleanup", %obj);
-		%padd = "0 0 3.5";
-		%pos = Vector::add(GameBase::getPosition(%player), %padd);
-		GameBase::setPosition(%obj, %pos);	
-		Player::trigger(%player,$BackpackSlot,false);
-	}
+	%radius = Player::getSensorSupression(%player);
+	if(%radius < 0)
+		%radius = 0;
+	%radius += 2;
+	Player::setSensorSupression(%player,%radius);
+	GameBase::playSound(%player,ForceFieldOpen,0);
+ 	%player.cloaked = 1;
+ 	Cloaker(%player);
+	Client::sendMessage(Player::getClient(%player),0,"Cloaking Device On");
+	Player::trigger(%player,$BackpackSlot,true);
 }
 
 function CloakingDeviceImage::onDeactivate(%player,%imageSlot)
 {
-
-	%armor = Player::getArmor(%player);
-
-	 if ((%armor != "aarmor") && (%armor != "afemale"))
-	 {
-		GameBase::startFadein(%player);
-		Client::sendMessage(Player::getClient(%player),0,"Cloaking Device Off");
-		%rate = Player::getSensorSupression(%player) - 5;
-		Player::setSensorSupression(%player,%rate);
-		Player::trigger(%player,$BackpackSlot,false);
-	 }
-	 else
-		Player::trigger(%player,%imageslot,false);
-
+	%radius = Player::getSensorSupression(%player);
+	if(%radius < 0)
+		%radius = 0;
+	%radius -= 2;
+	Player::setSensorSupression(%player,%radius);
+	GameBase::playSound(%player,ForceFieldClose,0);
+ 	%player.cloaked = 0;
+	Player::trigger(%player,$BackpackSlot,false);
+ 	Cloaker(%player);
+	Client::sendMessage(Player::getClient(%player),0,"Cloaking Device Off");
 }
 
 //======================================================================== Stealth Shield
@@ -855,14 +844,15 @@ function SMRPackImage::onActivate(%player,%slot)
 		Player::decItemCount(%player,$WeaponAmmo[SMRPack],1);
 		%trans = GameBase::getMuzzleTransform(%player);
 		%vel = Item::getVelocity(%player);
-	
+
 		 if(GameBase::getLOSInfo(%player,950)) 
 		 {
-			 %object = getObjectType($los::object);
-			 %targetId = GameBase::getOwnerClient($los::object);
+			%object = getObjectType($los::object);
+			%targetId = GameBase::getOwnerClient($los::object);
+			%tarmor = Player::getArmor($los::object);
 
-			 if(%object == "Player") // || %object == "Flier"
-			 {			 
+			if(%object == "Player" && (%tarmor != "spyarmor" && %tarmor != "spyfemale"))
+			{			 
 				%name = Client::getName(%targetId);
 				Tracker(%client,%targetId);
 				Client::sendMessage(%client,0,"** Lock Aquired - " @ %name @ "~wmine_act.wav");
@@ -1134,7 +1124,7 @@ ItemImageData SuicidePackImage
 	mountPoint = 2;
 	mountOffset = { 0, -0.5, -0.3 };
 	mountRotation = { 0, 0, 0 };
-	mass = 1.5;
+	mass = 2.5;
 	firstPerson = false;
 
 };
@@ -1147,7 +1137,7 @@ ItemData SuicidePack
    	heading = "cBackpacks";
 	imageType = SuicidePackImage;
 	shadowDetailMask = 4;
-	mass = 1.5;
+	mass = 2.5;
 	elasticity = 0.2;
 	price = 450;
 	hudIcon = "deployable";

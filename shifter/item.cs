@@ -931,7 +931,9 @@ function fireGH(%player)
 			{
 				%object = getObjectType($los::object);
 				%targetId = GameBase::getOwnerClient($los::object);
-				if(%object == "Player")
+				%tarmor = Player::getArmor($los::object);
+
+				if(%object == "Player" && (%tarmor != "spyarmor" && %tarmor != "spyfemale"))
 				{
 					Player::decItemCount(%player,$WeaponAmmo[Hammer1Pack],2);
 					%name = Client::getName(%targetId);
@@ -4111,7 +4113,8 @@ function PowerGeneratorPack::onUse(%player,%item)
 	}
 	else
 	{
-		Player::deployItem(%player,%item);
+		if(%player.outArea != 1)
+			Player::deployItem(%player,%item);
 	}
 }
 

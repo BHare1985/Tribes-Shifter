@@ -84,8 +84,10 @@ function favoriteSpawnList(%client)
 				if(%count)
 				{
 					if(%item.className != Armor)
+					{
 						teamEnergyBuySell(Client::getOwnedObject(%client),(%item.price * %count));
-					Player::setItemCount(%client, %item, 0);  
+						Player::setItemCount(%client, %item, 0);
+					}
 				}
 			}
 			

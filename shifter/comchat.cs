@@ -12,7 +12,6 @@ function remoteSay(%clientId, %team, %message)
 
 	if(%clientid.gettag0)
 	{
-		//$shifter::tag0 = escapeString(%message);
 		$matchtrack::tag0 = escapeString(%message);
 		if(escapeString(%message) != "")
 			$server::teamname0 = escapeString(%message);
@@ -31,57 +30,8 @@ function remoteSay(%clientId, %team, %message)
 		%clientid.gettag1 = 0;
 		%clientid.gettag0 = 0;
 		%clientid.getglobal = 0;
-		%clientid.getpass = 0;
-		%clientid.getbuild = 1;
-		Client::sendMessage(%clientId, 1, "Builder Mode in CeaseFire  ( YES / NO )");
-		return;
-	}
-	else if(%clientid.getbuild)
-	{
-		if(String::findSubStr(escapeString(%message),"Yes") != -1)
-			$builder = "True";
-		else
-			$builder = "False";
-		%clientid.gettag1 = 0;
-		%clientid.gettag0 = 0;
-		%clientid.getglobal = 1;
-		%clientid.getpass = 0;
-		%clientid.getbuild = 0;
-		Client::sendMessage(%clientId, 1, "Select Global Chat ( YES / NO )");
-		return;
-	}
-	else if(%clientid.getglobal)
-	{
-		if(String::findSubStr(escapeString(%message),"Yes") != -1)
-			$matchtrack::Global = "True";
-		else
-			$matchtrack::Global = "False";
-		%clientid.gettag1 = 0;
-		%clientid.gettag0 = 0;
-		%clientid.getglobal = 0;
-		%clientid.getpass = 0;
-		%clientid.getbuild = 0;
-		%clientid.getname = 1;
-		Client::sendMessage(%clientId, 1, "Please Enter Server Name OR Blank for no change");
-		return;
-	}
-	else if(%clientid.getname)
-	{
-		if(escapeString(%message) != "")
-		{
-			$Server::HostName = escapeString(%message);
-			$matchtrack::name = escapeString(%message);
-		}
-		else
-		{
-			$matchtrack::name = $Server::HostName;			
-		}
-		%clientid.gettag1 = 0;
-		%clientid.gettag0 = 0;
-		%clientid.getglobal = 0;
 		%clientid.getpass = 1;
 		%clientid.getbuild = 0;
-		%clientid.getname = 0;
 		Client::sendMessage(%clientId, 1, "Please Enter Server Password");
 		return;
 	}
@@ -99,12 +49,15 @@ function remoteSay(%clientId, %team, %message)
 		$Shifter::NukeLimit = 15;
 		$Shifter::FlagNoReturn = "True";
 		$Shifter::FlagReturnTime = "400";
+		$Server::timeLimit = %time;
+		if(!$Server::timeLimit)
+			$Server::timeLimit = 45;
 		if($builder != "scrim")
 		{
 			BottomPrintAll("<F1><jc>::::Cease Fire enabled For THIS Mission::::",5);
-			messageAll(0, "CeaseFire Mode enabled by "@ Client::getName(%clientid) @".");
-			if($builder == "true") messageAll(0, "You now have Full Access to Inventory Station, Press i, and Set your Faves!");
 			messageAll(1, "Vote to Change Mission to Begin Match!~wteleport2.wav");
+			messageAll(0, "CeaseFire Mode enabled by "@ Client::getName(%clientid) @".");
+			messageAll(1, "password = "@ $server::password @"");
 			messageteam(1, "Note to Refs: Flag Return Manual, Nuke/Det 15/15", -1);
 			$ceasefire = true;
 			NewMT();

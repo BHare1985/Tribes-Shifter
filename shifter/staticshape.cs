@@ -401,7 +401,7 @@ function DeployableForceField::onCollision(%this,%obj)
 		GameBase::setDamageLevel(%obj.vehicle, 10);
 	else if(GameBase::getDataName(%obj).shapefile == "rocket")
 		GameBase::setDamageLevel(%obj, 10);
-	else if(%this.isactive == True || getObjectType(%obj) != "Player" || Player::isDead(%obj))
+	else if(getObjectType(%obj) != "Player" || Player::isDead(%obj))
 		{}
 	else if (GameBase::getTeam(%obj) == Gamebase::getTeam(%this) || (Player::getArmor(%obj) == "spyarmor" || Player::getArmor(%obj) == "spyfemale") )
 		ff::Open(%this, 1);
@@ -421,7 +421,7 @@ function LargeForceField::onCollision(%this,%obj)
 		GameBase::setDamageLevel(%obj.vehicle, 10);
 	else if(GameBase::getDataName(%obj).shapefile == "rocket")
 		GameBase::setDamageLevel(%obj, 10);
-	else if(%this.isactive == True || getObjectType(%obj) != "Player" || Player::isDead(%obj))
+	else if(getObjectType(%obj) != "Player" || Player::isDead(%obj))
 		{}
 	else if (GameBase::getTeam(%obj) == Gamebase::getTeam(%this) || (Player::getArmor(%obj) == "spyarmor" || Player::getArmor(%obj) == "spyfemale") )
 		ff::Open(%this, 2.75);
@@ -441,7 +441,7 @@ function LargeShockForceField::onCollision(%this,%obj)
 		GameBase::setDamageLevel(%obj.vehicle, 10);
 	else if(GameBase::getDataName(%obj).shapefile == "rocket")
 		GameBase::setDamageLevel(%obj, 10);
-	else if(%this.isactive == True || getObjectType(%obj) != "Player" || Player::isDead(%obj))
+	else if(getObjectType(%obj) != "Player" || Player::isDead(%obj))
 		{}
 	else if (GameBase::getTeam(%obj) == Gamebase::getTeam(%this)) // || (Player::getArmor(%obj) == "spyarmor" || Player::getArmor(%obj) == "spyfemale") 
 		ff::Open(%this, 2.75);
@@ -479,7 +479,7 @@ function ShockFloor::onCollision(%this,%obj)
 		GameBase::setDamageLevel(%obj.vehicle, 10);
 	else if(GameBase::getDataName(%obj).shapefile == "rocket")
 		GameBase::setDamageLevel(%obj, 10);
-	else if(%this.isactive == True || getObjectType(%obj) != "Player" || Player::isDead(%obj))
+	else if(getObjectType(%obj) != "Player" || Player::isDead(%obj))
 		{}
 	else if (GameBase::getTeam(%obj) == Gamebase::getTeam(%this))// || (Player::getArmor(%obj) == "spyarmor" || Player::getArmor(%obj) == "spyfemale") 
 		ff::Open(%this, 2.75);
@@ -521,7 +521,7 @@ function BlastWall2::onDestroyed(%this)
 }
 
 //============================================================================ Deployable Platform
-StaticShapeData DeployablePlatform { shapeFile = "elevator_4x4"; debrisId = defaultDebrisSmall; maxDamage = 4.00; visibleToSensor = false; isTranslucent = true; description = "Deployable Platform"; damageSkinData = "objectDamageSkins"; };
+StaticShapeData DeployablePlatform { shapeFile = "elevator_4x4"; debrisId = defaultDebrisSmall; maxDamage = 6.00; visibleToSensor = false; isTranslucent = true; description = "Deployable Platform"; damageSkinData = "objectDamageSkins"; };
 function DeployablePlatform::onDestroyed(%this)
 {
    StaticShape::onDestroyed(%this);
