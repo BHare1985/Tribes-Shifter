@@ -115,6 +115,7 @@ $InvList[Vulcan] = 1;
 $InvList[VulcanAmmo] = 1;
 $InvList[JammerBeaconPack] = 1;
 $InvList[FlamerTurretPack] = 1;
+$InvList[OmegaTurretPack] = 1;
 
 $RemoteInvList[AccelPPack] = 1;
 $RemoteInvList[AirAmmoPad] = 1;
@@ -225,6 +226,7 @@ $RemoteInvList[Volter] = 1;
 $RemoteInvList[Vulcan] = 1;
 $RemoteInvList[VulcanAmmo] = 1;
 $RemoteInvList[FlamerTurretPack] = 1;
+$RemoteInvList[OmegaTurretPack] = 1;
 
 // List of all items available to buy from Vehicle station
 //========================================================

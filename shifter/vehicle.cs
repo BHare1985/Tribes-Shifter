@@ -750,6 +750,7 @@ function Vehicle::dismount(%this,%mom)
 				%pl.vehicle = "";
 				%this.driver = "";
 				%cl.inflyer = 0;
+                schedule("checkUnderMap("@%cl @"," @ %pl @",30);",0.5); // -tubs
 			}
 			else
 				Client::sendMessage(%cl,0,"Can not dismount - Obstacle in the way.~wError_Message.wav");
@@ -763,6 +764,23 @@ function Vehicle::dismount(%this,%mom)
 		Player::setSensorSupression(%pl,%rate);
 		Player::setSensorSupression(%client,%rate);
 		Player::setSensorSupression(%this,%rate);
+	}
+}
+function checkUnderMap (%cl,%pl,%dist) // added 9/8/02 -tubs
+{
+	if (gamebase::getLOSInfo(%pl,%dist,"1.5 0 0"))
+	{
+		%obj = getObjectType($los::object);
+		Client::sendMessage(%cl,0,%obj);
+		if (%obj == "SimTerrain")
+		{
+			schedule("remoteKill("@%cl@");",0.5);
+		}
+		else if (%obj == "Flier")
+		{
+			%dist += 50;
+			schedule("checkUnderMap(" @ %cl @ "," @ %pl @ "," @ %dist @ ");",0.5);
+		}
 	}
 }
 function Vehicle::onDestroyed (%this,%mom) 

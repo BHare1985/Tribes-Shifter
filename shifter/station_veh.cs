@@ -103,8 +103,8 @@ function VehicleStation::checkBuying(%client,%item)
 
 		%mask = $StaticObjectType;
   		%Tset = newObject("vehicleTestset",SimSet);
-		%dway = containerBoxFillSet(%Tset,%mask,%markerPos,6,5,14,1);
-		%objInWay += (%dway - 1);
+		//%dway = containerBoxFillSet(%Tset,%mask,%markerPos,6,5,14,1);
+		//%objInWay += (%dway - 1);
 		if(%Tset)deleteobject(%Tset);
 
 		%station = %player.Station;

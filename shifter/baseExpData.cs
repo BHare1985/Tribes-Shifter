@@ -90,7 +90,7 @@ ExplosionData flamerExp
    faceCamera = true;
    randomSpin = true;
    hasLight   = true;
-   lightRange = 4.0;
+   lightRange = 3.0; /// changed from 4.0 to 3.0 becuase of lagg.
 
    timeZero = 0.200;
    timeOne  = 0.950;
@@ -325,7 +325,7 @@ ExplosionData plasmaExp2
    faceCamera = true;
    randomSpin = true;
    hasLight   = true;
-   lightRange = 15.0;
+   lightRange = 4.0;    // changed from 15.0 to 4.0
 
    timeScale = 2.5;
    timeZero = 0.200;
@@ -704,7 +704,7 @@ ExplosionData NukeShockwave
    faceCamera = false;
    randomSpin = true;
    hasLight   = true;
-   lightRange = 50.0;
+   lightRange = 40.0; // changed from 50 to 40.
 
    timeZero = 0.100;
    timeOne  = 0.300;

@@ -84,7 +84,7 @@ function Sensor::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
 		%this.lastDamageTeam = GameBase::getTeam(%object);
 	%TDS= 1;
 
-	if (%type == $FlashDamageType)
+	if (%type == $FlashDamageType || %type == $ShockDamageType)
 	{
 		%value = (%value * 0.75);
 		%energy = (GameBase::getEnergy(%this) - 100);

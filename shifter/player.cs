@@ -21,8 +21,13 @@ function Player::onAdd(%this)
 {
 	%armor = Player::getArmor(%this);
 	GameBase::setRechargeRate(%this,8);
+   //if($jefeffect == true)
+   //// {
+  // Player::JetEffect(%this); // star - killa
+ // }
 	if(%armor == aarmor || %armor == afemale)
 		GameBase::setRechargeRate(%player,10);
+
 }
 
 function Player::onRemove(%this)
@@ -33,8 +38,10 @@ function Player::onRemove(%this)
 		if (%type != -1) 
 		{
 			%item = newObject("","Item",%type,1,false);
-         		schedule("Item::Pop(" @ %item @ ");", $ItemPopTime, %item);
-         		addToSet("MissionCleanup", %item);
+         		schedule("GameBase::startFadeout(" @ %item @ ");", 1.5, %item); // Item::pop 5
+           schedule("deleteobject(" @ %item @ ");",2.5, %item);                   // n/a
+           addToSet("MissionCleanup", %item);
+           
 			GameBase::setPosition(%item,GameBase::getPosition(%this));
 		}
 	}
@@ -47,7 +54,8 @@ function Player::onRemove(%this)
 
 function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%object)
 {
-	if (%type == $GravDamageType || $builder) return;
+
+	if (%type == $GravDamageType) return;
 	if (Player::isDead(%this)) return;
 	%damagedClient = Player::getClient(%this);
 	%damTeam = Client::getTeam(%damagedClient);
@@ -70,6 +78,138 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 		Vehicle::onDamage(%this.vehicle,%type,%value,%pos,%vec,%mom,%object);
 			return;
 	}
+	//----------------------------
+	// Begin of the New scoring system
+	// Note: Scoring was never finished due to enV's Lazyness. To use it anyways just replace "//UnfinishedScoring " with "". Make sure you dont use the quotes
+	//----------------------------
+		//UnfinishedScoring if(%shooterClient != %damagedClient && Client::getName(%shooterClient) != ""){ // if your damaging yourself, or a turret isnt damaging you
+	//----------------------------
+	// Find the Distance of shot
+	//----------------------------
+		//UnfinishedScoring if (gamebase::getposition(%object) != "0 0 0" && gamebase::getposition(%this) != "0 0 0") 
+			//UnfinishedScoring %distance = (Vector::getDistance(gamebase::getposition(%object), gamebase::getposition(%this)))
+		//UnfinishedScoring else
+			//UnfinishedScoring %distance = 0;
+				//UnfinishedScoring echo("Distance between is "@%distance);
+	//----------------------------
+	//Find the velocity of shooter
+	//----------------------------
+			//UnfinishedScoring %shootervelx = getWord(item::getvelocity(%shooterClient),0);
+			//UnfinishedScoring %shootervely = getWord(item::getvelocity(%shooterClient),1);
+			//UnfinishedScoring %shootervelz = getWord(item::getvelocity(%shooterClient),2);
+			//UnfinishedScoring %shootervelxsq = (%shootervelx * %shootervelx);
+			//UnfinishedScoring %shootervelysq = (%shootervely * %shootervely);
+			//UnfinishedScoring %shootervelzsq = (%shootervelz * %shootervelz);
+			//UnfinishedScoring %shootervelocity = sqrt(%shootervelxsq + %shootervelysq + %shootervelzsq);
+				//UnfinishedScoring echo("shooter velocity is "@%shootervelocity);
+	//----------------------------
+	//Find the velocity of damaged player
+	//----------------------------
+			//UnfinishedScoring %damagedvelx = getWord(item::getvelocity(%damagedClient),0);
+			//UnfinishedScoring %damagedvely = getWord(item::getvelocity(%damagedClient),1);
+			//UnfinishedScoring %damagedvelz = getWord(item::getvelocity(%damagedClient),2);
+			//UnfinishedScoring %damagedvelxsq = (%damagedvelx * %damagedvelx);
+			//UnfinishedScoring %damagedvelysq = (%damagedvely * %damagedvely);
+			//UnfinishedScoring %damagedvelzsq = (%damagedvelz * %damagedvelz);
+			//UnfinishedScoring %damagedvelocity = sqrt(%damagedvelxsq + %damagedvelysq + %damagedvelzsq);
+				//UnfinishedScoring echo("Damaged player's velocity is "@%damagedvelocity);
+	//----------------------------
+	//Find the Weapon Image
+	//----------------------------
+			//UnfinishedScoring %wep = Player::getMountedItem(%shooterClient,$WeaponSlot);
+				//UnfinishedScoring echo("Shooters Weapon is "@%wep);
+			//UnfinishedScoring %wepimage = %wep.imageType;
+			//UnfinishedScoring 	echo("Weapon is "@%wepimage);
+	//----------------------------
+	//Find the projectile
+	//----------------------------
+		//UnfinishedScoring if(%wepimage.projectileType)
+			//UnfinishedScoring %wepproj = %wepimage.projectileType;
+		//UnfinishedScoring else if(%wep == "Disclauncher" && %shooterClient.disc == 0)
+			//UnfinishedScoring %wepproj = "DiscShell1";
+		//UnfinishedScoring else if(%wep == "mortar2" && %shooterClient.Mortar == 3)
+			//UnfinishedScoring %wepproj = "DelayMortarShell";
+		//UnfinishedScoring else if(%wep == "mortar2" && %shooterClient.Mortar == 2)
+			//UnfinishedScoring %wepproj = "BomberShell";
+		//UnfinishedScoring else if(%wep == "Plasmagun" && %shooterClient.Plasma == 0)
+			//UnfinishedScoring %wepproj = "PlasmaBolt2";
+		//UnfinishedScoring else if(%wep == "Plasmagun" && %shooterClient.Plasma == 1)
+			//UnfinishedScoring %wepproj = "PlasmaBoltRapid";
+		//UnfinishedScoring else if(%wep == "Plasmagun" && %shooterClient.Plasma == 2)
+			//UnfinishedScoring %wepproj = "PlasmaBoltMulti";
+		//UnfinishedScoring else if(%wep == "Boomstick")
+			//UnfinishedScoring %wepproj = "BoomStickBlast";
+		//UnfinishedScoring else if(%wep == "Rocketlauncher" && %shooterClient.rocket == 0)
+			//UnfinishedScoring %wepproj = "JuggStingerMissile";
+		//UnfinishedScoring else if(%wep == "Rocketlauncher" && %shooterClient.rocket == 1)
+			//UnfinishedScoring %wepproj = "StingerMissile";
+		//UnfinishedScoring else if(%wep == "Rocketlauncher" && %shooterClient.rocket == 2)
+			//UnfinishedScoring %wepproj = "LockJaw";
+		//UnfinishedScoring else if(%wep == "Rocketlauncher" && %shooterClient.rocket == 3)
+			//UnfinishedScoring %wepproj = "GodHammerMortar";
+		//UnfinishedScoring else if(%wep == "Mfgl")
+			//UnfinishedScoring %wepproj = "FgcShell";
+				//UnfinishedScoring echo("%wepproj "@%wepproj);
+	//----------------------------
+	//Find the reloadTime
+	//----------------------------
+			//UnfinishedScoring %reloadtime = %wepimage.reloadtime;
+				//UnfinishedScoring echo("%wepimage.reloadtime "@%wepimage.reloadtime);
+	//----------------------------
+	//Find the fireTime
+	//----------------------------
+			//UnfinishedScoring %firetime =%wepimage.firetime;
+				//UnfinishedScoring echo("%wepimage.firetime "@%wepimage.firetime);
+	//----------------------------
+	//Find the Speed of Projectile
+	//----------------------------
+			//UnfinishedScoring %muzzleVelocity = %wepproj.muzzleVelocity;
+			//UnfinishedScoring %inheritedVelocityScale = %wepproj.inheritedVelocityScale;
+			//UnfinishedScoring %SpeedofProjectile = %muzzleVelocity + (%shootervelocity * %inheritedVelocityScale);
+				//UnfinishedScoring echo("%SpeedofProjectile "@%SpeedofProjectile);
+	//----------------------------
+	//Find the Arch
+	//----------------------------
+			//UnfinishedScoring %projSpecialTime = %wepproj.projSpecialTime;
+	//----------------------------
+	//Find Skill rating of Speed
+	//----------------------------
+			//UnfinishedScoring %RatingofSpeed = (((%shootervelocity+4.025)/3.35) + ((%damagedvelocity+4.025)/3.35));
+	//----------------------------
+	//Find Skill rating of RateofFire
+	//----------------------------
+		//UnfinishedScoring if(%reloadtime > %firetime)
+			//UnfinishedScoring %RatingofRateoffire = (((%reloadtime+0.276)/0.169));
+		//UnfinishedScoring else
+			//UnfinishedScoring %RatingofRateoffire = ((%firetime+0.170)/0.140);
+	//----------------------------
+	//Find Skill rating of Arch
+	//----------------------------
+		//UnfinishedScoring %RatingofArch = ((%projSpecialTime+0.0055)/0.0098);
+	//----------------------------
+	//Find Skill rating of Speed of Proj.
+	//----------------------------
+		//UnfinishedScoring %RatingofSpeedProj = ((%SpeedofProjectile-3664)/-432);
+	//----------------------------
+	//Find Skill rating of Distancr
+	//----------------------------
+		//UnfinishedScoring %RatingofDistance = (%distance)/20;
+	//----------------------------
+	//Find Skill rating of the total shot
+	//----------------------------
+		//UnfinishedScoring %DiffcultyofShot =  (%RatingofSpeed + %RatingofRateoffire + %RatingofArch + %RatingofSpeedProj + %RatingofDistance)/6;
+			//UnfinishedScoring messageAll(0, Client::getName(%clientId) @ " Speed 1-10 :" @ %RatingofSpeed);
+			//UnfinishedScoring messageAll(0, Client::getName(%clientId) @ " RateofFire 1-10 :" @ %RatingofRateoffire);
+			//UnfinishedScoring messageAll(0, Client::getName(%clientId) @ " Arch 1-10:" @ %RatingofArch);
+			//UnfinishedScoring messageAll(0, Client::getName(%clientId) @ " Speed of bullet 1-10 :" @ %RatingofSpeedProj);
+			//UnfinishedScoring messageAll(0, Client::getName(%clientId) @ " Distance :" @ %RatingofDistance);
+			//UnfinishedScoring messageAll(0, Client::getName(%clientId) @ " Difficulty :" @ %DiffcultyofShot);
+		//UnfinishedScoring }
+	//----------------------------
+	// End of the New scoring system
+	//----------------------------
+	
+	
 	if(%vertPos == "head")
 		%head = 1;
 	else if(%vertPos == "torso")
@@ -78,18 +218,27 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 		%legs = 1;
 	if (Player::isExposed(%this))
 	{
+ if($Shifter::PlayerDamage == false || %damagedClient.possessing == "true" || %damagedClient.possessed == "true" || %damagedClient.dan == "true")                          // player damage ...disabled in 23
+		{
+			if($debug)echo("No Damage");
+			%thisPos = getBoxCenter(%this);
+			%offsetZ =((getWord(%pos,2))-(getWord(%thisPos,2)));
+			GameBase::activateShield(%this,%vec,%offsetZ);
+			return;
+		}
 		Player::applyImpulse(%this,%mom);
 		//=============================================== Determin Team Damage
 		if($teamplay && %damagedClient != %shooterClient && %td && %shooterClient)
 		{
 			%curTime = getSimTime();
+
 		   if ((%curTime - %this.DamageStamp > 1.5 || %this.LastHarm != %shooterClient) && %damagedClient != %shooterClient && $Server::TeamDamageScale > 0) 
 		   {
 				if(%type != $MineDamageType)
 				{
 					Client::sendMessage(%shooterClient,0,"You just harmed Teammate " @ Client::getName(%damagedClient) @ "!");
 					Client::sendMessage(%damagedClient,0,"You took Friendly Fire from " @ Client::getName(%shooterClient) @ "!");
-					if(!$Server::TourneyMode)
+					if($Server::TourneyMode == "false")
 					{
 	           		%shooterClient.score -= 1;
 						if ($ScoreOn) bottomprint(%shooterClient, "You harmed your teammate... Score -1 = " @ %shooterClient.score @ " Total Score");
@@ -166,11 +315,24 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 			}
 		}
 		//==================================== Flash Damage Does EMP Effect
-		if(%type == $FlashDamageType || %type == $nukedamagetype)
+		if(%type == $FlashDamageType || %type == $nukedamagetype || %type == $MDMDamageType || %type == $ShockDamageType){
+		if(%this.isJugg == "1")
+		{
+					messageall(1, "Jugg was hit with EMP"); //sd
+					ixstartEMP(%this, %this, 14);
+		}
+		else
 			ixstartEMP(%damagedClient, %this, 14);
-		else if(%type == $MDMDamageType && %value > 0.3)
+			}
+		else if(%type == $MDMDamageType && %value > 0.3){
+		if(%this.isJugg == "1")
+		{
+					messageall(1, "Jugg was hit with EMP"); //sd
+					ixstartEMP(%this, %this, 14);
+		}
+		else
 			ixstartEMP(%damagedClient, %this, 14);
-
+}
 		//=============================================== Shield Pack On
 		if (%type != -1 && %this.shieldStrength && %type != $HBlasterDamageType && %type != $EnergyDamageType)
 		{
@@ -262,7 +424,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 
 		//======================================= Life Drain - Poison
 		else if (%type == $EnergyDamageType && !%td && (%armor != "aarmor" && %armor != "afemale"))
-			Renegades_startBlind(%damagedClient, %this);
+			Renegades_startBlind(%damagedClient, %this, %shooterClient);
 		
 		//======================= Plasma Damage Catches Player On Fire
 		else if ((%type == $PlasmaDamageType || %type == $NukeDamageType || %type == $MDMDamageType) && !%td && %armor != "barmor" && %armor != "bfemale")
@@ -409,7 +571,6 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 				%distance = Vector::getDistance(gamebase::getposition(%object), gamebase::getposition(%this));
 			else
 				%distance = 0;
-			
 			%shooterClient.lastkill = %distance;
 			Client::onKilled(%damagedClient,%shooterClient, %type, %vertPos, %quadrant);
 		}
@@ -483,7 +644,7 @@ function Player::onCollision(%this,%object)
 			{
 				if (%thisteam != %objTeam && (%deadarmor == "lfemale" || %deadarmor == "larmor") && (%pickarmor != "lfemale" && %pickarmor != "larmor"))
 				{
-					bottomprint(player::getclient(%object), "<jc>You are poisoned by assassins items.");
+					bottomprint(player::getclient(%object), "<jc>You are poisoned by assassins items - Don't suicide or you'll gain 5 deaths.");
 					Renegades_startBlind(player::getclient(%object), %object);
 				}
 				playSound(SoundPickupItem,GameBase::getPosition(%this));
@@ -626,18 +787,33 @@ function Player::onCollision(%this,%object)
 			//===================================== Spy Disguise - Skin Snatch
 			else if (%armor == "spyarmor" || %armor == "spyfemale")
 		   {
-				%ClientId = Player::getClient(%object);
-				%thisId = Player::getClient(%this);
-				%grabskin = Client::getSkinBase(%thisId);
-				%origskin = Client::getSkinBase(%clientId);
-				Client::setSkin(%clientId,%grabskin);
-				GameBase::playSound(%this,ForceFieldOpen,0);
-				Client::sendMessage(%clientId,0,"You went undercover disguised as " @ Client::getName(%thisId) @ " !");
-				Client::sendMessage(Player::getClient(%object),1,"You go undercover disguised as "  @ Client::getName(%thisId) @ "!" );
-     			schedule("Client::setSkin("@ %clientId @"," @ %origskin @");", 120);
-				%clientID.cloaktime = 1;
-     			schedule(""@ %clientID @".cloaktime = 1;", 120);
-				Cloaker(%object);
+		   	//props to annilation mod
+		   %clientId = Player::getClient(%object);
+		Player::dropItem(%clientId, Flag);
+		if(Client::getTeam(%clientId) == 0) 
+	{
+	
+		%clientId.OrigTeam = 5;
+		Client::sendMessage(%clientId,0,"You Just summoned your chemeleon powers, to the enemy you have a green arrow!");
+		Client::setinitialTeam(%clientId, 1);
+		GameBase::setTeam(%clientId, 1);
+		Client::setinitialTeam(%clientId, 0);
+		//Client::setSkin(%clientId, $Server::teamSkin[1]);
+	}
+	else
+	{
+		
+		%clientId.OrigTeam = 6;
+		Client::sendMessage(%clientId,0,"You Just summoned your chemeleon powers, to the enemy you have a green arrow!");
+		Client::setinitialTeam(%clientId, 0);
+		GameBase::setTeam(%clientId, 0);
+		Client::setinitialTeam(%clientId, 1);
+		//Client::setSkin(%clientId, $Server::teamSkin[0]);
+	}
+	%msg = "You chemeleon powers will wear out in 5 seconds!";
+	schedule("centerprint(" @ %clientId @ ",\"" @ %msg@ "\", 5);", 15);
+	schedule("chemtouchstop("@%clientId@");",20);
+	
 				//EVIL EVIL EVIL GREY
 				//Player::setDetectParameters(%this, 1000, 3000);
 				//Shifter_startHide(%this, 30);
@@ -674,9 +850,8 @@ function Player::getHeatFactor(%this)
 	// but should be OK for now.
 	%client = Player::getClient(%this);
 	
-	if (Client::getControlObject(%client) != %this)
+	if (Client::getControlObject(%client) != %this && !%client.safet && !%client.possessing && !%client.wat)
 		return 1.0;
-	
 	%time = getIntegerTime(true) >> 5;
 	%lastTime = Player::lastJetTime(%this) >> 10;
 
@@ -742,10 +917,13 @@ function Player::enterMissionArea(%player)
 
 function Player::leaveMissionArea(%player)
 {
+	%clientId = Player::getClient(%player);
 	%flag = Player::getMountedItem(%player,$flagSlot);
-	
-
 	%pack = Player::getMountedItem(%player,$BackpackSlot);
+	//envduel-s
+		if(%clientId.dueling)
+		return;
+		//envduel-f
 	
 	if (%pack == "PowerGeneratorPack" || %pack == "CoolLauncher" || %pack == "EmplacementPack" || %pack == "airbase" || %pack == "TeleportPack")
 	{
@@ -900,21 +1078,54 @@ function checkControlUnmount(%clientId)
 
 function ixStartEMP(%clientId, %player)
 {
-	//%weapon = Player::getMountedItem(%player,$WeaponSlot);
 	%pack = Player::getMountedItem(%player,$BackpackSlot);
 	%armor = player::getarmor(%player);
-	//if(($WeaponAmmo[%weapon] == ""))
-	//	Player::unmountItem(%player,$WeaponSlot);
 	Client::sendMessage(%clientId,1,"You were hit with EMP!");
-	if(%clientId.empTime == 0)
-	{
 		if (%armor == earmor || %armor == efemale)
 		{
 			GameBase::setEnergy(%player,45);
 			if(%pack != energypack)
 			{
-				Player::unmountItem(%player,$WeaponSlot);
-				GameBase::setRechargeRate(%player,2);
+				%firstweapon = Player::getMountedItem(%player,$WeaponSlot);
+				%random = floor(getRandom() * 10);
+				if(%random <1)
+				%random++;
+				for(%time =1; %time <= %random; %time++){
+				remoteNextWeapon(%player);
+				%weapon = Player::getMountedItem(%player,$WeaponSlot);
+				}
+			if(%firstweapon == %weapon)
+			schedule("remoteNextWeapon("@%player@");",0.10);
+			schedule("Player::useItem("@%player@","@%weapon@");",0.10);
+			GameBase::setRechargeRate(%player,2);
+			}
+		}
+		else
+		{
+			GameBase::setEnergy(%player,0);
+			if(%pack != energypack)
+			{
+				%firstweapon = Player::getMountedItem(%player,$WeaponSlot);
+				%random = floor(getRandom() * 10);
+				if(%random <1)
+				%random++;
+				for(%time =1; %time <= %random; %time++){
+				remoteNextWeapon(%player);
+				%weapon = Player::getMountedItem(%player,$WeaponSlot);
+			}
+			if(%firstweapon == %weapon)
+			schedule("remoteNextWeapon("@%player@");",0.10);
+			schedule("Player::useItem("@%player@","@%weapon@");",0.10);
+				GameBase::setRechargeRate(%player,0);
+			}
+		}
+
+	if(%clientId.empTime == 0)
+	{
+		if (%armor == earmor || %armor == efemale)
+		{
+			if(%pack != energypack)
+			{
 				%clientId.empTime = 8;
 				checkPlayerEMP(%clientId, %player);
 			}
@@ -923,11 +1134,8 @@ function ixStartEMP(%clientId, %player)
 		}
 		else
 		{
-			GameBase::setEnergy(%player,0);
 			if(%pack != energypack)
 			{
-				Player::unmountItem(%player,$WeaponSlot);
-				GameBase::setRechargeRate(%player,0);
 				%clientId.empTime = 12;
 				checkPlayerEMP(%clientId, %player);
 			}
@@ -938,6 +1146,7 @@ function ixStartEMP(%clientId, %player)
 	else
 		%clientId.empTime = 10;
 }
+
 function checkPlayerEMP(%clientId, %player)
 {
 	if(%clientId.empTime > 0)
@@ -1000,13 +1209,17 @@ GrenadeData EMPShock
 
 //============================================================================= Poisoning
 
-function Renegades_startBlind(%clientId, %player)
+function Renegades_startBlind(%clientId, %player, %shooterClient)
 {
-	Client::sendMessage(%clientId,1,"You are poisoned!");
+	Client::sendMessage(%clientId,1,"You are poisoned! - Don't suicide!");
+	%shooterClient.score = (%shooterClient.score) + 1;
+	Game::refreshClientScore(%shooterClient);
+	remoteEval(%shooterClient, "BP", "Poison was injected. Score + 1", 5.0);
+	
 	if(%clientId.poisonTime == 0)
 	{
 		
-		Player::setDamageFlash(%player,0.75);
+		Player::setDamageFlash(%player,0.90);
 		%clientId.poisonTime = 15;
 		checkPlayerBlind(%clientId, %player);
 	}
@@ -1021,7 +1234,7 @@ function checkPlayerBlind(%clientId, %player)
 	if(%clientId.poisonTime > 0)
 	{
 		%clientId.poisonTime -= 2;  
-		%drrate = GameBase::getDamageLevel(%player) + 0.07;
+		%drrate = GameBase::getDamageLevel(%player) + 0.10;
 			if  (!Player::isDead(%player)) 
 			{
 				GameBase::setDamageLevel(%player, %drrate);  
@@ -1030,7 +1243,8 @@ function checkPlayerBlind(%clientId, %player)
 				{
 					messageall(0, Client::getName(%clientId) @ " died from a strange disease.");
 					%clientId.scoreDeaths++;
-		      		%clientId.score--;
+		      		%clientId.score = (%clientId.score - 10);
+		      		bottomprint($clientId, "You lost 10 Points for dying of a disease",5);
 					Game::refreshClientScore(%clientId);
 					%clientId.poisonTime = 0;
 				}
@@ -1205,4 +1419,73 @@ function Cloaker(%player)
 	}
 	if((Player::isTriggered(%player, $BackPackSlot) && Player::getMountedItem(%player, $BackPackSlot) == "CloakingDevice") || %cl.cloaktime) 
 		schedule("Cloaker(" @ %player @ ");", 0.5, %player);
+}
+function PlasmaCannoner2::Detonate(%client, %jugg, %time)
+{
+}
+	function chemtouchstop(%cl){
+		if(%cl.OrigTeam != 5 && %cl.OrigTeam != 6) 
+		return;
+	if(%cl.OrigTeam == 5) 
+	{
+		$UnCvrA = "";
+		GameBase::setTeam(%cl,0);
+	}
+	else 
+		if(%cl.OrigTeam == 6) 
+		{
+			$UnCvrB = "";
+			GameBase::setTeam(%cl,1);
+		}
+	%cl.OrigTeam = "";
+	Client::sendMessage(%cl,0,"Your Chemeleon powers wear Off~waccess_denied.wav");
+		
+	}
+	
+	function doneposs(%sel) 
+{
+	if(%sel.possessing) {
+		Client::setControlObject(%sel, %sel);
+	    Client::setControlObject(%sel.poss, %sel.poss);
+		MessageAllExcept(%sel.poss, 0, Client::getName(%sel.poss) @ " has been removed from the Mind Meld by " @ Client::getName(%sel) @ ".~wteleport2.wav"); 
+		Client::sendMessage(%sel.poss,1,"Your mind has been freed by " @ Client::getName(%sel)@".~wteleport2.wav"); 	
+		%sel.possessing = false;
+		(%sel.poss).possessed = false;
+		(%sel.poss).possby = "";
+		%sel.poss = "";
+	}
+	if(%sel.possessed) {
+		Client::setControlObject(%sel.possby, %sel.possby);
+	    Client::setControlObject(%sel, %sel);
+		MessageAllExcept(%sel , 0, Client::getName(%sel) @ " has been removed from the Mind Meld by " @ Client::getName(%sel.possby) @ ".~wteleport2.wav"); 
+		Client::sendMessage(%sel ,1,"Your mind has been freed by " @ Client::getName(%sel.possby)@".~wteleport2.wav"); 	
+		%sel.possessed = false;
+		(%sel.possby).possessing = false;
+		(%sel.possby).poss = "";
+		%sel.possby = "";
+	}
+	if(%sel.wat) {
+		Client::sendMessage(%sel,0,"You are no longer watching " @ Client::getName(%sel.wat)@"."); 	
+		bottomprint(%sel, "", 0);
+		if(Observer::isObserver(%sel)) {
+			(%sel.wat).wated = "";
+			%sel.wat = "";
+			%sel.booyah = "";
+			Client::setControlObject(%sel, Client::getObserverCamera(%sel));
+			%sel.observerMode = "observerFly";
+			Observer::triggerUp(%sel);
+			return;
+		}
+		Client::setControlObject(%sel, Client::getOwnedObject(%sel));
+		if(!%sel.isAdmin || (%sel.wat).isSuperAdmin)
+			Client::sendMessage(%sel.wat,0,"You are no longer being watched by " @ Client::getName(%sel)@"."); 	
+		(%sel.wat).wated = "";
+		%sel.wat = "";
+		%sel.booyah = "";
+	}
+	if(%sel.wated) {
+		for(%cc = Client::getFirst(); %cc != -1; %cc = Client::getNext(%cc)) {
+			if(%cc.wat == %sel) schedule("changewat("@%cc@", "@%sel@");", 1);
+		}
+	}
 }

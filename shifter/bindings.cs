@@ -9,6 +9,12 @@ function remotesaveinfo(%clientId)
 }
 
 //=================================================================================================== Plastique
+function remoteweapon_plastic_plas1(%clientId)
+{
+	%clientId.Plastic = 1;
+	schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Plastique Delay Set To 1 Sec.\", 3);", 0.01);
+
+}
 function remoteweapon_plastic_plas2(%clientId)
 {
 	%clientId.Plastic = 2;
@@ -58,21 +64,26 @@ function remoteweapon_engmine_cloak(%clientId)
 	schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mine Set To Cloaking Mine.\", 3);", 0.01);
 
 }
+//function remoteweapon_gmine1(%clientId)
+//{
+ //  %clientId.EngMine = "2";
+//  schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mine set to point Defense Anti-Grav Mine.\", 3);", 0.01);
+//}
 function remoteweapon_engmine_laser(%clientId)
 {
-	%clientId.EngMine = "2";
+	%clientId.EngMine = "2"; //2
 	schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mine Set To Point Defense Laser Mine.\", 3);", 0.01);
 
 }
 function remoteweapon_engmine_stand(%clientId)
 {
-	%clientId.EngMine = "3";
+	%clientId.EngMine = "3";  //3
 	schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mine Set To Standard Anti-Personell Mine.\", 3);", 0.01);
 
 }
 function remoteweapon_engmine_replica(%clientId)
 {
-	%clientId.EngMine = "4";
+	%clientId.EngMine = "4";     //4
 	schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mine Set To Replicator Mine.\", 3);", 0.01);
 
 }
@@ -176,7 +187,7 @@ function remoteweapon_rocket2(%clientId)
 }
 function remoteweapon_rocket3(%clientId)
 {
-	if($Shifter::LockOn)
+	if($Shifter::LockOn=="true")
 	{
 		if (%clientId.target != -1)
 		{
@@ -304,7 +315,7 @@ function remoteweapon_eng_disa(%clientId)
 }
 function remotePlayFakeDeath(%client,%anim)
 {
-	if(!$server::tourneymode && %anim != 51 && %anim != 114 )
+	if($Server::TourneyMode == "false" && %anim != 51 && %anim != 114 )
 		Player::setAnimation(%client,%anim);
 }
 

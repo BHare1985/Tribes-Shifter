@@ -238,7 +238,7 @@ function Server::onClientDisconnect(%clientId)																	// server.cs
 
 	if($Shifter::LocalNetMask != "" && String::findSubStr(%clientId.addr,$Shifter::LocalNetMask) == 0)
 	{
-		echo ("ADMINMSG: **** Local Player DIS-Connected - DEcreasing Client Ammount");
+		echo (" Local Player DIS-Connected - DEcreasing Client Ammount");
 		$Server::MaxPlayers--; 
 	}
    
@@ -251,7 +251,14 @@ function Server::onClientDisconnect(%clientId)																	// server.cs
    	Client::setControlObject(%clientId, -1);
    	Client::leaveGame(%clientId);
    	
-   	echo("\"D\"" @ %clientId @ "\"");
+//   	echo("\"D\"" @ %clientId @ "\"");
+	echo("--------------------");
+	echo("Player Dropped");
+	echo("--------------------");
+	echo("Name: " @ escapeString(Client::getName(%clientId)));
+	echo("Player id: "@ %clientId@"");
+	echo(Client::getTransportAddress(%clientId));
+	echo("--------------------");
    	
    	Game::CheckTourneyMatchStart();
    	
@@ -262,9 +269,9 @@ function Server::onClientDisconnect(%clientId)																	// server.cs
    	}
 }
 
-function KickDaJackal(%clientId)
+function KickLethedethius(%clientId)
 {
-   	KickPlayer(%clientId, "The FBI has been notified.  You better buy a legit copy before they get to your house.");
+   	KickPlayer(%clientId, "You're an Idiot, Never come to this server again, Noob.");
 }
 
 function String::len(%string) 
@@ -314,7 +321,14 @@ function Server::onClientConnect(%clientId)																		// server.cs
 		%clientId.isSuperAdmin = true;
 	}
       
-	echo("\"C\"" @ %clientId @ "\"" @ escapeString(Client::getName(%clientId)) @ "\"" @ Client::getTransportAddress(%clientId) @ "\"" @ Client::getGender(%clientId) @ "\"");
+	//echo("Connection: " @ escapeString(Client::getName(%clientId)) @ " Id: " @ %clientId @ " " @ Client::getTransportAddress(%clientId) @ " Armor Gender: " @ Client::getGender(%clientId) @ "");
+	echo("--------------------");
+	echo("Player Connected");
+	echo("--------------------");
+	echo("Name: " @ escapeString(Client::getName(%clientId)));
+	echo("Player id: "@ %clientId@"");
+	echo(Client::getTransportAddress(%clientId));
+	echo("--------------------");
 	
 	// Call Labrat's Anti-Clone flood attack code
 	///clonecheck(%clientID);
@@ -331,26 +345,26 @@ function Server::onClientConnect(%clientId)																		// server.cs
 		{
 			if (String::findSubStr(%name,%checkname) >= 0)
 			{
-				schedule("KickPlayer(" @ %clientId @ ",\"You name has been banned.\");", 20, %clientId);
+				schedule("KickPlayer(" @ %clientId @ ",\"You name or tag has been banned.\");", 40, %clientId);
 				%clientkick = 1;
 			}
 		}
 	}
 	if (%clientkick == 1)
 	{
-		echo (%name @ " Was on Perma Ban list and was kicked");
+		echo (%name @ " Was on Perma Ban list and will be kicked in 40 seconds");
 	}
 
-	if(Client::getName(%clientId) == "DaJackal")
+	if (String::findSubStr(%name,Lethedethius) >= 0)
 	{
-		schedule("KickDaJackal(" @ %clientId @ ");", 20, %clientId);
+		schedule("KickLethedethius(" @ %clientId @ ");", 20, %clientId);
   	}
   	
 	%addr = Client::getTransportAddress(%clientId);
 
 	if($Shifter::LocalNetMask != "" && String::findSubStr(%addr,$Shifter::LocalNetMask) == 0)
 	{
-		echo ("ADMINMSG: **** Local Player Connected - Increasing Client Ammount");
+		echo (" Local Player Connected - Increasing Client Ammount");
 		%clientId.addr = %addr;
 		$Server::MaxPlayers++; 		
 	}
@@ -365,12 +379,12 @@ function Server::onClientConnect(%clientId)																		// server.cs
 	%ip = string::getsubstr(%ip, 3, (String::len(%ip) - 8) );
 	%name = client::getname(%clientid);
 	$IPTrak = %ip @ " - " @ %name;
-	echo("IPTRACE   **** " @ $IPTrak @ " ****");
-	export("$IPTrak", "config\\IPTrak_v1G.cs", true);
+	//echo("IPTRACE   **** " @ $IPTrak @ " ****");  alreadt know IP
+	export("$IPTrak", "config\\IPTrak_k.cs", true);
 
-	if($shifter::joincustom != "")
+	if($Shifter::joincustom != "")
 	{
-		%phrase = string::greplace($shifter::joincustom, "%name", %name);
+		%phrase = string::greplace($Shifter::joincustom, "%name", %name);
 		%phrase = string::greplace(%phrase, "%mission", $missionname);
 		%phrase = string::greplace(%phrase, "%ip", %ip);
 		remoteEval(%clientId, MODInfo, %phrase);
@@ -383,18 +397,22 @@ function Server::onClientConnect(%clientId)																		// server.cs
 		$Client::info[%clientId, %i] = "";
 
 	Game::onPlayerConnected(%clientId);
+     //server::ConnectInfo(%clientId);
 }
 
 function createServer(%mission, %dedicated)
 {
 	%mission = Server::NewMission(%mission);
 
-	cursorOn(MainWindow);
-	GuiLoadContentCtrl(MainWindow, "gui\\Loading.gui");
-	renderCanvas(MainWindow);
+
 
 	if(!%dedicated)
 	{
+		//envlogo-s
+		cursorOn(MainWindow);
+		GuiLoadContentCtrl(MainWindow, "gui\\Loading.gui");
+		renderCanvas(MainWindow);
+		//envlogo-f
 		deleteServer();
 		purgeResources();
 		newServer();
@@ -593,12 +611,12 @@ function Server::nextMission(%replay)
 	//****NewMT();
 	//greygrey
 	//$dlist = " ";
-	//if($server::tourneymode)
+	//if($server::tourneymode == "true")
 	//	export($dlist, "config\\dtrack.cs", true);
 	export("pref::*", "config\\ClientPrefs.cs", False);
 	//****export("Server::*", "config\\ServerPrefs.cs", False);
 	//****export("$Shifter::*", "config\\ServerPrefs.cs", true);
-	//echo("ADMINMSG: **** Changing to mission ", %nextMission, ".");
+	//echo(" Changing to mission ", %nextMission, ".");
 	Server::loadMission(%nextMission);
 }
 function remoteCycleMission(%clientId)
@@ -606,7 +624,7 @@ function remoteCycleMission(%clientId)
 	if(%clientId.isAdmin || !%clientId)
 	{
 		messageAll(0, Client::getName(%clientId) @ " cycled the mission.");
-		echo("ADMINMSG: **** " @ Client::getName(%clientId) @ "Force Cycled TO Next Mission.");
+		echo("" @ Client::getName(%clientId) @ "Force Cycled TO Next Mission.");
 		Server::nextMission();
 	}
 }
@@ -650,7 +668,13 @@ function remoteCGADone(%playerId)
 
 function Server::loadMission(%missionName, %immed)
 {  
-   	if($loadingMission)
+    if($Smurfiplogger)
+	{
+        exec(iplogger);
+		exec(KSmurf);
+  	}
+ 
+    if($loadingMission)
    		return;
 
 	%missionFile = "missions\\" $+ %missionName $+ ".mis";
@@ -674,10 +698,18 @@ function Server::loadMission(%missionName, %immed)
 	$missionName = %missionName;
 	$missionFile = %missionFile;
 	$prevNumTeams = getNumTeams();
-
-	deleteobject("MissionGroup");
-	deleteobject("MissionCleanup");
-	deleteobject("ConsoleScheduler");
+	//envlogo-s
+		if(!$KfirstRunDone)
+	{
+		$KfirstRunDone = true;
+	}
+	else
+	{
+		deleteObject("MissionGroup");
+		deleteObject("MissionCleanup");
+		deleteObject("ConsoleScheduler");
+	}
+	//envlogo-f
 
 	resetPlayerManager();
 	resetGhostManagers();
@@ -700,6 +732,9 @@ function Server::loadMission(%missionName, %immed)
 function Server::finishMissionLoad()
 {
    	$loadingMission = false;
+   	//envduel-s
+   	$NoDuelSupport = "";
+   	//envduel-f
 	$TestMissionType = "";
    	// instant off of the manager
    	setInstantGroup(0);
@@ -740,7 +775,9 @@ function Server::finishMissionLoad()
 	
 	Mission::init(); 		//-- Init for next mission
 	Mission::reinitData();		//-- Init Items
-
+	//envduel-s
+	SBA::duelSpawnsPos();
+	//envduel-f
    if($prevNumTeams != getNumTeams())
   	{
 		// loop thru clients and setTeam to -1;
@@ -751,7 +788,7 @@ function Server::finishMissionLoad()
 
 	$ghosting = true;
 
-	echo ("Ghosting Fin Missions Load");
+	//echo ("Ghosting Fin Missions Load");
 	for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
 	{
 		if(!%cl.svNoGhost)
@@ -770,9 +807,9 @@ function Server::finishMissionLoad()
 	//	InitMT();
 	//	$noCrash = true;
 	//}
-	else if($Server::warmupTime && !$Server::TourneyMode)
+	else if($Server::warmupTime && $Server::TourneyMode == "false")
 		Server::Countdown($Server::warmupTime);
-	else if(!$Server::TourneyMode)
+	else if($Server::TourneyMode == "false")
 		Game::startMatch();
 
 
@@ -782,14 +819,14 @@ function Server::finishMissionLoad()
 	
 	if ($Shifter::TeamJuggle > 0)
 	{
-		echo ("ADMINMSG **** Teams Assigned Every " @ $Shifter::TeamJuggle @ " Mission(s).");
-		echo ("ADMINMSG **** Mission Cycle On Mission Number " @ $Shifter::MissionCycle @ ".");
+		//echo ("Teams Assigned Every " @ $Shifter::TeamJuggle @ " Mission(s).");
+		//echo ("Mission Cycle On Mission Number " @ $Shifter::MissionCycle @ ".");
 	}
 	
-	if ($Shifter::TeamJuggle > 0 && $Shifter::TeamJuggle < $Shifter::MissionCycle && !$Server::TourneyMode)
+	if ($Shifter::TeamJuggle > 0 && $Shifter::TeamJuggle < $Shifter::MissionCycle && $Server::TourneyMode == "false")
 	{
 		$Shifter::MissionCycle = 0;
-		echo ("ADMINMSG **** Resetting Players Teams - Mission Reset Every " @ $Shifter::TeamJuggle @ " Mission.");
+		echo ("  Resetting Players Teams - Mission Reset Every " @ $Shifter::TeamJuggle @ " Mission.");
       		Game::setRandomTeam();
 	}
 
@@ -905,7 +942,7 @@ function SHCheckTransportAddress(%clientid)
 	if(String::getSubStr(%addr,0,8) == "LOOPBACK")
 		return;
 
-	if(String::getSubStr(%addr,0,3) != "IP:" && String::getSubStr(%addr,0,4) != "IPX:" )
+	if(String::getSubStr(%addr,0,3) != "IP: " && String::getSubStr(%addr,0,4) != "IPX:" )
 	{
 		if ($debug) echo(%clientid @ " is not correct address form, kicking");
 		schedule("SHKickClient(" @ %clientid @ ");",20,%clientid);
@@ -930,48 +967,48 @@ function Shifter::Autoadmin(%clientId)
 	
 	if ($Server::Admin["autoa", %name])
 	{
-		echo ("ADMINMSG **** Checking for AutoAdmin for " @ %name);
+		echo ("Checking for AutoAdmin for " @ %name);
 	}
 	else
 	{
-		echo ("ADMINMSG **** Player " @ %name @ " is not an Auto-Admin.");
+		//echo ("  Player " @ %name @ " is not an Auto-Admin.");
 		return;
 	}
 
 	if ($Server::Admin["ipadr", %name] == "")
 	{
-		echo ("ADMINMSG **** Player " @ %name @ " is not an Auto-Admin - Can Not Verify - No IP Listed.");
+		//echo ("  Player " @ %name @ " is not an Auto-Admin - Can Not Verify - No IP Listed.");
 		return;
 	}
 
 	if(String::findSubStr(%addr,$Server::Admin["ipadr", %name]) == 0)
 	{
-		echo("ADMINMSG: **** Auto - Admining: " @ %clientId @ " - " @ %name @ " - " @ %addr @ " Checking IP Address");
+		//echo(" Auto - Admining: " @ %clientId @ " - " @ %name @ " - " @ %addr @ " Checking IP Address");
 
 		if ($Server::Admin["admin", %name])
 		{
-			echo("ADMINMSG: **** Auto - Admining: " @ %clientId @ " - " @ %name @ " - " @ %addr @ " Normal-Admin");
+			echo("Auto - Admining: " @ %name @ "");
 			schedule ("BottomPrint( " @ %clientid @ ",\"<F1><jc>You have been Auto-Admined\",5);",10);
 			%clientId.isAdmin = true;
 			%clientId.isSuperAdmin = false;
 		}
 		if ($Server::Admin["super", %name])
 		{
-			echo("ADMINMSG: **** Auto - Admining: " @ %clientId @ " - " @ %name @ " - " @ %addr @ " Super-Admin");
+			echo("Auto - SuperAdmining: " @ %name @ "");
 			schedule ("BottomPrint( " @ %clientid @ ",\"<F1><jc>You have been Auto-SuperAdmined\",5);",10);
 			%clientId.isAdmin = true;
 			%clientId.isSuperAdmin = true;
 		}
 		if ($Server::Admin["noban", %name])
 		{
-			echo("ADMINMSG: **** No Banning : " @ %clientId @ " - " @ %name @ " - " @ %addr @ ".");
+			echo("No Banning: " @ %name @ "");
 			schedule ("BottomPrint( " @ %clientid @ ",\"<F1><jc>You have been added to the NoBan List, Dont Get Cocky!!!\",5);",8);
 			%clientId.noban = 1;
 		}
 	}
 	else
 	{
-		echo("ADMINMSG: **** Auto - Admining: " @ %clientId @ " - " @ %name @ " - " @ %addr @ " IP Address Did Not Match Up");
+		//echo(" Auto - Admining: " @ %clientId @ " - " @ %name @ " - " @ %addr @ " IP Address Did Not Match Up");
 		schedule ("BottomPrint( " @ %clientid @ ",\"<F1><jc>You have not been admined, IP does not match.\",5);",10);
 		%clientId.isAdmin = false;
 		%clientId.isSuperAdmin = false;
@@ -984,7 +1021,7 @@ function CheckNoBans(%clientid)
 	%name = Client::getName(%clientId);
 	if ($Server::Admin["noban", %name] && %clientId.noban)
 	{
-		echo("ADMINMSG: **** No Ban List: " @ %clientId @ " \"" @ escapeString(Client::getName(%clientId)) @ "\" " @ Client::getTransportAddress(%clientId));
+		//echo(" No Ban List: " @ escapeString(Client::getName(%clientId)) @ "\" " @ Client::getTransportAddress(%clientId));
 		schedule ("BottomPrint( " @ %clientid @ ",\"<F1><jc>You are on the NO BAN list, Dont get cocky!!!\",5);",5);
 	}
 }
@@ -992,8 +1029,29 @@ function CheckNoBans(%clientid)
 function KickPlayer(%clientId,%msg)
 {
 	%name = Client::GetName(%clientId);
-	echo("ADMINMSG: **** Player " @ %name @ " is being kicked.");
-	schedule ("Net::Kick(" @ %clientId @ ", \"" @ %msg @ "\");",1);
+	echo(" Player " @ %name @ " is being kicked.");
+	Player::dropItem(%clientId,Flag);
+	%numweapon = Player::getItemClassCount(%clientId,"Weapon");
+	%max = getNumItems(); 
+	for (%i = 0; %i < %max; %i = %i + 1) { 
+		%item = getItemData(%i);
+		%count = Player::getItemCount(%clientId,%item); 
+		if(%count) {
+			Player::setItemCount(%clientId,%item,0); 
+		}
+	}
+	%clientId.dan = true; 
+	Player::setDamageFlash(%clientId,0.75);
+	%rotZ = getWord(GameBase::getRotation(%clientId),2); 
+	GameBase::setRotation(%clientId, "0 0 " @ %rotZ); 
+	%forceDir = Vector::getFromRot(GameBase::getRotation(%clientId),20,2000); 
+	Player::applyImpulse(%clientId,%forceDir); 
+	schedule("Client::sendMessage("@%clientId@", 1,\"~wmale3.wbye.wav\");", 4.5);
+	schedule("Client::sendMessage("@%clientId@", 1,\"~wmale3.wdsgst2.wav\");", 5.5);
+	if($Shifter::KickMessage != "")
+		centerprint(%clientId, "<jc><f1>"@$Shifter::KickMessage, 10);
+	schedule ("Net::Kick(" @ %clientId @ ", \"" @ %msg @ "\");",8);
+	
 }
 
 //===========================================================================

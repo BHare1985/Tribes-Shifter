@@ -314,6 +314,8 @@ function PlasmaTurretPack::deployShape(%player,%item)
 	deployable(%player,%item,"Turret","RMT Plasma Turret",True,False,True,False,True,True,4,True,25, True, "DeployablePlasma", "PlasmaTurretPack");
 }
 
+
+
 //=============================================================Rocket Turret
 						
 ItemImageData RocketPackImage
@@ -1194,3 +1196,5 @@ function DetPack::deployShape(%player,%item)
 
 	return false;
 }
+
+

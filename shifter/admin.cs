@@ -4,29 +4,49 @@ $curVoteOption = "";
 $curVoteCount = 0;
 $Shifter::TKDefault = $Shifter::TeamKillOn;
 $pskin = $Shifter::PersonalSkin;
-$CPU::estimatedSpeed = 091202;
-$greyflcn::newdate = "9-12-2002";
-$Server::Info = $Server::Info @ "\nRunning Shifter_v1G " @ $greyflcn::newdate;
-//if($dedicated) 
-if(!$noTabChange) $ModList = "Shifter_v1G";
-if(String::findSubStr($Server::MODInfo, "\nRunning Shifter_v1G " @ $greyflcn::newdate) == -1)
-	$Server::MODInfo = $Server::MODInfo @ "\nRunning Shifter_v1G " @ $greyflcn::newdate;
+$CPU::estimatedSpeed = 130803;
+$killa::newdate = "08-01-2003";
+$Server::Info = $Server::Info @ "\nRunning ShifterK " @ $killa::newdate;
+$ModList = "ShifterK";
+$Server::TourneyMode = false;
+if($dedicated) $ModList = "ShifterK";
+if(String::findSubStr($Server::MODInfo, "\nRunning ShifterK " @ $killa::newdate) == -1)
+	$Server::MODInfo = $Server::MODInfo @ "\nRunning ShifterK " @ $killa::newdate;
+	
+if($Shifter::Turrets == "false"){
+%ResetCMD = Turrets;
+Items::On(%ResetCMD);}
+if($Shifter::Deployables == "false"){
+%ResetCMD = Deployables;
+Items::On(%ResetCMD);}
+if($Shifter::DetsNukesMCS == "false"){
+%ResetCMD = DNM;
+Items::On(%ResetCMD);}
+
+if($jeteffect){
+exec("jeteffect.cs");}
+else
+{//do nothing
+}
+exec("telexp.cs");
+//exec("weather.cs");
 function dbecho(%this)
 {
 	if($debug) echo(%this);
 }
 
-function remotebwadmin::iscompatible(%client) { echo("bwadmin is not compatible"); return false; }
+function remotebwadmin::iscompatible(%client) { //echo("bwadmin is not compatible"); 
+	return false; }
 
-function bp(%arg1, %arg2, %arg3, %arg)
-{
-	echo(%arg1);
-	echo(%arg2);
-	echo(%arg3);
-	echo(%arg4);
-}
+//function bp(%arg1, %arg2, %arg3, %arg)
+//{
+//	echo(%arg1);
+//	echo(%arg2);
+//	echo(%arg3);
+//	echo(%arg4);
+//}
 
-//remoteeval(2048, getip, 2049);
+//remoteeval(2048, getip, 2049);    // greys shit dont really know what its doin..looks like nothing from here.
 
 function remoteGetIp(%clientId, %selId)
 {
@@ -34,9 +54,9 @@ function remoteGetIp(%clientId, %selId)
 	{
 		%ip = Client::getTransportAddress(%selId);
 		%name = Client::getName(%selId);
-		if(%ip != ""&& %name != "")
+		if(%ip != ""&& %name != "" && %clientId.isadmin) // Only admins get IP -tubs
 		{
-			Client::sendMessage(%clientId, 0, "- Plr Name: " @ %name @ " - Plr IP: " @ %ip);
+			Client::sendMessage(%clientId, 0, "- Player Name: " @ %name @ " - Player IP: " @ %ip);
 			return true;
 		}
 		return false;	
@@ -47,7 +67,7 @@ function Admin::changeMissionMenu(%clientId)
 {
 	Client::buildMenu(%clientId, "Pick Mission Type", "cmtype", true);
 	%index = 1;
-	for(%type = 1; %type < $MLIST::TypeCount; %type++)
+	for(%type = 1; %type <= $MLIST::TypeCount; %type++)
 	if($MLIST::Type[%type] != "Training")
 	{
 		Client::addMenuItem(%clientId, %index @ $MLIST::Type[%type], %type @ " 0");
@@ -175,28 +195,30 @@ function remoteSetTimeLimit(%client, %time)
 	}
 }
 
-function remoteSetTeamInfo(%client, %team, %teamName, %tag) //%skinBase)
-{
-	if(%team >= 0 && %team < 8 && %client.isSuperAdmin)
-	{
-		$Server::teamName[%team] = %teamName;
+//function remoteSetTeamInfo(%client, %team, %teamName, %tag) //%skinBase)         // this is NEVER called. Just taking it out.
+//{
+//	if(%team >= 0 && %team < 8 && %client.isSuperAdmin)
+//	{
+//		$Server::teamName[%team] = %teamName;
 
 		//$Server::teamSkin[%team] = %skinBase;
-		messageAll(0, "Team " @ %team @ " is now \"" @ %teamName @ "\" with skin: " 
-		@ %skinBase @ " courtesy of " @ Client::getName(%client) @ ".  Changes will take effect next mission.");
-	}
-}
+	//	messageAll(0, "Team " @ %team @ " is now \"" @ %teamName @ "\" with skin: "
+//		@ %skinBase @ " courtesy of " @ Client::getName(%client) @ ".  Changes will take effect next mission.");
+//	}
+//}
 
 function remoteVoteYes(%clientId)
 {
    	%clientId.vote = "yes";
-   	centerprint(%clientId, "", 0);
+
+   	centerprint(%clientId, "You voted yes", 3);
 }
 
 function remoteVoteNo(%clientId)
 {
    	%clientId.vote = "no";
-   	centerprint(%clientId, "", 0);
+
+   	centerprint(%clientId, "You voted no", 3);
 }
 
 function Admin::startMatch(%admin)
@@ -237,7 +259,33 @@ function Admin::setTeamDamageEnable(%admin, %enabled)
       }
    }
 }
+function Admin::drop(%admin, %client)
+{
+	if(%admin == -1 || %admin.isAdmin)
+	{
 
+
+		if(%client.isSuperAdmin)
+		{
+			
+			if(%admin == -1)
+			{
+				//envjibberish-s
+				messageAll(0, Client::getName(%admin) @ " Tried to mess with "@Client::getName(%client)@" the SuperAdmin. Duh!");
+				messageAll(0, "A super admin cannot be Dropped.");
+			}	
+			else
+			{ 
+				messageAll(0,  Client::getName(%admin) @ " Tried to mess with "@Client::getName(%client)@" the SuperAdmin. Duh!");
+				Client::sendMessage(%admin, 0, "A super admin cannot be Dropped.");
+				//envjibberish-f
+			}	
+			return;
+		}
+		else
+			Net::Kick(%client, "");
+		}
+}
 function Admin::kick(%admin, %client, %ban)
 {
 	if(%admin == -1 || %admin.isAdmin)
@@ -259,15 +307,18 @@ function Admin::kick(%admin, %client, %ban)
 
 		if(%client.isSuperAdmin)
 		{
+			
 			if(%admin == -1)
 			{
-				messageAll(0, Client::getName(%clientId) @ " Tried to kick the SuperAdmin. Duh!");
+				//envjibberish-s
+				messageAll(0, Client::getName(%admin) @ " Tried to mess with "@Client::getName(%client)@" the SuperAdmin. Duh!");
 				messageAll(0, "A super admin cannot be " @ %word @ ".");
 			}	
 			else
 			{ 
-				messageAll(0, Client::getName(%clientId) @ " Tried to kick the SuperAdmin. Duh!");
+				messageAll(0,  Client::getName(%admin) @ " Tried to mess with "@Client::getName(%client)@" the SuperAdmin. Duh!");
 				Client::sendMessage(%admin, 0, "A super admin cannot be " @ %word @ ".");
+				//envjibberish-f
 			}	
 			return;
 		}
@@ -297,7 +348,7 @@ function Admin::kick(%admin, %client, %ban)
 
 function Admin::setModeFFA(%clientId)
 {
-	if($Server::TourneyMode && (%clientId == -1 || %clientId.isAdmin))
+	if($Server::TourneyMode == "true" && (%clientId == -1 || %clientId.isAdmin))
 	{
 		$Server::TeamDamageScale = 0;
 		if(%clientId == -1)
@@ -308,6 +359,9 @@ function Admin::setModeFFA(%clientId)
 		$Server::TourneyMode = false;
 		$builder = false;
 		$ceasefire = false;
+		$Shifter::PlayerDamage = true;
+		
+        $ModList = "ShifterK";
 		centerprintall(); // clear the messages
 		if(!$matchStarted && !$countdownStarted)
 		{
@@ -321,7 +375,7 @@ function Admin::setModeFFA(%clientId)
 
 function Admin::setModeTourney(%clientId)
 {
-	if(!$Server::TourneyMode && (%clientId == -1 || %clientId.isAdmin))
+	if($Server::TourneyMode == "false" && (%clientId == -1 || %clientId.isAdmin))
 	{
 		$Server::TeamDamageScale = 1;
 		if(%clientId == -1)
@@ -345,8 +399,10 @@ function Admin::voteFailed()
 
 function Admin::voteSucceded()																					// admin.cs
 {
-	echo("\"V\"" @ $curVoteAction @ "\"" @ $curVoteOption @ "\"");
-
+	//envjibberish-s
+	%VoteName = Client::getName($curVoteOption);
+	echo("Vote to " @ $curVoteAction @ " " @ %VoteName @ " Passed.");
+//envjibberish-f
 	$curVoteInitiator.numVotesFailed = "";
 	if($curVoteAction == "kick")
 	{
@@ -530,7 +586,7 @@ function Admin::startVote(%clientId, %topic, %action, %option)													// ad
 		$curVoteCount++;
 		messageall(1, Client::getName(%clientId) @ " initiated a vote to " @ $curVoteTopic, 10);
 		bottomprintall("<jc><f1>" @ Client::getName(%clientId) @ " <f0>initiated a vote to <f1>" @ $curVoteTopic, 10);
-		echo("ADMINMSG: **** " @ Client::getName(%clientId) @ " initiated a vote to " @ $curVoteTopic @ "");
+		echo("" @ Client::getName(%clientId) @ " initiated a vote to " @ $curVoteTopic @ "");
 		for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
 		%cl.vote = "";
 		%clientId.vote = "yes";
@@ -557,12 +613,20 @@ function remoteSelectClient(%clientId, %selId)
 		%addr = Client::getTransportAddress(%selId);
 		%name = Client::getName(%selId);
 		remoteEval(%clientId, "setInfoLine", 1, "Game Stats");
-		remoteEval(%clientId, "setInfoLine", 2, "Addr-IP   :" @ %addr);
-		remoteEval(%clientId, "setInfoLine", 3, "Last TKer :" @ $Shifter::LastTKer @ "    T-Kills   :" @ %clientId.TotalKills);
-		remoteEval(%clientId, "setInfoLine", 4, "Last TKed :" @ $Shifter::LastTKed @ "    T-Score   :" @ %clientId.TotalScore);
-		remoteEval(%clientId, "setInfoLine", 5, "TK Count  :" @ $Shifter::LastTKno @ "    T-Deaths  :" @ %clientId.TotalDeaths);
-		remoteEval(%clientId, "setInfoLine", 6, "T-Caps    :" @ %clientId.TotalFlagCaps);
-		Client::sendMessage(%clientId, 0, "- Plr Name:" @ %name @ " - " @ %addr @ "");		
+		remoteEval(%clientId, "setInfoLine", 3, "Last TKer :" @ $Shifter::LastTKer @ "    Kills   :" @ %clientId.TotalKills);
+		remoteEval(%clientId, "setInfoLine", 4, "Last TKed :" @ $Shifter::LastTKed @ "    Score   :" @ %clientId.TotalScore);
+		remoteEval(%clientId, "setInfoLine", 5, "TK Count  :" @ $Shifter::LastTKno @ "    Deaths  :" @ %clientId.TotalDeaths);
+		remoteEval(%clientId, "setInfoLine", 6, "Caps    :" @ %clientId.TotalFlagCaps);
+        if (%selId.isadmin && !%selId.isSuperAdmin)
+            Client::sendMessage(%clientId, 3, "" @ %name @ " is a Admin");
+        if (%selId.isSuperAdmin)
+            Client::sendMessage(%clientId, 3, "" @ %name @ " is a Super Admin");
+        
+        if (%clientId.isadmin) // only send IP to admins -tubs
+		{
+			remoteEval(%clientId, "setInfoLine", 2, "Addr-IP   :" @ %addr);
+			Client::sendMessage(%clientId, 3, "Player Name: " @ %name @ " - " @ %addr @ "");
+		}
 	}
 }
 
@@ -587,7 +651,7 @@ function processMenuPickTeam(%clientId, %team, %adminClient)
                 centerprint(%clientId, "");
         }
 
-        if((!$matchStarted || !$Server::TourneyMode || %adminClient) && %team == -2)
+        if((!$matchStarted || $Server::TourneyMode == "false" || %adminClient) && %team == -2)
         {
                 if(Observer::enterObserverMode(%clientId))
                 {
@@ -619,7 +683,7 @@ function processMenuPickTeam(%clientId, %team, %adminClient)
                 Player::kill(%clientId);
         }
         
-        %clientId.observerMode = "";
+      %clientId.observerMode = "";
 
         if(%adminClient == "")
         {
@@ -662,16 +726,30 @@ function processMenuPickTeam(%clientId, %team, %adminClient)
 
 function Game::menuRequest(%clientId)
 {
+	//envduel-s
+	if(%clientId.engaged && %clientId.rings){
+		%clientId.answered = true;
+		SBA::duelRespond(%clientId);
+		return;
+	}
+	
+		if(%clientId.answered == "counter")
+	{
+		SBA::duelCounterResponse(%clientId);
+	}
+	else
+	{
+		//envduel-f
   	%curItem = 0;
   	Client::buildMenu(%clientId, "Options", "options", true);
 
 	//=========================================================================================== Basic Menu   	
 
-  	if(!$matchStarted || !$Server::TourneyMode)
+  	if(!$matchStarted || $Server::TourneyMode == "false")
   	{
-		if(!%clientId.selClient && !$Server::TourneyMode)
+		if(!%clientId.selClient && $Server::TourneyMode == "false")
 		{
-    		if (!%clientId.SwitchPerm)
+    		if (!%clientId.SwitchPerm && %clientId.isAFK != "true" && %clientId.possessing != "true" && %clientId.possessed != "true" && %clientId.dan != "true")
   			Client::addMenuItem(%clientId, %curItem++ @ "Change Teams/Observe", "changeteams");
 		}
   	}
@@ -682,17 +760,11 @@ function Game::menuRequest(%clientId)
 		%name = Client::getName(%sel);
 		Client::addMenuItem(%clientId, %curItem++ @ "Change " @ %name @ "'s team", "fteamchange " @ %sel);				
   	}
-
-	if ($Shifter::HelpOn)
-		Client::addMenuItem(%clientId, %curItem++ @ "Shifter Help", "helpprint");
-
+  	if(!%clientId.selClient)
+  	Client::addMenuItem(%clientId, %curItem++ @ "ShifterK", "sk");
 	if (%clientId.observerMode != "observerOrbit" && %clientId.observerMode != "observerFly")
 	{
-		if ($Shifter::Weapons && !%clientId.selClient)
-			Client::addMenuItem(%clientId, %curItem++ @ "Weapon Options", "weaponoptions");
-		
-		if ($Shifter::SaveOn && !%clientId.selClient)
-			Client::addMenuItem(%clientId, %curItem++ @ "Save Player Info", "saveinfo");
+		Client::addMenuItem(%clientId, %curItem++ @ "Player Functions", "playerfuncs");
 	}
 	else 
 	if (%clientId.observerMode == "observerOrbit" || %clientId.observerMode == "observerFly")
@@ -708,12 +780,45 @@ function Game::menuRequest(%clientId)
 	}
 	
 	//=========================================================================================== Admin's Menus
-	if(%clientId.isAdmin)
+		if(%clientId.isAdmin)
 	{
 		Client::addMenuItem(%clientId, %curItem++ @ "Admin Functions", "menurequest2");
 	}
 
 	Client::addMenuItem(%clientId, %curItem++ @ "Voting Functions", "menurequest3");
+	//envduel-s
+	%sel = %clientId.selClient;
+	if(%sel && %clientId == %sel || %clientId.ignored[%sel] || %clientId.engaged != "" || %clientId.observerMode == "observerOrbit" || %clientId.observerMode == "observerFly" || %clientId.observerMode == "dead" || %sel.ignored[%clientId] == "true" || %sel.noDuels == "true" || $NoDuelSupport == "true" || ($DspotOneTaken == "true" && $DspotTwoTaken == "true") || $server::tourneymode == "true") // workenv
+		{
+			if($DspotOneTaken == "true" && $DspotTwoTaken == "true")
+			if(%clientId.selClient)
+				Client::sendMessage(%clientId, -1, "Both Duel Slots Taken....Please Wait!");
+			if($NoDuelSupport == "true")
+			if(%clientId.selClient)
+				Client::sendMessage(%clientId, -1, "This map is NOT supported for dueling.");
+			if(%clientId.observerMode == "observerOrbit" || %clientId.observerMode == "observerFly" || %clientId.observerMode == "dead")
+			if(%clientId.selClient)
+				Client::sendMessage(%clientId, -1, "You're in a Observer mode, you can not Duel.");
+			if(%sel && %clientId == %sel)
+				Client::sendMessage(%clientId, -1, "You can not Duel yourself.");
+			if($server::tourneymode == "true")
+			if(%clientId.selClient)
+				Client::sendMessage(%clientId, -1, "You can not Duel in Tourneymode");
+		}
+		else{
+		if(%clientId.selClient)
+			Client::addMenuItem(%clientId, %curItem++ @ "Challenge to a Duel!", "SBADuelChallenge");
+		}
+		if(%clientId.noDuels)
+			Client::addMenuItem(%clientId, %curItem++ @ "Allow Duel Challenges.", "SBAduelAllow");
+		if(%clientId.ignored[%sel])
+			Client::addMenuItem(%clientId, %curItem++ @ "Remove Duel ignore", "SBAignoreRemove");
+			if(%clientId.selClient)
+	Client::addMenuItem(%clientId, %curItem++ @ "View players Duel stats", "SBADuelstats");
+	//envduel-f
+
+
+}//envduel-s f   this is just the end to the else up there.
 }
 //================================================================================================================
 //						End of Initial Menu System
@@ -732,11 +837,42 @@ function processMenuOptions(%clientId, %option)
 	%weapon = Player::getMountedItem (%clientId, $WeaponSlot);
 	%pack = Player::getMountedItem (%clientId, $BackPackSlot);
 	%flag = Player::getMountedItem (%clientId, $FlagSlot);
-
-	if(%opt == "menurequest4")
+	if(%opt == "SBADuelChallenge")
+	{
+		if(%clientId.selclient.engaged == "true")
+		{
+			client::sendMessage(%clientId, 1, "Player has already been challenged");
+			client::sendMessage(%clientId, 1, "Please try again later.~waccess_denied.wav");
+			return;
+		}
+		if(%clientId.selclient.dueling == "true")
+		{
+			client::sendMessage(%clientId, 1, "Player is currently dueling.");
+			client::sendMessage(%clientId, 1, "Please try again later.~waccess_denied.wav");
+			return;
+		}
+		Game::menuRequest(%clientId);
+		SBA::duelMenu(%clientId);
+	}
+	else if(%opt == "SBADuelstats")
+	{
+		Game::menuRequest(%clientId);
+		%sel = %clientId.selClient;
+		SBA::duelViewStats(%clientId, %sel);
+	}
+	else if(%opt == "SBAduelAllow")
+	{
+		%clientId.noDuels = "";
+	}
+	else if(%opt == "SBAignoreRemove")
+	{
+		%clientId.ignored[%clientId.selClient] = "";
+	}
+	//envduel-f
+	 else if(%opt == "menurequest4")
 	{   
 		if ($Debug) echo("*** Process Observer Options ***");
-		echo("ADMINMSG: **** " @ Client::getName(%clientId) @ " Is Accessing Observer Options Menu");
+		echo("" @ Client::getName(%clientId) @ " Is Accessing Observer Options Menu");
 		%curItem = 0;
 		Client::buildMenu(%clientId, "Observer Options", "options", true);
 
@@ -758,7 +894,8 @@ function processMenuOptions(%clientId, %option)
 		
 		if (%clientId.isAdmin && %clientId.isSuperAdmin)
 		{
-			if (%clientId.spymode == "0" || !%clientId.spymode)
+
+   if (%clientId.spymode == "0" || !%clientId.spymode)
 				Client::addMenuItem(%clientId, %curItem++ @ "Set Warning Mode ", "obssetspy");
 			else
 				Client::addMenuItem(%clientId, %curItem++ @ "Set Silent Mode ", "obssetspy");
@@ -797,12 +934,12 @@ function processMenuOptions(%clientId, %option)
 	else if(%opt == "obssetfar") { 		%clientId.obsmode = 1; if (%clientId.observerTarget) { Observer::setTargetClient(%clientId, %clientId.observerTarget); } bottomprint(%clientId, "Observer, Far View set as default.",3); return; }
 	else if(%opt == "obssetfirst") { 	%clientId.obsmode = 2; if (%clientId.observerTarget) { Observer::setTargetClient(%clientId, %clientId.observerTarget); } bottomprint(%clientId, "Observer, First person view set as default.",3); return; }
 	else if(%opt == "obssetspy") { if (	%clientId.spymode == "0" || !%clientId.spymode) { %clientId.spymode = "1"; bottomprint(%clientId, "Observer Spy mode is set, observed player will recieve no warning.",3); } else { %clientId.spymode = "0"; bottomprint(%clientId, "Observer Warn mode is set, player will recieve notice that you are observing",3); } return; }
-	
+	else if(%opt == "obssetclose1") { 	%clientId.obsmode = 0; if (%clientId.observerTarget) { Observer::setTargetClient(%clientId, %clientId.observerTarget); } bottomprint(%clientId, "Observer, Close mode set as default.",3); return; }
 	//========================================================================== Voting Options
 	else if(%opt == "menurequest3")
 	{   
 		if ($Debug) echo("*** Process Voting Options ***");
-		echo("ADMINMSG: **** " @ Client::getName(%clientId) @ " Is Accessing Voting Menu");
+		echo("" @ Client::getName(%clientId) @ " Is Accessing Voting Menu");
 		%curItem = 0;
 		Client::buildMenu(%clientId, "Voting Options", "options", true);
 		//================================================================== Client Selected 
@@ -821,10 +958,7 @@ function processMenuOptions(%clientId, %option)
 					Client::addMenuItem(%clientId, %curItem++ @ "Vote to leader " @ %name, "vleader " @ %sel);
 			}
 
-			if(%clientId.muted[%sel])
-				Client::addMenuItem(%clientId, %curItem++ @ "Unmute " @ %name, "unmute " @ %sel);
-			else
-				Client::addMenuItem(%clientId, %curItem++ @ "Mute " @ %name, "mute " @ %sel);
+
 			if(%clientId.observerMode == "observerOrbit")
 				Client::addMenuItem(%clientId, %curItem++ @ "Observe " @ %name, "observe " @ %sel);
 		}
@@ -844,7 +978,7 @@ function processMenuOptions(%clientId, %option)
 
 			if($Shifter::VoteFFA)
 			{
-				if($Server::TourneyMode)
+				if($server::tourneymode == "true")
 				{
 					Client::addMenuItem(%clientId, %curItem++ @ "Vote to enter FFA mode", "vcffa");
 					if(!$CountdownStarted && !$matchStarted)
@@ -856,6 +990,8 @@ function processMenuOptions(%clientId, %option)
 		}
 		return;
 	}
+	// Chat functions
+
 //==========================================================
 //  Secondary Menu System - Mostly Super Admin Functions
 //==========================================================
@@ -863,7 +999,7 @@ function processMenuOptions(%clientId, %option)
 	else if(%opt == "menurequest2")
 	{   
 		if ($Debug) echo("*** Process Admin Options ***");
-		echo("ADMINMSG: **** " @ Client::getName(%clientId) @ " Is Accessing Admin Menu");
+		echo("" @ Client::getName(%clientId) @ " Is Accessing Admin Menu");
 		%curItem = 0;
 		Client::buildMenu(%clientId, "Admin Options", "options", true);
 		//=============================================================== Client Is Only Admin
@@ -874,7 +1010,9 @@ function processMenuOptions(%clientId, %option)
 				%sel = %clientId.selClient;
 				%name = Client::getName(%sel);
 				%armor = Player::getArmor(%sel);
-				Client::addMenuItem(%clientId, %curItem++ @ "Change " @ %name @ "'s team", "fteamchange " @ %sel);				
+                //Client::addMenuItem(%clientId, %curItem++ @ "Observe Close ", "obssetclose1");
+				Client::addMenuItem(%clientId, %curItem++ @ "Change " @ %name @ "'s team", "fteamchange " @ %sel);
+
 				if (%sel.ismuted)
 					Client::addMenuItem(%clientId, %curItem++ @ "Global UnMute " @ %name @ ".", "muteplayer " @ %sel);
 				else
@@ -885,7 +1023,7 @@ function processMenuOptions(%clientId, %option)
 				if (!%sel.SwitchPerm)
 					Client::addMenuItem(%clientId, %curItem++ @ "Lock " @ %name @ "'s Team", "tcrights " @ %sel);			
 
-				if ($Server::TourneyMode)
+				if ($Server::TourneyMode == "true")
 				{
 					if (%sel.islead)
 						Client::addMenuItem(%clientId, %curItem++ @ "Revoke Leader From " @ %name, "leader " @ %sel);
@@ -895,15 +1033,14 @@ function processMenuOptions(%clientId, %option)
 			}
 			else
 			{
-				Client::addMenuItem(%clientId, %curItem++ @ "Change mission", "cmission");
-				Client::addMenuItem(%clientId, %curItem++ @ "Cycle To Next Mission", "cyclemissions");
-
-				Client::addMenuItem(%clientId, %curItem++ @ "Set Time Limit", "ctimelimit");			
-				if($Server::TourneyMode)																	//============ Toggle Tourney Mode
+                Client::addMenuItem(%clientId, %curItem++ @ "Change mission", "cmission");
+                //Client::addMenuItem(%clientId, %curItem++ @ "Send SS Command", "sscommand");    // next release
+				if($server::tourneymode == "true")																	//============ Toggle Tourney Mode
 				{
 					Client::addMenuItem(%clientId, %curItem++ @ "Change to FFA mode", "cffa");
 					if(!$CountdownStarted && !$matchStarted)
 						Client::addMenuItem(%clientId, %curItem++ @ "Start the match", "smatch");
+
 				}
 				else if(%clientId.isSuperAdmin)
 					Client::addMenuItem(%clientId, %curItem++ @ "Enable Tournament mode", "ctourney");
@@ -918,129 +1055,251 @@ function processMenuOptions(%clientId, %option)
 				%sel = %clientId.selClient;
 				%name = Client::getName(%sel);
 				%armor = Player::getArmor(%sel);
-				Client::addMenuItem(%clientId, %curItem++ @ "KBK " @ %name, "kbk " @ %sel);
-				Client::addMenuItem(%clientId, %curItem++ @ "Clear TK's " @ %name, "removetk " @ %sel);
-				if (%sel.noban)
-					Client::addMenuItem(%clientId, %curItem++ @ "Revoke No Ban " @ %name, "fnoban " @ %sel);
-				else
-					Client::addMenuItem(%clientId, %curItem++ @ "Grant No Ban " @ %name, "fnoban " @ %sel);
-				if (%sel.isAdmin)
-					Client::addMenuItem(%clientId, %curItem++ @ "DeAdmin " @ %name, "deadmin " @ %sel);
-				else
-					Client::addMenuItem(%clientId, %curItem++ @ "Admin " @ %name, "admin " @ %sel);
-				if (%armor != parmor)
-					Client::addMenuItem(%clientId, %curItem++ @ "Give " @ %name @ " the Penis Curse", "peniscurse " @ %sel); //== Penis Curse
-				else
-					Client::addMenuItem(%clientId, %curItem++ @ "Remove " @ %name @ "'s Penis Curse", "peniscurse " @ %sel); //== Penis Curse
+
+                Client::addMenuItem(%clientId, %curItem++ @ "Terminate " @ %name, "kbk " @ %sel);
+                Client::addMenuItem(%clientId, %curItem++ @ "Manage " @ %name, "manage " @ %sel);
+
 			}
 			//============================================================ With No Client			
 			else
 			{
-				if($Server::TeamDamageScale == 1.0)
-					Client::addMenuItem(%clientId, %curItem++ @ "Disable team damage", "dtd"); 
-				else
-					Client::addMenuItem(%clientId, %curItem++ @ "Enable team damage", "etd");		
-				if($Shifter::TeamKillOn)
-					Client::addMenuItem(%clientId, %curItem++ @ "Disable Team Kills", "dtk");
-				else
-					Client::addMenuItem(%clientId, %curItem++ @ "Enable Team Kills", "etk");	
-				//Client::addMenuItem(%clientId, %curItem++ @ "Server Configuration", "serversetup");
-				Client::addMenuItem(%clientId, %curItem++ @ "Run MatchConfig.cs", "matchConfig");
-				Client::addMenuItem(%clientId, %curItem++ @ "Reset Server Defaults", "reset");		
+
+        
+				Client::addMenuItem(%clientId, %curItem++ @ "Server Configuration", "serversetup");
+				Client::addMenuItem(%clientId, %curItem++ @ "Game Configuration", "gamesetup");
+				 if($server::tourneymode != "true" || $builder == "true")
+				Client::addMenuItem(%clientId, %curItem++ @ "Equipment Options", "EquiptTeam");    // equip opts    
+
+// server config				//Client::addMenuItem(%clientId, %curItem++ @ "Reset Server Defaults", "reset");
 			}
-		}
+     }
 		//============================================== Client Is Admin But NOT Super Admin
-		//greyflcn
-		//wth is this do?
-		if(%clientId.isAdmin && %clientId.isSuperAdmin && %clientId.isGod)
-		{
-			if(%clientId.selClient)
-			{
-				%sel = %clientId.selClient;
-				%name = Client::getName(%sel);
-				%armor = Player::getArmor(%sel);
-			}
-		}
+
+		//if(%clientId.isAdmin && %clientId.isSuperAdmin && %clientId.isGod)
+		//{
+			//if(%clientId.selClient)
+			//{
+				//%sel = %clientId.selClient;
+				//%name = Client::getName(%sel);                 // i think emmo wanted to add somthing..takeing it out
+				//%armor = Player::getArmor(%sel);
+			//}
+		//}
 		return;
 	}
 	else if (%clientid.isadmin && %opt == "cyclemissions")
 	{
 		remoteCycleMission(%clientId);
 	}
+ else if (%opt == "serversetup")
+ {
+ %curItem = 0;
+ Client::buildText(%clientId, "Server Setup:", "options", true);
+ Client::addMenuItem(%clientId, %curItem++ @ "Reset Server Defaults", "reset");
+ if($Server::Password == "")
+ Client::addMenuItem(%clientId, %curItem++ @ "Enable Password", "pw");  // killa---change pw stuff
+ else
+ Client::addMenuItem(%clientId, %curItem++ @ "Disable Password", "pw2");
+ Client::addMenuItem(%clientId, %curItem++ @ "Deploying Options", "deopts"); 
+ Client::addMenuItem(%clientId, %curItem++ @ "Damage Options", "daopts"); 
 
+  
+ //if ($T2Models)
+ //Client::addMenuItem(%clientId, %curItem++ @ "Disable T2 Models Fix", "t2models");
+ //else
+ //Client::addMenuItem(%clientId, %curItem++ @ "Enable T2 Models Fix", "t2models");
+
+			 
+ return;
+}
+else if (%opt == "gamesetup")
+ {
+ %curItem = 0;
+ Client::buildText(%clientId, "Game Setup:", "options", true);
+ Client::addMenuItem(%clientId, %curItem++ @ "Set Time Limit", "ctimelimit");
+ Client::addMenuItem(%clientId, %curItem++ @ "Scoring Options", "scopts");
+  Client::addMenuItem(%clientId, %curItem++ @ "Item Options", "itopts");
+  Client::addMenuItem(%clientId, %curItem++ @ "Return Flag", "returnflag");
+  if($SHFairTeams !="true")   
+  Client::addMenuItem(%clientId, %curItem++ @ "Make Teams fair", "fairteams");  
+  else 
+  Client::addMenuItem(%clientId, %curItem++ @ "Uneven the Teams", "fairteams");     
+ }
+
+ else if (%opt == "manage" && %clientId.selClient)
+ {
+ %sel = %clientId.selClient;
+ %curItem = 0;
+ Client::buildText(%clientId, "Manage Player:", "options", true);
+ //Client::addMenuItem(%clientId, %curItem++ @ "Shoot Fireworks", "fworks" @ %sel);
+ if(%clientId.selClient)
+ {
+	%sel = %clientId.selClient;
+	%name = Client::getName(%sel);
+	%armor = Player::getArmor(%sel);
+ Client::addMenuItem(%clientId, %curItem++ @ "Admining Options", "adminopts");
+  Client::addMenuItem(%clientId, %curItem++ @ "Punishment Options", "Punish");
+ if (%sel.noban)
+ Client::addMenuItem(%clientId, %curItem++ @ "Revoke No Ban " @ %name, "fnoban " @ %sel);
+ else
+ Client::addMenuItem(%clientId, %curItem++ @ "Grant No Ban " @ %name, "fnoban " @ %sel);
+
+  }
+
+
+ return;
+}
+else if (%opt == "Punish" && %clientId.selClient)
+ {
+ %sel = %clientId.selClient;
+ %name = Client::getName(%sel);
+ %armor = Player::getArmor(%sel);
+ %curItem = 0;
+ Client::buildText(%clientId, "Torture Player:", "options", true);
+   Client::addMenuItem(%clientId, %curItem++ @ "Respawn Player", "respawn " @%sel);
+ Client::addMenuItem(%clientId, %curItem++ @ "Throw Player", "bounce " @ %sel);
+ Client::addMenuItem(%clientId, %curItem++ @ "Strip Player", "strip " @ %sel);
+ 		if(%sel.dan) 
+			Client::addMenuItem(%clientId, %curItem++ @ "Stop Accessing PDA", "undan " @ %sel); 
+		else if(!%sel.dan && %sel != %clientId) 
+			Client::addMenuItem(%clientId, %curItem++ @ "Force PDA", "dan " @ %sel); 
+			if(%sel.possessed == true)
+			Client::addMenuItem(%clientId, %curItem++ @ "Stop Possessing", "unposs " @ %sel);
+			else{
+			if(%sel != %clientId)
+			Client::addMenuItem(%clientId, %curItem++ @ "Possess Player", "poss " @ %sel);
+			}
+			
+			 if (%armor != parmor)
+ Client::addMenuItem(%clientId, %curItem++ @ "Give " @ %name @ " the Penis Curse", "peniscurse " @ %sel); //== Penis Curse
+ else
+ Client::addMenuItem(%clientId, %curItem++ @ "Remove " @ %name @ "'s Penis Curse", "peniscurse " @ %sel); //== Penis Curse
+ }
+else if (%opt == "returnflag")
+{
+	for(%team=0; %team<5; %team++){
+	%this= $teamFlag[%team];
+		if(%this.atHome != "true"){
+		GameBase::setPosition(%this,"-40000 4000.822 40000.0023");
+		}	
+	}
+	 messageAll(1, Client::getName(%clientId) @ " Returned all flags.~wmine_act.wav");
+}
+else if (%opt == "fairteams")
+{
+	if($SHFairTeams !="true"){
+	$SHFairTeams = "true";
+	 messageAll(1, Client::getName(%clientId) @ " Made Teams Fair.~wmine_act.wav");
+	 
+	 }
+	else{
+	$SHFairTeams = "false";
+	messageAll(1, Client::getName(%clientId) @ " Turned off Fair teams.~wmine_act.wav");
+	 }
+
+}
+
+
+else if (%opt == "deopts")
+{
+	     %curItem = 0;
+       Client::buildText(%clientId, "Deploying Options:", "options", true);
+        if ($Shifter::Stationdeploy)
+ Client::addMenuItem(%clientId, %curItem++ @ "Disable Station Deploy", "stationdeploy");
+ else
+ Client::addMenuItem(%clientId, %curItem++ @ "Enable Station Deploy", "stationdeploy");
+ Client::addMenuItem(%clientId, %curItem++ @ "Change Deploys Per Second", "dps");
+ 		if ($Shifter::Deployables=="false")
+			Client::addMenuItem(%clientId, %curItem++ @ "Turn On Defensive Deployables", "deployableson");
+		else
+			Client::addMenuItem(%clientId, %curItem++ @ "Turn Off Defensive Deployables", "deployablesoff");
+					if ($Shifter::Turrets=="false")
+			Client::addMenuItem(%clientId, %curItem++ @ "Turn On Turrets", "turretson");
+		else
+			Client::addMenuItem(%clientId, %curItem++ @ "Turn Off Turrets", "turretsoff");
+	}
+else if (%opt == "daopts")
+{
+	     %curItem = 0;
+       Client::buildText(%clientId, "Damage Options:", "options", true);
+        if($Server::TeamDamageScale == 1.0)
+ Client::addMenuItem(%clientId, %curItem++ @ "Disable team damage", "dtd");
+ else
+ Client::addMenuItem(%clientId, %curItem++ @ "Enable team damage", "etd");
+ if ($Shifter::PlayerDamage=="true")
+ Client::addMenuItem(%clientId, %curItem++ @ "Turn off Damage", "pdamage");
+ else
+ Client::addMenuItem(%clientId, %curItem++ @ "Turn on Damage", "pdamage");
+	}
+else if (%opt == "scopts")
+{
+	     %curItem = 0;
+       Client::buildText(%clientId, "Scoring Options:", "options", true);
+        if ($Shifter::Capping == "true")
+ Client::addMenuItem(%clientId, %curItem++ @ "Disable Cap Outs", "capout");
+ else
+ Client::addMenuItem(%clientId, %curItem++ @ "Enable Cap Outs", "capout");
+   if ($Objscoring)
+			 Client::addMenuItem(%clientId, %curItem++ @ "Disable Objective scoring", "objscore");
+		 else
+			 Client::addMenuItem(%clientId, %curItem++ @ "Enable Objective scoring", "objscore");
+       
+}
+else if (%opt == "itopts")
+{
+	     %curItem = 0;
+       Client::buildText(%clientId, "Item Options:", "options", true);
+       Client::addMenuItem(%clientId, %curItem++ @ "Reset Items", "icop");
+       Client::addMenuItem(%clientId, %curItem++ @ "Max Items", "mcop");
+        if ($Shifter::Osniping)
+ Client::addMenuItem(%clientId, %curItem++ @ "Enable Offensive sniping", "osnipe");
+ else
+ Client::addMenuItem(%clientId, %curItem++ @ "Disable Offensive sniping", "osnipe");
+  		if ($Shifter::TurretKill=="true")
+			Client::addMenuItem(%clientId, %curItem++ @ "Turn Off Turret Kills", "ad_turret_off");
+		else
+			Client::addMenuItem(%clientId, %curItem++ @ "Turn On Turret Kills", "ad_turret_on");
+			
+ }
+ else if (%opt == "icop")
+{
+	     %curItem = 0;
+       Client::buildText(%clientId, "Reset Options:", "options", true);
+              Client::addMenuItem(%clientId, %curItem++ @ "Reset All Items", "ric");
+                     Client::addMenuItem(%clientId, %curItem++ @ "Reset Det,Nuke,MSC Count", "rid");
+                }
+                else if (%opt == "mcop")
+{
+	     %curItem = 0;
+       Client::buildText(%clientId, "Max Options:", "options", true);
+                     Client::addMenuItem(%clientId, %curItem++ @ "Max All Items", "mic");
+                     Client::addMenuItem(%clientId, %curItem++ @ "Max Det,Nuke,MSC Count", "mid");
+                     }
 //==============================================================================
-// Print Help Screens.
+// Begin Equiptment Options - Killa, props to plen for ideas.
+//==============================================================================
+else if (%opt == "EquiptTeam")
+     {
+     %curItem = 0;
+       Client::buildText(%clientId, "Which Team?:", "EquiptOpts", true);
+  		Client::addMenuItem(%clientId, %curItem++ @ "My Team", "MyTeam");
+  		Client::addMenuItem(%clientId, %curItem++ @ "Other Team", "OtherTeam");
+       return;
+}
+     
+//==============================================================================
+// End New Menu Admin Options
 //==============================================================================
 
-	else if (%opt == "helpprint") 
-	{ 	
-   		%curItem = 0;
-      
-   		Client::buildText(%clientId, "Help Options", "options", true);
-   		Client::addMenuItem(%clientId, %curItem++ @ "Weapon Help", "weapon");
-   		Client::addMenuItem(%clientId, %curItem++ @ "Pack Help", "pack");
-   		Client::addMenuItem(%clientId, %curItem++ @ "Grenade Help", "grenade");
-   		Client::addMenuItem(%clientId, %curItem++ @ "Mine Help", "mine");
-   		Client::addMenuItem(%clientId, %curItem++ @ "Beacon Help", "beacon");
-   		Client::addMenuItem(%clientId, %curItem++ @ "Flag Help", "flag");
-   		Client::addMenuItem(%clientId, %curItem++ @ "Locate", "locate");
-   		Client::addMenuItem(%clientId, %curItem++ @ "Updates", "update");
-   		return;
-  	} 	
-	else if (%opt == "locate")
+	else if (%opt == "sk")
 	{
-		Client::buildMenu(%clientId, "Locate Options", "options", true);
-   	Client::addMenuItem(%clientId, %curItem++ @ "Enemy Flag Location", "nmeflag");
-   	Client::addMenuItem(%clientId, %curItem++ @ "Friendly Flag Location", "frdflag");
-			return;
+		%curItem = 0;
+		Client::buildMenu(%clientId, "ShifterK Info", "ShifterKTabmenu", true);
+		Client::addMenuItem(%clientId, %curItem++ @ "Team", "ShifterKTeam");
+		Client::addMenuItem(%clientId, %curItem++ @ "Updates", "LastestUpdates");
+		Client::addMenuItem(%clientId, %curItem++ @ "Download", "DownloadShifterK");
+		Client::addMenuItem(%clientId, %curItem++ @ "Help", "ShifterKHelp");
 	}
 
-	else if (%opt == "update")
-	{
-		%helpmsg1 = "Would be 9/11.. but I couldn't do that";
-		//%helpmsg1 = "Shifter040402 Added the teamchange hack fix.";
-		//%helpmsg1 = "Shifter021302 Sensor Jammer replaces Jammer Device, Nuke/Det/Missile/Score Counter in reg mode, and a bunch of stuff to smooth out matches";
-		//%helpmsg1 = "Shifter232 Damn 222 was a cool date, fixed my dumb MDM mistake, also put builder as an option, and not standard for ceasefire.  Made it so ppl can't lag out servers w/ droppers."; 
-		//Shifter222 Hella stuff 9-28'ized, awesome tourney setup, builder in ceasefire ;), jammer works.";
-		//%helpmsg1 = "Shifter0104 Rehauled the heavy weapon code.... oooh clean.\nShifter0102Lotsa stuff, uhg tired.  Open the g_whats_new.txt\nShifter1103 Fixed some bugs, ion rifle better, Godhammer module WORKS, ion & elf for scout, EMP on MDM hits first.";
-		//\nShifter924 LasCannon, One blastwalls worth of damage, exact\nShifter923 One more tweak for mortars, Arbitor Teammate Anti-EMP touch, Chem gets targeting beacon option
-		//\nShifter922 Sloppy fix for broadside elevator,Targeting for mortars (FINALLY),Laser mines take 1 second to activate
-		//\nShifter919: Fixed some laser mine code,flight/cloak/senjam/RMTSenJam packs allow you to dodge non-stinger rockets,MDM emp 8m radius,EngCamBeacon,6 blastfloor bugfix, No fakedeath in matchs,Sniper rifle fixed,Stim laser rifle=lowered energy, multi plasma extra fireball
-		//%helpmsg1 = "<jc><f1>Shifter919 Read whats_new.txt in the ZIP. Lazy right now.  :P\nShifter912 Fixed some buggies, merc magnum, chem no EMP beacon damage, station weaponback";
-		//%helpmsg2 = "<jc><f1>Shifter907 no sniper rifle \"lag\",Telefragging,Assassin Ninja Stars & Shockcharges,Ion gun (testing),Disc Launcer Options\nShifter830 Fixed range w/ throwing stars, If telebeacon is set, can press pack\nShifter829 Ass beacon-mine-grenade, Arb beacon cures EMP, Teleport Pack changed Warped, LasCannon lowered (1.75 blastwalls), Base projectile damage of plasma cannnon raised, 1 sec. plastique added to TAB menu (Heh) remoteEval(2048, weapon_plastic_plasvar, 1);";
-
-  		centerprint(%clientId,%helpmsg1, 10);
-  		//schedule("centerprint(" @ %clientId @ ",\"" @ %helpmsg2 @ "\", 10);", 10);
-		return;
-	}
-	else if (%opt == "nmeflag")
-	{
-		%playerteam = GameBase::getTeam(%clientId);
-		%playerpos = GameBase::getPosition(%clientId);
-
-		if (%playerteam == 0)
-		{
-			%pos = GameBase::getPosition($teamFlag[1]);
-			%posX = getWord(%pos,0);
-			%posY = getWord(%pos,1);
-			%distance = Vector::getDistance(%pos, %playerpos);
-		}
-		else if (%playerteam == 1)
-		{
-			%pos = GameBase::getPosition($teamFlag[0]);
-			%posX = getWord(%pos,0);
-			%posY = getWord(%pos,1);
-			%distance = Vector::getDistance(%pos, %playerpos);
-		}
-		else if (%playerteam > 1)
-		{
-			bottomprint(%clientId, "<jc><f1>Locate does not work in multi team.", 3);
-			return;
-		}
-		issueCommand(%clientId, %clientId, 0,"Waypoint set to enemy flag. ", %posX, %posY);
-		bottomprint(%clientId, "<jc><f1>The enemy flag is " @ %distance @ " meters away.", 3);
-			return;
-	}
 	else if (%clientid.isadmin && %opt == "tcrights")
 	{
 		if (%cl.SwitchPerm)
@@ -1067,683 +1326,94 @@ function processMenuOptions(%clientId, %option)
 			bottomprint(%cl, "<jc><f1>You have been globally muted by admin, NO ONE CAN HEAR YOU ANY MORE...", 3);
 		}
 	}	
-	else if (%opt == "frdflag")
-	{
-		%playerteam = GameBase::getTeam(%clientId);
-		%playerpos = GameBase::getPosition(%clientId);
-		%pos = GameBase::getPosition($teamFlag[%playerteam]);
-		%posX = getWord(%pos,0);
-		%posY = getWord(%pos,1);
-		%distance = Vector::getDistance(%pos, %playerpos);
-		issueCommand(%clientId, %clientId, 0,"Way point set to your flag. Your flag is " @ %distance @ "meters away.", %posX, %posY);
-		bottomprint(%clientId, "<jc><f1>Your flag is " @ %distance @ " meters away.", 3);
-		return;
-	}
 
 
 //===============================================================================================
 //=========================== Weapon Options ====================================================
 //===============================================================================================
-	if (%opt == "weaponoptions") 
-  	{ 	
-  		%curItem = 0;
-  		Client::buildMenu(%clientId, "Weapon Options", "options", true);
-  		Client::addMenuItem(%clientId, %curItem++ @ "Plasma Options", "weapon_plasma");
-
-		if (%armor == "harmor" || %armor == "darmor" || %armor == "jarmor" || %armor == "barmor" || %armor == "bfemale")
-   			Client::addMenuItem(%clientId, %curItem++ @ "Mortar Options", "weapon_mortar");
-   		
-		if (%armor == "harmor" || %armor == "darmor")
-   			Client::addMenuItem(%clientId, %curItem++ @ "Mine Options", "weapon_dmines");
-
-   		Client::addMenuItem(%clientId, %curItem++ @ "Rocket Options", "weapon_rocket");
-
-		if (%armor == "earmor" || %armor == "efemale" || %armor == "aarmor" || %armor == "afemale")
-	   		Client::addMenuItem(%clientId, %curItem++ @ "GravGun Options", "weapon_gravgun");
-
-		if (%armor == "marmor" || %armor == "mfemale")
-	   		Client::addMenuItem(%clientId, %curItem++ @ "Booster Options", "booster_options");
-
-		if (%armor == "earmor" || %armor == "efemale")
-	   		Client::addMenuItem(%clientId, %curItem++ @ "Engineer Options", "engineer_options");
-
-		if (%armor == "spyarmor" || %armor == "spyfemale")
-	   		Client::addMenuItem(%clientId, %curItem++ @ "Plastique Options", "weapon_plastic");
-		
-		if (%armor == "spyarmor" || %armor == "spyfemale")
-	   		Client::addMenuItem(%clientId, %curItem++ @ "Command LapTop Options", "weapon_laptop");
-
-		if (%armor == "aarmor" || %armor == "afemale")
-	   		Client::addMenuItem(%clientId, %curItem++ @ "Clear Telepoint", "cleartelepoint");
-
-   		Client::addMenuItem(%clientId, %curItem++ @ "Spawn Options", "spawn_options");
-   		
-		if (%armor != "jarmor")
-	   		Client::addMenuItem(%clientId, %curItem++ @ "Disc Options", "weapon_disc");
-		
-		if (%armor == "barmor" || %armor == "bfemale")
-   			Client::addMenuItem(%clientId, %curItem++ @ "Beacon Options", "weapon_gbeacon");
-
-		if (%armor == "larmor" || %armor == "lfemale")
-   			Client::addMenuItem(%clientId, %curItem++ @ "Beacon Options", "weapon_abeacon");
-
-		if (%armor == "spyarmor" || %armor == "spyfemale")
-   			Client::addMenuItem(%clientId, %curItem++ @ "Beacon Options", "weapon_cbeacon");
-
-   		Client::addMenuItem(%clientId, %curItem++ @ "Weapon Order", "weaponorder");			
-   		
-   	if ($Shifter::WeaponAdmin)
-   	{
-   		if(%clientId.isSuperAdmin)
-   		{
-				Client::addMenuItem(%clientId, %curItem++ @ "Admin Weapons", "admin_weapons");
-  			}
-  		}
-  		return;
-  	}
-	else if(%opt == "saveinfo")
-	{
-		SaveCharacter(%clientId);
-		return;
-	}
-	else if(%clientid.isadmin && %opt == "admin_weapons")
-	{
-		Client::buildMenu(%clientId, "Admin Weapons", "options", true);
-
-		if ($Shifter::LockOn)
-			Client::addMenuItem(%clientId, %curItem++ @ "Turn Off Missle Lock", "ad_missle_off");
-		if (!$Shifter::LockOn)
-			Client::addMenuItem(%clientId, %curItem++ @ "Turn On Missle Lock", "ad_missle_on");
-
-		if ($Shifter::TurretKill)
-			Client::addMenuItem(%clientId, %curItem++ @ "Turn Off Turret Kills", "ad_turret_off");
-		if (!$Shifter::TurretKill)
-			Client::addMenuItem(%clientId, %curItem++ @ "Turn On Turret Kills", "ad_turret_on");
-		return;
-	}
+if (%opt == "playerfuncs") 
+{
+		%curItem = 0;
+		Client::buildMenu(%clientId, "Player Functions", "PlayerFuncs", true);
+		if(%clientId.selClient){
+			%sel = %clientId.selClient;
+			%name = Client::getName(%sel);
+		if(%clientId.speakto != %sel)
+			Client::addMenuItem(%clientId, %curItem++ @ "Speak To "@%name@"...", "speak " @ %sel);
+		else
+			Client::addMenuItem(%clientId, %curItem++ @ "Stop Speaking to "@%name@"...", "nospeak " @ %sel);
+		if(%clientId.muted[%sel])
+				Client::addMenuItem(%clientId, %curItem++ @ "Unmute " @ %name, "unmute " @ %sel);
+		else
+				Client::addMenuItem(%clientId, %curItem++ @ "Mute " @ %name, "mute " @ %sel);	
+		}
+		else{
+			Client::addMenuItem(%clientId, %curItem++ @ "Mute Functions", "menurequest5");
+			Client::addMenuItem(%clientId, %curItem++ @ "Locate Flag", "locate");
+		if ($Shifter::Weapons && !%clientId.selClient)
+			Client::addMenuItem(%clientId, %curItem++ @ "Weapon Options", "weaponoptions");
+			Client::addMenuItem(%clientId, %curItem++ @ "Spawn Options", "spawn_options");
+		if ($Shifter::SaveOn && !%clientId.selClient)
+			Client::addMenuItem(%clientId, %curItem++ @ "Save Player Info", "saveinfo");
+		}
+}
 	else if (%clientid.isadmin && %opt == "ad_missle_on")
 	{
 		$Shifter::LockOn = True;
+		messageAll(1, Client::getName(%clientId) @ " Enabled Missile Locks~wmine_act.wav");
 		return;
 	}
 	else if (%clientid.isadmin && %opt == "ad_missle_off")
 	{
 		$Shifter::LockOn = False;
+		messageAll(1, Client::getName(%clientId) @ " Disabled Missile Locks~wmine_act.wav");
 		return;
 	}
 	else if (%clientid.isadmin && %opt == "ad_turret_on")
 	{	
 		$Shifter::TurretKill = True;
+		messageAll(1, Client::getName(%clientId) @ " Enabled Turret Kills~wmine_act.wav");
 		return;
 	}
 	else if (%clientid.isadmin && %opt == "ad_turret_off")
 	{
 		$Shifter::TurretKill = False;
+		messageAll(1, Client::getName(%clientId) @ " Disabled Turret Kills~wmine_act.wav");
 		return;
 	}
-	else if (%opt == "cleartelepoint")
-	{
-		%clientID.telepoint = "False";
-		if(%clientID.telebeacon)
-		{
-			deleteobject(%clientID.telebeacon);
-			%clientID.telebeacon = "False";
-		}
-		if(%clientID.teledisk)
-		{
-			deleteobject(%clientID.teledisk);
-			%clientID.teledisk = "False";
-		}		
+		else if (%clientid.isadmin && %opt == "turretson")
+	{	
+		$Shifter::Turrets = true;
+		%ResetCMD = Turrets;
+		Items::On(%ResetCMD);
+		messageAll(1, Client::getName(%clientId) @ " Enabled Turrets~wmine_act.wav");
 		return;
 	}
-	else if (%opt == "weapon_laptop")
+	else if (%clientid.isadmin && %opt == "turretsoff")
 	{
- 		%curItem = 0;
-  		Client::buildMenu(%clientId, "Laptop Options", "options", true);
-  		Client::addMenuItem(%clientId, %curItem++ @ "Turret Control", "laptop_control");
-  		Client::addMenuItem(%clientId, %curItem++ @ "Turret Hack", "laptop_hack");
-  		return;	
-	}
-	else if (%opt == "laptop_control")
-	{
-		%ClientId.HackPack = True;
-      bottomprint(%clientId, "<jc><f2>Comand LapTop Set To Command Mode", 2);
+		$Shifter::Turrets = false;
+		%MaxCMD = Turrets;
+		Items::Off(%MaxCMD);
+		messageAll(1, Client::getName(%clientId) @ " Disabled Turrets~wmine_act.wav");
 		return;
 	}
-	else if (%opt == "laptop_hack")
-	{
-      bottomprint(%clientId, "<jc><f2>Comand LapTop Set To Hack Mode", 2);
-		%ClientId.HackPack = False;
-		return;
-	}	
-
-	else if (%opt == "spawn_options")
-	{
-  		%curItem = 0;
-  		Client::buildMenu(%clientId, "Spawn Options", "options", true);
-  		Client::addMenuItem(%clientId, %curItem++ @ "Spawn Standard", "spawn_standard");
-  		Client::addMenuItem(%clientId, %curItem++ @ "Spawn Random", "spawn_random");
-		Client::addMenuItem(%clientId, %curItem++ @ "Spawn Favorites", "spawn_favs");
-  		return;
-	}
-	else if (%opt == "spawn_standard")
-	{
-		bottomprint(%clientId, "<jc><f2>Spawn Set To Standard.",5);
-		%clientId.spawntype = "standard";
+		else if (%clientid.isadmin && %opt == "deployableson")
+	{	
+		$Shifter::Deployables = true;
+		%ResetCMD = Deployables;
+		Items::On(%ResetCMD);
+		messageAll(1, Client::getName(%clientId) @ " Enabled Defensive Deployables~wmine_act.wav");
 		return;
 	}
-	else if (%opt == "spawn_random")
+	else if (%clientid.isadmin && %opt == "deployablesoff")
 	{
-		bottomprint(%clientId, "<jc><f2>Spawn Set To Random.",5);
-		%clientId.spawntype = "random";
+		$Shifter::Deployables = false;
+		%MaxCMD = Deployables;
+		Items::Off(%MaxCMD);
+		messageAll(1, Client::getName(%clientId) @ " Disabled Defensive Deployables~wmine_act.wav");
 		return;
 	}
-	else if (%opt == "spawn_favs")
-	{
-		bottomprint(%clientId, "<jc><f2>Spawn Set To Favs.",5);
-		%clientId.spawntype = "favs";
-		return;
-	}
-	else if (%opt == "booster_options")
-	{
-  		%curItem = 0;
-  		Client::buildMenu(%clientId, "Booster Options", "options", true);
-  		Client::addMenuItem(%clientId, %curItem++ @ "Normal Booster", "booster_norm");
-  		Client::addMenuItem(%clientId, %curItem++ @ "Advanced Booster", "booster_adv");
-  		return;
-	}
-	else if (%opt == "weapon_mortar")
-	{
-  		%curItem = 0;
-  		Client::buildMenu(%clientId, "Mortar Options", "options", true);
-  		Client::addMenuItem(%clientId, %curItem++ @ "Standard Shell", "weapon_mortar_regular");
-  		Client::addMenuItem(%clientId, %curItem++ @ "EMP Shell", "weapon_mortar_emp");
-  		Client::addMenuItem(%clientId, %curItem++ @ "Frag Shell", "weapon_mortar_frag");
-  		Client::addMenuItem(%clientId, %curItem++ @ "MDM Shell", "weapon_mortar_mdm");
-  		return;
-	}
-	else if (%opt == "weapon_rocket")
-	{
-  		%curItem = 0;
-  		Client::buildMenu(%clientId, "Stinger Options", "options", true);
-  		Client::addMenuItem(%clientId, %curItem++ @ "Standard Stinger", "weapon_rocket1");
-  		Client::addMenuItem(%clientId, %curItem++ @ "Locking Stinger", "weapon_rocket2");
-		if ($Shifter::LockOn)
-	  		Client::addMenuItem(%clientId, %curItem++ @ "Heat Seeker", "weapon_rocket3");
-  		Client::addMenuItem(%clientId, %curItem++ @ "Wire Guided", "weapon_rocket4");
-  		return;
-	}
-	else if (%opt == "weapon_plasma")
-	{
-  		%curItem = 0;
-  		Client::buildMenu(%clientId, "Plasma Options", "options", true);
-  		Client::addMenuItem(%clientId, %curItem++ @ "Standard Fire", "weapon_plasma_regular");
-  		Client::addMenuItem(%clientId, %curItem++ @ "Rapid Fire", "weapon_plasma_rapid");
-  		Client::addMenuItem(%clientId, %curItem++ @ "Multi Fire", "weapon_plasma_multi");
-  		return;
-	}
-	else if (%opt == "weapon_disc")
-	{
-  		%curItem = 0;
-  		Client::buildMenu(%clientId, "Disc Options", "options", true);
-  		Client::addMenuItem(%clientId, %curItem++ @ "Standard Fire", "weapon_disc_regular");
-  		Client::addMenuItem(%clientId, %curItem++ @ "Rapid Fire", "weapon_disc_rapid");
-  		return;
-	}
-	else if (%opt == "weapon_dmines")
-	{
-  		%curItem = 0;
-  		Client::buildMenu(%clientId, "Mine Options", "options", true);
-  		Client::addMenuItem(%clientId, %curItem++ @ "DLM (Laser Mines)", "weapon_dmines1");
-  		Client::addMenuItem(%clientId, %curItem++ @ "Standard", "weapon_dmines2");
-  		return;
-	}
-	else if (%opt == "weapon_abeacon")
-	{
-  		%curItem = 0;
-  		Client::buildMenu(%clientId, "Beacon Options", "options", true);
-  		Client::addMenuItem(%clientId, %curItem++ @ "Poison Throwing Stars", "weapon_abeacon1");
-  		Client::addMenuItem(%clientId, %curItem++ @ "Shock Charges", "weapon_abeacon2");
- 		return;
-	}
-	else if (%opt == "weapon_cbeacon")
-	{
-  		%curItem = 0;
-  		Client::buildMenu(%clientId, "Beacon Options", "options", true);
-  		Client::addMenuItem(%clientId, %curItem++ @ "Satchel", "weapon_cbeacon1");
-  		Client::addMenuItem(%clientId, %curItem++ @ "Targeting", "weapon_cbeacon2");
- 		return;
-	}
-	else if (%opt == "weaponorder")
-	{
-  		%curItem = 0;
-  		Client::buildMenu(%clientId, "Weapon Order Option", "options", true);
-  		Client::addMenuItem(%clientId, %curItem++ @ "Old style", "weaponorder_0");
-  		Client::addMenuItem(%clientId, %curItem++ @ "Hud-Follow", "weaponorder_1");
- 		return;
-	}
-	else if (%opt == "weapon_gbeacon")
-	{
-  		%curItem = 0;
-  		Client::buildMenu(%clientId, "Beacon Options", "options", true);
-  		Client::addMenuItem(%clientId, %curItem++ @ "FireBomb", "weapon_gbeacon1");
-  		Client::addMenuItem(%clientId, %curItem++ @ "Targeting", "weapon_gbeacon2");
- 		return;
-	}
-	else if (%opt == "weapon_gravgun")
-	{
-   	%curItem = 0;
-   	Client::buildMenu(%clientId, "GravGun Options", "options", true);
-   	Client::addMenuItem(%clientId, %curItem++ @ "Tractor Effect", "weapon_gravgun_tract");
-   	Client::addMenuItem(%clientId, %curItem++ @ "Repulse Effect", "weapon_gravgun_repulse");
-   	Client::addMenuItem(%clientId, %curItem++ @ "Grapler Effect", "weapon_gravgun_pull");
-   	return;
-	}
-	else if (%opt == "weapon_plastic")
-	{
-   	%curItem = 0;
-   	Client::buildMenu(%clientId, "Plastique Options", "options", true);
-   	Client::addMenuItem(%clientId, %curItem++ @ "1 Sec. Delay", "weapon_plastic_plas1");
-   	Client::addMenuItem(%clientId, %curItem++ @ "2 Sec. Delay", "weapon_plastic_plas2");
-   	Client::addMenuItem(%clientId, %curItem++ @ "5 Sec. Delay", "weapon_plastic_plas5");
-   	Client::addMenuItem(%clientId, %curItem++ @ "10 Sec. Delay", "weapon_plastic_plas10");
-   	Client::addMenuItem(%clientId, %curItem++ @ "15 Sec. Delay", "weapon_plastic_plas15");
-   	return;
-	}
-	//========================================================= Engineer Opts
-	else if (%opt == "engineer_options")
-	{
-  		%curItem = 0;
-  		Client::buildMenu(%clientId, "Engineer Options", "options", true);
-	   	Client::addMenuItem(%clientId, %curItem++ @ "Engineer Mines", "weapon_engmine");
-	   	Client::addMenuItem(%clientId, %curItem++ @ "Engineer Gun", "weapon_eng");
-	   	Client::addMenuItem(%clientId, %curItem++ @ "Engineer Beacons", "weapon_engbeacon");
-		return;
-	}	
-	else if (%opt == "weapon_engmine")
-	{
-   	%curItem = 0;
-   	Client::buildMenu(%clientId, "Mine Type", "options", true);
-   	Client::addMenuItem(%clientId, %curItem++ @ "Proximity Warning", "weapon_engmine_proxy");
-   	Client::addMenuItem(%clientId, %curItem++ @ "Cloaking Mine", "weapon_engmine_cloak");
-   	Client::addMenuItem(%clientId, %curItem++ @ "Laser Mine", "weapon_engmine_laser");
-   	Client::addMenuItem(%clientId, %curItem++ @ "Anti-Personel", "weapon_engmine_stand");
-   	Client::addMenuItem(%clientId, %curItem++ @ "Replicator", "weapon_engmine_replica");
-   	return;
-	}
-	else if (%opt == "weapon_engbeacon")
-	{
-   	%curItem = 0;
-   	Client::buildMenu(%clientId, "Mine Type", "options", true);
-   	Client::addMenuItem(%clientId, %curItem++ @ "Standard Beacon", "weapon_engbeacon_standard");
-   	Client::addMenuItem(%clientId, %curItem++ @ "Cloaked Camera", "weapon_engbeacon_camera");
-		Client::addMenuItem(%clientId, %curItem++ @ "Missile Jammer", "weapon_engbeacon_antimissile");
-   	Client::addMenuItem(%clientId, %curItem++ @ "Medi-Pack Patch", "weapon_engbeacon_medikit");
-   	return;
-	}
-	else if (%opt == "weapon_eng")
-	{
-   		%curItem = 0;
-   		Client::buildMenu(%clientId, "Engineer Gun Options", "options", true);
-   		Client::addMenuItem(%clientId, %curItem++ @ "Repair", "weapon_eng_repair");
-   		Client::addMenuItem(%clientId, %curItem++ @ "Hack", "weapon_eng_hack");
-   		Client::addMenuItem(%clientId, %curItem++ @ "Disassymbler", "weapon_eng_disa");
-   		return;
-	}	
-	//========================================================= Merc Booster
-	else if (%opt == "booster_norm")
-	{
-		%clientId.booster = "0";
-		bottomprint(%clientId, "<jc><f1>Booster Set To Normal Mode.", 3);
-   	return;
-	}
-	else if (%opt == "booster_adv")
-	{
-		%clientId.booster = "1";
-		bottomprint(%clientId, "<jc><f1>Booster Set To Advanced Mode.", 3);
-   	return;
-	}
-	//========================================================= Engineer Mines
-	else if(%opt == "weapon_engmine_proxy")
-	{
-		%clientId.EngMine = "0";
-		bottomprint(%clientId, "<jc><f1>Mine Set To Proximity Detector.", 3);
-  		return;
-	}
-	else if(%opt == "weapon_engmine_cloak")
-	{
-		%clientId.EngMine = "1";
-		bottomprint(%clientId, "<jc><f1>Mine Set To Cloaking Mine.", 3);
-  		return;
-	}
-	else if(%opt == "weapon_engmine_laser")
-	{
-		%clientId.EngMine = "2";
-		bottomprint(%clientId, "<jc><f1>Mine Set To Point Defense Laser Mine.", 3);
-  		return;
-	}
-	else if(%opt == "weapon_engmine_stand")
-	{
-		%clientId.EngMine = "3";
-		bottomprint(%clientId, "<jc><f1>Mine Set To Standard Anti-Personell Mine.", 3);
-  		return;
-	}
-	else if(%opt == "weapon_engmine_replica")
-	{
-		%clientId.EngMine = "4";
-		bottomprint(%clientId, "<jc><f1>Mine Set To Replicator Mine.", 3);
-  		return;
-	}
-	//================================================================= Engineer Beacons
-	else if(%opt == "weapon_engbeacon_standard")
-	{
-		%clientId.EngBeacon = "0";
-		bottomprint(%clientId, "<jc><f1>Beacon Set To Standard.", 3);
-  		return;
-	}
-	else if (%opt == "weapon_engbeacon_camera")
-	{
-		%clientId.EngBeacon = "1";
-		bottomprint(%clientId, "<jc><f1>Beacons Set To Cloaking Camera.", 3);
-   		return;
-	}
-	else if (%opt == "weapon_engbeacon_antimissile")
-	{
-		%clientId.EngBeacon = "2";
-		bottomprint(%clientId, "<jc><f1>Beacons Set To Anti-Missile Screen, only protects from Guided Missiles.", 3);
-   		return;
-	}
-	else if (%opt == "weapon_engbeacon_medikit")
-	{
-		%clientId.EngBeacon = "3";
-		bottomprint(%clientId, "<jc><f1>Beacons Set To Medi Kit Patch. Help You And Your Team Mates On The Field.", 3);
-   		return;
-	}		
-	//=================================================================== Eng-Gun Options
-	else if (%opt == "weapon_eng_repair")
-	{
-		if (Player::getItemCount(%clientId, HackIt) || Player::getItemCount(%clientId, DisIt))
-		{
-			%clientId.Eng = 0;		
-			Player::setItemCount(%clientId, Fixit , 1);
-			Player::setItemCount(%clientId, Hackit, 0);
-			Player::setItemCount(%clientId, DisIt, 0);
-			Player::mountItem(%clientId, Fixit, $WeaponSlot);		
-			bottomprint(%clientId, "<jc><f1>Repair Gun Option Selected.", 3);
-		}
-		else
-		{		
-			if (Player::getItemCount(%clientId, FixIt))
-				bottomprint(%clientId, "<jc><f1>Your Engineer Gun Is Already Set To Repair Mode.", 3);
-			else			
-				bottomprint(%clientId, "<jc><f1>You do not possess a Engineer Gun.", 3);
-		}
-   		return;
-	}
-	else if (%opt == "weapon_eng_hack")
-	{
-		if (Player::getItemCount(%clientId, FixIt) || Player::getItemCount(%clientId, DisIt))
-		{
-			%clientId.Eng = 1;
-			Player::setItemCount(%clientId, Fixit, 0);
-			Player::setItemCount(%clientId, DisIt, 0);
-			Player::setItemCount(%clientId, Hackit, 1);
-			Player::mountItem(%clientId, HackIt, $WeaponSlot);
-			bottomprint(%clientId, "<jc><f1>Hacking Option Selected.", 3);
-		}
-		else
-		{		
-			if (Player::getItemCount(%clientId, HackIt))
-				bottomprint(%clientId, "<jc><f1>Your Engineer Gun Is Already Set To Hacking Mode.", 3);
-			else			
-				bottomprint(%clientId, "<jc><f1>You do not possess a Engineer Gun.", 3);
-		}
-   		return;
-	}
-	else if (%opt == "weapon_eng_disa")
-	{
-		if (Player::getItemCount(%clientId, HackIt) || Player::getItemCount(%clientId, FixIt))
-		{
-			%clientId.Eng = 1;
-			Player::setItemCount(%clientId, Fixit, 0);
-			Player::setItemCount(%clientId, Hackit, 0);
-			Player::setItemCount(%clientId, DisIt, 1);
-			Player::mountItem(%clientId, DisIt, $WeaponSlot);
-			bottomprint(%clientId, "<jc><f1>Disassymbler Option Selected.", 3);
-		}
-		else
-		{		
-			if (Player::getItemCount(%clientId, DisIt))
-				bottomprint(%clientId, "<jc><f1>Your Engineer Gun Is Already Set To Disassymbler Mode.", 3);
-			else			
-				bottomprint(%clientId, "<jc><f1>You do not possess a Engineer Gun.", 3);
-		}
-   	return;
-	}
-
-	//========================================================= Plastique
-	else if(%opt == "weapon_plastic_plas1")
-	{
-		%clientId.Plastic = 1;
-		bottomprint(%clientId, "<jc><f1>Plastique Delay Set To 1 Sec.", 3);
-   	return;
-	}
-	else if(%opt == "weapon_plastic_plas2")
-	{
-		%clientId.Plastic = 2;
-		bottomprint(%clientId, "<jc><f1>Plastique Delay Set To 2 Sec.", 3);
-   	return;
-	}
-	else if (%opt == "weapon_plastic_plas5")
-	{
-		%clientId.Plastic = 5;
-		bottomprint(%clientId, "<jc><f1>Plastique Delay Set To 5 Sec.", 3);
-   	return;
-	}
-	else if (%opt == "weapon_plastic_plas10")
-	{
-		%clientId.Plastic = 10;
-		bottomprint(%clientId, "<jc><f1>Plastique Delay Set To 10 Sec.", 3);
-   	return;
-	}
-	else if (%opt == "weapon_plastic_plas15")
-	{
-		%clientId.Plastic = 15;
-		bottomprint(%clientId, "<jc><f1>Plastique Delay Set To 15 Sec.", 3);
-   	return;
-	}
-
-	//===================================================== Mortar Options
-	//greygrey
-	if (%opt == "weapon_mortar_regular")
-	{
-		%clientId.Mortar = 0;
-		bottomprint(%clientId, "<jc><f1>Standard Mortar Selected.", 3);
-		%player = Client::getOwnedObject(%clientId);
-		%wep = Player::getMountedItem(%player,$WeaponSlot);
-		if(%wep == mortar || %wep == mortar0 || %wep == mortar1 || %wep == mortar2)
-			Player::useItem(%player,mortar);
-		return;
-	}
-	else if (%opt == "weapon_mortar_emp")
-	{
-		%clientId.Mortar = 1;
-		bottomprint(%clientId, "<jc><f1>Magnetic Pulse Shell Selected.", 3);
-		%player = Client::getOwnedObject(%clientId);
-		%wep = Player::getMountedItem(%player,$WeaponSlot);
-		if(%wep == mortar || %wep == mortar0 || %wep == mortar1 || %wep == mortar2)
-			Player::useItem(%player,mortar);
-   	return;
-	}
-	else if (%opt == "weapon_mortar_frag")
-	{
-		%clientId.Mortar = 2;
-		bottomprint(%clientId, "<jc><f1>Fragmenting Shell Selected.", 3);
-		%player = Client::getOwnedObject(%clientId);
-		%wep = Player::getMountedItem(%player,$WeaponSlot);
-		if(%wep == mortar || %wep == mortar0 || %wep == mortar1 || %wep == mortar2)
-			Player::useItem(%player,mortar);
-   	return;
-	}
-	else if (%opt == "weapon_mortar_mdm")
-	{
-		%clientId.Mortar = 3;
-		bottomprint(%clientId, "<jc><f1>MDM Shell Selected.", 3);
-		%player = Client::getOwnedObject(%clientId);
-		%wep = Player::getMountedItem(%player,$WeaponSlot);
-		if(%wep == mortar || %wep == mortar0 || %wep == mortar1 || %wep == mortar2)
-			Player::useItem(%player,mortar);
-   	return;
-	}
-	//===================================================== Rocket Options
-	else if (%opt == "weapon_rocket1")
-	{
-		%clientId.rocket = 0;
-		bottomprint(%clientId, "<jc><f1>Stinger Rocket Initiated.", 3);
-   	return;
-	}
-	else if (%opt == "weapon_rocket2")
-	{
-		%clientId.rocket = 1;
-		bottomprint(%clientId, "<jc><f1>Stinger Locking Initiated.", 3);
-   		return;
-	}
-	else if (%opt == "weapon_rocket3")
-	{
-		%clientId.rocket = 2;
-		bottomprint(%clientId, "<jc><f1>Heat Seeking Initiated.", 3);
-   		return;
-	}
-	else if (%opt == "weapon_rocket4")
-	{
-		%clientId.rocket = 3;
-		bottomprint(%clientId, "<jc><f1>Wire Guided System Initiated.", 3);
-  		return;
-	}
-
-	//====================================================== Dread Mine Options
-	else if (%opt == "weapon_dmines1")
-	{
-		%clientId.dmines = 0;
-		bottomprint(%clientId, "<jc><f1>Mines Set To DLM.", 3);
-   		return;
-	}
-	else if (%opt == "weapon_dmines2")
-	{
-		%clientId.dmines = 1;
-		bottomprint(%clientId, "<jc><f1>Mines Set To Standard.", 3);
-   		return;
-	}
-	else if (%opt == "weapon_dmines3")
-	{
-		%clientId.dmines = 2;
-		bottomprint(%clientId, "<jc><f1>Mines Set To Light-AP.", 3);
-   		return;
-	}
-
-	//===============================Assassin Beacon
-	else if (%opt == "weapon_abeacon1")
-	{
-		%clientId.AssBcn = 0;
-		bottomprint(%clientId, "<jc><f1>Beacon Set To Poison Throwing Stars.", 3);
-   	return;
-	}
-	else if (%opt == "weapon_abeacon2")
-	{
-		%clientId.AssBcn = 1;
-		bottomprint(%clientId, "<jc><f1>Beacon Set To Shock Charge.", 3);
-  		return;
-	}
-
-	else if (%opt == "weaponorder_0")
-	{
-		%clientId.WeaponOrder = "0";
-		bottomprint(%clientId, "<jc><f1>Old style WeaponOrder.", 3);
-   	return;
-	}
-	else if (%opt == "weaponorder_1")
-	{
-		%clientId.WeaponOrder = "1";
-		bottomprint(%clientId, "<jc><f1>Hud-Follow style WeaponOrder.", 3);
-  		return;
-	}
-
-	else if (%opt == "weapon_cbeacon1")
-	{
-		%clientId.ChemBeacon = 0;
-		bottomprint(%clientId, "<jc><f1>Beacon Set To Satchel.", 3);
-   	return;
-	}
-	else if (%opt == "weapon_cbeacon2")
-	{
-		%clientId.ChemBeacon = 1;
-		bottomprint(%clientId, "<jc><f1>Beacon Set To Targeting.", 3);
-  		return;
-	}
-
-	else if (%opt == "weapon_gbeacon1")
-	{
-		%clientId.GolBeacon = 0;
-		bottomprint(%clientId, "<jc><f1>Beacon Set To FireBomb.", 3);
-   	return;
-	}
-	else if (%opt == "weapon_gbeacon2")
-	{
-		%clientId.GolBeacon = 1;
-		bottomprint(%clientId, "<jc><f1>Beacon Set To Targeting.", 3);
-  		return;
-	}
-
-	//====================================================== Plasma Options
-	else if (%opt == "weapon_plasma_regular")
-	{
-		%clientId.Plasma = 0;
-		bottomprint(%clientId, "<jc><f1>Standard Plasma Bolt Selected.", 3);
-   	return;
-	}
-	else if (%opt == "weapon_plasma_rapid")
-	{
-		%clientId.Plasma = 1;
-		bottomprint(%clientId, "<jc><f1>Rapid-Bold Plasma Selected.", 3);
-   	return;
-	}
-	else if (%opt == "weapon_plasma_multi")
-	{
-		%clientId.Plasma = 2;
-		bottomprint(%clientId, "<jc><f1>Multi-Bold Plasma Selected.", 3);
-   	return;
-	}
-	else if (%opt == "weapon_disc_regular")
-	{
-		%clientId.disc = 0;
-		bottomprint(%clientId, "<jc><f1>Standard Disc Shell Selected.", 3);
-   	return;
-	}
-	else if (%opt == "weapon_disc_rapid")
-	{
-		%clientId.disc = 1;
-		bottomprint(%clientId, "<jc><f1>Rapid Disc Shell Selected.", 3);
-   		return;
-	}
-	//==================================================== Grav Gun Options
-	else if (%opt == "weapon_gravgun_tract")
-	{
-		%clientId.gravbolt = 0;
-		bottomprint(%clientId, "<jc><f1>Grav Gun Tractor Setting Selected.", 3);
-   		return;
-	}
-	else if (%opt == "weapon_gravgun_repulse")
-	{
-		%clientId.gravbolt = 1;
-		bottomprint(%clientId, "<jc><f1>Grav Gun Repulse Setting Selected.", 3);
-   		return;
-	}
-	else if (%opt == "weapon_gravgun_pull")
-	{
-		%clientId.gravbolt = 2;
-		bottomprint(%clientId, "<jc><f1>Grav Gun Repulse Grapler Selected.", 3);
-   		return;
-	}
+	
 
 //================================================================================   
    else if(%opt == "fteamchange")
@@ -1760,16 +1430,16 @@ function processMenuOptions(%clientId, %option)
    }      
    else if(%opt == "changeteams")
    {
-		if(!$matchStarted || !$Server::TourneyMode)
+		if(!$matchStarted || $Server::TourneyMode == "false")
 		{
 			Client::buildMenu(%clientId, "Pick a team:", "PickTeam", true);
 			Client::addMenuItem(%clientId, "0Observer", -2);
 			Client::addMenuItem(%clientId, "1Automatic", -1);
 		}
-		if($Shifter::KeepBalanced)
-      {
+		if($Shifter::KeepBalanced=="true")
+     {
 			%j = checkTeams();
-			if($Shifter::KeepBalanced)
+			if($Shifter::KeepBalanced=="true")
 			{
 				%i = checkTeams();
 				Client::addMenuItem(%clientId, (2) @ getTeamName(%i), %i);
@@ -1782,10 +1452,6 @@ function processMenuOptions(%clientId, %option)
 		}
       return;
    }
-   else if(%opt == "mute")
-      %clientId.muted[%cl] = true;
-   else if(%opt == "unmute")
-      %clientId.muted[%cl] = "";
    else if(%opt == "vkick")
    {
 		%cl.voteTarget = true;
@@ -1828,11 +1494,13 @@ function processMenuOptions(%clientId, %option)
    else if(%opt == "voteYes" && %cl == $curVoteCount) //=================================================== Yes
    {
       %clientId.vote = "yes";
+      bottomprint(%clientId, "<jc><f1>You voted<f2>YES!", 4);
       centerprint(%clientId, "", 0);
    }
    else if(%opt == "voteNo" && %cl == $curVoteCount) //==================================================== No
    {
       %clientId.vote = "no";
+      bottomprint(%clientId, "<jc><f1>You voted<f2>NO!", 4);
       centerprint(%clientId, "", 0);
    }
    else if(%clientid.isadmin && %opt == "kick") //=========================================================== Kick Player
@@ -1857,11 +1525,18 @@ function processMenuOptions(%clientId, %option)
       Client::addMenuItem(%clientId, "2Don't DeAdmin " @ Client::getName(%cl), "no " @ %cl);
       return;
    }
-   else if(%clientid.isSuperadmin && %clientid.isadmin && %opt == "ban") //============================================================ Ban Player
+    else if(%clientid.isSuperadmin && %clientid.isadmin && %opt == "ban") //============================================================ Ban Player
    {
       Client::buildMenu(%clientId, "Confirm Ban:", "baffirm", true);
       Client::addMenuItem(%clientId, "1Ban " @ Client::getName(%cl), "yes " @ %cl);
       Client::addMenuItem(%clientId, "2Don't ban " @ Client::getName(%cl), "no " @ %cl);
+      return;
+   }
+       else if(%clientid.isSuperadmin && %clientid.isadmin && %opt == "drop") //============================================================ Ban Player
+   {
+      Client::buildMenu(%clientId, "Confirm Drop:", "dropaffirm", true);
+      Client::addMenuItem(%clientId, "1Drop " @ Client::getName(%cl), "yes " @ %cl);
+      Client::addMenuItem(%clientId, "2Don't Drop " @ Client::getName(%cl), "no " @ %cl);
       return;
    }
    else if(%clientid.isSuperadmin && %clientid.isadmin && %opt == "kill") //===================================================== Admin Kill Player
@@ -1873,14 +1548,164 @@ function processMenuOptions(%clientId, %option)
 		messageAll(0, Client::getName(%cl) @ " spontaneously combusted.");
 		return; 
    }
-   else if(%clientid.isadmin && %opt == "removetk")
+   // shifter v2g added killa. all manage options are below
+   else if(%opt == "respawn")
    {
-   	%name = Client::getName(%cl);
-   	%aname = Client::getName(%clientId);
-		%cl.TKCount = 0;
-		echo("ADMINMSG: **** " @ %aname @ " cleared " @ %name @ "'s TK Count.");
-		BottomPrint(%cl,"<F1><jc>Your TK's have been cleared. Be thankful!",5);
+
+        %sel = %clientId.selClient;
+		%name = Client::getName(%sel);
+        Player::blowUp(%sel);
+        remoteKill(%sel);
+      	messageAll(0, Client::getName(%clientId) @ " respawned " @ %name);
+  		schedule("Game::playerSpawn("@%sel@", "@true@");",$Shifter::SuicideTimer+0.5);
+  		//Game::playerSpawn(%sel, true);
+		return;
    }
+
+   else if(%opt == "bounce")
+	{
+
+    %sel = %clientId.selClient;
+    %name = Client::getName(%sel);
+	%rotZ = getWord(GameBase::getRotation(%sel),2);
+	GameBase::setRotation(%sel, "0 0 " @ %rotZ);
+	%forceDir = Vector::getFromRot(GameBase::getRotation(%sel),2000,1000);
+	Player::applyImpulse(%sel,%forceDir);
+
+		centerprint(%sel, "<jc><f3>"@Client::getName(%clientId)@"<f2> throws you like a golf ball.", 5);
+		MessageAllExcept(%sel,1, Client::getName(%clientId) @ " throws " @ %name @ ", and hes outta site!!");
+
+    }
+	else if(%opt == "strip") 
+	{
+		%sel = %clientId.selClient;
+		Player::dropItem(%sel,Flag);
+		if(%sel.observerMode == "" || %sel.observerMode == "pregame") {
+			%numweapon = Player::getItemClassCount(%sel,"Weapon");
+			%max = getNumItems(); 
+			for (%i = 0; %i < %max; %i = %i + 1) { 
+				%item = getItemData(%i);
+				%count = Player::getItemCount(%sel,%item); 
+				if(%count) {
+					Player::setItemCount(%sel,%item,0); 
+				}
+			}
+		}
+		Player::setDamageFlash(%sel,1); 
+		echo(Client::getName(%sel) @ " has been stripped by " @ Client::getName(%clientId));
+		MessageAllExcept(%sel , 0, Client::getName(%sel) @ " has been stripped by " @ Client::getName(%clientId) @ "."); 
+		Client::sendMessage(%sel ,1,"You've been stripped by " @ Client::getName(%clientId)@"!"); 
+	}
+	else if(%opt == "dan") {
+		%sel = %clientId.selClient;
+		%sel.dan = true; 
+		if(!String::ICompare(Client::getGender(%clientId), "Male")) {
+			MessageAllExcept(%sel, 0, Client::getName(%sel) @ " has been forced to access his PDA by " @ Client::getName(%clientId) @ ".~wmale3.wtaunt3.wav"); 
+			Client::sendMessage(%sel, 1,"You've been forced to access your PDA by " @ Client::getName(%clientId) @ "!~wmale3.wtaunt3.wav"); 
+		} else { 
+			MessageAllExcept(%sel, 0, Client::getName(%sel) @ " has been forced to access her PDA by " @ Client::getName(%clientId) @ ".~wfemale4.wtaunt3.wav"); 
+			Client::sendMessage(%sel, 1,"You've been forced to access your PDA by " @ Client::getName(%clientId) @ "!~wfemale4.wtaunt3.wav"); 
+		}
+		echo(Client::getName(%sel) @ " has been forced to access their PDA by " @ Client::getName(%clientId));
+		doneposs(%sel);
+		Player::dropItem(%sel,Flag);
+		if(%sel.observerMode == "" || %sel.observerMode == "pregame") {
+			%numweapon = Player::getItemClassCount(%sel,"Weapon");
+			%max = getNumItems(); 
+			for (%i = 0; %i < %max; %i = %i + 1) { 
+				%item = getItemData(%i);
+				%count = Player::getItemCount(%sel,%item); 
+				if(%count) {
+					Player::setItemCount(%sel,%item,0); 
+				}
+			}
+		}
+		Player::setDamageFlash(%sel,1); 
+        Client::setControlObject(%sel, Client::getObserverCamera(%sel));
+        Observer::setOrbitObject(%sel, Client::getOwnedObject(%sel), 3, 3, 3);
+	%sel.safet = true;
+	}
+	else if(%opt == "undan") {
+		%sel = %clientId.selClient;
+		%sel.dan = false; 
+		MessageAllExcept(%sel, 0, Client::getName(%clientId) @ " has allowed " @ Client::getName(%sel) @ " to stop accessing their PDA."); 
+		Client::sendMessage(%sel, 1, Client::getName(%clientId) @ " has allowed you to stop accessing your PDA."); 	
+		doneposs(%sel);
+		Client::setControlObject(%sel, Client::getOwnedObject(%sel));
+		%sel.safet = false;
+	}
+	else if(%opt == "poss") {
+		%sel = %clientId.selClient;
+		if(Client::getControlObject(%sel) != Client::getOwnedObject(%sel)) {
+			Client::sendMessage(%clientId,1,"Unable to gain Meld - Player currently is not in control of themselves~waccess_denied.wav"); 	
+			Game::menuRequest(%clientId); 
+			return;
+		}	
+			if(Client::getControlObject(%clientId) != Client::getOwnedObject(%clientId)) {
+			Client::sendMessage(%clientId,1,"Unable to gain Meld - You have to be in control of yourself~waccess_denied.wav"); 	
+			Game::menuRequest(%clientId); 
+			return;
+		}	
+		if(Client::getControlObject(%clientId) != Client::getOwnedObject(%clientId) && !Observer::isObserver(%clientId)) {
+			Client::sendMessage(%clientId,1,"Unable to Meld - You are currently not controlling your player~waccess_denied.wav"); 	
+			Game::menuRequest(%clientId); 
+			return;
+		}	
+        Client::setControlObject(%sel, Client::getObserverCamera(%sel));
+        Observer::setOrbitObject(%sel, Client::getOwnedObject(%sel), 3, 3, 3);
+        %sel.obsmode = 2;
+        Observer::setTargetClient(%sel, %clientId);
+		Client::setControlObject(%clientId, %sel);
+		%sel.possessed = true;
+		%sel.possby = %clientId;
+		%clientId.poss = %sel;
+		%clientId.possessing = true;
+		echo(Client::getName(%sel) @ " is being Mind Melded by " @ Client::getName(%clientId));
+		MessageAllExcept(%sel , 0, Client::getName(%sel) @ " has been possessed by " @ Client::getName(%clientId) @ ".~wteleport2.wav"); 
+		Client::sendMessage(%sel ,1,"You're being Mind Melded by " @ Client::getName(%clientId)@"!~wteleport2.wav"); 	
+	} 
+	else if(%opt == "unposs") {
+		%sel = %clientId.selClient;
+		Client::setControlObject(%clientId, %clientId);
+        Client::setControlObject(%sel, %sel);
+		%sel.possessed = false;
+		%sel.possby = "";
+		%clientId.possessing = false;
+		%clientId.poss = "";
+		MessageAllExcept(%sel, 0, Client::getName(%sel) @ " has been released of his Mind Meld by " @ Client::getName(%clientId) @ ".~wteleport2.wav"); 
+		Client::sendMessage(%sel ,1,"You have been freed of your Mind Meld by " @ Client::getName(%clientId)@".~wteleport2.wav"); 	
+	}
+
+  // manage options
+  // server config options
+  else if(%opt == "pdamage")
+  {
+  	
+  	 if($Shifter::PlayerDamage == false)
+          {
+         $Shifter::PlayerDamage = true;
+          messageAll(1, Client::getName(%clientId) @ " Enabled player damage~wmine_act.wav");
+        }
+        else{
+        $Shifter::PlayerDamage = false;
+          messageAll(1, Client::getName(%clientId) @ " Disabled player damage~wmine_act.wav");
+          }
+
+  }
+
+
+
+        
+
+  
+   //else if(%clientid.isadmin && %opt == "removetk")
+  // {
+ 	//%name = Client::getName(%cl);
+ 	//%aname = Client::getName(%clientId);
+	//	%cl.TKCount = 0;
+	//	echo("" @ %aname @ " cleared " @ %name @ "'s TK Count.");
+	//	BottomPrint(%cl,"<F1><jc>Your TK's have been cleared. Be thankful!",5);      // if no bans on...wtf u need delete tks for.
+   //}
    else if(%clientid.isadmin && %opt == "leader")
    {
 		%name = Client::getName(%cl);
@@ -1888,13 +1713,13 @@ function processMenuOptions(%clientId, %option)
 		if (%cl.islead)
   		{
 			%cl.islead = 0;
-			echo("ADMINMSG: **** " @ %aname @ " revoked " @ %name @ "'s LeaderShip Status");
+			echo("" @ %aname @ " revoked " @ %name @ "'s LeaderShip Status");
 			BottomPrint(%cl,"<F1><jc>Your LeaderShip Status Has Been Revoked!",5);
 	  	}
 	  	else
   		{
 			%cl.islead = 1;
-			echo("ADMINMSG: **** " @ %aname @ " granted " @ %name @ " LeaderShip Status");
+			echo("" @ %aname @ " granted " @ %name @ " LeaderShip Status");
 			BottomPrint(%cl,"<F1><jc>You Have Been Granted LeaderShip Status!",5);
 	  	}   
    }
@@ -1905,22 +1730,22 @@ function processMenuOptions(%clientId, %option)
    	if (%cl.noban)
 	  	{
 			%cl.noban = 0;
-			echo("ADMINMSG: **** " @ %aname @ " revoked " @ %name @ "'s No Ban Status");
+			echo("" @ %aname @ " revoked " @ %name @ "'s No Ban Status");
 			BottomPrint(%cl,"<F1><jc>Your No Ban Status Has Been Revoked!",5);
 	  	}
 		else
 		{
 			%cl.noban = 1;
-			echo("ADMINMSG: **** " @ %aname @ " granted " @ %name @ " No Ban Status");
-			BottomPrint(%cl,"<F1><jc>You Have Been Granted No Ban Status!",5);
+   			BottomPrint(%cl,"<F1><jc>You Have Been Granted No Ban Status!",5);
   		}   
    }
    else if(%clientid.isSuperAdmin && %clientid.isadmin && %opt == "kbk") //===================================================== Kill Ban Kick Menu
    {
-		Client::buildMenu(%clientId, "Kill Ban Kick:", "options", true);
+		Client::buildMenu(%clientId, "Kill Ban Drop Kick:", "options", true);
 		%name = Client::getName(%cl);%sel = %cl;
 		Client::addMenuItem(%clientId, %curItem++ @ "Kick " @ %name, "kick " @ %sel);
 		Client::addMenuItem(%clientId, %curItem++ @ "Ban " @ %name, "ban " @ %sel);
+		Client::addMenuItem(%clientId, %curItem++ @ "Drop " @ %name, "drop " @ %sel);
 		Client::addMenuItem(%clientId, %curItem++ @ "Kill " @ %name, "kill " @ %sel);
 		return;
    }
@@ -1931,13 +1756,13 @@ function processMenuOptions(%clientId, %option)
 		if (%armor != parmor) 
 		{
 			 Player::setArmor(%cl,parmor);
-			 checkMaxDrop(%cl,parmor);
+			// checkMaxDrop(%cl,parmor); server was giving bad call...removed.
 			 armorChange(%cl);
 			 Player::setItemCount(%cl, $ArmorName[%armor], 0);
 			 
-			 messageAll(0, Client::getName(%cl) @ " was given ONE FOR BEING ONE by " @ Client::getName(%clientId) @ ".");
+			 messageAll(0, Client::getName(%cl) @ " was given a penis for being one by " @ Client::getName(%clientId) @ ".");
           for(%i=0;%i<=$WeaponAmmt;%i++) 
-            Player::dropItem(%cl,$WeaponList[%i]); 
+             Player::dropItem(%cl,$WeaponList[%i]);
 			 Player::setItemCount(%cl, Penis, 1);
 			 Player::mountItem(%cl, Penis, $WeaponSlot);
 	 
@@ -1996,6 +1821,11 @@ function processMenuOptions(%clientId, %option)
 		}
 		return;
    }
+   //else if(%clientId.isadmin && %opt == "sscommand")
+  // {
+  // messageall(2, "ScreenShotCommand");                               // next release enV
+  // centerprintall("May encounter tempory lag...");
+  // }
    else if(%clientid.isadmin && %opt == "ctimelimit")
    {
       Client::buildMenu(%clientId, "Change Time Limit:", "ctlimit", true);
@@ -2016,26 +1846,199 @@ function processMenuOptions(%clientId, %option)
       Client::addMenuItem(%clientId, "2Don't Reset", "no");
       return;
    }
-   else if(%clientid.isSuperAdmin && %clientid.isadmin && %opt == "matchConfig")
-   {
-      Client::buildMenu(%clientId, "Confirm Match configuration:", "maffirm", true);
-      Client::addMenuItem(%clientId, "1Enable", "yes");
-      Client::addMenuItem(%clientId, "2Cancel", "no");
-      return;
-   }
+   //else if(%clientid.isSuperAdmin && %clientid.isadmin && %opt == "matchConfig")
+  // {
+   //   Client::buildMenu(%clientId, "Confirm Match configuration:", "maffirm", true);
+  //    Client::addMenuItem(%clientId, "1Enable", "yes");
+  //    Client::addMenuItem(%clientId, "2Cancel", "no");
+  //    return;
+  // }
    else if(%opt == "observe")
    {
       Observer::setTargetClient(%clientId, %cl);
       return;
    }
-   Game::menuRequest(%clientId);
+      else if(%opt == "osnipe")
+     {
+      if ($Shifter::Osniping)     // im afraid somtings wrong with the else..if's its just not showing.
+        {
+        $Shifter::Osniping = false;
+        messageAll(1, Client::getName(%clientId) @ " Enabled Offensive sniping.~wmine_act.wav");
+        }
+        else
+        {
+        $Shifter::Osniping = true;
+        OffensiveSniping();
+        messageAll(1, Client::getName(%clientId) @ " Disabled Offensive sniping.~wmine_act.wav");
+
+        }
+        return;
+      }
+         else if(%opt == "stationdeploy")
+     {
+      if ($Shifter::Stationdeploy)     // im afraid somtings wrong with the else..if's its just not showing.
+        {
+        $Shifter::Stationdeploy = false;
+        messageAll(1, Client::getName(%clientId) @ " Disabled Deploying from the invo.~wmine_act.wav");
+        }
+        else
+        {
+        $Shifter::Stationdeploy = true;
+        messageAll(1, Client::getName(%clientId) @ " Enabled Deploying from the invo.~wmine_act.wav");
+
+        }
+
+        return;
+      }
+               else if(%opt == "dps"){
+               %curItem = 0;
+ 		 Client::buildText(%clientId, "Change Deploy per Second ", "options", true);
+ 		  Client::addMenuItem(%clientId, %curItem++ @ "Tournament DPS", "ddps");
+ 		  Client::addMenuItem(%clientId, %curItem++ @ "No DPS", "ndps");
+ 		  Client::addMenuItem(%clientId, %curItem++ @ "5 DPS", "5dps");
+ 		  Client::addMenuItem(%clientId, %curItem++ @ "3 DPS", "3dps");
+ 		  Client::addMenuItem(%clientId, %curItem++ @ "2 DPS", "2dps");
+ 		  Client::addMenuItem(%clientId, %curItem++ @ "1 DPS", "1dps");
+    
+}
+else if(%opt == "ddps"){
+       $DPSAllowedChanged = 0.15;
+       exec("itemfuncs.cs");
+       messageAll(1, Client::getName(%clientId) @ " Changed Deploys per Second allowed to Tournament~wmine_act.wav");
+}
+else if(%opt == "ndps"){
+       $DPSAllowedChanged = 0.0;
+       exec("itemfuncs.cs");
+             messageAll(1, Client::getName(%clientId) @ " Disabled All Restraints on Deploying ~wmine_act.wav");
+}
+else if(%opt == "5dps"){
+       $DPSAllowedChanged = 0.2;
+       exec("itemfuncs.cs");
+             messageAll(1, Client::getName(%clientId) @ " Changed Deploys per Second allowed to 5 ~wmine_act.wav");
+}
+else if(%opt == "3dps"){
+       $DPSAllowedChanged = 0.33333;
+       exec("itemfuncs.cs");
+             messageAll(1, Client::getName(%clientId) @ " Changed Deploys per Second allowed to 3~wmine_act.wav");
+}
+else if(%opt == "2dps"){
+       $DPSAllowedChanged = 2.0;
+       exec("itemfuncs.cs");
+             messageAll(1, Client::getName(%clientId) @ " Changed Deploys per Second allowed to 2~wmine_act.wav");
+}
+else if(%opt == "1dps"){
+       $DPSAllowedChanged = 1.0;
+       exec("itemfuncs.cs");
+             messageAll(1, Client::getName(%clientId) @ " Changed Deploys per Second allowed to 1~wmine_act.wav");
+}
+   
+      else if(%opt == "pw")
+   {
+       getpass();
+   }
+   else if(%opt == "pw2")
+   {
+      getpassold();
+      }
+   else if(%opt == "adminopts")
+  {
+  %sel = %clientId.selClient;
+  %name = Client::getName(%sel);
+  %curItem = 0;
+  Client::buildText(%clientId, "Admining Options: ", "options", true);
+  if (%sel.isAdmin)
+ Client::addMenuItem(%clientId, %curItem++ @ "DeAdmin " @ %name, "deadmin " @ %sel);
+ else
+ Client::addMenuItem(%clientId, %curItem++ @ "Admin " @ %name, "admin " @ %sel);
+ if (%sel.isSuperAdmin)
+ Client::addMenuItem(%clientId, %curItem++ @ "De Super Admin " @ %name, "dsuperadmin " @ %sel);
+ else
+ Client::addMenuItem(%clientId, %curItem++ @ "Super Admin " @ %name, "superadmin " @ %sel);
+ return;
+ }
+      else if(%clientid.isSuperadmin && %clientid.isadmin && %opt == "superadmin") //========================================================== Admin
+   {
+      %sel = %clientId.selClient;
+	  %name = Client::getName(%sel);
+      Client::buildMenu(%clientId, "Confirm admim:", "saaffirm", true);
+      Client::addMenuItem(%clientId, "1Super Admin " @ Client::getName(%cl), "yes " @ %cl);
+      Client::addMenuItem(%clientId, "2Don't admin " @ Client::getName(%cl), "no " @ %cl);
+      return;
+   }
+   else if(%clientid.isSuperadmin && %clientid.isadmin && %opt == "dsuperadmin") //========================================================== Admin
+   {
+      %sel = %clientId.selClient;
+	  %name = Client::getName(%sel);
+      Client::buildMenu(%clientId, "Confirm admim:", "dsaaffirm", true);
+      Client::addMenuItem(%clientId, "1DeSuper Admin " @ Client::getName(%cl), "yes " @ %cl);
+      Client::addMenuItem(%clientId, "2Don't deadmin " @ Client::getName(%cl), "no " @ %cl);
+      return;
+   }
+   			else if(%opt == "objscore")
+	{
+		if ($Objscoring == true)     // im afraid somtings wrong with the else..if's its just not showing.
+		{
+			$Objscoring = false;
+			messageAll(1, Client::getName(%clientId) @ " Disabled Objective scoring~wmine_act.wav");
+		}
+		else
+		{
+			$Objscoring = true;
+			messageAll(1, Client::getName(%clientId) @ " Enabled Objective scoring~wmine_act.wav");
+		}
+		return;
+	}
+   else if(%clientId.isSuperAdmin && %opt == "capout")
+   {
+
+        if($Shifter::Capping == "true")
+        {
+        $Shifter::Capping = false;
+        messageAll(1, Client::getName(%clientId) @ " Disabled Capping Out.~wmine_act.wav");
+         }
+         else
+        {
+        $Shifter::Capping = true;
+        messageAll(1, Client::getName(%clientId) @ " Enabled Capping Out.~wmine_act.wav");
+
+        }
+        return;
+}
+else if(%opt == "ric"){
+	%ResetCMD = All;
+	Items::On(%ResetCMD);
+ messageAll(1, Client::getName(%clientId) @ " Reset All Items.~wmine_act.wav");
+}
+else if(%opt == "mic"){
+	%MaxCMD = All;
+	Items::Off(%MaxCMD);
+ messageAll(1, Client::getName(%clientId) @ " Maxed All Items.~wmine_act.wav");
+}
+else if(%opt == "mid"){
+	$Shifter::DetsNukesMCS = false;
+	%MaxCMD = DNM;
+	Items::Off(%MaxCMD);
+ messageAll(1, Client::getName(%clientId) @ " Maxed Nuke, Det, MCS Count.~wmine_act.wav");
+}
+else if(%opt == "rid"){
+	$Shifter::DetsNukesMCS = true;
+	%ResetCMD = DNM;
+	Items::On(%ResetCMD);
+ messageAll(1, Client::getName(%clientId) @ " Reset the Nuke, Det, MCS Count.~wmine_act.wav");
+ }
+
+
+//   Game::menuRequest(%clientId);  seems like i need this done..dunno
+
 }
 
 //====================================================================================================== Varrious Menu Process
 
+
+
 function processMenuKAffirm(%clientId, %opt)
 {
-	echo("ADMINMSG: **** " @ Client::getName(getWord(%opt, 1)) @ " Kicked By " @ Client::getName(%clientId));
+	echo("" @ Client::getName(getWord(%opt, 1)) @ " Kicked By " @ Client::getName(%clientId));
 
 	if(getWord(%opt, 0) == "yes")
 	{
@@ -2048,14 +2051,38 @@ function processMenuBAffirm(%clientId, %opt)
 {
 	if(%clientId.isSuperAdmin)
 	{
-		echo("ADMINMSG: **** " @ Client::getName(getWord(%opt, 1)) @ " Banned By " @ Client::getName(%clientId));
+		echo("" @ Client::getName(getWord(%opt, 1)) @ " Banned By " @ Client::getName(%clientId));
 	   if(getWord(%opt, 0) == "yes")
 			Admin::kick(%clientId, getWord(%opt, 1), true);
 		Game::menuRequest(%clientId);
 	}
 }
+function processMenuDropAffirm(%clientId, %opt)
+{
+
+	if(getWord(%opt, 0) == "yes")
+	{
+		Admin::drop(%clientId, getWord(%opt, 1));
+	}
+	Game::menuRequest(%clientId);
+}
 
 function processMenuAAffirm(%clientId, %opt)
+{
+   if(getWord(%opt, 0) == "yes")
+   {
+      if(%clientId.isAdmin)
+      {
+         %cl = getWord(%opt, 1);
+         %cl.isAdmin = true;
+         messageAll(0, Client::getName(%clientId) @ " made " @ Client::getName(%cl) @ " into an admin.");
+ 	 echo("" @ Client::getName(getWord(%opt, 1)) @ " Admined By " @ Client::getName(%clientId));
+         
+      }
+   }
+   Game::menuRequest(%clientId);
+}
+function processMenuSAAffirm(%clientId, %opt)
 {
    if(getWord(%opt, 0) == "yes")
    {
@@ -2063,14 +2090,14 @@ function processMenuAAffirm(%clientId, %opt)
       {
          %cl = getWord(%opt, 1);
          %cl.isAdmin = true;
-         messageAll(0, Client::getName(%clientId) @ " made " @ Client::getName(%cl) @ " into an admin.");
- 	 echo("ADMINMSG: **** " @ Client::getName(getWord(%opt, 1)) @ " Admined By " @ Client::getName(%clientId));
-         
+         %cl.isSuperAdmin = true;
+         messageAll(0, Client::getName(%clientId) @ " made " @ Client::getName(%cl) @ " into an Super admin.");
+ 	 echo("" @ Client::getName(getWord(%opt, 1)) @ " Admined By " @ Client::getName(%clientId));
+
       }
    }
    Game::menuRequest(%clientId);
 }
-
 function processMenuDAffirm(%clientId, %opt)
 {
    if(getWord(%opt, 0) == "yes")
@@ -2078,9 +2105,9 @@ function processMenuDAffirm(%clientId, %opt)
 		if(%clientId.isSuperAdmin && !%cl.isSuperadmin)
 		{
 			%cl = getWord(%opt, 1);
-			%cl.isAdmin = false;
+			%cl.isSuperAdmin = false;
 			messageAll(0, Client::getName(%clientId) @ " revoked " @ Client::getName(%cl) @ "'s admin ability.");
-			echo("ADMINMSG: **** " @ Client::getName(getWord(%opt, 1)) @ " Admined Revoked By " @ Client::getName(%clientId));
+			echo("" @ Client::getName(getWord(%opt, 1)) @ " Admined Revoked By " @ Client::getName(%clientId));
 			return;
 		}
 		else if (%cl.isSuperadmin)
@@ -2091,13 +2118,36 @@ function processMenuDAffirm(%clientId, %opt)
    }
    Game::menuRequest(%clientId);
 }
+function processMenuDSAAffirm(%clientId, %opt)
+{
+	%name = Client::getName(getWord(%opt, 1));
+	%nameSA = Client::getName(%clientId);
+   if(getWord(%opt, 0) == "yes")
+   {
+		if(%clientId.isSuperAdmin && %name != "enV.3zer0")
+		{
+			echo(%name);
+			%cl = getWord(%opt, 1);
+           		%cl.isAdmin = false;
+			%cl.isSuperAdmin = false;
+			messageAll(0, %nameSA @ " revoked " @ %name @ "'s Super admin ability.");
+			echo("" @ Client::getName(getWord(%opt, 1)) @ " Super Admined Revoked By " @ %nameSA);
+			return;
+		}
+		else{
+		messageAll(0, %nameSA @ " tried to revoked " @ %name @ "'s Super admin ability.");
+		messageAll(0, "Ha...Puny mortals!");}
+
+   }
+   Game::menuRequest(%clientId);
+}
 
 
 function processMenuRAffirm(%clientId, %opt)
 {
    if(%opt == "yes" && %clientId.isAdmin)
    {
-		echo("ADMINMSG: **** Server Reset By " @ Client::getName(%clientId));
+		echo(" Server Reset By " @ Client::getName(%clientId));
       messageAll(0, Client::getName(%clientId) @ " reset the server to default settings.");
 		$noFakeDeath = false;
       exec("serverConfig.cs");
@@ -2108,12 +2158,12 @@ function processMenuRAffirm(%clientId, %opt)
 		if ($Shifter::NukeLimit == ""){ $Shifter::NukeLimit = "15"; }
 		$TeamItemMax[SuicidePack] = $Shifter::DetPackLimit;
 		$TeamItemMax[MFGLAmmo] = $Shifter::NukeLimit;
-		$Server::Info = $Server::Info @ "\nRunning Shifter_v1G " @ $greyflcn::newdate;
+		$Server::Info = $Server::Info @ "\nRunning ShifterK " @ $killa::newdate;
 		//if($dedicated) 
-		if(!$noTabChange) $ModList = "Shifter_v1G";
-		$Server::MODInfo = $Server::MODInfo @ "\nRunning Shifter_v1G " @ $greyflcn::newdate;
+		if(!$noTabChange) $ModList = "ShifterK";
+		$Server::MODInfo = $Server::MODInfo @ "\nRunning ShifterK " @ $killa::newdate;
 		Server::storeData();
-		echo("ADMINMSG: **** Default config stored");
+		echo(" Default config stored");
 		Server::refreshData();
    }
    Game::menuRequest(%clientId);
@@ -2123,23 +2173,28 @@ function processMenuFAffirm(%clientId, %opt)
 {
    if(%opt == "new" && %clientId.isAdmin)
    {
-		echo("ADMINMSG: **** Server set to Tournament Mode By " @ Client::getName(%clientId));
+		echo(" Server set to Tournament Mode By " @ Client::getName(%clientId));
 		%clientid.gettag0 = 1;
 		%clientid.getpass = 0;
+		       $DPSAllowedChanged = 0.15;
+       exec("itemfuncs.cs");
 		%clientid.gettag1 = 0;
 		%clientid.getglobal = 0;
 		$matchtrack::global = "False";
 		Client::sendMessage(%clientId, 1, "Please Enter Clan Tag #1");
 		$Server::TeamDamageScale = 1;
+         $ModList = "Shifter| k |SBA";
    }
 	else if(%opt == "old" && %clientId.isAdmin)
    {
-		echo("ADMINMSG: **** Server set to Tournament Mode By " @ Client::getName(%clientId));
+		echo(" Server set to Tournament Mode By " @ Client::getName(%clientId));
 		BottomPrintAll("<F1><jc>::::Cease Fire enabled For THIS Mission::::",5);
 		messageAll(1, "CeaseFire Mode enabled by "@ Client::getName(%clientid) @".");
 		%clientid.getpass = 0;
 		%clientid.gettag1 = 0;
 		%clientid.gettag0 = 0;
+		       $DPSAllowedChanged = 0.15;
+       exec("itemfuncs.cs");
 		%clientid.getglobal = 0;
 		$server::tourneymode = true;
 		$ceasefire = true;
@@ -2149,43 +2204,67 @@ function processMenuFAffirm(%clientId, %opt)
 		$Shifter::FlagReturnTime = "400";
 		exec("matchtrack.cs");
 		$Shifter::GlobalTChat = $matchtrack::global;
-		$shifter::tag0 = $matchtrack::tag0;
-		$shifter::tag1 = $matchtrack::tag1;
+		$Shifter::tag0 = $matchtrack::tag0;
+		$Shifter::tag1 = $matchtrack::tag1;
 		$Server::HostName = $matchtrack::name;
 		$server::password = $matchtrack::pass;
 		messageAll(1, "password = "@ $server::password @"");
 		messageAll(1, "Vote to Change Mission to Begin Match!~wteleport2.wav");
 		SortTeams();
 		CheckStayBase();
+  //$ModList = "Shifter|SvdMatch";
    }
+   //else if(%opt == "1v1" && %clientId.isAdmin)
+   //{
+   //
+	//	%clientid.getpass = true;
+	//	$builder = "scrim";
+	//	$ceasefire = "true";
+	//	$Shifter::tag0 = "";
+	//	$Shifter::tag1 = "";
+	//	$matchtrack::global = "False";
+	//	$Shifter::DetPackLimit = 15;         hopefully next release
+	//	$Shifter::NukeLimit = 15;
+	//	$Shifter::FlagNoReturn = "True";
+	//	$Shifter::FlagReturnTime = "400";
+	//	Client::sendMessage(%clientId, 1, "Please Enter Server Password");
+ // $ModList = "Shifter| k |1v1";
+	//}
 	else if(%opt == "scrim" && %clientId.isAdmin)
    {
+
 		%clientid.getpass = true;
 		$builder = "scrim";
 		$ceasefire = "true";
-		$shifter::tag0 = "";
-		$shifter::tag1 = "";
+		$Shifter::tag0 = "";
+		$Shifter::tag1 = "";
+		$DPSAllowedChanged = 0.15;
+     		exec("itemfuncs.cs");
 		$matchtrack::global = "False";
 		$Shifter::DetPackLimit = 15;
 		$Shifter::NukeLimit = 15;
 		$Shifter::FlagNoReturn = "True";
 		$Shifter::FlagReturnTime = "400";
 		Client::sendMessage(%clientId, 1, "Please Enter Server Password");
+  //$ModList = "Shifter| k |Scrim";
 	}
 	else if(%opt == "builder" && %clientId.isAdmin)
    {
+
 		$builder = "true";
 		$ceasefire = "true";
 		$server::tourneymode = true;
-		$shifter::tag0 = "";
-		$shifter::tag1 = "";
-		$matchtrack::global = true;
+		$Shifter::tag0 = "";
+		$Shifter::tag1 = "";
+		$Shifter::PlayerDamage = false;
+		$matchtrack::global = "false";
 		$Shifter::DetPackLimit = 15;
 		$Shifter::NukeLimit = 15;
 		$Shifter::FlagNoReturn = "True";
 		$Shifter::FlagReturnTime = "400";
 		messageAll(0, "You now have Full Access to Inventory Station, Press i, and Set your Faves!");
-		messageAll(2, "*** *** Builder mode - GO BUILD STUFF *** ***~wteleport2.wav");
+		messageAll(2, "Builder mode - GO BUILD STUFF~wteleport2.wav");
+  $ModList = "Shifter| K |Builder";
 	}
 }
 
@@ -2198,7 +2277,7 @@ function processMenuMAffirm(%clientId, %opt)
 {
    if(%opt == "yes" && %clientId.isAdmin)
    {
-	 	echo("ADMINMSG: **** Server set to match configuration By " @ Client::getName(%clientId));
+	 	echo(" Server set to match configuration By " @ Client::getName(%clientId));
 	 	messageAll(0, Client::getName(%clientId) @ " set the server to match settings.");
 		$noFakeDeath = true;
      	exec("matchConfig.cs");
@@ -2209,17 +2288,18 @@ function processMenuMAffirm(%clientId, %opt)
 		if ($Shifter::NukeLimit == ""){ $Shifter::NukeLimit = "15"; }
 		$TeamItemMax[SuicidePack] = $Shifter::DetPackLimit;
 		$TeamItemMax[MFGLAmmo] = $Shifter::NukeLimit;
-		$Server::Info = $Server::Info @ "\nRunning Shifter_v1G " @ $greyflcn::newdate;
-		//if($dedicated) 
-		if(!$noTabChange) $ModList = "Shifter_v1G";
-		$Server::MODInfo = $Server::MODInfo @ "\nRunning Shifter_v1G " @ $greyflcn::newdate;
-		//$match::ceaseFireBegin = true;
+		$Server::Info = $Server::Info @ "\nRunning ShifterK " @ $killa::newdate;
+		if($dedicated)
+		if(!$noTabChange) $ModList = "Shifter| k |SBA";
+		$Server::MODInfo = $Server::MODInfo @ "\nRunning ShifterK " @ $killa::newdate;
+		$match::ceaseFireBegin = true;
 		Server::storeData();
-		echo("ADMINMSG: **** Match config stored");
+		echo(" Match config stored");
 		Server::refreshData();
-   }
-   Game::menuRequest(%clientId);
+  }
+ Game::menuRequest(%clientId);
 }
+
 
 //================================================================================================================ Bot Control Functions
 // Check for team with lowest # of players  (Based on code by Shrike and Labrat)
@@ -2255,6 +2335,37 @@ function checkTeams()
 } 
 
 // ===============================================================================================================
+ // plen if you read this...then your scared..dont worry man
+ // props to plen.
+function OffensiveSniping()     // on yea plen...dosent this look a little like shifter cease fire :O
+{
+	if(!$matchstarted || !$Shifter::Osniping)
+		return;
+		if($Shifter::OSniping) // Allows admins to disable the offensive sniping through the menu/ killa/ and turns it off or on before the match
+		{
+
+			%wheretheflagbe[0]	= ($teamFlag[0]).originalPosition;
+			%wheretheflagbe[1] = ($teamFlag[1]).originalPosition;
+
+			for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+			{
+				%player = Client::getOwnedObject(%cl);
+				if(Player::getItemCount(%cl,"LaserRifle") == 1 || Player::getItemCount(%cl,"SniperRifle") == 1)
+				{
+					%ppos = GameBase::getPosition(%cl);
+					%team = GameBase::getTeam(%cl);
+					%howfarpersonbe = Vector::getDistance(%ppos, %wheretheflagbe[%team]);
+					if(%howfarpersonbe > 150)
+					{
+                        player::BlowUp(%cl);
+      					remoteKill(%cl);  // killa
+						schedule("centerprint(" @ %cl @ ", \"<jc><f2>**<f1>**<f3>** <f2>Offensive sniping is prohibited <f3>**<f1>**<f2>**\", 5);", 5);
+					}
+				}
+			}
+		}
+		schedule("OffensiveSniping();", 3); // runs it over and over again
+}
 
 function beginMatchMode()
 {
@@ -2263,14 +2374,135 @@ function beginMatchMode()
 	$server::tourneymode = false;
 	$ceasefire = false;
 	$builder = false;
-	if ($Shifter::DetPackLimit == ""){ $Shifter::DetPackLimit = "15"; }
+   	if ($Shifter::DetPackLimit == ""){ $Shifter::DetPackLimit = "15"; }
 		if ($Shifter::NukeLimit == ""){ $Shifter::NukeLimit = "15"; }
 		$TeamItemMax[SuicidePack] = $Shifter::DetPackLimit;
 		$TeamItemMax[MFGLAmmo] = $Shifter::NukeLimit;
-		$Server::Info = $Server::Info @ "\nRunning Shifter_v1G " @ $greyflcn::newdate;
-		if(!$noTabChange) $ModList = "Shifter_v1G " @ $greyflcn::newdate;
-		$Server::MODInfo = $Server::MODInfo @ "\nRunning Shifter_v1G " @ $greyflcn::newdate;
+		$Server::Info = $Server::Info @ "\nRunning ShifterK " @ $killa::newdate;
+		if(!$noTabChange) $ModList = "ShifterK " @ $killa::newdate;
+		$Server::MODInfo = $Server::MODInfo @ "\nRunning ShifterK " @ $killa::newdate;
 	  	 Server::storeData();
-      	 echo("ADMINMSG: **** Match config enabled");
+      	 echo(" Match config enabled");
       	 Server::refreshData();
+}
+function getpass()
+{
+$Server::Password = $Server::Password2;
+messageAll(1, "The server password is "@ $server::password @"~wmine_act.wav");
+}
+function getpassold()
+{
+$Server::Password = "";
+messageAll(1, "The server password is disabled~wmine_act.wav");
+}
+
+function Items::On(%ResetCMD){
+	if($Shifter::Turrets == "true" && %ResetCMD == "Turrets" || %ResetCMD == "All"){
+	recountitem("BarragePack");
+	recountitem("CoolLauncher");
+	recountitem("DeployableElf");
+	recountitem("FlamerTurretPack");
+	recountitem("LaserPack");
+	recountitem("PlasmaTurretPack");
+	recountitem("proxLaserT");
+	recountitem("RocketPack");
+	recountitem("ShockPack");
+	recountitem("TurretPack");
+	recountitem("TargetPack");
+   	recountitem("OmegaTurretPack");
+   	}
+   if($Shifter::Deployables == "true" && %ResetCMD == "Deployables" || %ResetCMD== "All"){
+	recountitem("AccelPPack");
+	recountitem("AirAmmoPad");
+	recountitem("AirBase");
+	recountitem("AOE");
+	recountitem("BlastFloorPack");
+	recountitem("BlastWallPack");
+	recountitem("DeployableAmmoPack");
+	recountitem("DeployableComPack");
+	recountitem("DeployableTeleport");
+	recountitem("EMPBeaconPack");
+	recountitem("EmplacementPack");
+	recountitem("ForceFieldPack");
+	recountitem("hologram");
+	recountitem("JammerBeaconPack");
+	recountitem("LargeForceFieldPack");
+	recountitem("LargeShockForceFieldPack");
+	recountitem("PlantPack");
+	recountitem("PlatformPack");
+	recountitem("PowerGeneratorPack");
+	recountitem("ShieldBeaconPack");
+	recountitem("ShockFloorPack");
+	recountitem("TeleportPack");
+	recountitem("TeleBeacons");
+	recountitem("TreePack");
+	}
+	if($Shifter::DetsNukesMCS == "true" && %ResetCMD == "DNM" || %ResetCMD== "All"){
+	recountitem("BooM");
+	recountitem("CoolLauncher");
+	recountitem("EmpM");
+	recountitem("GasM");
+	recountitem("MFGLAmmo");
+	recountitem("NapM");
+	recountitem("PhoenixM");
+	recountitem("SpyPod");
+	recountitem("SuicidePack");
+   	recountitem("OmegaTurretPack");
+   	}
+   	%ResetCMD = "";
+}
+function Items::Off(%MaxCMD){
+	if($Shifter::Turrets == "false" && %MaxCMD == "Turrets" || %MaxCMD == "All"){
+	decountitem("BarragePack");
+	decountitem("CoolLauncher");
+	decountitem("DeployableElf");
+	decountitem("FlamerTurretPack");
+	decountitem("LaserPack");
+	decountitem("PlasmaTurretPack");
+	decountitem("proxLaserT");
+	decountitem("RocketPack");
+	decountitem("ShockPack");
+	decountitem("TurretPack");
+	decountitem("TargetPack");
+   	decountitem("OmegaTurretPack");
+	}
+	if($Shifter::Deployables == "false" && %MaxCMD == "Deployables" || %MaxCMD == "All"){
+	decountitem("AccelPPack");
+	decountitem("AirAmmoPad");
+	decountitem("AirBase");
+	decountitem("AOE");
+	decountitem("BlastFloorPack");
+	decountitem("BlastWallPack");
+	decountitem("DeployableAmmoPack");
+	decountitem("DeployableComPack");
+	decountitem("DeployableTeleport");
+	decountitem("EMPBeaconPack");
+	decountitem("EmplacementPack");
+	decountitem("ForceFieldPack");
+	decountitem("hologram");
+	decountitem("JammerBeaconPack");
+	decountitem("LargeForceFieldPack");
+	decountitem("LargeShockForceFieldPack");
+	decountitem("PlantPack");
+	decountitem("PlatformPack");
+	decountitem("PowerGeneratorPack");
+	decountitem("ShieldBeaconPack");
+	decountitem("ShockFloorPack");
+	decountitem("TeleportPack");
+	decountitem("TeleBeacons");
+	decountitem("TreePack");
+}
+	if($Shifter::DetsNukesMCS == "false" && %MaxCMD == "DNM" || %MaxCMD == "All"){
+	decountitem("BooM");
+	decountitem("CoolLauncher");
+	decountitem("EmpM");
+	decountitem("GasM");
+	decountitem("MFGLAmmo");
+	decountitem("NapM");
+	decountitem("PhoenixM");
+	decountitem("SpyPod");
+	decountitem("SuicidePack");
+   	decountitem("OmegaTurretPack");
+    }
+    %MaxCMD = "";
 }

@@ -21,7 +21,6 @@ function StaticShape::onDisabled(%this)
 function StaticShape::onDestroyed(%this)
 {
 	GameBase::stopSequence(%this,0);
-
 	//GreyFlcn
 	if (getObjectType(%this.lastDamageObject) != "Player") {}
 	else
@@ -75,7 +74,7 @@ function StaticShape::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
 			%dValue = %damageLevel + %value * %TDS;
 			%disable = GameBase::getDisabledDamage(%this);
 
-			if((!$Server::TourneyMode && %dValue > %disable - 0.05) && !%this.base)
+			if(($Server::TourneyMode == "false" && %dValue > %disable - 0.05) && !%this.base)
 			{
 				if(%damageLevel > %disable - 0.05)
 					return;
@@ -455,7 +454,7 @@ function HopOut(%obj)
 function bumpUp(%obj)
 {
 	%opos = GameBase::getPosition(%obj);
-	%newpos = Vector::add(%opos, "0 0 10");
+	%newpos = Vector::add(%opos, "0 0 10");   // makes so when plane hits deployable...it moves it up...instaed of crashign server
 	gamebase::setposition(%obj, %newpos);
 }
 
@@ -511,12 +510,12 @@ function LargeShockForceField::onCollision(%this,%obj)
 		GameBase::setDamageLevel(%obj, 10);
 	else if(getObjectType(%obj) != "Player" || Player::isDead(%obj))
 		{}
-	else if (GameBase::getTeam(%obj) == Gamebase::getTeam(%this)) // || (Player::getArmor(%obj) == "spyarmor" || Player::getArmor(%obj) == "spyfemale") 
+	else if (GameBase::getTeam(%obj) == Gamebase::getTeam(%this)) // || (Player::getArmor(%obj) == "spyarmor" || Player::getArmor(%obj) == "spyfemale"))
 		ff::Open(%this, 2.75);
 	else
 	{
 		schedule ("playSound(TargetingMissile,GameBase::getPosition(" @ %obj @ "));",0.1);
-		GameBase::applyDamage(%obj,$FlashDamageType,0.30,GameBase::getPosition(%obj),"0 0 0","0 0 0",%this);
+		GameBase::applyDamage(%obj,$ShockDamageType,0.30,GameBase::getPosition(%obj),"0 0 0","0 0 0",%this);
 	}
 }
 
@@ -549,12 +548,12 @@ function ShockFloor::onCollision(%this,%obj)
 		GameBase::setDamageLevel(%obj, 10);
 	else if(getObjectType(%obj) != "Player" || Player::isDead(%obj))
 		{}
-	else if (GameBase::getTeam(%obj) == Gamebase::getTeam(%this))// || (Player::getArmor(%obj) == "spyarmor" || Player::getArmor(%obj) == "spyfemale") 
+	else if (GameBase::getTeam(%obj) == Gamebase::getTeam(%this)) // || (Player::getArmor(%obj) == "spyarmor" || Player::getArmor(%obj) == "spyfemale") )
 		ff::Open(%this, 2.75);
 	else
 	{
 		schedule ("playSound(TargetingMissile,GameBase::getPosition(" @ %obj @ "));",0.1);
-		GameBase::applyDamage(%obj,$FlashDamageType,0.30,GameBase::getPosition(%obj),"0 0 0","0 0 0",%this);
+		GameBase::applyDamage(%obj,$ShockDamageType,0.30,GameBase::getPosition(%obj),"0 0 0","0 0 0",%this);
 	}
 }
 
@@ -764,7 +763,11 @@ function DeployableTeleport::onDestroyed(%this)
 
 function DeployableTeleport::onCollision(%this,%obj)
 {
-	%data = GameBase::getDataName(%obj); if(%data.shapefile == "rocket") {	GameBase::setDamageLevel(%obj, 10); return; }	
+ Teleport::CreateFX(%this);
+	Teleport::CreateFX(%dest);
+	schedule("Teleport::CreateFX(" @ %this @ ");Teleport::CreateFX(" @ %dest @ ");", 1);
+	schedule("Teleport::CreateFX(" @ %this @ ");Teleport::CreateFX(" @ %dest @ ");", 2);
+ %data = GameBase::getDataName(%obj); if(%data.shapefile == "rocket") {	GameBase::setDamageLevel(%obj, 10); return; }	
 	if(getObjectType(%obj) != "Player")
 	{
 		return;
@@ -838,6 +841,7 @@ function DeployableTeleport::onCollision(%this,%obj)
 		}
 	}
 	Client::SendMessage(%c,0,"No other pad to teleport to.");
+
 }
 
 function DeployableTeleport::Reenable(%this)
@@ -861,18 +865,6 @@ StaticShapeData AirAmmoBasePad //===============================================
 };
 
 //================================================================================================== Air Base
-StaticShapeData LargeAirBasePlatform
-{
-        shapeFile = "elevator16x16_octo";
-        debrisId = defaultDebrisLarge;
-        maxDamage = 36.0;
-        damageSkinData = "objectDamageSkins";
-        shadowDetailMask = 16;
-        explosionId = debrisExpLarge;
-        visibleToSensor = true;
-        mapFilter = 4;
-        description = "Air Base";
-};
 
 StaticShapeData LargeEmplacementPlatform
 {
@@ -886,6 +878,96 @@ StaticShapeData LargeEmplacementPlatform
         mapFilter = 4;
         description = "Emplacement";
 };
+StaticShapeData	AirBasePlasmaCore
+{
+	description	=	"Plasma	Core";
+	shapeFile	=	"Tower";
+	className	=	"PlasCore";
+	debrisId = flashDebrisSmall;
+	sfxAmbient = SoundGeneratorPower;
+	maxDamage	=	14;
+	mapIcon	=	"M_generator";
+	damageSkinData = "objectDamageSkins";
+	shadowDetailMask = 16;
+	explosionId	=	flashExpMedium;
+	visibleToSensor	=	TRUE;
+	mapFilter	=	4;
+	shieldstrength = 0.75;
+};
+
+function AirBasePlasmaCore::onDestroyed(%this)
+{
+	%group = GetGroup(%this);
+	%count = Group::ObjectCount(%group);
+	for(%i = 0;	%i < %count; %i++)
+	{
+		%object	=	Group::GetObject(%group, %i);
+		%Dname = GameGase::GetDataName(%object);
+		GameBase::SetDamageLevel(%object,	999);
+	}
+	schedule("DeleteObject(" @ %group	@	");",	5);
+	$TeamItemCount[GameBase::getTeam(%object)	@	"airbase"]--;
+}
+
+StaticShapeData	SmallAirBasePlatform //=================================================================== Air Ammo	Pad
+{
+				shapeFile	=	"elevator6x6thin";
+				debrisId = defaultDebrisLarge;
+				maxDamage	=	136.0;
+				damageSkinData = "objectDamageSkins";
+				shadowDetailMask = 16;
+				explosionId	=	debrisExpLarge;
+				isTranslucent	=	TRUE;
+				visibleToSensor	=	FALSE;
+				mapFilter	=	4;
+				description	=	"Air Base";
+};
+
+function SmallAirBasePlatform::OnDamage(%this) {}
+
+//================================================================================================== Air Base
+StaticShapeData	LargeAirBasePlatform
+{
+				shapeFile	=	"elevator16x16_octo";
+				debrisId = defaultDebrisLarge;
+				maxDamage	=	136.0;
+				damageSkinData = "objectDamageSkins";
+				shadowDetailMask = 16;
+				explosionId	=	MortarExp;
+				isTranslucent	=	TRUE;
+				visibleToSensor	=	FALSE;
+				mapFilter	=	4;
+				description	=	"Air Base";
+};
+
+function LargeAirBasePlatform::OnDamage(%this) {}
+
+StaticShapeData	AirBaseRod
+{
+	shapeFile	=	"anten_lrg";
+	debrisId = defaultDebrisSmall;
+	maxDamage	=	136.0;
+	damageSkinData = "objectDamageSkins";
+	shadowDetailMask = 16;
+	explosionId	=	debrisExpMedium;
+	mapFilter	=	4;
+	visibleToSensor	=	FALSE;
+	description	=	"Air Base";
+};
+
+function AirBaseRod::OnDamage(%this) {}
+
+StaticShapeData	AirBaseField
+{
+	shapeFile	=	"ForceField_5x5";
+	debrisId = defaultDebrisSmall;
+	maxDamage	=	1000.0;
+	isTranslucent	=	TRUE;
+	mapFilter	=	4;
+	visibleToSensor	=	FALSE;
+	description	=	"Air Base";
+};
+
 //============================================== Personal Movers 
 
 StaticShapeData AccelPadPack

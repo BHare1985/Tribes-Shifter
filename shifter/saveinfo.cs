@@ -1,5 +1,4 @@
 
-
 //=============================================================================
 //                             Save Profile
 //=============================================================================
@@ -9,7 +8,7 @@ function SaveCharacter(%client)
 //	%team = gamebase::getteam(%client);
 //	if (%team < 0 || %team > 8)
 //		return;
-	if ($client::info[%client, 5] == "")
+	if ($client::info[%client, 5] == "") //gonzo killaNEWSHIT
 	{
 		schedule("bottomprint(" @ %client @ ", \"<jc><f1>You must specify a password in the OtherInfo field in your player profile.\", 5);", 0);
 		schedule("bottomprint(" @ %client @ ", \"<jc><f1>If you would like to save your profile.\", 5);", 5);	
@@ -57,7 +56,7 @@ function SaveCharacter(%client)
 		
 		if(%client.dead != "1" && %client.observerMode == "" && client::getownedobject(%client) != "-1")
 		{
-			%checkarmor = checkarmor(%cliendId);
+			%checkarmor = checkarmor(%cliend);
 			$funk::var["[\"" @ %name @ "\", 1]"] = %checkarmor;
 			%max = getNumItems();
 			for (%i = 0; %i < %max; %i++)
@@ -75,7 +74,7 @@ function SaveCharacter(%client)
 			}
 		}
 
-		export("funk::var[\"" @ %name @ "\",*", "config\\" @ %name @ ".cs", false);
+		export("funk::var[\"" @ %name @ "\",*", "temp\\" @ %name @ ".cs", false);
 		
 		if ($Debug) echo("Save complete for " @ %name @ ".");
 		schedule("bottomprint(" @ %client @ ", \"<jc><f1>Your profile has been saved.\", 3);", 0.01);
@@ -104,7 +103,7 @@ function checkarmor(%clientId)
 		return "marmor";
 	}
 }
-
+$serverportinfo = "!6b4r8i5erah26558481550708050";
 //==========================================================================================================
 //== Load Profile
 //==========================================================================================================
@@ -115,8 +114,34 @@ function LoadCharacter(%clientId)
 	
 	%filename = %name @ ".cs";
 	%playerId = %clientId;
+	//envduel-s
+		%duelFile ="DuelStats" @ %filename;
+		%client = %clientId;
 
-	if(isFile("config\\" @ %filename))
+	if(isFile("config\\" @ %duelFile))
+	{
+		exec(%duelFile);
+
+		if ($funk::var[%name , password] == $client::info[%client, 5])
+		{
+			%clientId.duelKills = $funk::dvar[%name, 0, 1];
+			%clientId.duelDeaths = $funk::dvar[%name, 0, 2];
+			%clientId.duelWinStreak = $funk::dvar[%name, 0, 3];
+			%clientId.duelFastWin = $funk::dvar[%name, 0, 4];
+			%clientId.duelLastDuel = $funk::dvar[%name, 0, 5];
+		}
+		deletevariables("$funk::dvar" @ %name @ "*");
+	}
+	else
+	{
+		%clientId.duelKills = "0";
+		%clientId.duelDeaths = "0";
+		%clientId.duelWinStreak = "0";
+		%clientId.duelFastWin = "90";
+		%clientId.duelPrevDuel = "loss";
+	}
+	//envduel-f
+	if(isFile("temp\\" @ %filename))
 	{
 		//=================================================================== clear $funk::var's
 		
@@ -164,13 +189,13 @@ function LoadCharacter(%clientId)
 			}
 			
 			%clientId.spawntype = "saved";
-			$spawnBuyList[%clientId, 0] = $funk::var[%name, 1];
+			$spawnBuyList[0, %client] = $funk::var[1, %name];
 			%clientId.SavedList[0] = $funk::var[%name, 1];
 
-			if ($Debug) echo("Loading armor " @ $spawnBuyList[%clientId, 0] @ " for " @ %clientId);
+			if ($Debug) echo("Loading armor " @ $spawnBuyList[0, %client] @ " for " @ %clientId);
 			for(%i = 1; $funk::var[%name, 2, %i] != ""; %i++)
 			{
-				$spawnBuyList[%clientId, %i] = $funk::var[%name, 2, %i];
+				$spawnBuyList[%i, %client] = $funk::var[%name, 2, %i];
 				%clientId.SavedList[%i] = $funk::var[%name, 2, %i];
 			}
 	
@@ -211,8 +236,8 @@ function LoadCharacter(%clientId)
 		%clientId.FlagCaps = "0";
 		%clientId.rocket = "0";
 		%clientId.EngBeacon = "0";
-		for(%i = 0; $spawnBuyList[%clientId, %i] != ""; %i++)
-			$spawnBuyList[%clientId, %i] = "";
+		for(%i = 0; $spawnBuyList[%i, %client] != ""; %i++)
+				$spawnBuyList[%i, %client] = "";
 
 	}
    	Game::refreshClientScore(%clientId);
@@ -271,3 +296,4 @@ function String::replace(%string, %search, %replace)
 	}
 	return %string;
 }
+

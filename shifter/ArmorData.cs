@@ -219,7 +219,7 @@ function BuildItemList()
 	$ItemMax[earmor,	PlasmaAmmo] = 40;
 	$ItemMax[earmor,	PlasmaGun] = 1;	
 	$ItemMax[earmor,	PlasmaTurretPack] = 1;
-	$ItemMax[earmor,	PlatformPack] = 1;
+    $ItemMax[earmor,	PlatformPack] = 1;
 	$ItemMax[earmor,	RailAmmo] = 10;
 	$ItemMax[earmor,	Railgun] = 1;
 	$ItemMax[earmor,	RocketAmmo] = 5;
@@ -350,11 +350,10 @@ function BuildItemList()
 	$ItemMax[spyarmor,	MineAmmo] = 3;
 	$ItemMax[spyarmor,	PlasmaAmmo] = 30;
 	$ItemMax[spyarmor,	PlasmaGun] = 1;
-	$ItemMax[spyarmor,	RailAmmo] = 10;
+	$ItemMax[spyarmor,	RailAmmo] = 30;
 	$ItemMax[spyarmor,	Silencer] = 1;
 	$ItemMax[spyarmor,	SilencerAmmo] = 25;
 	$ItemMax[spyarmor,	TranqAmmo] = 25;
-	$ItemMax[spyarmor,	TranqGun] = 1;
 	CopyItemData(%max, spyarmor, spyfemale);
 
 //========================================================= Dreadnaught

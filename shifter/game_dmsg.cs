@@ -1,8 +1,3 @@
-
-//---------------------------------------------------------------------------------
-// Player death messages - %1 = killer's name, %2 = victim's name
-//       %3 = killer's gender pronoun (his/her), %4 = victim's gender pronoun
-//---------------------------------------------------------------------------------
 $deathMsg[$LandingDamageType, 0]     	= "%2 falls to %3 death.";
 $deathMsg[$LandingDamageType, 1]     	= "%2 forgot to tie %3 bungie cord.";
 $deathMsg[$LandingDamageType, 2]     	= "%2 bites the dust in a forceful manner.";
@@ -102,6 +97,11 @@ $deathMsg[$FlashDamageType, 0]		= "%2 was EMPed to death by %1.";
 $deathMsg[$FlashDamageType, 1]		= "%2 gets drained by %1.";
 $deathMsg[$FlashDamageType, 2]		= "%2 get an electric blast from %1.";
 $deathMsg[$FlashDamageType, 3]		= "%2 gets sucked dry by %1.";
+
+$deathMsg[$ShockDamageType, 0]		= "%2 was EMPed to death by Shocks.";
+$deathMsg[$ShockDamageType, 1]		= "%2 gets drained by Shocks.";
+$deathMsg[$ShockDamageType, 2]		= "%2 get an electric blast from Shocks.";
+$deathMsg[$ShockDamageType, 3]		= "%2 gets sucked dry by Shocks.";
 
 $deathMsg[$NukeDamageType, 0]		= "%2 was incinerated by %1's nuclear blast..";
 $deathMsg[$NukeDamageType, 1]		= "%2 was turned to ashes by %1.";

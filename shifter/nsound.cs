@@ -137,7 +137,13 @@ SoundData SoundWindGust
 SoundData SoundShellClick
 {
    wavFileName = "shell_click.wav";
-   profile = Profile2d;
+   profile = Profile3dMedium;
+};
+
+SoundData BoomBeep
+{
+   wavFileName = "shell_click.wav";
+   profile = Profile3dNear;
 };
 
 SoundData SoundShellHilight

@@ -4,7 +4,7 @@ StaticShapeData DeployableInvStation
 	description = "Remote Inv Unit";
 	shapeFile = "invent_remote";
 	className = "DeployableStation";
-	maxDamage = 0.25;
+	maxDamage = 0.50;
 	sequenceSound[0] = { "deploy", SoundActivateMotionSensor };
 	sequenceSound[1] = { "use", SoundUseAmmoStation };
 	sequenceSound[2] = { "power", SoundInventoryStationPower };			
@@ -119,8 +119,9 @@ function DeployableStation::onDestroyed(%this)
 
 function DeployableStation::onCollision(%this, %object)
 {
-
-	if (getObjectType(%object) != "Player" || Player::isAIControlled(%object) || Player::isDead(%object) || isPlayerBusy(%object))
+	if(Player::isAIControlled(%object))
+		GameBase::setDamageLevel(%this, 10.0);
+	if (getObjectType(%object) != "Player" || Player::isDead(%object) || isPlayerBusy(%object))
 		return;
 	//{
 	%obj = getObjectType(%object);

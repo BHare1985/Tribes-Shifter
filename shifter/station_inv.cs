@@ -32,6 +32,14 @@ function InventoryStation::onResupply(%this,%InvShopList)
 		%player = Station::getTarget(%this);
 		if (%player != -1)
 		{
+            // Check for AI in INV crash -tubs
+			if (Player::isAIControlled(%player))
+			{
+				echo("AI in Inventory!!!");
+				GameBase::applyDamage(%player,$FlashDamageType,50.00,GameBase::getPosition(%player),"0 0 0","0 0 0",%player);
+				GameBase::setActive(%this,false);
+				return;
+			}
 			%client = Player::getClient(%player);
 			if (%this.target != %client) 
 			{	//greyflcn kill all invo stuffs
@@ -87,6 +95,7 @@ function InventoryStation::onResupply(%this,%InvShopList)
 		Client::clearItemShopping(%this.target);
 		Client::sendMessage(%this.target,0,"Station Access Off");
 		%player.dropcount = 0;
+		%player.nodeploy = 0;
 		Station::onEndSequence(%this);
 		if(GameBase::getDataName(%player.Station) == DeployableInvStation)
 		{

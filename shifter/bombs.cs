@@ -273,6 +273,7 @@ MineData Suicidebomb2
 function Suicidebomb2::onAdd(%this)
 {
 	schedule("det("@ %this @".deployer, GameBase::GetPosition("@ %this @"));",20,%this);
+	$Detlayed = true;
 }
 
 function Suicidebomb2::onDestroyed(%this)
@@ -295,7 +296,10 @@ function det(%cl, %pos)
 	for(%i; %i < %num; %i++)
 	{
 		%obj = Group::getObject(%Set, %i);
-		GameBase::applyDamage(%obj, $NukeDamageType, 1.5, GameBase::getPosition(%obj), "0 0 0", "0 0 0", %client);		
+		if($Detlayed == "true"){
+		GameBase::applyDamage(%obj, $NukeDamageType, 1.75, GameBase::getPosition(%obj), "0 0 0", "0 0 0", %client);}
+		else{
+		GameBase::applyDamage(%obj, $NukeDamageType, 1.5, GameBase::getPosition(%obj), "0 0 0", "0 0 0", %client);}		
 	}
 	deleteobject(%set);
 
@@ -380,6 +384,7 @@ function det(%cl, %pos)
 	%padd = "0 0 65";%pos = Vector::add(%pos1, %padd);
 	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
 	schedule ("Projectile::spawnProjectile(NRing, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");",0.2,%check);
+	$Detlayed = false;
 }
 
 
@@ -400,7 +405,7 @@ function Suicidebomb2::onCollision(%this,%obj)
 	%armor = Player::getArmor(%obj);
 	if (%armor == "earmor" || %armor == "efemale")
 	{
-		if(floor(getRandom() * 12) < 5)
+		if(floor(getRandom() * 12) < 4)
 		{	
 		   Client::sendMessage(%c,1,"OOPS! You cut the wrong wire...");
 			Mine::Detonate(%this);

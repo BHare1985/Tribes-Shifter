@@ -567,7 +567,7 @@ ItemImageData HyperBImage
 	mountPoint = 0;
 	weaponType = 0; // Single Shot
 	reloadTime = 0;
-	fireTime = 0.1;
+	fireTime = 0.075;
 	minEnergy = 5;
 	maxEnergy = 6;
 	projectileType = HyperBolt;
@@ -859,7 +859,7 @@ ItemImageData TranqGunImage
 	ammoType = TranqAmmo;
 	projectileType = TranqDart;
 	accuFire = true;
-	reloadTime = 1.5;
+	reloadTime = 1.0;
 	fireTime = 0;
 	lightType = 3;  // Weapon Fire
 	lightRadius = 6;
@@ -881,9 +881,9 @@ ItemData TranqGun
 	showWeaponBar = true;
 };
 //======================================================================== Magnum
-ItemData SilencerAmmo
+ItemData RailAmmo
 {
-	description = "Magnum Bullets";
+	description = "Railgun Bolt";
 	className = "Ammo";
    	heading = "xAmmunition";
 	shapeFile = "ammo1";
@@ -896,16 +896,17 @@ ItemImageData SilencerImage
 	shapeFile = "energygun";
 	mountPoint = 0;
 	weaponType = 0;
-	ammoType = SilencerAmmo;
+	ammoType = RailAmmo;
 	projectileType = SilencerBullet;
 	accuFire = true;
-	reloadTime = 0.39;
+	reloadTime = 0.10;
 	fireTime = 0.5;
 	lightType = 3;
 	lightRadius = 6;
 	lightTime = 2;
 	lightColor = { 0, 0, 0 };
 	sfxFire = SoundFireMortar;
+	mountRotation = { 0, -0.785, 0 };
 	sfxActivate = SoundPickUpWeapon;
 };
 
@@ -953,9 +954,9 @@ ItemData ConCun
 
 //======================================================================== Rail Gun
 
-ItemData RailAmmo
+ItemData SilencerAmmo
 {
-	description = "Railgun Bolt";
+	description = "Silencer Bolt";
 	className = "Ammo";
    	heading = "xAmmunition";
 	shapeFile = "ammo1";
@@ -973,7 +974,7 @@ ItemImageData RailgunImage
 	projectileType = RailRound;
 	accuFire = true;
 	reloadTime = 0.2;
-	fireTime = 2.0;
+	fireTime = 1.0;
 	lightType = 3;  // Weapon Fire
 	lightRadius = 6;
 	lightTime = 2;
@@ -1143,6 +1144,7 @@ function MfglImage::onFire(%player, %slot)
 		//return;
 	}
 }
+
 function Mfgl::onUse(%player,%item)
 {
 	%armor = Player::getArmor(%player);

@@ -1,3 +1,32 @@
+    //-------------------- Night / Day stuff
+//$initHaze = 900;
+//$currentHaze = $initHaze;
+//$currentSky = "lushdayclear.dml";
+
+//$dayCycleSky[1] = "lushdayclear.dml";
+//$dayCycleSky[2] = "litesky.dml";
+//$dayCycleSky[3] = "lushsky_night.dml";
+//$dayCycleSky[4] = "litesky.dml";
+//$dayCycleSky[5] = "lushdayclear.dml";
+//$dawnSky = ""; // some dawn sky
+//$dawnHaze = 100; // gotta check hazes
+//$daySky = "lushdayclear.dml";                           // tried some weather stuff, may pick it back up, if i have time.
+//$dayHaze = 1000; // ??
+//$duskSky = "nitesky.dml"; //some dusk sky
+//$duskHaze = 200;
+//$nightSky = "lushsky_night.dml";
+//$nightHaze = 100;
+
+//exec("weather.cs");
+//ChangeWeather(15);
+//RecursiveWorld(4);
+
+
+//if($fullCycleTime == "") $fullCycleTime = 60 * 60;
+//if($nightDayCycle == "") $nightDayCycle = true;
+//--------------------------------------
+
+    // globals for weather^
 exec("comchat.cs");
 exec("shban.cs");
 
@@ -156,11 +185,22 @@ $AutoRespawn = 0;
 //===============================================================================================================
 function Game::playerSpawned(%pl, %clientId, %armor)
 {
-	dbecho ("============================ Spawning Player");
+	%item = Player::getMountedItem(%player,$WeaponSlot);
+//envduel-s 
+	if(%clientId.dueling)
+	{
+		echo("GameMSG   ====   SPAWN " @ %name @ " - Duel");
+		if (Game::playerSetSpawned(%pl, %clientId, %armor))
+			return true;
+		return false;
+			
+	}
+	//envduel-f
+    GameBase::startFadeIn(%clientId);
+    dbecho ("============================ Spawning Player");
 	dbecho ("PL - " @ %pl @ "");
 	dbecho ("CL - " @ %clientId @ "");
 	dbecho ("ST - " @ %clientId.spawntype @ "");
-	
 	%clientId.JustSpawned = true;
 	schedule (%clientId @ ".JustSpawned = False;",1.5);
 
@@ -233,11 +273,11 @@ function Game::playerSetSpawned(%pl, %clientId, %armor)
 {
 	//======================================================================================== Buy Actual Items
 	dbecho ("Buying Inventory");
-
 	%clientId.spawn = 1;
 	%max = getNumItems();
+	%client = %clientId;
 
-	for(%i = 0; (%item = $spawnBuyList[%i, %clientId]) != ""; %i++)
+	for(%i = 0; (%item = $spawnBuyList[%i, %client]) != ""; %i++)
 	{
 		buyItem(%clientId,%item);
 		if(%item.className == Weapon) 
@@ -259,8 +299,9 @@ function Game::playerSetSpawned(%pl, %clientId, %armor)
 		%armor = Player::getArmor(%clientId);
 
 		if (%armor == "jarmor") //================================================== Check Juggernaught   
-		{
+		{	
 			Player::mountItem(%clientId, Mortar, $WeaponSlot);
+			bottomprint(%client, "<jc><f2>Spawned with Mortar", 2);
 		}
 		%clientId.spawnWeapon="";
 	}
@@ -319,8 +360,38 @@ function Game::playerSpawn(%clientId, %respawn)
 	 	%clientId.observermode = "";
 
 	   	if(%spawnMarker == -1){%spawnPos = "0 0 300";%spawnRot = "0 0 0";}
-	   	else{%spawnPos = GameBase::getPosition(%spawnMarker);%spawnRot = GameBase::getRotation(%spawnMarker);}
-
+	   //envduel-s	
+	 if(%clientId.dueling)
+		{
+			if(%clientId.one == "true")
+			{
+				%spawnPos = $SBAduelPos1;
+				%spawnRot = $SBAduelRot1;
+				$DspotOneTaken = "true";
+			}
+			if(%clientId.two == "true")
+			{
+				%spawnPos = $SBAduelPos2;
+				%spawnRot = $SBAduelRot2;
+			}
+			if(%clientId.three == "true")
+			{
+				%spawnPos = $SBAduelPos3;
+				%spawnRot = $SBAduelRot3;
+				$DspotTwoTaken = "true";
+			}
+			if(%clientId.four == "true")
+			{
+				%spawnPos = $SBAduelPos4;
+				%spawnRot = $SBAduelRot4;
+			}
+		}
+	   	else
+		{
+			%spawnPos = GameBase::getPosition(%spawnMarker);
+			%spawnRot = GameBase::getRotation(%spawnMarker);
+		}
+		//envduel-f
 	   	if(!String::ICompare(Client::getGender(%clientId), "Male"))
 	   		%armor = "larmor";
 	   	else
@@ -469,9 +540,10 @@ function Game::startMatch()																						// game.cs
 	
 	messageAll(0, "Match started.");
 	Game::resetScores();	
-	if($server::tourneymode && !$ceasefire) initMT();
-	echo("\"M\"" @ $missionName @ "\"" @ ($Server::timeLimit * 60) + $missionStartTime - getSimTime() @ "\"");
-
+	if($server::tourneymode =="true" && !$ceasefire) initMT();
+		//envjibberish-s
+	echo("Map: " @ $missionName @ "");
+	//envjibberish-f
 	%numTeams = getNumTeams();
 	for(%i = 0; %i < %numTeams; %i = %i + 1)
 	{
@@ -530,7 +602,7 @@ function Game::initialMissionDrop(%clientId)
 		bottomprint(%clientid, "<F1><jc>::::MIXED SCRIM::::",10);
 		return;
 	}
-   if($Server::TourneyMode && ($Shifter::Tag0 != "" && $Shifter::Tag1 != "") && !$ceasefire)
+   if($Server::TourneyMode =="true" && ($Shifter::Tag0 != "" && $Shifter::Tag1 != "") && !$ceasefire)
    {
    	%clName = Client::getName(%clientId);
    	dbecho($Shifter::tag0 @ " " @ %clName @ " " @ String::findSubStr(%clName,$Shifter::Tag0 @ %clientId));
@@ -557,7 +629,7 @@ function Game::initialMissionDrop(%clientId)
 			GameBase::setTeam(%clientId, -1);
 		}
    }
-   else if($Server::TourneyMode && !$ceasefire)
+   else if($Server::TourneyMode =="true" && !$ceasefire)
    {
 		%clientID.observerMode = "pregame";
 		%clientid.notready = "true";
@@ -589,12 +661,12 @@ function Game::initialMissionDrop(%clientId)
 	{
 		%clientId.observerMode = "pickingTeam";
 		
-		if($Server::TourneyMode)// && ($matchStarted || $matchStarting))
+		if($server::tourneymode == "true")// && ($matchStarted || $matchStarting))
 		{
 			%clientId.observerMode = "observerFly";
 			return;
 		}
-		else if($Server::TourneyMode)
+		else if($server::tourneymode == "true")
 		{
 			if($Server::TeamDamageScale)
 				%td = "ENABLED";
@@ -603,7 +675,7 @@ function Game::initialMissionDrop(%clientId)
 			bottomprint(%clientId, "<jc><f1>Server is running in Competition Mode\nYour team will be assigned.\nTeam damage is " @ %td, 0);
 		}
 	
-		if(!$Server::TourneyMode)
+		if($Server::TourneyMode == "false")
 		{
 		Client::buildMenu(%clientId, "Pick a team:", "InitialPickTeam");
 		Client::addMenuItem(%clientId, "0Observe", -2);
@@ -671,7 +743,7 @@ function processMenuuseCustom(%clientId, %skin)
 
 function processMenuInitialPickTeam(%clientId, %team)
 {
-   if($Server::TourneyMode && $matchStarted)
+   if($Server::TourneyMode =="true" && $matchStarted)
       %team = -2;
 
    if(%team == -2)
@@ -692,7 +764,7 @@ function processMenuInitialPickTeam(%clientId, %team)
       Client::setControlObject(%clientId, -1);
       Game::playerSpawn(%clientId, false);
    }
-   if($Server::TourneyMode && !$CountdownStarted)
+   if($Server::TourneyMode =="true" && !$CountdownStarted)
    {
       if(%team != -2)
       {
@@ -724,12 +796,12 @@ function processMenuPickTeam(%clientId, %team, %adminClient) // admin.cs
       centerprint(%clientId, "");
    }
 
-   if((!$matchStarted || !$Server::TourneyMode || %adminClient) && %team == -2)
+   if((!$matchStarted || $Server::TourneyMode == "false" || %adminClient) && %team == -2)
    {
       if(Observer::enterObserverMode(%clientId))
       {
        //TS
-       echo("\"A\"" @ %clientId @ "\"" @ %team @ "\"");
+//       echo("\"A\"" @ %clientId @ "\"" @ %team @ "\"");
        
          %clientId.notready = "";
          if(%adminClient == "") 
@@ -761,7 +833,7 @@ function processMenuPickTeam(%clientId, %team, %adminClient) // admin.cs
    }
    
    //TS
-   echo("\"A\"" @ %clientId @ "\"" @ %team @ "\"");
+//   echo("\"A\"" @ %clientId @ "\"" @ %team @ "\"");
 
    GameBase::setTeam(%clientId, %team);
    %clientId.teamEnergy = 0;
@@ -775,7 +847,7 @@ function processMenuPickTeam(%clientId, %team, %adminClient) // admin.cs
 	%team = Client::getTeam(%clientId);
 	if($TeamEnergy[%team] != "Infinite")
 		$TeamEnergy[%team] += $InitialPlayerEnergy;
-   if($Server::TourneyMode && !$CountdownStarted)
+   if($Server::TourneyMode =="true" && !$CountdownStarted)
    {
       centerprint(%clientId, "<f1><jc>Press FIRE when ready.", 0);
       %clientId.notready = true;
@@ -1002,6 +1074,7 @@ function Game::onPlayerConnected(%playerId)
 	%playerId.cloakTime = 0;
 	%playerId.ovd = 0;
 	%playerId.NRGTDOff = 0;
+	%jugg.emptime = 0;
 	%playerId.telepoint = 0;
 
 	for (%i = 0; %i <= 21; %i++)
@@ -1050,8 +1123,9 @@ function Game::assignClientTeam(%clientId)																		// game.cs
 		}
 
 		GameBase::setTeam(%clientId, %leastTeam);
-		//echo("**** Player " @ %clientId @ " set to team " @ gamebase::getteam(%clientId));
-		echo("\"A\"" @ %clientId @ "\"" @ %leastTeam @ "\"");
+		%name = Client::getName(%clientId);
+		echo("Player " @ %name @ " set to team " @ gamebase::getteam(%clientId));
+		//echo("\"A\"" @ %clientId @ "\"" @ %leastTeam @ "\"");
 	}
 	else
 	{
@@ -1062,6 +1136,9 @@ function Game::assignClientTeam(%clientId)																		// game.cs
 
 function Game::setRandomTeam()
 {
+    if($server::tourneymode == "true")
+    {}
+    else
 	bottomprintall ("<jc>Randomly Assigning Teams - Occurs Every " @ $Shifter::TeamJuggle @ " Missions.");
 	%numTeams = getNumTeams();
 	%numPlayers = getNumClients();
@@ -1069,7 +1146,7 @@ function Game::setRandomTeam()
 	
 	if (!%numPlayers)
 	{
-		dbecho ("ADMINMSG **** No Players In Game Not Assigning Teams");
+		dbecho ("  No Players In Game Not Assigning Teams");
 		return;
 	}
 
@@ -1160,6 +1237,7 @@ function Player::onKilled(%this)
 	%cl.shieldTime = 0;
 	%cl.cloakTime = 0;
 	%cl.ovd = 0;
+	%jugg.emptime = 0;
 	schedule("%cl.NRGTDOff = 0;", 1.0, %cl);
 	//schedule(%cl@".telepoint = 0;", 15);
 
@@ -1211,7 +1289,7 @@ function Player::onKilled(%this)
 		Client::setOwnedObject(%cl, -1);
 		Client::setControlObject(%cl, Client::getObserverCamera(%cl));
 		Observer::setOrbitObject(%cl, %this, 5, 5, 5);
-		schedule("deleteobject(" @ %this @ ");", $CorpseTimeoutValue + 2.5, %this);
+		schedule("deleteobject(" @ %this @ ");", $CorpseTimeoutValue + 1.5, %this);
 		%cl.observerMode = "dead";
 		%cl.dieTime = getSimTime();
    	}
@@ -1219,14 +1297,56 @@ function Player::onKilled(%this)
 
 function Client::onKilled(%playerId, %killerId, %damageType, %vertPos, %quadrant)
 {
+	       %clientId = %playerId;
+		%client = %clientId;
+		//envduel-s
+		if(%clientId.dueling && %clientId.isSet)
+	{
+		if(%clientId.one == "true" || %clientId.two == "true")
+			$DspotOneTaken = "";
+
+		if(%clientId.three == "true" || %clientId.four == "true")
+			$DspotTwoTaken = "";
+
+		if(!%killerId || %client == %killerId || %killerId == "-1")
+		{
+			%mybuddy = %clientId.engaged;
+			SBA::duelFinished(%clientId, %mybuddy);
+		}
+		else
+		{
+			SBA::duelFinished(%clientId, %killerId);
+		}
+		for(%i = 0;$oldSpawn[%i, %client] != "";%i++)
+		{
+			$spawnBuyList[%i, %client] = $oldSpawn[%i, %client];
+			$oldSpawn[ %i, %client] = "";
+		}
+
+		for(%i = 0;$oldSpawn[%i, %killerId] != "";%i++)
+		{
+			$spawnBuyList[%i, %killerId] = $oldSpawn[%i, %killerId];
+			$oldSpawn[%i, %killerId] = "";
+		}
+	}
+	//envduel-f
 	%score = 0;
 	%playerId.lascharge = "";
 	%playerId.charging = "";
-	
+	//envjibberish-s
+	if (Client::getName(%playerId) == "")
+			%PlayerName = "Unnamed";
+		else
+			%PlayerName = Client::getName(%playerId);
+	if (Client::getName(%killerId) == "")
+			%KillerName = "A Turret";
+		else
+			%KillerName = Client::getName(%killerId);
 	if($teamplay && (Client::getTeam(%killerId) == Client::getTeam(%playerId)) && (%killerId != playerId))
-		echo("\"T\"" @ %killerId @ "\"" @ %playerId @ "\"" @ %damageType @ "\"" @ "1" @ "\"");
+		echo(""@ escapeString(%PlayerName) @" Suicided.");
 	else
-		echo("\"K\"" @ %killerId @ "\"" @ %playerId @ "\"" @ %damageType @ "\"" @ "1" @ "\"");   
+		echo(""@ escapeString(%KillerName) @" Killed "@ escapeString(%PlayerName) @"");  
+		//envjibberish-f
 
 	dbecho ("*** Player " @ %playerId);
 	dbecho ("*** Killer " @ %killerId);
@@ -1249,15 +1369,28 @@ function Client::onKilled(%playerId, %killerId, %damageType, %vertPos, %quadrant
 
 	if(!%killerId || %killerId == "-1") //=== No Killer Listed
 	{
-		messageAll(0, strcat(%victimName, " dies."), $DeathMessageMask);
+
 		%playerId.scoreDeaths++;
 		if ($ScoreOn) bottomprint(%playerId,"You have died " @ %playerId.scoreDeaths @ " time(s).",3);	
-		return;
+	
+	for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+	{
+			if(%cl.MuteKill != "true")
+		Client::sendMessage(%cl, 0, strcat(%victimName, " dies."));
+	}
+        //killmsg messageAll(0, strcat(%victimName, " dies."), $DeathMessageMask);
+ 
+        return;
 	}
 	else if(%killerId == %playerId) //=== Suicide Kill
 	{
 		%oopsMsg = sprintf($deathMsg[-2, %ridx], %victimName, %playerGender);
-		messageAll(0, %oopsMsg, $DeathMessageMask);
+		for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+		{
+			if(%cl.MuteKill != "true")
+		Client::sendMessage(%cl, 0, %oopsMsg);
+		}
+		//killmsg messageAll(0, , $DeathMessageMask);
 		%playerId.scoreDeaths++;
 
 		if (%killedflag)
@@ -1287,16 +1420,26 @@ function Client::onKilled(%playerId, %killerId, %damageType, %vertPos, %quadrant
 		
 		if($teamplay && (Client::getTeam(%killerId) == Client::getTeam(%playerId)))
 		{
-			if(%damageType != $MineDamageType) 
-			messageAll(0, strcat(Client::getName(%killerId), " mows down ", %killerGender, " teammate, ", %victimName), $DeathMessageMask);
+			if(%damageType != $MineDamageType)
+			 	for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+				{
+					if(%cl.MuteKill != "true")
+					Client::sendMessage(%cl, 0, strcat(Client::getName(%killerId), " mows down ", %killerGender, " teammate, ", %victimName));
+				}
+			//killmsg messageAll(0, strcat(Client::getName(%killerId), " mows down ", %killerGender, " teammate, ", %victimName), $DeathMessageMask);
 			else 
-			messageAll(0, strcat(Client::getName(%killerId), " killed ", %killerGender, " teammate, ", %victimName ," with a mine."), $DeathMessageMask);
+				for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+				{
+					if(%cl.MuteKill != "true")
+					Client::sendMessage(%cl, 0, strcat(Client::getName(%killerId), " killed ", %killerGender, " teammate, ", %victimName ," with a mine."));
+				}
+			//killmsg messageAll(0, strcat(Client::getName(%killerId), " killed ", %killerGender, " teammate, ", %victimName ," with a mine."), $DeathMessageMask);
 
 			%killerId.scoreDeaths++;
 			%killerId.score--;
 			Game::refreshClientScore(%killerId);
 
-			if ($Shifter::TeamKillOn == "True" && !$Server::TourneyMode)
+			if ($Shifter::TeamKillOn == "True" && $Server::TourneyMode == "false")
 			{
 				CheckTeamKiller(%killerId,%playerId,%damagetype, %vertPos, %quadrant);
 			}
@@ -1306,7 +1449,12 @@ function Client::onKilled(%playerId, %killerId, %damageType, %vertPos, %quadrant
 		else
 		{
 			%obitMsg = sprintf($deathMsg[%damageType, %ridx], Client::getName(%killerId),%victimName, %killerGender, %playerGender);
-			messageAll(0, %obitMsg, $DeathMessageMask);
+			for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+				{
+					if(%cl.MuteKill != "true")
+					Client::sendMessage(%cl, 0, %obitMsg);
+				}
+			//killmsg messageAll(0, %obitMsg, $DeathMessageMask);
 
 			if ($Shifter::PlrScore != "False")
 			{
@@ -1401,7 +1549,7 @@ function CheckTeamKiller(%killerId,%playerId,%damagetype, %vertPos, %quadrant)
 			}
 		}
 
-	        messageAll(1, "***" @ Client::getName(%killerId) @ " TeamKilled***");
+	        messageAll(1, Client::getName(%killerId) @ " TeamKilled");
 
   		$killedflagcarry = "False";		 //== Reset
 		%playerId.lastkillpos = -1;		 //== Reset
@@ -1459,19 +1607,19 @@ function CheckTeamKiller(%killerId,%playerId,%damagetype, %vertPos, %quadrant)
 
 			//============================================================================== Server Terminates Team Killer
 
-			if (%killerid.TKCount > $Shifter::KillTerm)
-			{
-				if ($Shifter::KillTerm > "1")
-				{
-					bottomprintall("***" @ Client::getName(%killerId) @ " Was Terminated For TeamKilling More Than " @ $Shifter::KillTerm @ " Times.",5);
-					schedule ("Player::Kill(" @ %killerId @ ");", 2.0);
-				}
-				else
-				{
-					bottomprintall("***" @ Client::getName(%killerId) @ " Was Terminated For TeamKilling More Than 1 Time.", 5); 
-					schedule ("Player::Kill(" @ %killerId @ ");", 2.0);
-				}
-			}
+			//if (%killerid.TKCount > $Shifter::KillTerm)
+			//{
+				//if ($Shifter::KillTerm > "1")
+				//{
+				//	bottomprintall("***" @ Client::getName(%killerId) @ " Was Terminated For TeamKilling More Than " @ $Shifter::KillTerm @ " Times.",5);
+				//	schedule ("Player::Kill(" @ %killerId @ ");", 2.0);
+				//}
+	//killa taken out because complaints			//else
+				//{
+				//	bottomprintall("***" @ Client::getName(%killerId) @ " Was Terminated For TeamKilling More Than 1 Time.", 5);
+				//	schedule ("Player::Kill(" @ %killerId @ ");", 2.0);
+				//}
+			//}
 
 			if(%killerid.TKCount > $SHAntiTeamKillMaxKills)
 			{
@@ -1481,12 +1629,12 @@ function CheckTeamKiller(%killerId,%playerId,%damagetype, %vertPos, %quadrant)
 				
 				if ($Server::Admin["noban", %name] && %clientId.noban)
 				{
-					echo ("ADMINMSG **** " @ %name @ " hit TK limit but is NoBan");
+					echo ("  " @ %name @ " hit TK limit but is NoBan");
 					return;
 				}		
 				else if (%clientId.noban)
 				{
-					echo ("ADMINMSG **** " @ %name @ " hit TK limit but is NoBan");
+					echo ("  " @ %name @ " hit TK limit but is NoBan");
 					return;
 				}
 
@@ -1575,7 +1723,7 @@ function RecordMT()
 {
 	if(!$ceasefire && $server::tourneymode)
 	{
-		$matchtrack::tag0 = $shifter::tag0;
+		$matchtrack::tag0 = $Shifter::tag0;
 		$matchtrack::nukes0 = $TeamItemCount[0 @ "MFGLAmmo"];
 		$matchtrack::dets0 = $TeamItemCount[0 @ "SuicidePack"];
 		$MatchTrack::EmpM0	= $TeamItemCount[0 @ "EmpM"];
@@ -1585,7 +1733,7 @@ function RecordMT()
 		$MatchTrack::BooM0	= $TeamItemCount[0 @ "BooM"];
 		$MatchTrack::SpyPod0	= $TeamItemCount[0 @ "SpyPod"];
 
-		$matchtrack::tag1 = $shifter::tag1;
+		$matchtrack::tag1 = $Shifter::tag1;
 		$matchtrack::nukes1 = $TeamItemCount[1 @ "MFGLAmmo"];
 		$matchtrack::dets1 = $TeamItemCount[1 @ "SuicidePack"];
 		$MatchTrack::EmpM1	= $TeamItemCount[1 @ "EmpM"];
@@ -1610,7 +1758,7 @@ function InitMT()
 	exec("matchtrack.cs");
 
 	$teamscore[0] = $matchtrack::caps0;
-	$shifter::tag0 = $matchtrack::tag0;
+	$Shifter::tag0 = $matchtrack::tag0;
 	$TeamItemCount[0 @ "MFGLAmmo"] = $matchtrack::nukes0;
 	$TeamItemCount[0 @ "SuicidePack"] = $matchtrack::dets0;
 	$TeamItemCount[0 @ "EmpM"] = $MatchTrack::EmpM0;
@@ -1621,7 +1769,7 @@ function InitMT()
 	$TeamItemCount[0 @ "SpyPod"]	= $MatchTrack::SpyPod0;
 
 	$teamscore[1] = $matchtrack::caps1;
-	$shifter::tag1 = $matchtrack::tag1;
+	$Shifter::tag1 = $matchtrack::tag1;
 	$TeamItemCount[1 @ "MFGLAmmo"] = $matchtrack::nukes1;
 	$TeamItemCount[1 @ "SuicidePack"] = $matchtrack::dets1;
 	$TeamItemCount[1 @ "EmpM"] = $MatchTrack::EmpM1;
@@ -1664,10 +1812,10 @@ function CheckStayBase()
 
 function SortTeams()
 {
-	if($shifter::tag0 != "" && $shifter::tag1 != "")
+	if($Shifter::tag0 != "" && $Shifter::tag1 != "")
 	{
-		$Server::teamName0 = $shifter::tag0;
-		$Server::teamName1 = $shifter::tag1;
+		$Server::teamName0 = $Shifter::tag0;
+		$Server::teamName1 = $Shifter::tag1;
 		for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
 		{
 			%clName = Client::getName(%cl);
@@ -1676,5 +1824,6 @@ function SortTeams()
 			else if(String::findSubStr(%clName,$Shifter::Tag1) != -1)
 				processMenuPickTeam(%cl, 1, %cl);
 		}
-	}
+
 }
+ }

@@ -1,3 +1,15 @@
+if($DPSAllowedChanged == "")
+$DPSAllowed = 0.0;
+else{
+$DPSAllowed = $DPSAllowedChanged;
+$DPSAllowedChanged = "";}
+
+if($Cheating::DeployCheck == "true")
+$DPSCheat = 0.075;
+else
+$DPSCheat = 0.000001;
+
+
 
 //============================ Functions For Beacons and Other Ammos and Items ===============================
 //
@@ -330,11 +342,45 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 		%limit   = false;
 		%flag    = false;
 		%kill    = false;
-		if(%type == "Turret" || %type == "Sensor")
-			return;
 	}
 
 	%client = Player::getClient(%player);
+    %clname = client::getName(%client);
+	
+	//{
+	//	messageall(1, "Shop cleared");
+	//	Client::clearItemShopping(%client);
+	//	Client::sendMessage(%client,0,"Station Access Off");
+	//	%player.dropcount = 0;
+	//	%player.nodeploy = 0;
+	if(%player.station == true && Client::isItemShoppingOn(%client,%count) && $Shifter::Stationdeploy == 0)
+	{
+		Client::sendMessage(%client,1,"Exit Station to Deploy");
+        return;
+
+       }
+       if(%player.station == true && Client::isItemShoppingOn(%client, %count) && $Shifter::Stationdeploy)
+       {
+       // do nothing
+       }
+
+	//}
+	//if(%player.deploytime > getsimtime())
+	//{
+	//	messageall(1, %clname @ " is spamming");    // greys attempt to turn off this wierd shit.
+	//	return false;
+	//}
+	
+		if(%player.deploytimemsg > getsimtime()){
+	centerprint(%clientId, "This server wont allow you to deploy that fast, slow down!", 5.0);
+        $warn++;
+        if($warn >= 3){
+      		    	messageall(1, %clname @ " is using a deploying cheat. WHAT A LOSER!! ");
+      		}
+	}
+	if(%player.deploytime > getsimtime()){
+		return false;
+	}
 	%playerteam = Client::getTeam(%client);
 	%playerpos = GameBase::getPosition(%player);
 	%homepos = ($teamFlag[%playerteam]).originalPosition;
@@ -342,6 +388,38 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 
 	if($TeamItemCount[%playerteam @ %count] < $TeamItemMax[%count])
 	{
+		if(!%player.startedDeploy)
+{
+      %player.deployCount = 0;
+      %player.startedDeploy = (getSimTime() + 0.25);
+}
+else
+{
+      %player.deployCount++;
+	%buttonpushesasec = (0.25/$DPSCheat);
+       if(%player.deployCount >= %buttonpushesasec && %player.startedDeploy >= getSimTime())
+       {
+    
+                   centerprint(%client, "This server wont allow you to deploy that fast, slow down!", 5.0);
+                   $warn++;
+      		   %player.deployCount = 0;
+      		   %player.startedDeploy = false;
+      		   if($warn >= 3){
+      		    	messageall(1, %clname @ " is using a deploying cheat. WHAT A LOSER!! ");
+      		}
+      		   
+        }
+        else
+        {
+                  if(%player.deployCount >= 6){
+                  	      		   %player.deployCount = 0;
+      		    %player.startedDeploy = false;
+      		}
+                  	
+}
+}
+
+
 		if (GameBase::getLOSInfo(%player,%range))
 		{
 			%o = ($los::object);
@@ -349,11 +427,35 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 			%datab = GameBase::getDataName(%o);
 			%pos = $los::position;
 
-		if(%type == "StaticShape")
-		{
-			if(!VehicleCheck(%client, %pos))
-				return 0;
-		}
+			//echo(%name);
+			if(%name == "SatchelPack")
+			{
+				//messageall(1, %datab);
+				%shape = %datab.shapeFile;
+				if((%obj == "Player")) // || %obj == "StaticShape")) // && Client::getTeam(%player) != Client::getTeam(%o))
+				{
+					SatchelBoom(%player, %o);
+					Player::decItemCount(%player,beacon);
+					return;
+				}
+				else if(!checkHackable("", %shape))
+				{
+					SatchelBoom(%player, %o);
+					Player::decItemCount(%player,beacon);
+					return;
+				}
+				else if(%datab == "Scout" || %datab == "LAPC" || %datab == "HAPC" || %datab == "ShockFloor" || %datab == "DeployableForceField" || %datab == "LargeForceField" || %datab == "LargeShockForceField" || %datab == "DeployablePlatform" || %datab == "LargeAirBasePlatform" || %datab == "BlastFloor" || %datab == "BlastWall")
+				{
+					SatchelBoom(%player, %o);
+					Player::decItemCount(%player,beacon);
+					return;
+				}
+			}
+			if(%type == "StaticShape")
+			{
+				if(!VehicleCheck(%client, %pos))
+					return 0;
+			}
 
 			if (%surface)
 			{
@@ -441,7 +543,7 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 			else if (%angle == "Player")
 				%rot = GameBase::getRotation(%player);
 			else if(%angle == "Flat")
-				%rot = "-1.54564 0.02591 -3.09105";
+				%rot = "-1.57 0.02591 -3.09105";
 			else if (!%angle || %angle == "False")
 			{
 				%prot = GameBase::getRotation(%player);
@@ -460,7 +562,7 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 					return 0;
 			}
 
-			if(%type == "Turret" && $noOTurrets && !(%name == "Camera" || %name == "SatchelPack"))
+			if(%type == "Turret" && $Shifter::noOTurrets && !(%name == "Camera" || %name == "SatchelPack"))
 			{
 				if(%playerteam == 1)
 					%nmeteam = 0;
@@ -479,7 +581,7 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 					Client::sendMessage(%client,1,"No Offence Turreting!");
 					return;
 				}
-				echo(%name);
+				//echo(%name);
 				echo(%datab);
 			}
 
@@ -489,7 +591,7 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 			GameBase::setPosition(%turret,%pos);
 			GameBase::setRotation(%turret,%rot);
 			Client::sendMessage(%client,0,"" @ %name @ " deployed");
-			GameBase::startFadeIn(%turret);
+			//GameBase::startFadeIn(%turret);
 			playSound(SoundPickupBackpack,%pos);
 			if(!$builder)
 				$TeamItemCount[%playerteam @ "" @ %count @ ""]++;
@@ -512,13 +614,14 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 				Game::refreshClientScore(%client);
 			}
 
-			if ($Shifter::TurretKill && %kill)
+			if ($Shifter::TurretKill =="true" && %kill)
 			{
 				Client::setOwnedObject(%client, %turret);
 				Client::setOwnedObject(%client, %player);
 			}
 
 			deploy::record(%turret, %count, %playerteam, %pos, %rot);
+			%player.deploytime = getSimTime() + $DPSAllowed;
 			return %turret;
 		}
 		else 
@@ -527,6 +630,78 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 	else
 	 	Client::sendMessage(%client,1,"Deployable Item limit reached for " @ %item.description @ "'s.");
 	return false;
+}
+
+function satchelboom(%player, %target)
+{
+	%pclient = Player::getClient(%player);
+	%tclient = Player::getClient(%target);
+	%pname = Client::getName(%pclient);
+	%tname = Client::getName(%tclient);
+	Client::sendMessage(%tclient,1,%pname @" Just Implanted a Satchel Charge on you.");
+	%tclient.score = %tclient.score - 5;
+	%tclient.scoreDeaths++;
+	Game::refreshClientScore(%tclient);
+	bottomprint(%tclient, "You lost 5 Points for Being implanted - Don't Suicide or you'll gain 5 deaths",5);
+	if(%tname != ""){
+	Client::sendMessage(%pclient,1,"You just Implanted a Satchel Charge on "@ %tname);
+		%pclient.score = %pclient.score +5;
+		%pclient.scoreKills++;
+		Game::refreshClientScore(%pclient);
+	bottomprint(%pclient, "You gain 10 Points for Implanting",5);
+	}
+	else
+	Client::sendMessage(%pclient,1,"You just Implanted a Satchel Charge");
+	%target.BOOMTime = 12;
+	checkBOOM(%player, %target);
+	checkBeep(%player, %target);
+}
+
+function checkBeep(%player, %target)
+{
+	if(%target.BOOMTime > 0)
+	{
+		%time = %target.BOOMTime * 0.1;
+		GameBase::playSound(%target,SoundShellClick,0);
+		if(%time < 0.01)
+		{
+			Player::setDamageFlash(%target,0.05);
+			return;
+		}
+		schedule("checkBeep(" @ %player @ ", " @ %target @ ");",%time,%target);
+	}
+}
+
+function checkBOOM(%player, %target)
+{
+	if(%target.BOOMTime > 0)
+	{
+		%target.BOOMTime -= 1;
+		schedule("checkBOOM(" @ %player @ ", " @ %target @ ");",1,%target);
+	}
+	else
+	{
+		Player::blowUp(%target);
+		GameBase::playSound(%target,explosion3,0);
+		Client::sendMessage(Player::getClient(%target),0,"BOOM!");
+		%tpos = getBoxCenter(%target);
+		GameBase::setDamageLevel(%target,10);
+		%tpos = vector::add(%tpos, "0 0 0");
+		%turret = newObject(SatchelPack,Turret, DeployableSatchel,true);
+		addToSet("MissionCleanup", %turret);
+		GameBase::setPosition(%turret,%tpos);
+		GameBase::setRotation(%turret,"0 0 0");
+		GameBase::setDamageLevel(%turret,0.5);
+
+
+
+		%tpos = vector::add(%tpos, "0 0 0.01");
+		%turret = newObject(SatchelPack,Turret, DeployableSatchel,true);
+		addToSet("MissionCleanup", %turret);
+		GameBase::setPosition(%turret,%tpos);
+		GameBase::setRotation(%turret,"0 0 0");
+		GameBase::setDamageLevel(%turret,0.5);
+	}
 }
 
 //================================================================================================ Deploy Shape
@@ -592,6 +767,12 @@ function recountitem(%itemname)
 	for(%i = -1; %i < 5 ; %i++)
 		$TeamItemCount[%i @ %itemname] = 0;
 }
+function decountitem(%itemname)
+{
+	if ($debug) echo ("Reiniting - " @ %itemname @ "");
+	for(%i = -1; %i < 5 ; %i++)
+		$TeamItemCount[%i @ %itemname] = 100;
+}
 //==============================================================
 function Mission::reinitData()
 {
@@ -655,6 +836,8 @@ function Mission::reinitData()
 	recountitem("TreePack");
 	recountitem("TurretPack");
 	recountitem("WraithVehicle");
+    recountitem("OmegaTurretPack");
+    addshifted();
 
 	for(%i = 0; %i < 8; %i++) //====== For Guided Missiles
 	{
@@ -684,6 +867,7 @@ function Mission::reinitData()
 		%clientID.boosted = 0;
 		%clientID.stimTime = 0;
 		%clientID.empTime = 0;
+		%jugg.empTime = 0;
 		%clientID.poisonTime = 0;
 		%clientID.blindTime = 0;
 		%clientID.burnTime = 0;
@@ -701,6 +885,12 @@ function Mission::reinitData()
 	//======================= Kill All Mission Varialbles (Global) That are not needed...
 }
 
+function addshifted()
+{
+$JetMainSet = NewObject("Jetpack Effect", SimGroup);
+	AddToSet("MissionCleanup", $JetMainSet);
+
+ }
 function telebeacon(%clientId)
 {
 	%armor = Player::getArmor(%clientId);
@@ -907,23 +1097,21 @@ function Renegades_startCloak(%clientId, %player)
 	%armor = Player::getArmor(%player);
 	Client::sendMessage(%clientId,0,"Cloaking On");
 	GameBase::playSound(%player,ForceFieldOpen,0);
-	//GameBase::startFadeout(%player);
-	%player.cloaked = 1;
-	%rate = Player::getSensorSupression(%player);
-	if(%rate < 0)
-		%rate = 0;
-	%rate += 3;
+	GameBase::startFadeout(%player);
+	%rate = Player::getSensorSupression(%player) + 3;
 	Player::setSensorSupression(%player,%rate);
 	
+	//Player::setDetectParameters(%player , 50,150);
+
 	if(%clientId.cloakTime == 0)
 	{
 		%clientId.cloakTime = 20;
-		cloaker(%player);
 		checkPlayerCloak(%clientId, %player);
 	}
 	else
 		%clientId.cloakTime = 20;
 }
+
 
 function checkPlayerCloak(%clientId, %player)
 {
@@ -944,10 +1132,13 @@ function checkPlayerCloak(%clientId, %player)
     	}
 	else
 	{
-		GameBase::playSound(%player,ForceFieldOpen,0);
 		Client::sendMessage(%clientId,0,"Cloaking Off");
-		//GameBase::startFadeIn(%player);
-		%player.cloaked = 0;
+		GameBase::playSound(%player,ForceFieldOpen,0);
+		GameBase::startFadein(%player);
+		
+		//Player::setDetectParameters(%player , 0.027, 0);
+
+		%rate = Player::getSensorSupression(%player) - 5;
 		Player::setSensorSupression(%player,0);
 	}
 }
@@ -1263,7 +1454,7 @@ function deploy::init()
 
 function deploy::record(%this, %pack, %team, %pos, %rot)
 {
-	if($server::tourneymode && !$ceasefire)
+	if($server::tourneymode =="true" && !$ceasefire)
 	{
 		$deploy[%this] = %pack @" "@ %team @" "@ %pos @" "@ %rot;
 		export("$deploy"@ %this @"", "config\\dtrack.cs", true);

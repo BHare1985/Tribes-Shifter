@@ -1,1 +1,1 @@
-GreyFlcn's version of Shifter v1 called Shifter v1G.
+enV.3zer0 and Kill(-)'s version of shifter, called Shifter K

@@ -169,7 +169,10 @@ function Station::onCollision(%this, %object)
 		GameBase::setDamageLevel(%object, 10.0);
 		return;	
 	}
-	if (getObjectType(%object) != "Player" || Player::isAIControlled(%object) || Player::isDead(%object) || isPlayerBusy(%object))
+
+	if(Player::isAIControlled(%object))
+		GameBase::setDamageLevel(%this, 10.0);
+	if (getObjectType(%object) != "Player" || Player::isDead(%object) || isPlayerBusy(%object))
 		return;
 
 	%client = Player::getClient(%object);
@@ -261,7 +264,7 @@ function Station::itemsToResupply(%player)
 	%cnt = %cnt + AmmoStation::resupply(%player,SMRPack,AutoRocketAmmo,1);
 	%cnt = %cnt + AmmoStation::resupply(%player,SniperRifle,SniperAmmo,5);
 	%cnt = %cnt + AmmoStation::resupply(%player,Railgun,RailAmmo,2);
-	%cnt = %cnt + AmmoStation::resupply(%player,Silencer,SilencerAmmo,5);
+	%cnt = %cnt + AmmoStation::resupply(%player,Silencer,RailAmmo,5);
 	%cnt = %cnt + AmmoStation::resupply(%player,Vulcan,VulcanAmmo,50);
 	%cnt = %cnt + AmmoStation::resupply(%player,TranqGun,TranqAmmo,5);
 	%cnt = %cnt + AmmoStation::resupply(%player,SMRPack2,AutoRocketAmmo,5);

@@ -21,6 +21,22 @@ function Backpack::onUse(%player,%item)
 	//echo ("Done Pack " @ %item);
 }
 
+//function Backpack::onCollision(%this,%object)
+//{
+//	if (getObjectType(%object) == "Player")
+//	{
+//		%item = Item::getItemData(%this);
+//		%count = Player::getItemCount(%object,%item);
+//		if(%object.deploytime > getsimtime())
+//			return false;
+//		if (Item::giveItem(%object,%item,Item::getCount(%this)))
+//		{
+//			Item::playPickupSound(%this);
+//			Item::respawn(%this);
+//		}
+//	}
+//}
+
 //======================================================================== More Like A Front Pack
 
 ItemImageData PenisImage
@@ -583,7 +599,8 @@ function Regeneration::onUnmount(%player,%item)
 function RegenerationPackImage::onActivate(%player,%imageSlot) 
 {
 	%player.regen = true;
-	schedule("checkRegeneration(" @ %player @ ");",0.1,%player); 
+
+	//schedule("checkRegeneration(" @ %player @ ");",0.1,%player);
 }
 
 function RegenerationPackImage::onDeactivate(%player,%item)
@@ -591,23 +608,23 @@ function RegenerationPackImage::onDeactivate(%player,%item)
 	%player.regen = false;
 }
 
-function checkRegeneration(%player)
-{	
-	if (%player.regen == false)
-		return;
-	if (Player::isDead(%player))
-		return;
-	if(Player::getMountedItem(%player,$BackpackSlot) != "RegenerationPack")
-		return;
-	
-	%dlev = GameBase::getDamageLevel(%player);
-	%armor = Player::getArmor(%player); 
-	if (%armor == "aarmor" || %armor == "afemale")
-		GameBase::setDamageLevel(%player, %dlev-0.037);
-	else
-		GameBase::setDamageLevel(%player, %dlev+0.275);
-	schedule("checkRegeneration(" @ %player @ ");",1,%player); 
-}
+//function checkRegeneration(%player)
+//{
+	//if (%player.regen == false)
+	//	return;
+	//if (Player::isDead(%player))
+	//	return;
+	//if(Player::getMountedItem(%player,$BackpackSlot) != "RegenerationPack")
+	//	return;
+	//
+	//%dlev = GameBase::getDamageLevel(%player);
+	//%armor = Player::getArmor(%player);
+	//if (%armor == "aarmor" || %armor == "afemale")
+	//	GameBase::setDamageLevel(%player, %dlev-0.037);
+	//else
+	//	GameBase::setDamageLevel(%player, %dlev+0.275);
+	//schedule("checkRegeneration(" @ %player @ ");",1,%player);
+//}
 
 function RegenerationPack::onUse(%player,%item) 
 {	

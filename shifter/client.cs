@@ -463,7 +463,7 @@ function remoteMODInfo(%server, %modString)
       $ServerModInfo = %modString;
       if($ServerModInfo != "")
       {
-         Control::setValue(ModTextString, "<jc><f1>This Server Is Running Shifter : WWW.Dopplegangers.com/Tribes\n<f0>" @ %modString);
+         Control::setValue(ModTextString, "<jc><f1>This Server Is Running ShifterK : WWW.Dopplegangers.com/Tribes\n<f0>" @ %modString);
       }
    }
 }
@@ -707,12 +707,14 @@ function EnterLobbyMode()
 
 function ELM()
 {
-   if($playingDemo)
-   {
-      setCursor(MainWindow, "Cur_Arrow.bmp");
-      disconnect();
-      startMainMenuScreen();
-      GuiLoadContentCtrl(MainWindow, "gui\\Recordings.gui");
+	if($playingDemo)
+	{
+		disconnect();
+		$ConnectedToServer = FALSE;
+		purgeResources();
+		startMainMenuScreen();
+		setCursor(MainWindow, "Cur_Arrow.bmp");
+		GuiLoadContentCtrl(MainWindow, "gui\\Recordings.gui");
    }
    else
    {

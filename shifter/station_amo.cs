@@ -119,6 +119,27 @@ function AmmoStation::resupply(%player,%weapon,%item,%delta)
 }
 
 //----------------------------------------------------------------------------
+StaticShapeData DeployableAmmoStation21
+{
+	description = "Remote Ammo Unit";
+	shapeFile = "ammounit_remote";
+	className = "DeployableStation";
+	maxDamage = 500.0;
+	sequenceSound[0] = { "deploy", SoundActivateMotionSensor };
+	sequenceSound[1] = { "use", SoundUseAmmoStation };
+	sequenceSound[2] = { "power", SoundAmmoStationPower };
+	visibleToSensor = true;
+	shadowDetailMask = 4;
+	castLOS = true;
+	supression = false;
+	supressable = false;
+	mapFilter = 4;
+	mapIcon = "M_station";
+	debrisId = flashDebrisSmall;
+	damageSkinData = "objectDamageSkins";
+	explosionId = flashExpMedium;
+};
+
 StaticShapeData DeployableAmmoStation
 {
 	description = "Remote Ammo Unit";
@@ -164,3 +185,21 @@ function DeployableAmmoStation::onActivate(%this)
 	else
 	GameBase::setActive(%this,false);
 }
+function DeployableAmmoStation21::onAdd(%this)
+{
+	schedule("DeployableStation::deploy(" @ %this @ ");",1,%this);
+	if (GameBase::getMapName(%this) == "") 
+		GameBase::setMapName (%this, "R-Ammo Station");
+	%this.Energy = $RemoteAmmoEnergy;
+}
+
+function DeployableAmmoStation21::onActivate(%this)
+{
+	if(%this.deployed == 1)
+	{
+		GameBase::playSequence(%this,1,"use");
+		schedule("AmmoStation::onResupply(" @ %this @ ");",0.05,%this);
+	}
+	else 
+		GameBase::setActive(%this,false);
+		}

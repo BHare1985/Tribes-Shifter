@@ -72,7 +72,7 @@ function EvenTeams()
 	
 	if ($Shifter::FairTeams == "False" || $server::tourneymode)
 	{
-		echo("ADMINMSG: *** Fair Teams Is OFF");
+		echo("Fair Teams Is OFF");
 		return;
 	}
 
@@ -93,7 +93,7 @@ function EvenTeams()
 	SHResetStats();
 	DumpStats();
 
-	if($SHFairTeams == "")
+	if($SHFairTeams == "false")
 	{
 		return;
 	}
@@ -133,13 +133,13 @@ function EvenTeams()
 function CheckTeamsAreEven()
 {
 	
-	if (!$Shifter::FairTeams)
+	if ($Shifter::FairTeams=="false")
 	{
-		echo("ADMINMSG: *** Fair Teams Is OFF");
+		echo("Fair Teams Is OFF");
 		return;
 	}
 	
-	//echo("ADMINMSG: **** Shifter Is Checking For Even Teams");
+	//echo(" Shifter Is Checking For Even Teams");
 
 	if($SHAddOrder == "")
 		$SHAddOrder = 1;
@@ -156,7 +156,7 @@ function CheckTeamsAreEven()
 	}
 	SHResetStats();
 
-	if($SHFairTeams == "")
+	if($SHFairTeams == "false")
 	{
 		schedule("CheckteamsAreEven();",$Shifter::FairCheck);
 		return;
@@ -175,7 +175,7 @@ function CheckTeamsAreEven()
 					//processmenuPickTeam($SHMinTeamClient[%i],1-%i,"");
 					centerprint($SHMinTeamClient[%i],"<jc><j1>The teams are uneven, you must switch.", 15);
 					bottomprintall( Client::getName($SHMinTeamClient[%i]) @ " needs to switch sides to even the teams.", 10); 
-					echo("ADMINMSG: **** " @ Client::getName($SHMinTeamClient[%i]) @ " needs to switch sides to even the teams. ***"); 
+					echo("" @ Client::getName($SHMinTeamClient[%i]) @ " needs to switch sides to even the teams. ***"); 
 					schedule("CheckteamsAreEven();",$Shifter::FairCheck);
 					schedule("eventeams();",$Shifter::FairEvens);
 					return;
@@ -185,7 +185,7 @@ function CheckTeamsAreEven()
 					//processMenuPickTeam($SHMinTeamClient[%i],-2,"");
 					centerprint($SHMinTeamClient[%i],"<jc><j1>The teams are uneven, you must switch.", 15);
 					bottomprintall( Client::getName($SHMinTeamClient[%i]) @ " needs to switch sides to even the teams.", 10); 
-					echo("ADMINMSG: **** " @ Client::getName($SHMinTeamClient[%i]) @ " needs to switch sides to even the teams. ***"); 
+					echo("" @ Client::getName($SHMinTeamClient[%i]) @ " needs to switch sides to even the teams. ***"); 
 					schedule("eventeams();",$Shifter::FairEvens);
 				}
 
@@ -195,7 +195,7 @@ function CheckTeamsAreEven()
 				//processMenuPickTeam($SHMinTeamClient[%i],-2,"");
 				centerprint($SHMinTeamClient[%i],"<jc><j1>The teams are uneven, you must switch.", 15);
 				bottomprintall( Client::getName($SHMinTeamClient[%i]) @ " needs to switch sides to even the teams.", 10); 
-				echo("ADMINMSG: **** " @ Client::getName($SHMinTeamClient[%i]) @ " needs to switch sides to even the teams. ***"); 
+				echo("" @ Client::getName($SHMinTeamClient[%i]) @ " needs to switch sides to even the teams. ***"); 
 				schedule("eventeams();",$Shifter::FairEvens);
 			}
 		}
@@ -203,13 +203,27 @@ function CheckTeamsAreEven()
 	schedule("CheckteamsAreEven();",$Shifter::FairCheck);
 }
 
-if ($Shifter::FairTeams)
+if ($Shifter::FairTeams=="true")
 {
 	if ($Shifter::FairCheck > 0) schedule("CheckteamsAreEven();",$Shifter::FairCheck);
 	if ($Shifter::FairEvens > 0) schedule("EvenTeams();",$Shifter::FairEvens);
-	$SHFairTeams = 1;
+	$SHFairTeams = "true";
 	echo($modmgtModName @ " v" @ $modmgtModVers @ " loaded");
 }
+else
+{
+$SHFairTeams = "false";
+}	
+echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");echo("");
+echo("        ____   _      _  __   _                k");
+echo("       |  __| | |___ (_)|  | | |_  ____  _ __  kk");
+echo("       |_|__  |  _  || || |_ | __||  _ || '__| kk  kk");
+echo("        __| | | | | || ||  _|| |_ |  __|| |    kk kk");
+echo("       |____| |_| |_||_||_|  |___||___| |_|    kkkk");
+echo("                                               kkkkk");
+echo("              Loading ShifterK  :)             kk  kk");
+echo("              " @ $killa::newdate @ "                       kk   kk");
+echo("              Modded by: KiLL(--), enV.3zer0, Czar, Gonzo, and Grey");
 echo("");
-echo("                   Loading Shifter_v1G " @ $greyflcn::newdate);
-echo("");
+if($server::tourneymode == "true")
+echo("Tournament Mode is Enabled");

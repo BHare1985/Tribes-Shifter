@@ -368,9 +368,9 @@ MineData Detbomb
 	shadowDetailMask = 0;
 	explosionId = flashExpLarge;
 	explosionRadius = 3.0;
-	damageValue = 0.5;
-	damageType = $EnergyDamageType;
-	kickBackStrength = 700;
+	damageValue = 0.75;
+	damageType = $FlashDamageType;
+	kickBackStrength = 200;
 	triggerRadius = 2.0;
 	maxDamage = 8.0;
 };
@@ -378,7 +378,7 @@ MineData Detbomb
 function Detbomb::onAdd(%this)
 {
 	%data = GameBase::getDataName(%this);
-	schedule("Mine::Detonate(" @ %this @ ");",10.0,%this);
+	schedule("Mine::Detonate(" @ %this @ ");",1.5,%this);
 }
 
 function Detbomb::onDestroyed(%this)

@@ -1,4 +1,8 @@
 // TURRET DYNAMIC DATA
+
+
+
+
 //=============================================================================================================================
 TurretData PlasmaTurret
 {
@@ -502,6 +506,7 @@ function DeployableLaser::onEnabled(%this)
 }	
 
 //========================================================================================================= Laser Mine
+
 TurretData DeployableLaserM
 {
 	className = "Turret";
@@ -694,7 +699,7 @@ function DeployableSatchel::onCollision(%this,%object)
 
 function DeployableSatchel::onFire(%this)
 {
-	GameBase::applyRadiusDamage($MineDamageType, getBoxCenter(%this), 20, 5.2, 305, %this);
+	GameBase::applyRadiusDamage($MineDamageType, getBoxCenter(%this), 1.5, 5.2, 305, %this);
 }
 
 function DeployableSatchel::onAdd(%this)
@@ -720,7 +725,7 @@ function DeployableSatchel::onEndSequence(%this,%thread)
 
 function DeployableSatchel::onControl(%this)
 {
-	GameBase::applyRadiusDamage($DebrisDamageType, getBoxCenter(%this), 20, 5.2, 305, %this);
+	GameBase::applyRadiusDamage($DebrisDamageType, getBoxCenter(%this), 1.101, 5.2, 305, %this);
 }
 
 function DeployableSatchel::onDestroyed(%this)
@@ -728,7 +733,7 @@ function DeployableSatchel::onDestroyed(%this)
 	%this.shieldStrength = 0;
 	GameBase::setRechargeRate(%this,0);
 	Turret::onDeactivate(%this);
-	GameBase::applyRadiusDamage($DebrisDamageType, getBoxCenter(%this), 20, 5.2, 305, %this);
+	GameBase::applyRadiusDamage($DebrisDamageType, getBoxCenter(%this), 1.101, 5.2, 305, %this);
 
 	//CalcRadiusDamage(%this,$DebrisDamageType,30,0.2,25,20,20,1.5,0.5,200,100);
   	$TeamItemCount[GameBase::getTeam(%this) @ "SatchelPack"]--;
@@ -1212,7 +1217,7 @@ function EMPBeacon::checkEMPBeacon(%this)
 		}
 		else if(%obj != %this && GameBase::getTeam(%obj) != GameBase::getTeam(%this))
 		{
-			GameBase::applyDamage(%obj,$FlashDamageType, 0.01,GameBase::getPosition(%obj),"0 0 0","0 0 0",%this);		
+			GameBase::applyDamage(%obj,$ShockDamageType, 0.01,GameBase::getPosition(%obj),"0 0 0","0 0 0",%this);		
 			schedule ("playSound(TargetingMissile,GameBase::getPosition(" @ %obj @ "));",0.1);
 		}
 	}
@@ -1362,7 +1367,7 @@ function JammerBeacon::checkJammerBeacon(%this)
 				%trans =  %rot @ " " @ %dir @ " " @ %dir @ " " @ gamebase::getposition(%obj);
 				%fired = Projectile::spawnProjectile(DeadRocket, %trans ,%obj,%vel);
 				GameBase::setDamageLevel(%obj, 1000);
-				GameBase::applyDamage(%this, $ImpactDamageType, 0.10,GameBase::getPosition(%obj),"0 0 0","0 0 0",%obj);
+				GameBase::applyDamage(%this, $ImpactDamageType, 0.075,GameBase::getPosition(%obj),"0 0 0","0 0 0",%obj);
 			}
 		}
 	}
@@ -1479,7 +1484,7 @@ function Turret::onDestroyed(%this)
 function Turret::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
 {	
 	if(%type == $GravDamageType)return;
-	if (%type == $FlashDamageType)
+	if (%type == $FlashDamageType || %type == $ShockDamageType)
 	{
 		%value = (%value * 0.50);
 		%energy = (GameBase::getEnergy(%this) - 50);
@@ -1911,4 +1916,80 @@ function DeployableLaserM2::onEnabled(%this)
 	GameBase::setRechargeRate(%this,3);
 	GameBase::setActive(%this,true);
 }	
+
+TurretData DeployableGMine
+{
+	className = "Turret";
+	shapeFile = "camera";
+	projectileType = GMineCharge;
+	maxDamage = 0.75;
+	maxEnergy = 55;
+	minGunEnergy = 10;
+	maxGunEnergy = 60;
+	sequenceSound[0] = { "deploy", SoundActivateMotionSensor };
+	reloadDelay = 150.0;
+	speed = 4.0;
+	speedModifier = 1.5;
+	range = 35;
+	visibleToSensor = flase;
+	shadowDetailMask = 4;
+	dopplerVelocity = 0;
+	castLOS = true;
+	supression = false;
+	mapFilter = 2;
+	mapIcon = "M_turret";
+	debrisId = flashDebrisMedium;
+	shieldShapeName = "shield";
+	fireSound = SoundFireLaser;
+	activationSound = SoundRemoteTurretOn;
+	deactivateSound = SoundRemoteTurretOff;
+	explosionId = flashExpMedium;
+	description = "Point Defense Grav Mine";
+	damageSkinData = "objectDamageSkins";
+};
+
+function DeployableGMine::onAdd(%this)
+{
+		DeployableGMine::deploy(%this);
+		GameBase::setEnergy(%this, 55);
+
+	GameBase::setRechargeRate(%this,0.0);
+	%this.shieldStrength = 0;
+}
+
+function DeployableGMine::onCollision(%this,%object)
+{
+//	%type = getObjectType(%object);
+//	%data = GameBase::getDataName(%this);
+//	if ((%type == "Player" || %data == AntipersonelMine || %data == Vehicle || %type == "Moveable") &&
+//			GameBase::isActive(%this)
+//			&& (GameBase::getTeam(%this)!=GameBase::getTeam(%object)) //no teamdmg
+//			)
+//		GameBase::setDamageLevel(%this, %data.maxDamage);
+}
+
+function DeployableGMine::deploy(%this)
+{
+	schedule("deleteobject(" @ %this @ ");",$Shifter::GMineLive,%this);
+	GameBase::playSequence(%this,1,"deploy");
+}
+
+function DeployableGMine::onEndSequence(%this,%thread)
+{
+	GameBase::setActive(%this,true);
+}
+
+function DeployableGMine::onDestroyed(%this)
+{
+	GameBase::setDamageLevel(%this, %data.maxDamage);
+	Turret::onDestroyed(%this);
+}
+
+function DeployableGMine::onPower(%this,%power,%generator) {}
+
+function DeployableGMine::onEnabled(%this)
+{
+	GameBase::setRechargeRate(%this,3);
+	GameBase::setActive(%this,true);
+}
 

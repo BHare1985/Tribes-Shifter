@@ -123,6 +123,7 @@ function varValue::onAction()
 
 function NewMission::create()
 {
+   //$server::tourneymode = false;
    focusClient();
    disconnect();
    

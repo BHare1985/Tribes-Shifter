@@ -56,9 +56,11 @@ function CopyDamageRatio(%armor1, %armor2)
 
 //===== Arbitor Armor
 $DamageScale[aarmor,	$BlasterDamageType] 	= 0.5;
+$DamageScale[aarmor,	$BulletDamageType] = 1.4;
 $DamageScale[aarmor,	$ElectricityDamageType] = 0.2;
 $DamageScale[aarmor,	$EnergyDamageType] 	= 0.15;
 $DamageScale[aarmor,	$FlashDamageType] 	= 0.5;
+$DamageScale[aarmor,	$ShockDamageType] 	= 0.5;
 $DamageScale[aarmor,	$IDamageType] 	 	= 0.7;
 $DamageScale[aarmor,	$ImpactDamageType] 	= 0.4;
 $DamageScale[aarmor,	$LandingDamageType] 	= 0.1;
@@ -116,6 +118,7 @@ CopyDamageRatio(dmarmor, dmfemale);
 //===== Engineer Armor
 $DamageScale[earmor,	$EqualizerDamageType] 	 = 0.7;
 $DamageScale[earmor,	$FlashDamageType] = 0.7;
+$DamageScale[earmor,	$ShockDamageType] 	= 0.7;
 $DamageScale[earmor,	$IDamageType] 	 = 0.7;
 CopyDamageRatio(earmor, efemale);
 
@@ -125,6 +128,8 @@ $DamageScale[larmor,	$BulletDamageType] = 1.2;
 $DamageScale[larmor,	$DebrisDamageType] = 1.2;
 $DamageScale[larmor,	$EnergyDamageType] = 1.3;
 $DamageScale[larmor,	$IDamageType]	 = 0.7;
+$DamageScale[larmor,	$LaserDamageType] 	= 0.4;
+$DamageScale[larmor,	$Laser2DamageType] 	= 0.4;
 $DamageScale[larmor,	$MineDamageType] = 1.2;
 $DamageScale[larmor,	$MortarDamageType] = 1.3;
 $DamageScale[larmor,	$ShrapnelDamageType] = 1.2;
@@ -181,12 +186,13 @@ $DamageScale[jarmor,	$CrushDamageType] = 0.6;
 $DamageScale[jarmor,	$ElectricityDamageType] = 1.2;
 $DamageScale[jarmor,	$EnergyDamageType] = 1.3;
 $DamageScale[jarmor,	$FlashDamageType] = 1.5;
+$DamageScale[jarmor,	$ShockDamageType] 	= 1.5;
 $DamageScale[jarmor,	$IDamageType] 	 = 0.7;
 $DamageScale[jarmor,	$ImpactDamageType] = 0.5;
 $DamageScale[jarmor,	$LandingDamageType] = 0.2;
 $DamageScale[jarmor,	$LaserDamageType] = 0.5;
 $DamageScale[jarmor,	$Laser2DamageType] = 0.5;
-$DamageScale[jarmor,	$PlasmaDamageType] = 2.0;
+$DamageScale[jarmor,	$PlasmaDamageType] = 1.0;
 $DamageScale[jarmor,	$BoomStickDamageType] 	= 1.2;
 $DamageScale[jarmor,	$HBlasterDamageType] 	= 1.1;
 

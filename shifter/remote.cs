@@ -67,7 +67,7 @@ function remoteScoresOff(%clientId)
 
 function remoteToggleCommandMode(%clientId)
 {
-	if($Server::TourneyMode && (!$matchStarted || $matchStarting))
+	if($Server::TourneyMode =="true" && (!$matchStarted || $matchStarting) || %clientId.duelcountdown == "true")
 	{
 		bottomprint(%clientId, "<jc><f0>That command is only available when playing the match", 15);
 		return;
@@ -106,28 +106,47 @@ function remoteToggleObjectivesMode(%clientId)
 //========================================================================================== On Kill Self
 function remoteKill(%client)
 {
+//envduel-s
+		if(%client.dueling){
+		return;
+	}
+	//envduel-f
 	if ($Shifter::SuicideTimer)
-	{
 		schedule("remoteKilldone(" @ %client @ ");", $Shifter::SuicideTimer, %client);
-	}
 	else
-	{
 		remoteKilldone(%client);
-	}
 }
 
 function remoteKilldone(%client)
 {
-	if($Server::TourneyMode && $matchStarting)
+	
+	if($Server::TourneyMode =="true" && $matchStarting)
 		return;
 
 	%player = Client::getOwnedObject(%client);
+	if(%player.BOOMtime || %client.poisonTime)
+	{
+		bottomprint(%client, "Ha! You can't suicide now - 5 Deaths have just been added.",5);
+		%client.scoreDeaths = (%client.scoreDeaths + 5);
+		playVoice(%client, "help");
+		return;
+	}
+	if(%client.isAFK == "true" || %client.possessing == "true" || %client.possessed == "true" || %client.dan == "true"){
+		bottomprint(%client, "Ha! You can't suicide now",5);
+		playVoice(%client, "help");
+		return;
+	}
+
 	%armor = Player::getArmor(%client);
 	
 	if (%client.holo)
 	{	%holopl = Client::GetOwnedObject(%client);
-		if(Player::isAiControlled(%client.holo)) remotekill(%client.holo);
-		else %client.holo = -1;
+		if(Player::isAiControlled(%client.holo))
+      {
+       remotekill(%client.holo);
+       }
+	else %client.holo = -1;
+
 	}
 
 	if(%armor == parmor)
@@ -183,33 +202,33 @@ function login(%clientId, %password)
 	%name = Client::getName(%clientId);
 	%addr = Client::getTransportAddress(%clientId);
 
-	echo ("ADMINMSG: **** Player " @ %name @ " is attempting to use Admin Login - IP = " @ Client::getTransportAddress(%clientId) @ " - Checking Password.");
+	//echo (" Player " @ %name @ " is attempting to use Admin Login - IP = " @ Client::getTransportAddress(%clientId) @ " - Checking Password.");
 
 	if ($Server::Admin["sadpw", %name] == "")
 	{
-		echo("ADMINMSG: **** Auto - Admining Failed : " @ %clientId @ " - " @ %name @ " - " @ %addr @ " Client Has No SAD Password.");
+		//echo(" Auto - Admining Failed : " @ %clientId @ " - " @ %name @ " - " @ %addr @ " Client Has No SAD Password.");
 	}
 	else if(%password == $Server::Admin["sadpw", %name])
 	{
-		echo("ADMINMSG: **** SAD - Admining: " @ %clientId @ " \"" @ escapeString(Client::getName(%clientId)) @ "\" " @ Client::getTransportAddress(%clientId));
+		//echo(" SAD - Admining: " @ %clientId @ " \"" @ escapeString(Client::getName(%clientId)) @ "\" " @ Client::getTransportAddress(%clientId));
 
 		if ($Server::Admin["admin", %name])
 		{
-			echo("ADMINMSG: **** Auto - Admining: " @ %clientId @ " - " @ %name @ " - " @ %addr @ " Normal-Admin");
+			//echo(" Auto - Admining: " @ %clientId @ " - " @ %name @ " - " @ %addr @ " Normal-Admin");
 			schedule ("BottomPrint( " @ %clientid @ ",\"<F1><jc>You have been Auto-Admined\",5);",3);
 			%clientId.isAdmin = true;
 			%clientId.isSuperAdmin = false;
 		}
 		if ($Server::Admin["super", %name])
 		{
-			echo("ADMINMSG: **** Auto - Admining: " @ %clientId @ " - " @ %name @ " - " @ %addr @ " Super-Admin");
+			echo(" Auto - Admining: " @ %clientId @ " - " @ %name @ " - " @ %addr @ " Super-Admin");
 			schedule ("BottomPrint( " @ %clientid @ ",\"<F1><jc>You have been Auto-SuperAdmined\",5);",5);
 			%clientId.isAdmin = true;
 			%clientId.isSuperAdmin = true;
 		}
 		if ($Server::Admin["noban", %name])
 		{
-			echo("ADMINMSG: **** No Banning : " @ %clientId @ " - " @ %name @ " - " @ %addr @ ".");
+			//echo(" No Banning : " @ %clientId @ " - " @ %name @ " - " @ %addr @ ".");
 			schedule ("BottomPrint( " @ %clientid @ ",\"<F1><jc>You have been added to the NoBan List, Dont Get Cocky!!!\",5);",8);
 			%clientId.noban = 1;
 		}
@@ -224,7 +243,7 @@ function login(%clientId, %password)
 	}
 	else
 	{
-		echo("ADMINMSG: **** AutoAdmining Failed : " @ %clientId @ " - " @ %name @ " - " @ %addr @ " Password Failed " @ %clientId.hackattempt @ " times.");
+		//echo(" AutoAdmining Failed : " @ %clientId @ " - " @ %name @ " - " @ %addr @ " Password Failed " @ %clientId.hackattempt @ " times.");
 		%clientId.hackattempt++;
 	}
 	
@@ -262,7 +281,7 @@ function remoteAdminPassword(%clientId, %password)
 {
 	%name = Client::getName(%clientId);
 	%addr = Client::getTransportAddress(%clientId);
-	echo("ADMINMSG: **** Attempting Admin Login : " @ %clientId @ " - " @ %name @ " - " @ %addr @ ".");
+	echo(" Attempting Admin Login : " @ %clientId @ " - " @ %name @ " - " @ %addr @ ".");
 	login(%clientId, %password);
 	return 1;
 }

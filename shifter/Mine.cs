@@ -193,7 +193,7 @@ function SubspaceMine::deployCheck(%this)
 {
 	if (GameBase::isAtRest(%this))
 	{
-		GameBase::startFadeOut(%this);
+		//GameBase::startFadeOut(%this);
 		GameBase::playSequence(%this,1,"deploy");
 		GameBase::setActive(%this,true);
 

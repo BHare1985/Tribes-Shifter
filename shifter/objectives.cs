@@ -168,7 +168,7 @@ function ObjectiveMission::missionComplete()
 	for(%i = 0; %i < getNumTeams(); %i++)
 	{ 
 		Team::setObjective(%i, $firstObjectiveLine-4, " ");
-		Team::setObjective(%i, $firstObjectiveLine-3, "<f5>Mission Summary:");
+		Team::setObjective(%i, $firstObjectiveLine-3, "<f2>Mission Summary:");
 		Team::setObjective(%i, $firstObjectiveLine-2, " ");
 	}
 
@@ -199,7 +199,7 @@ function ObjectiveMission::setObjectiveHeading()
 		%tieTeams[%tie] = %curLeader; 
 		
 		for(%i = 0; %i < getNumTeams() ; %i++) 
-			echo("GAME: teamfinalscore " @ %i @ " " @ $teamScore[%i]);
+			echo("GAME: Team" @ %i @ " Score - " @ $teamScore[%i]);
 	
 		for(%i = 1; %i < getNumTeams() ; %i++) 
 		{
@@ -241,25 +241,25 @@ function ObjectiveMission::setObjectiveHeading()
 	         		if(%i == %curLeader)
 			 	{ 
 					if($teamScore[%curLeader] == 1)
-					   	Team::setObjective(%i, 1, "<F5>           Your team won the mission with " @ $teamScore[%curLeader] @ " point!");
+					   	Team::setObjective(%i, 1, "<F3>           Your team won the mission with " @ $teamScore[%curLeader] @ " point!");
 					else
-					   	Team::setObjective(%i, 1, "<F5>           Your team won the mission with " @ $teamScore[%curLeader] @ " points!");
+					   	Team::setObjective(%i, 1, "<F3>           Your team won the mission with " @ $teamScore[%curLeader] @ " points!");
 				}
 				else
 				{
 					if($teamScore[%curLeader] == 1)
-						Team::setObjective(%i, 1, "<F5>     The " @ getTeamName(%curLeader) @ " team won the mission with " @ $teamScore[%curLeader] @ " point!");
+						Team::setObjective(%i, 1, "<F3>     The " @ getTeamName(%curLeader) @ " team won the mission with " @ $teamScore[%curLeader] @ " point!");
   					else
-	          			Team::setObjective(%i, 1, "<F5>     The " @ getTeamName(%curLeader) @ " team won the mission with " @ $teamScore[%curLeader] @ " points!");
+	          			Team::setObjective(%i, 1, "<F3>     The " @ getTeamName(%curLeader) @ " team won the mission with " @ $teamScore[%curLeader] @ " points!");
 				}
 		  	}	
 			else
 			{
 				if(getNumTeams() > 2)
-					Team::setObjective(%i, 1, "<F5>     The " @ %names @ " tied with a score of " @ $teamScore[%curLeader]);
+					Team::setObjective(%i, 1, "<F3>     The " @ %names @ " tied with a score of " @ $teamScore[%curLeader]);
   	         
 				else
-					Team::setObjective(%i, 1, "<F5>     The mission ended in a tie where each team had a score of " @ $teamScore[%curLeader]);
+					Team::setObjective(%i, 1, "<F3>     The mission ended in a tie where each team had a score of " @ $teamScore[%curLeader]);
 			}
 			
 			Team::setObjective(%i, 2, " ");
@@ -396,6 +396,7 @@ function ObjectiveMission::setObjectiveHeading()
 			Team::setObjective(%i, 1,"<f5>Mission Completion:");
 			Team::setObjective(%i, 2,"<f1>   - " @ $teamScoreLimit @ " points needed to win the mission.");
 
+
 			//=== Players Ratio & Scores
 	
 			%numClients = getNumClients();
@@ -517,7 +518,7 @@ function ObjectiveMission::setObjectiveHeading()
 
 				// FlagCaps
 				if((%clientList[%c]).FlagCaps == %highFlagCaps && %highFlagCaps > 0)
-				{
+				{                                                                     // makes a different color..if your the best
 					%FontFlagCaps = "<F1>";
 				}
 
@@ -532,9 +533,9 @@ function ObjectiveMission::setObjectiveHeading()
 	}
 	
 	if(!$Server::timeLimit)
-		%str = "<f1>   - No time limit on the game.";
+		%str = "<f3>   - No time limit on the game.";
 	else if($timeLimitReached)
-		%str = "<f1>   - Time limit reached.";
+		%str = "<f3>   - Time limit reached.";
 	else if($missionComplete)
 	{
 		%time = getSimTime() - $missionStartTime;
@@ -546,18 +547,19 @@ function ObjectiveMission::setObjectiveHeading()
 		if(%seconds < 10)
 			%seconds = "0" @ %seconds;
 		
-		%str = "<f1>   - Total match time: " @ %minutes @ ":" @ %seconds;
+		%str = "<f3>   - Total match time: " @ %minutes @ ":" @ %seconds;
 	}
 	else
-		%str = "<f1>   - Time remaining: " @ floor($Server::timeLimit - (getSimTime() - $missionStartTime) / 60) @ " minutes.";
+		%str = "<f3>   - Time remaining: " @ floor($Server::timeLimit - (getSimTime() - $missionStartTime) / 60) @ " minutes.";
 
 	for(%i = -1; %i < getNumTeams(); %i++)
 	{
 		Team::setObjective(%i, 3, " ");
-		Team::setObjective(%i, 4, "<f5>Mission Information:");
-		Team::setObjective(%i, 5, "<f1>   - Mission Name: " @ $missionName); 
+		Team::setObjective(%i, 4, "<f2>Mission Information:");
+		Team::setObjective(%i, 5, "<f3>   - Mission Name: " @ $missionName);
 		Team::setObjective(%i, 6, %str);
-	}	
+	}
+
 }
 //================================================================================================ Get Player Ratios
 function getEfficiencyRatio(%clientId)
@@ -660,7 +662,7 @@ function Vote::changeMission()
 	}
    for(%i = 0; %i < getNumTeams(); %i++) { 
 	   Team::setObjective(%i, $firstObjectiveLine-2, " ");
-	   Team::setObjective(%i, $firstObjectiveLine-1, "<f5>Mission Summary:");
+	   Team::setObjective(%i, $firstObjectiveLine-1, "<f4>Mission Summary:");
 	}
 	ObjectiveMission::setObjectiveHeading();
    $missionComplete = false;
@@ -672,10 +674,14 @@ function ObjectiveMission::checkScoreLimit()
    ObjectiveMission::refreshTeamScores();
 
    for(%i = 0; %i < getNumTeams(); %i++)
-      if($teamScore[%i] >= $teamScoreLimit)
-         %done = true;
+	if($TeamScore[%i] >= $TeamScoreLimit){
+			if( $Shifter::Capping == "true"){
+			%done = true;}
+			 else{
+         		%done = false;}
+         	}
 
-   if(%done)
+   if(%done == "true")
       ObjectiveMission::missionComplete();
 }
 
@@ -728,7 +734,8 @@ function Game::refreshClientScore(%clientId)
 
 function Mission::init()
 {
-   setClientScoreHeading("Player Name\t\x6FTeam\t\xA6Score\t\xCFPing\t\xEFPL\t\xFFTotalScore");
+   //exec("weather.cs");
+   setClientScoreHeading("Player Name\t\x6FTeam\t\xA6Score\t\xCFPing\t\xEFPL\t\xFFTotalScore");   //xa6status
    setTeamScoreHeading("Team Name\t\x6FPlayers\t\xD6Score");
 
    $firstTeamLine = 7;
@@ -741,16 +748,8 @@ function Mission::init()
 	$DamageScale[larmor,	$PlasmaDamageType] = 1.0;$DamageScale[lfemale,	$PlasmaDamageType] = 1.0;
 	$DamageScale[larmor,	$EqualizerDamageType]	 = 1.0;$DamageScale[lfemale,	$EqualizerDamageType]	 = 1.0;
    if(!$noTabChange)
-		$ModList = "Shifter_v1G";
-	if($flamerTurret)
-	{
-		$ItemMax[darmor,	FlamerTurretPack] = 1;
-		$ItemMax[barmor,	FlamerTurretPack] = 1;
-		$ItemMax[bfemale,	FlamerTurretPack] = 1;
-		$ItemMax[earmor,	FlamerTurretPack] = 1;
-		$ItemMax[efemale,	FlamerTurretPack] = 1;
-	}
-	if($match::ceaseFireBegin)
+		$ModList = "ShifterK";
+ 	if($match::ceaseFireBegin)
 	{
 		$match::ceaseFireBegin = false;
 		$ceasefire = true;
@@ -761,7 +760,7 @@ function Mission::init()
 		$ceasefire = false;
 		$builder = false;
 	}
-	else if($Server::TourneyMode)
+	else if($server::tourneymode == "true")
 	{
 		messageall(0, "Reseting Server Defaults");
 		exec("serverconfig.cs");
@@ -781,7 +780,7 @@ function Mission::init()
 	$teamFlag[%i] = "";
 	Team::setObjective(%i, $firstTeamLine - 1, " ");
 	Team::setObjective(%i, $firstObjectiveLine - 1, " ");
-	Team::setObjective(%i, $firstObjectiveLine, "<f5>Mission Objectives: ");
+	Team::setObjective(%i, $firstObjectiveLine, "<f3>Mission Objectives: ");
 	$firstObjectiveLine++;
 	$deltaTeamScore[%i] = 0;
 	$teamScore[%i] = 0;
@@ -851,7 +850,7 @@ function ObjectiveMission::refreshTeamScores()
 //     else
        Team::setScore(%i, "%t\t  " @ $teamplayers[%i] @"\t  " @ $teamScore[%i], $teamScore[%i]);
      for(%j = 0; %j < %nt; %j++)
-       Team::setObjective(%i,%j+$firstTeamLine, "<f1>   - Team " @ getTeamName(%j) @ " score = " @ $teamScore[%j]);
+       Team::setObjective(%i,%j+$firstTeamLine, "<f3>   - Team " @ getTeamName(%j) @ " score = " @ $teamScore[%j]);
    }
 }
 
@@ -931,13 +930,17 @@ function TowerSwitch::onAdd(%this)
 function TowerSwitch::onDamage()
 {
 }
-
+$showon = true;
 function TowerSwitch::getObjectiveString(%this, %forTeam)
 {
    %thisTeam = GameBase::getTeam(%this);
    
    if($missionComplete)
    {
+       if($showon)
+       {
+         return "<f2>Shifter\n<f3>     k      \n<f3>     kk     \n<f3>     kk  kk \n<f3>     kk kk  \n<f3>     kkkk   \n<f3>     kkkkk  \n<f3>     kk kkk \n<f3>     kk  kkk\n<f2>Shifter K Mission Complete\n<f2>Modded by: KiLL(--), enV.3zer0";
+      }
       if(%thisTeam == -1)
          return "<Btowers_neutral.bmp>\nNo team claimed " @ %this.objectiveName @ ".";
       else if(%thisTeam == %forTeam)
@@ -977,8 +980,11 @@ function TowerSwitch::getObjectiveString(%this, %forTeam)
  			  	return "<Btowers_neutral.bmp>\n" @ %this.objectiveName @ " has not been claimed."; 
  			else
  			   return "<Btower_teamcontrol.bmp>\nThe " @ getTeamName(%thisTeam) @ " team is in control of the " @ %this.objectiveName @ ".";
-	  	}
+
+    }
+
    }
+
 }
 //=========================================================================================================== Player Touches A Tower Switch
 function TowerSwitch::onCollision(%this, %object)
@@ -1006,15 +1012,22 @@ function TowerSwitch::onCollision(%this, %object)
    %dropPoints = nameToID(%group @ "/DropPoints");
    %oldDropSet = nameToID("MissionCleanup/TeamDrops" @ %oldTeam);
    %newDropSet = nameToID("MissionCleanup/TeamDrops" @ %playerTeam);
-
+   
+	if($Objscoring == true) //  'Gonzo'
+	{
+	if(%playerTeam == 0)
+	{
+		%Enemyteam = 1;
+	}
+	else
+	{
+		%Enemyteam = 0;
+	}
    $deltaTeamScore[%oldTeam] -= %this.deltaTeamScore;
    $deltaTeamScore[%playerTeam] += %this.deltaTeamScore;
-   //TS
-   echo("\"B\"" @ %oldTeam @ "\"-" @ %this.scoreValue @ "\"");
-   echo("\"B\"" @ %playerTeam @ "\"" @ %this.scoreValue @ "\"");
    $teamScore[%oldTeam] -= %this.scoreValue;
    $teamScore[%playerTeam] += %this.scoreValue;
-
+echo("1");
    if(%dropPoints != -1)
    {
       for(%i = 0; (%dropPoint = Group::getObject(%dropPoints, %i)) != -1; %i++)
@@ -1024,33 +1037,46 @@ function TowerSwitch::onCollision(%this, %object)
          addToSet(%newDropSet, %dropPoint);
       }
    }
-   //TS
-   echo("\"O\"" @ %playerClient @ "\"0\"");
    //============================================================================================== Points For Getting Objectives
    if(%oldTeam == -1)
    {
-      MessageAllExcept(%playerClient, 0, %touchClientName @ " claimed " @ %this.objectiveName @ " for the " @ getTeamName(%playerTeam) @ " team!");
-      Client::sendMessage(%playerClient, 0, "You claimed " @ %this.objectiveName @ " for the " @ getTeamName(%playerTeam) @ " team!");
+      MessageAll(0, %touchClientName @ " claimed " @ %this.objectiveName @ " for the " @ getTeamName(%playerTeam) @ " team!");
+      echo("2");
+			Messageall(1, "*********************************************************");
+			Messageall(-1, getTeamName(%playerteam) @ " Score  " @ $TeamScore[%playerTeam]);
+			Messageall(-1, getTeamName(%Enemyteam) @ " Score  " @ $TeamScore[%EnemyteamTeam]);
+			Messageall(1, "*********************************************************");
+			echo("3");
 
 		  //==================================================================================================== Score For Initial Capture
 	      %playerClient.score = (%playerClient.score + $Score::InitialObj);
 		  if ($ScoresOn) bottomprint(%playerClient, "Score +" @ $Score::InitialObj @ " = " @ %playerClient.score @ " Total Score");
  	}
    else
-   {
+   {echo("4");
       if(%this.objectiveLine)
       {
-         MessageAllExcept(%playerClient, 0, %touchClientName @ " captured " @ %this.objectiveName @ " from the " @ getTeamName(%oldTeam) @ " team!");
-         Client::sendMessage(%playerClient, 0, "You captured " @ %this.objectiveName @ " from the " @ getTeamName(%oldTeam) @ " team!");
+				MessageAll(0, %touchClientName @ " captured " @ %this.objectiveName @ " from the " @ getTeamName(%oldTeam) @ " team!");
+				Messageall(1, "*********************************************************");
+				echo("5");
+				echo($TeamScore[%oldTeam]);
+				Messageall(-1, getTeamName(%playerteam) @ " Score  " @ $TeamScore[%playerTeam]);
+				Messageall(-1, getTeamName(%oldTeam) @ " Score  " @ $TeamScore[%oldTeam]);
+				echo("6");
+				echo($TeamScore[%oldTeam]);
+				Messageall(1, "*********************************************************");
 		 %this.numSwitchTeams++;	
 
 		 //======================================================================================================== Score For Capture From
          %playerClient.score = (%playerClient.score + $Score::CaptureObj);	  
-	     if ($ScoresOn) bottomprint(%playerClient, "Score +" @ $Score::CaptureObj @ " = " @ %playerClient.score @ " Total Score");
+	     echo("7");if ($ScoresOn) bottomprint(%playerClient, "Score +" @ $Score::CaptureObj @ " = " @ %playerClient.score @ " Total Score");
 
 			schedule("TowerSwitch::timeLimitCheckPoints(" @ %this @ "," @ %playerClient @ "," @ %this.numSwitchTeams @ ");",60);
       }
    }
+   }
+   
+
 
    if(%this.objectiveLine)
    {
@@ -1061,13 +1087,7 @@ function TowerSwitch::onCollision(%this, %object)
       ObjectiveMission::ObjectiveChanged(%this);
    }
    ObjectiveMission::checkScoreLimit();
-	//if($Server::TourneyMode == true)
-	//{
-		messageall(2, "-------------------------------------------------------------------------------------");
-		messageall(0, "SCORE: " @ getTeamName(0) @ " " @ $teamScore[0] @ " - " @ getTeamName(1) @ " " @ $teamScore[1]);
-		messageall(2, "-------------------------------------------------------------------------------------");
-	//}
-}
+   }
 
 function TowerSwitch::timeLimitCheckPoints(%this,%client,%numChange)											// objectives.cs
 {
@@ -1075,8 +1095,6 @@ function TowerSwitch::timeLimitCheckPoints(%this,%client,%numChange)											/
 	if(%this.numSwitchTeams == %numChange) {
 	   %client.score+=5;
 		Game::refreshClientScore(%client);
-		//TS
-        echo("\"H\"" @ %client @ "\"5\"");
 	   Client::sendMessage(%client, 0, "You receive 5 points for holding your captured tower!");
 	}
 }
@@ -1157,9 +1175,9 @@ function Flag::getObjectiveString(%this, %forTeam)
       else if(%forTeam != -1)
       {
          if(%thisTeam == %forTeam)
-            return "<Bflag_atbase.bmp>\nYour flag was captured " @ %this.enemyCaps @ " times.";
+            return "<Bflag_atbase.bmp>\n<f4>Your flag was captured " @ %this.enemyCaps @ " times.";
          else
-            return "<Bflag_enemycaptured.bmp>\nYour team captured the " @ getTeamName(%thisTeam) @ " flag " @ %this.caps[%forTeam] @ " times.";
+            return "<Bflag_enemycaptured.bmp>\n<f4>Your team captured the " @ getTeamName(%thisTeam) @ " flag " @ %this.caps[%forTeam] @ " times.";
       }
   		else 
       	return "<Bflag_atbase.bmp>\nThe " @ getTeamName(%thisTeam) @ "'s flag was captured " @ %this.enemyCaps @ " times.";
@@ -1248,7 +1266,7 @@ function Flag::onDrop(%player, %type)
 	$FlagCarry[%flagTeam] = "";
 	
 	echo("\"P\"" @ %playerClient @ "\"0\"");
-	echo("ADMINMSG: **** " @ %dropClientName @ " dropped the " @ getTeamName(%flagTeam) @ " flag!");
+	echo("" @ %dropClientName @ " dropped the " @ getTeamName(%flagTeam) @ " flag!");
 
 	%homepos = ($teamFlag[%playerTeam]).originalPosition; //========= Get Base location for live player.
 	%droppos = GameBase::getPosition(%player);
@@ -1293,7 +1311,11 @@ function Flag::onDrop(%player, %type)
 				
 	        	MessageAllExcept(%playerClient, 0, %playerName @ " returned the " @ getTeamName(%playerTeam) @ " flag!~wflagreturn.wav");
 	        	Client::sendMessage(%playerClient, 0, "You returned your flag!~wflagreturn.wav");
+	        	if(%playerName != "")
 	        	teamMessages(1, %playerTeam, "Your flag was returned to base by " @ %playerName @ ".", -2, "", "The " @ getTeamName(%playerTeam) @ " flag was returned to base.");
+	        	else
+	        	teamMessages(1, %playerTeam, "Your flag was returned to base by means of Throwing.", -2, "", "The " @ getTeamName(%playerTeam) @ " flag was returned to base.");
+	        	
 			$Spoonbot::HuntFlagrunner = 0;
 			return;
 		}
@@ -1534,12 +1556,16 @@ function Flag::onCollision(%this, %object)
 					MessageAllExcept(%playerClient, 0, %touchClientName @ " captured the " @ getTeamName(%enemyTeam) @ " flag!~wflagcapture.wav");
 					Client::sendMessage(%playerClient, 0, "You captured the " @ getTeamName(%enemyTeam) @ " flag!~wflagcapture.wav");
 					TeamMessages(1, %playerTeam, "Your team captured the flag.", %enemyTeam, "Your team's flag was captured.");
-					echo("ADMINMSG: **** " @ %touchClientName @ " captured the " @ getTeamName(%enemyTeam) @ " flag!~wflagcapture.wav");
+					echo("" @ %touchClientName @ " captured the " @ getTeamName(%enemyTeam) @ " flag!~wflagcapture.wav");
 					%flag = %object.carryFlag;
 					%flag.atHome = true;
 					%flag.carrier = -1;
+                    if($Shifter::Capping) {
 					%flag.caps[%playerTeam]++;
-					%flag.enemyCaps++;
+					%flag.enemyCaps++; }
+                     else
+                     {
+                     }
 
 					Item::hide(%flag, false);
 					$flagAtHome[1] = true;
@@ -1574,6 +1600,14 @@ function Flag::onCollision(%this, %object)
 						messageall(2, "-------------------------------------------------------------------------------------");					
 						$matchtrack::caps[%playerTeam] += %flag.scoreValue;
 						RecordMT();
+                        if(%playerClient.FlagCaps < 2)
+                        {
+                        bottomprintall("<jc>-------------------------------------------------------------------------------------\n<f3><jc>" @ getTeamName(0) @ " <f2>" @ $teamScore[0] @ "\n <f3>" @ getTeamName(1) @ " <f2>" @ $teamScore[1] @ "\n<jc><f3>Capped by:<f1> " @ %touchClientName @ "\n <f3>" @ %touchClientName @ "<f2> has " @ %playerClient.FlagCaps @ " <f1>cap\n<f0>------------------------------------------------------------------------------------- " ,5);
+                        }
+                        else
+                        bottomprintall("<jc>-------------------------------------------------------------------------------------\n<f3><jc>" @ getTeamName(0) @ " <f2>" @ $teamScore[0] @ "\n <f3>" @ getTeamName(1) @ " <f2>" @ $teamScore[1] @ "\n<jc><f3>Capped by:<f1> " @ %touchClientName @ "\n <f3>" @ %touchClientName @ "<f2> has " @ %playerClient.FlagCaps @ " <f1>caps\n<f0>------------------------------------------------------------------------------------- " ,5);
+
+
 					//}
 				}
 			}
@@ -1613,8 +1647,9 @@ function Flag::onCollision(%this, %object)
 					MessageAllExcept(%playerClient, 0, %touchClientName @ " took the " @ getTeamName(%flagTeam) @ " flag! ~wflag1.wav");
 					Client::sendMessage(%playerClient, 0, "You took the " @ getTeamName(%flagTeam) @ " flag! ~wflag1.wav");
 					TeamMessages(1, %playerTeam, "Your team has the " @ getTeamName(%flagTeam) @ " flag.", %flagTeam, "Your team's flag has been taken.");
-					echo("ADMINMSG: **** " @ %touchClientName @ " took the " @ getTeamName(%flagTeam) @ " flag!");
-				}
+					echo("" @ %touchClientName @ " took the " @ getTeamName(%flagTeam) @ " flag!");
+
+    }
 				else
 				{
 					%hteam = %this.holdingTeam;
@@ -1629,15 +1664,19 @@ function Flag::onCollision(%this, %object)
 						TeamMessages(1, %playerTeam, "Your team has " @ %this.objectiveName @ ".", %hteam, "Your team lost " @ %this.objectiveName @ ".", "The " @ getTeamName(%playerTeam) @ " team has taken " @ %this.objectiveName @ " from the " @ getTeamName(%hteam) @ " team.");
 						%this.holdingTeam = -1;
 						%this.holder.flag = "";
+
 					}
 					else
 					{
 						MessageAllExcept(%playerClient, 0, %touchClientName @ " took " @ %this.objectiveName @ ".~wflag1.wav");
 						Client::sendMessage(%playerClient, 0, "You took " @ %this.objectiveName @ ".~wflag1.wav");
 						TeamMessages(1, %playerTeam, "Your team has " @ %this.objectiveName @ ".", -2, "", "The " @ getTeamName(%playerTeam) @ " team has taken " @ %this.objectiveName @ ".");
+
 					}
 				}
-				%this.trainingObjectiveComplete = true;
+    bottomprintall("<jc>-------------------------------------------------------------------------------------\n<jc><f3>Flag Taken by:<f1> " @ %touchClientName @ "\n<f0>------------------------------------------------------------------------------------- " ,5);
+
+    %this.trainingObjectiveComplete = true;
 				ObjectiveMission::ObjectiveChanged(%this);
 			//}
 		}
@@ -1736,6 +1775,7 @@ function FlagStand::onCollision(%this, %object)
 	%playerClient = Player::getClient(%object);
 	%playerName = Client::getName(%playerClient);
 
+
 	if (%object.carryFlag != "" && %standTeam == %playerTeam && getObjectType(%object) == "Player" && (%carryflagTeam == %standTeam && %carryflagTeam == %playerTeam))
 	{
 		if($debug) echo ("************** RETURNED FLAG TO BASE **");
@@ -1765,11 +1805,14 @@ function FlagStand::onCollision(%this, %object)
 		if ($ScoreOn) bottomprint(%playerClient, "You Safely Returned Your Flag Score + " @ ($Score::FlagReturn * 3) @ " = " @ %playerClient.score @ " Total Score" ,3);
 
 		//========================================================= Message Players And Team About Flag Return
-
+         bottomprintall("<jc>-------------------------------------------------------------------------------------\n<jc><f1>Flag is safe at home\n<f0>------------------------------------------------------------------------------------- " ,5);
 		MessageAllExcept(%playerClient, 0, %playerName @ " returned the " @ getTeamName(%playerTeam) @ " flag!~wflagreturn.wav");
 		Client::sendMessage(%playerClient, 0, "You returned your flag!~wflagreturn.wav");
+	        	if(%playerName != "")
 		teamMessages(1, %playerTeam, "Your flag was returned to base by " @ %playerName @ ".", -2, "", "The " @ getTeamName(%playerTeam) @ " flag was returned to base.");
-	}
+		else
+		teamMessages(1, %playerTeam, "Your flag was returned to base by means of Throwing.", -2, "", "The " @ getTeamName(%playerTeam) @ " flag was returned to base.");
+ }
 
 	//==== Everything After This Is For Find And Retrieve
 
@@ -1910,7 +1953,7 @@ function Flag::playerLeaveMissionArea(%this, %playerId)
 				GameBase::setPosition(%this, GameBase::getPosition(%this.flagStand));
             			Item::setVelocity(%this, "0 0 0");
 			}
-			
+			bottomprintall("<jc>-------------------------------------------------------------------------------------\n<jc><f1>" @ %clientName @ " Left the mission area with the flag!! DOH!\n<f0>------------------------------------------------------------------------------------- " ,5);
 			MessageAllExcept(%playerClient, 0, %clientName @ " left the mission area while carrying the " @ getTeamName(%team) @ " flag!");
 	    Client::sendMessage(%playerClient, 0, "You left the mission area while carrying the " @ getTeamName(%team) @ " flag!");
 	      		TeamMessages(1, %team, "Your flag was returned to base.~wflagreturn.wav", -2, "", "The " @ getTeamName(%team) @ " flag was returned to base.");
@@ -2124,3 +2167,24 @@ function StaticShape::objectiveDestroyed(%this)
 function StaticShape::objectiveDisabled(%this)
 {
 }
+//function runflagnotify()
+//{
+//schedule("bottomprintall(\"<jc><f2>*-\");",0.3);
+ //                       schedule("bottomprintall(\"<jc><f2>*--\");",0.4);
+ //                       schedule("bottomprintall(\"<jc><f2>*---\");",0.5);
+ //                       schedule("bottomprintall(\"<jc><f2>*----<f0>" @ %touchclientname @ "<jc><f2> T\");",0.6);
+ //                       schedule("bottomprintall(\"<jc><f2>*----<f0>" @ %touchclientname @ "<jc><f2> To\");",0.7);
+  //                      schedule("bottomprintall(\"<jc><f2>*----<f0>" @ %touchclientname @ "<jc><f2> Too\");",0.8);
+  //                       schedule("bottomprintall(\"<jc><f2>*----<f0>" @ %touchclientname @ "<jc><f2> Took\");",0.9);
+  //                       schedule("bottomprintall(\"<jc><f2>*----<f0>" @ %touchclientname @ "<jc><f2> Took t\");",1.2);
+     //                    schedule("bottomprintall(\"<jc><f2>*----<f0>" @ %touchclientname @ "<jc><f2> Took th\");",1.3);
+        //                 schedule("bottomprintall(\"<jc><f2>*----<f0>" @ %touchclientname @ "<jc><f2> Took the\");",1.4);
+           //              schedule("bottomprintall(\"<jc><f2>*----<f0>" @ %touchclientname @ "<jc><f2> Took the <f3>f<f2>\");",1.5);
+ //                        schedule("bottomprintall(\"<jc><f2>*----<f0>" @ %touchclientname @ "<jc><f2> Took the <f3>fl<f2>\");",1.6);
+  //                       schedule("bottomprintall(\"<jc><f2>*----<f0>" @ %touchclientname @ "<jc><f2> Took the <f3>fla<f2>\");",1.7);
+   //                      schedule("bottomprintall(\"<jc><f2>*----<f0>" @ %touchclientname @ "<jc><f2> Took the <f3>flag<f2>\");",1.8);
+   //                      schedule("bottomprintall(\"<jc><f2>*----<f0>" @ %touchclientname @ "<jc><f2> Took the <f3>flag<f2>-\");",1.9);
+   //                      schedule("bottomprintall(\"<jc><f2>*----<f0>" @ %touchclientname @ "<jc><f2> Took the <f3>flag<f2>--\");",2);
+    //                     schedule("bottomprintall(\"<jc><f2>*----<f0>" @ %touchclientname @ "<jc><f2> Took the <f3>flag<f2>---\");",2.1);
+     //                    schedule("bottomprintall(\"<jc><f2>*----<f0>" @ %touchclientname @ "<jc><f2> Took the <f3>flag<f2>----*\");",2.2);
+      //                   }

@@ -15,6 +15,7 @@ $MissileDamageType     = 12;
 $MineDamageType        = 13;
 $SniperDamageType      = 14;	//=== Drop Weapon-Flag Damage
 $FlashDamageType       = 15;	//=== EMP Damage
+$ShockDamageType       = 16;	//=== Shock Damage
 $GravDamageType	     = 20;
 $ShellDamageType       = 21;
 $CloakDamageType       = 22;
@@ -152,18 +153,18 @@ BulletData SniperBullet1
 //Contributed by Czar :), and edited
 BulletData SilencerBullet
 {
-	//bulletShapeName    = "plasmabolt.dts";
-	bulletShapeName    = "bullet.dts";
+	bulletShapeName    = "plasmabolt.dts";
+	//bulletShapeName    = "bullet.dts";
 	explosionTag       = debrisExpsmall;
 	expRandCycle       = 0;
 	mass               = 200.0;
 	bulletHoleIndex    = 0;
 	damageClass        = 0;
-	damageValue        = 1.02;
+	damageValue        = 1.03;
 	damageType         = $BulletDamageType;
 	muzzleVelocity     = 700.0;
 	aimDeflection      = 0.0;
-	totalTime          = 0.09;
+	totalTime          = 0.1;
 	inheritedVelocityScale = 0.9;
 	isVisible          = True;
 	kickBackStrength = 900.0; 
@@ -182,10 +183,10 @@ BulletData TranqDart
 	mass               = 0.05;
 	bulletHoleIndex    = 0;
 	damageClass        = 0;       // 0 impact, 1, radius
-	damageValue        = 0.20;
+	damageValue        = 0.25;
 	damageType         = $EnergyDamageType;
-   muzzleVelocity   = 2000.0;
-   terminalVelocity = 2000.0;
+   muzzleVelocity   = 1500.0;
+   terminalVelocity = 1500.0;
    acceleration     = 5.0;
 	totalTime          = 1.5;
 	inheritedVelocityScale = 1.0;
@@ -205,7 +206,7 @@ BulletData VulcanBullet
 	damageClass        = 0;       // 0 impact, 1, radius
 	damageValue        = 0.04;
 	damageType         = $BulletDamageType;
-	aimDeflection      = 0.007;
+	aimDeflection      = 0.005;//7
 	muzzleVelocity     = 900.0;
 	totalTime          = 0.95;
 	inheritedVelocityScale = 1.0;
@@ -306,12 +307,12 @@ BulletData BlasterBolt1
    explosionTag       = blasterExp;
 
    damageClass        = 0;
-   damageValue        = 0.200;
+   damageValue        = 0.300;
    damageType         = $BlasterDamageType;
 
    muzzleVelocity     = 200.0;
-   totalTime          = 2.0;
-   liveTime           = 1.125;
+   totalTime          = 0.50;
+   liveTime           = 0.50;
 
    lightRange         = 3.0;
    lightColor         = { 1.0, 0.25, 0.25 };
@@ -328,7 +329,7 @@ BulletData HyperBolt
    explosionTag       = hblasterExp;
 
    damageClass        = 0;
-   damageValue        = 0.05;
+   damageValue        = 0.2;
    damageType         = $HBlasterDamageType;
 
    muzzleVelocity     = 200.0;
@@ -428,7 +429,7 @@ BulletData PlasmaBoltMulti
 	explosionTag       = plasmaExp;
 
 	damageClass        = 1;
-	damageValue        = 0.32;
+	damageValue        = 0.30;
 	damageType         = $PlasmaDamageType;
 	explosionRadius    = 1.5;
 
@@ -451,11 +452,11 @@ BulletData PlasmaBoltRapid
 	explosionTag       = plasmaExp;
 
 	damageClass        = 1;
-	damageValue        = 0.42;
+	damageValue        = 0.30;
 	damageType         = $PlasmaDamageType;
-	explosionRadius    = 2.0;
+	explosionRadius    = 1.3;
 
-	muzzleVelocity     = 180.0;
+	muzzleVelocity     = 120.0;
 	totalTime          = 2.0;
 	liveTime           = 0.1;
 	lightRange         = 3.0;
@@ -475,7 +476,7 @@ BulletData PlasmaBoltRapid2
 	damageClass        = 1;
 	damageValue        = 0.35;
 	damageType         = $PlasmaDamageType;
-	explosionRadius    = 2.0;
+	explosionRadius    = 1.3;
 
 	muzzleVelocity     = 120.0;
 	totalTime          = 2.0;
@@ -666,7 +667,7 @@ RocketData DiscShell2
    mass            = 2.0;
 
    damageClass      = 1;
-   damageValue      = 0.51;
+   damageValue      = 0.25;
    damageType       = $ExplosionDamageType;
 
    explosionRadius  = 7.5;
@@ -1107,7 +1108,7 @@ RocketData GodHammer
 	collisionRadius = 0.0;
 	mass            = 2.0;
 	damageClass      = 1;       // 0 impact, 1, radius
-	damageValue      = 0.45;
+	damageValue      = 0.55;
 	damageType       = $ExplosionDamageType;
 	explosionRadius  = 8;
 	kickBackStrength = 80;
@@ -1215,7 +1216,7 @@ function GodHammerMortar::Release(%this)
 	%t0 = getword (%trans, 0); %t1 = getword (%trans, 1); %t2 = getword (%trans, 2); %t3 = getword (%trans, 3); %t4 = getword (%trans, 4); %t5 = getword (%trans, 5); %t6 = getword (%trans, 6); %t7 = getword (%trans, 7); %t8 = getword (%trans, 8);
 	%trans = %t0 @ " " @ %t1 @ " " @ %t2 @ " " @ %t3 @ " " @ %t4 @ " " @ %t5 @ " " @ %t6 @ " " @ %t7 @ " " @ %t8 @ " " @ gamebase::getposition(%this);
 	playSound(SoundMissileTurretFire,GameBase::getPosition(%this));	
-	%fired = Projectile::spawnProjectile(GodHammer, %trans ,%player,%vel);
+	%fired = Projectile::spawnProjectile(Godhammer, %trans ,%player,%vel);
 	%fired.deployer = %client;
 	%fired.spawn = %this.spawn + 1;
 	%fired.pos = gamebase::getposition(%fired);
@@ -1227,7 +1228,6 @@ function GodHammerMortar::Release(%this)
 	}
 	if(%this) deleteobject(%this);
 }
-
 
 //========================================================================  Ion Bolt
 RocketData IonBolt
@@ -1607,24 +1607,24 @@ function FgcShell::Deploy(%this)
 
 //======================================================= Sniper Rifle Laser
 
-//if($weaklaser)
-//	%lasdam = 0.01;
-//else
-	%lasdam = 0.02;
-
-if($redlaser)
-	%lascolor = "laserPulse.bmp";
+if($Shifter::WeakLaserRifle == "true")
+	%lasdam = 0.01;
 else
-	%lascolor = "lightningNew.bmp";
+	%lasdam = 0.014;
 
-if($attachedlaser)
+if($Shifter::RedLaserRifle == "true")
+	%lascolor = "red_blink2.bmp";
+else
+	%lascolor = "blue_blink4.bmp";
+
+if($Shifter::AttachedLaserRifle == "true")
 	%lasattach = False;
 else
 	%lasattach = True;
 
 LaserData sniperLaser1
 {
-   laserBitmapName   = "blue_blink2.bmp";
+   laserBitmapName   = %lascolor;
    hitName           = "laserhit.dts";
 
    damageConversion  = %lasdam;
@@ -1752,7 +1752,7 @@ LaserData GatlingLaser
 {
 	laserBitmapName   = "lightningNew.bmp";
 	hitName           = "shield.dts";
-	damageConversion  = 0.10;
+	damageConversion  = 0.20;
 	baseDamageType    = $LaserDamageType;
 	beamTime          = 2.5;
 	lightRange        = 5.0;
@@ -3156,4 +3156,47 @@ RocketData StarShell
 	rotationPeriod = 0.25;
    soundId = SoundThrowItem;
 };
+LightningData GMineCharge
+{
+   bitmapName       = "repairadd.bmp";
+
+   damageType       = $GravDamageType;
+   boltLength       = 100.0;
+   coneAngle        = 40.0;
+   damagePerSec      = 0.001;
+   energyDrainPerSec = 0.001;
+   segmentDivisions = 2;
+   numSegments      = 1;
+   beamWidth        = 0.5;
+
+   updateTime   = 100;
+   skipPercent  = 0.9;
+   displaceBias = 0.25;
+
+   lightRange = 0.0;
+	lightColor = { 0.0, 0.0, 0.0 };
+
+   soundId = SoundELFFire;
 };
+
+function GMineCharge::damageTarget(%target, %timeSlice, %damPerSec, %enDrainPerSec, %pos, %vec, %mom, %shooterId)
+{
+	if(%target == %shooterId)  return;
+
+	%playerId = %shooterId;
+  if(%playerId.GravBolt == "1")
+		{
+			%Rotation = GameBase::GetRotation(Client::getOwnedObject(%shooterId));
+			%Zvalue = %Rotation;
+			%velocity = 25;
+			%shooterDir = Vector::getFromRot(GameBase::getRotation(%shooterId),%velocity,%Zvalue);
+			%vec=Vector::getFromRot(%rot,%len*%mass,%zlen*%mass);
+			Player::applyImpulse(%obj,%vec);
+			Player::applyImpulse(%target, %shooterDir);
+			%damVal = %timeSlice * %damPerSec;
+			%enVal  = %timeSlice * %enDrainPerSec;
+			GameBase::applyDamage(%target, $ElectricityDamageType, %damVal, %pos, %vec, %mom, %shooterId);
+		}
+
+}
+
