@@ -1276,16 +1276,7 @@ function Flag::onDrop(%player, %type)
 			%flag.checking = false;
 
 				//========================================================= Returns Flag From Player To Stand			
-				GameBase::startFadeOut(%flag);
-				GameBase::setPosition(%flag, %flag.originalPosition);
-				Item::setVelocity(%this, "0 0 0");
-				GameBase::startFadeIn(%flag);
-				%flag.atHome = true;
-				$flagAtHome[1] = true;
-				%flag = %object.carryFlag;
-				%flag.atHome = true;
-				%flag.carrier = -1;                           
-				Item::hide(%flag, false);
+				returnflag(%flag);
 
 				//========================================================= Removes Flag From Player				
 				Player::setItemCount(%object, Flag, 0);
@@ -1360,11 +1351,7 @@ function Flag::checkReturn(%flag, %sequenceNum)																	// objectives.cs
 				if(%flag.flagStand == "" || %flag.flagStand.flag != "")
 				{
 					MessageAll(0, %flag.objectiveName @ " was returned to its initial position.");
-					GameBase::setPosition(%flag, %flag.originalPosition);
-					Item::setVelocity(%flag, "0 0 0");
-					%flag.flagStand = "";
-					$Spoonbot::HuntFlagrunner = 0;
-					%flag.checking = false;
+					returnflag(%flag); return;
    			}
    			else
    			{
@@ -1386,9 +1373,7 @@ function Flag::checkReturn(%flag, %sequenceNum)																	// objectives.cs
 			else
 			{
 				TeamMessages(0, %flagTeam, "Your flag was returned to base.~wflagreturn.wav", -2, "", "The " @ getTeamName(%flagTeam) @ " flag was returned to base.~wflagreturn.wav");
-				GameBase::setPosition(%flag, %flag.originalPosition);
-				Item::setVelocity(%flag, "0 0 0");
-				%flag.checking = false;
+				returnflag(%flag); return;
 			}
 
 			%flag.atHome = true;
@@ -1397,6 +1382,23 @@ function Flag::checkReturn(%flag, %sequenceNum)																	// objectives.cs
 			ObjectiveMission::ObjectiveChanged(%flag);
 		}
 	}
+}
+
+function returnflag(%flag)
+{
+	%team = GameBase::getTeam(%flag);
+	%name = getTeamName(%team);
+	GameBase::startFadeOut(%flag);
+	GameBase::setPosition(%flag, %flag.originalPosition);
+	Item::setVelocity(%flag, "0 0 0");
+	GameBase::startFadeIn(%flag);
+	%flag.atHome = true;
+	$flagAtHome[1] = true;
+	%flag.atHome = true;
+	%flag.carrier = -1;
+	%flag.checking = false;
+	Item::hide(%flag, false);
+	MessageAll(1, %name @ "'s flag was returned to base!!~wflagreturn.wav");
 }
 
 function flagcheck(%flag)
@@ -1419,26 +1421,11 @@ function flagcheck(%flag)
 			%yPos = getword(%fpos, 1);
 			if(!(GetLosInfo(%fPos, %mpos, 1)))
 			{
-				%flag.checking = false;
-				%team = GameBase::getTeam(%flag);
-				%name = getTeamName(%team);
-				MessageAll(1, %name @ "'s flag was returned to base!!~wflagreturn.wav");
-				GameBase::setPosition(%flag, %flag.originalPosition);
-				Item::setVelocity(%flag, "0 0 0");
-				%flag.flagStand = "";
-				$Spoonbot::HuntFlagrunner = 0;
-				return;
+				returnflag(%flag); return;
 			}
 			if(%xPos > $xMax || %xPos < $xMin || %yPos > $yMax || %yPos < $yMin)
 			{
-				%flag.checking = false;
-				%team = GameBase::getTeam(%flag);
-				%name = getTeamName(%team);
-				MessageAll(1, %name @ "'s flag was returned to base!!~wflagreturn.wav");
-				GameBase::setPosition(%flag, %flag.originalPosition);
-				Item::setVelocity(%flag, "0 0 0");
-				%flag.flagStand = "";
-				$Spoonbot::HuntFlagrunner = 0;
+				returnflag(%flag); return;
 			}
 		}
 		schedule("flagcheck(" @ %flag @");", 5.0);
@@ -1671,13 +1658,14 @@ function Objective::AutoReturn (%this)
 	
 	if (%playerTeam == %flagTeam)
 	{
-		DoTheFlagDrop(%object);
-
+		//DoTheFlagDrop(%object);
+		Player::setItemCount(%object, Flag, 0);
+		%object.carryFlag = "";
+		%flag.carrier = -1;
+		Flag::clearWaypoint(%playerClient, true);
+		MessageAllExcept(%playerClient, 1, Client::getName(%playerClient) @ " has butter fingers and dropped the flag.");
 		MessageAll(0, %flag.objectiveName @ " was returned to its initial position.");
-		GameBase::setPosition(%flag, %flag.originalPosition);
-		Item::setVelocity(%flag, "0 0 0");
-		%flag.flagStand = "";
-		$Spoonbot::HuntFlagrunner = 0;
+		returnflag(%flag);
 	}
 }
 
@@ -1893,6 +1881,7 @@ function Flag::clientDropped(%this, %clientId)
 
 function Flag::playerLeaveMissionArea(%this, %playerId)
 {
+		%flag = %this;
    	// if a guy leaves the area, warp the flag back to its base
    	if(%this.carrier == %playerId)
    	{
@@ -1901,23 +1890,19 @@ function Flag::playerLeaveMissionArea(%this, %playerId)
 		%playerClient = Player::getClient(%playerId);
 		%clientName = Client::getName(%playerClient);
 	   	%flagTeam = GameBase::getTeam(%this);
+		%team = GameBase::getTeam(%this);
 		%flag.checking = false;
 		if(%flagTeam == -1 && (%this.flagStand == "" || (%this.flagStand).flag != "") ) 
 	   	{
 			MessageAllExcept(%playerClient, 0, %clientName @ " left the mission area while carrying " @ %this.objectiveName @ "!  It was returned to its initial position.");
 			Client::sendMessage(%playerClient, 0, "You left the mission area while carrying " @ %this.objectiveName @ "!  It was returned to its initial position.");
-			GameBase::setPosition(%this, %this.originalPosition);
-			Item::setVelocity(%this, "0 0 0");
-			%this.flagStand = "";
-			$Spoonbot::HuntFlagrunner = 0;
+			returnflag(%flag);
 	   	}
 	   	else
 	   	{
 			if(%flagTeam != -1)
 			{
-				%team = %flagTeam;
-				GameBase::setPosition(%this, %this.originalPosition);
-            			Item::setVelocity(%this, "0 0 0");
+				returnflag(%flag);
 			}
 			else
 			{
@@ -1927,7 +1912,7 @@ function Flag::playerLeaveMissionArea(%this, %playerId)
 			}
 			
 			MessageAllExcept(%playerClient, 0, %clientName @ " left the mission area while carrying the " @ getTeamName(%team) @ " flag!");
-	      		Client::sendMessage(%playerClient, 0, "You left the mission area while carrying the " @ getTeamName(%team) @ " flag!");
+	    Client::sendMessage(%playerClient, 0, "You left the mission area while carrying the " @ getTeamName(%team) @ " flag!");
 	      		TeamMessages(1, %team, "Your flag was returned to base.~wflagreturn.wav", -2, "", "The " @ getTeamName(%team) @ " flag was returned to base.");
 			
                 	echo("\"B\"" @ %holdTeam @ "\"" @ %this.scoreValue @ "\"");
@@ -1937,7 +1922,7 @@ function Flag::playerLeaveMissionArea(%this, %playerId)
 			%this.holder = %this.flagStand;
 	   		%this.flagStand.flag = %this;
 			%this.holdingTeam = %holdTeam;
-			$Spoonbot::HuntFlagrunner = 0;
+			//$Spoonbot::HuntFlagrunner = 0;
 		}
 		GameBase::startFadeIn(%this);
 		%this.carrier = -1;

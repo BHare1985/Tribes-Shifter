@@ -126,7 +126,7 @@ function DeployableInvPack::onDeploy(%player,%item,%pos)
 
 function DeployableInvPack::deployShape(%player,%item)
 {
-	deployable(%player,%item,"StaticShape","Invo Station",True,False,True,False,True,True,4,True,0,False, "DeployableInvStation", "DeployableInvPack");
+	deployable(%player,%item,"StaticShape","Invo Station",True,False,True,False,False,True,4,True,0,False, "DeployableInvStation", "DeployableInvPack");
 }
 
 
@@ -268,9 +268,7 @@ ItemData EnergyPack
 function EnergyPack::onUse(%player,%item)
 {
 	if (Player::getMountedItem(%player,$BackpackSlot) != %item) 
-	{
 		Player::mountItem(%player,%item,$BackpackSlot);
-	}
 }
 
 function EnergyPack::onMount(%player,%item)
@@ -458,7 +456,7 @@ ItemData CloakingDevice
 	description = "Cloaking Device";
 	shapeFile = "sensorjampack";
 	className = "Backpack";
-	heading = "kBackpacks";
+	heading = "cBackpacks";
 	shadowDetailMask = 4;
 	imageType = CloakingDeviceimage;
 	price = 600;
@@ -477,6 +475,7 @@ function CloakingDeviceImage::onActivate(%player,%imageSlot)
 	GameBase::playSound(%player,ForceFieldOpen,0);
  	%player.cloaked = 1;
  	Cloaker(%player);
+	GameBase::startFadeOut(%player);
 	Client::sendMessage(Player::getClient(%player),0,"Cloaking Device On");
 	Player::trigger(%player,$BackpackSlot,true);
 }
@@ -492,6 +491,7 @@ function CloakingDeviceImage::onDeactivate(%player,%imageSlot)
  	%player.cloaked = 0;
 	Player::trigger(%player,$BackpackSlot,false);
  	Cloaker(%player);
+	GameBase::startFadeIn(%player);
 	Client::sendMessage(Player::getClient(%player),0,"Cloaking Device Off");
 }
 
@@ -553,10 +553,8 @@ ItemImageData RegenerationPackImage
 	shapeFile = "shieldPack";
 	mountPoint = 2;
 	weaponType = 2;
-	minEnergy = 8;
-	maxEnergy = 14;
-	sfxFire = SoundRepairItem;
-	projectileType = DrainBolt;
+	minEnergy = 0;
+	maxEnergy = 0;
 };
 
 ItemData RegenerationPack
@@ -573,42 +571,49 @@ ItemData RegenerationPack
 	hiliteOnActive = true;
 };
 
-function RegenerationPack::onUnmount(%player,%item)
-{
-	if (Player::getMountedItem(%player,$WeaponSlot) == Regen)
-	{
-		Player::unmountItem(%player,$WeaponSlot);
-	}
+function RegenerationPack::OnMount(%player,%item)
+{	
+	Player::trigger(%player,$BackpackSlot,true);
+}
+ 
+function Regeneration::onUnmount(%player,%item)
+{	
 }
 
-function RegenerationPack::onUse(%player,%item)
+function RegenerationPackImage::onActivate(%player,%imageSlot) 
 {
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
+	%player.regen = true;
+	schedule("checkRegeneration(" @ %player @ ");",0.1,%player); 
+}
+
+function RegenerationPackImage::onDeactivate(%player,%item)
+{	
+	%player.regen = false;
+}
+
+function checkRegeneration(%player)
+{	
+	if (%player.regen == false)
+		return;
+	if (Player::isDead(%player))
+		return;
+	if(Player::getMountedItem(%player,$BackpackSlot) != "RegenerationPack")
+		return;
+	
+	%dlev = GameBase::getDamageLevel(%player);
+	%armor = Player::getArmor(%player); 
+	if (%armor == "aarmor" || %armor == "afemale")
+		GameBase::setDamageLevel(%player, %dlev-0.037);
 	else
-	{
-		Player::mountItem(%player,Regen,$WeaponSlot);
-	}
+		GameBase::setDamageLevel(%player, %dlev+0.275);
+	schedule("checkRegeneration(" @ %player @ ");",1,%player); 
 }
 
-function RegenerationPack::onDrop(%player,%item)
-{
-	if($matchStarted)
-	{
-		%mounted = Player::getMountedItem(%player,$WeaponSlot);
-		if (%mounted == Regen)
-		{
-			Player::unmountItem(%player,$WeaponSlot);
-		}
-		else
-		{
-			Player::mountItem(%player,%mounted,$WeaponSlot);
-		}
-		Item::onDrop(%player,%item);
-	}
-}	
+function RegenerationPack::onUse(%player,%item) 
+{	
+	if (Player::getMountedItem(%player,$BackpackSlot) != %item) 
+		Player::mountItem(%player,%item,$BackpackSlot);
+}
 
 //================================================== Teleport Pack
 ItemImageData LightningPackImage

@@ -1088,8 +1088,8 @@ ItemData Mfgl
 	imageType = MfglImage;
 	price = 3500;
 	showWeaponBar = true;
+	mass = 0.5;
 };
-
 
 // Bugfix concept by |LGS|Gonzo 5-1-2002
 function MfglImage::onFire(%player, %slot) 
@@ -1162,12 +1162,12 @@ ItemImageData FlamerImage
   	shapeFile  = "GrenadeL";
 	mountPoint = 0;
 	weaponType = 0;
-	reloadTime = 0.1;
+	reloadTime = 0.15;
 	fireTime = 0;
-	spinUpTime = 0.5;
+	spinUpTime = 0.1;
 	spinDownTime = 3;
-	minEnergy = 6;
-	maxEnergy = 6;
+	minEnergy = 1;
+	maxEnergy = 3;
 	projectileType = FlamerBolt;
 	accuFire = true;
 	sfxFire = SoundJetHeavy;
@@ -1191,17 +1191,24 @@ ItemData Flamer
 
 ItemImageData IonGunImage
 {
-   	shapeFile  = "GrenadeL";
+	shapeFile = "grenadeL";//grenadeL";
 	mountPoint = 0;
-	weaponType = 0;
-	reloadTime = 0.2;
-	fireTime = 0.2;
-	minEnergy = 10;
-	maxEnergy = 20;
+	mountRotation = { 0, 0.785, 0 };
+	weaponType = 0; // Single Shot
+	minEnergy = 2.5;
+	maxEnergy = 7;
 	projectileType = IonGunBolt;
 	accuFire = true;
+	reloadTime = 0.1;
+	fireTime = 0.1;
+	lightType = 3;  // Weapon Fire
+	lightRadius = 6;
+	lightTime = 2;
+	lightColor = { 1.0, 0, 0 };
 	sfxFire = SoundFireLaser;
 	sfxActivate = SoundPickUpWeapon;
+	sfxSpinUp = SoundSpinUp;
+	sfxSpinDown = SoundSpinDown;
 };
 
 
@@ -1210,7 +1217,7 @@ ItemData IonGun
     	heading = "bWeapons";
 	description = "Ion Rifle";
 	className = "Weapon";
-    	shapeFile  = "GrenadeL";
+    	shapeFile  = "grenadeL";
 	hudIcon = "targetlaser";
 	shadowDetailMask = 4;
 	imageType = IonGunImage;
@@ -1219,16 +1226,16 @@ ItemData IonGun
 };
 
 //======================================================================== Volter
-
 ItemImageData VolterImage
 {
 	shapeFile  = "shotgun";
 	mountPoint = 0;
+	mountRotation = { 0, 0.785, 0 };
 	weaponType = 0; // Single Shot
-	reloadTime = 0.2;
+	reloadTime = 0.1;
 	fireTime = 0;
-	minEnergy = 5;
-	maxEnergy = 6;
+	minEnergy = 2.5;
+	maxEnergy = 3;
 	projectileType = Flameburst;
 	accuFire = false;
 	lightType = 3;

@@ -165,6 +165,7 @@ function Station::onCollision(%this, %object)
 	if (getObjectType(%object) == "Flier")
 	{	
 		%data = GameBase::getDataName(%object);
+		HopOut(%object);
 		GameBase::setDamageLevel(%object, 10.0);
 		return;	
 	}
@@ -175,9 +176,19 @@ function Station::onCollision(%this, %object)
 	//========================================== Spy Can Use Any Invo
 	%armor = Player::getArmor(%object);
 	if(%armor == parmor) {Client::sendMessage(%client,1,"You won't rid yourself of the penis this easily...");return;}
-//greyflcn
+
 	if(GameBase::getTeam(%object) == GameBase::getTeam(%this) || GameBase::getTeam(%this) == -1 || ((%armor == "spyarmor" || %armor == "spyfemale") && %object.infected != "true") )
 	{
+		%armor = Player::getArmor(%object);
+		if (%armor == "earmor" || %armor == "efemale")
+		{
+			if(GameBase::getDamageLevel(%this)) 
+			{
+				GameBase::repairDamage(%this,0.10);
+				GameBase::playSound(%this,ForceFieldOpen,0);
+	     	}
+		}
+
 		if (GameBase::getDamageState(%this) == "Enabled" && (GameBase::isPowered(%this) || %this.poweron == "True"))
 		{
 			if (!%this.isuse)
@@ -192,6 +203,7 @@ function Station::onCollision(%this, %object)
 		}
 		else 
 			Client::sendMessage(%client,1,"Unit is not powered or disabled.");
+
 	}
 	else if(Station::getTarget(%this) == %object)
 	{

@@ -324,22 +324,22 @@ function Server::onClientConnect(%clientId)																		// server.cs
 
 	%clientkick = 0;
 
-	///for(%i=0; %i != "25";%i++)
-	///{
-	///	%checkname = $Server::NameBan[%i];
-	///	if (%checkname != "")
-	///	{
-	///		if (String::findSubStr(%name,%checkname) >= 0)
-	///		{
-	///			schedule("KickPlayer(" @ %clientId @ ",\"You name has been banned.\");", 20, %clientId);
-	///			%clientkick = 1;
-	///		}
-	///	}
-	///}
-	///if (%clientkick == 1)
-	///{
-	///	echo (%name @ " Was on Perma Ban list and was kicked");
-	///}
+	for(%i=0; %i != "25";%i++)
+	{
+		%checkname = $Server::NameBan[%i];
+		if (%checkname != "")
+		{
+			if (String::findSubStr(%name,%checkname) >= 0)
+			{
+				schedule("KickPlayer(" @ %clientId @ ",\"You name has been banned.\");", 20, %clientId);
+				%clientkick = 1;
+			}
+		}
+	}
+	if (%clientkick == 1)
+	{
+		echo (%name @ " Was on Perma Ban list and was kicked");
+	}
 
 	if(Client::getName(%clientId) == "DaJackal")
 	{

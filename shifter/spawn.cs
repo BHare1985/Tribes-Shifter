@@ -13,7 +13,7 @@ function standardSpawnlist(%client)
 
 	if ($Debug) echo ("----------------------->Spawning Standard");
 	$spawnBuyList[0, %client] = MediumArmor;
-	$spawnBuyList[1, %client] = HyperB;
+	$spawnBuyList[1, %client] = Blaster;
 	$spawnBuyList[2, %client] = Chaingun;
 	$spawnBuyList[3, %client] = Disclauncher;
 	$spawnBuyList[4, %client] = RepairKit; 

@@ -39,16 +39,16 @@ function StaticShape::onDestroyed(%this)
 
 function StaticShape::onCollision(%this,%obj)
 {
-	%data = GameBase::getDataName(%obj);
-	if(%data.shapefile == "rocket")
-	{
-		if (%obj.missilegone != 1){%obj.missilegone = 1;}
-		else{return;}	
-		GameBase::setDamageLevel(%obj, 10);
-		return;
-	}	
-	if ($debug) echo (" THIS =  " @ %this @ " DATA " @ GameBase::getDataName(%this).shapefile);
-	if ($debug) echo (" OBJS =  " @ %obj @ " DATA " @ GameBase::getDataName(%obj).shapefile );
+//	%data = GameBase::getDataName(%obj);
+//	if(%data.shapefile == "rocket")
+//	{
+//		if (%obj.missilegone != 1){%obj.missilegone = 1;}
+//		else{return;}	
+//		GameBase::setDamageLevel(%obj, 10);
+//		return;
+//	}	
+//	if ($debug) echo (" THIS =  " @ %this @ " DATA " @ GameBase::getDataName(%this).shapefile);
+//	if ($debug) echo (" OBJS =  " @ %obj @ " DATA " @ GameBase::getDataName(%obj).shapefile );
 }
 
 function StaticShape::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
@@ -229,10 +229,22 @@ StaticShapeData Generator 	{ description = "Generator"; shapeFile = "generator";
 StaticShapeData SolarBig 	{ description = "SolarBig"; shapeFile = "solar"; className = "Generator"; sfxAmbient = SoundGeneratorPower; debrisId = flashDebrisLarge; explosionId = flashExpLarge; maxDamage = 5.0; visibleToSensor = true; mapFilter = 4; mapIcon = "M_generator"; damageSkinData = "objectDamageSkins"; shadowDetailMask = 16; };
 StaticShapeData SolarPanel 	{ description = "Solar Panel"; shapeFile = "solar_med"; className = "Generator"; debrisId = flashDebrisMedium; maxDamage = 1.0; visibleToSensor = true; mapFilter = 4; mapIcon = "M_generator"; damageSkinData = "objectDamageSkins"; shadowDetailMask = 16; explosionId = flashExpLarge; };
 function SolarPanel::onCollision(%this,%obj)
-{	%damageLevel = GameBase::getDamageLevel(%this);
+{
+	%damageLevel = GameBase::getDamageLevel(%this);
 	%disable = GameBase::getDisabledDamage(%this);
 	if(getObjectType(%obj) == "Player" && %damagelevel >= %disable && GameBase::getTeam(%this) == GameBase::getTeam(%obj))
-	{	%client = Player::getClient(%obj);
+	{
+		%armor = Player::getArmor(%obj);
+		if (%armor == "earmor" || %armor == "efemale")
+		{
+			if(GameBase::getDamageLevel(%this)) 
+			{
+				GameBase::repairDamage(%this,0.10);
+				GameBase::playSound(%this,ForceFieldOpen,0);
+	     	}
+		}
+
+		%client = Player::getClient(%obj);
 		Client::sendMessage(%client,1,"Unit is not powered or disabled.");
 	}
 }
@@ -241,7 +253,18 @@ function PortGenerator::onCollision(%this,%obj)
 {	%damageLevel = GameBase::getDamageLevel(%this);
 	%disable = GameBase::getDisabledDamage(%this);
 	if(getObjectType(%obj) == "Player" && %damagelevel >= %disable && GameBase::getTeam(%this) == GameBase::getTeam(%obj))
-	{	%client = Player::getClient(%obj);
+	{
+		%armor = Player::getArmor(%obj);
+		if (%armor == "earmor" || %armor == "efemale")
+		{
+			if(GameBase::getDamageLevel(%this)) 
+			{
+				GameBase::repairDamage(%this,0.10);
+				GameBase::playSound(%this,ForceFieldOpen,0);
+	     	}
+		}
+
+		%client = Player::getClient(%obj);
 		Client::sendMessage(%client,1,"Unit is not powered or disabled.");
 	}
 }
@@ -289,7 +312,18 @@ function Generator::onCollision(%this,%obj)
 {	%damageLevel = GameBase::getDamageLevel(%this);
 	%disable = GameBase::getDisabledDamage(%this);
 	if(getObjectType(%obj) == "Player" && %damagelevel >= %disable && GameBase::getTeam(%this) == GameBase::getTeam(%obj))
-	{	%client = Player::getClient(%obj);
+	{
+		%armor = Player::getArmor(%obj);
+		if (%armor == "earmor" || %armor == "efemale")
+		{
+			if(GameBase::getDamageLevel(%this)) 
+			{
+				GameBase::repairDamage(%this,0.10);
+				GameBase::playSound(%this,ForceFieldOpen,0);
+	     	}
+		}
+
+		%client = Player::getClient(%obj);
 		Client::sendMessage(%client,1,"Unit is not powered or disabled.");
 	}
 }
@@ -391,14 +425,48 @@ function ff::Open(%this, %delay)
 	}
 }
 
+function HopOut(%obj)
+{
+	if(%obj.driver)
+		Vehicle::dismount(%obj.vehicle,"0 0 0");
+	else
+	{
+		%height = 8;
+		%velocity = 100;
+		%zVec = 100;
+		%pos = GameBase::getPosition(%obj);
+		%posX = getWord(%pos,0);
+		%posY	= getWord(%pos,1);
+		%posZ	= getWord(%pos,2);
+		%client = Player::getClient(%obj);
+		(%obj.vehicle).Seat[%obj.vehicleSlot-2] = "";
+		%obj.vehicleSlot = "";
+		%obj.vehicle = "";
+		Player::setMountObject(%obj, -1, 0);
+		%rotZ = getWord(GameBase::getRotation(%obj),2);
+		GameBase::setRotation(%obj, "0 0 " @ %rotZ);
+		GameBase::setPosition(%obj,%posX @ " " @ %posY @ " " @ (%posZ + %height));
+		%jumpDir = Vector::getFromRot(GameBase::getRotation(%obj),%velocity,%zVec);
+		%client.inflyer = 0;
+		Player::applyImpulse(%obj,%jumpDir);
+	}
+}
+
+function bumpUp(%obj)
+{
+	%opos = GameBase::getPosition(%obj);
+	%newpos = Vector::add(%opos, "0 0 10");
+	gamebase::setposition(%obj, %newpos);
+}
+
 //============================================================================ Small Force Field
 // Deployable Forcefield 
 
 StaticShapeData DeployableForceField { shapeFile = "forcefield_3x4"; debrisId = defaultDebrisSmall; maxDamage = 5.50; visibleToSensor = true; isTranslucent = true; description = "Small Force Field"; };
 function DeployableForceField::onCollision(%this,%obj)
 {
-	if(Player::getClient(%obj).inflyer == 1)
-		GameBase::setDamageLevel(%obj.vehicle, 10);
+	if(getobjecttype(%obj) == "Flier")
+		BumpUp(%obj); //HopOut(%obj); //GameBase::setDamageLevel(%obj.vehicle, 10);
 	else if(GameBase::getDataName(%obj).shapefile == "rocket")
 		GameBase::setDamageLevel(%obj, 10);
 	else if(getObjectType(%obj) != "Player" || Player::isDead(%obj))
@@ -417,8 +485,8 @@ function DeployableForceField::onDestroyed(%this)
 StaticShapeData LargeForceField { shapeFile = "forcefield"; debrisId = defaultDebrisLarge; maxDamage = 8.00; visibleToSensor = true; isTranslucent = true; description = "Large Force Field"; };
 function LargeForceField::onCollision(%this,%obj)
 {
-	if(Player::getClient(%obj).inflyer == 1)
-		GameBase::setDamageLevel(%obj.vehicle, 10);
+	if(getobjecttype(%obj) == "Flier")
+		BumpUp(%obj); //HopOut(%obj); //GameBase::setDamageLevel(%obj.vehicle, 10);
 	else if(GameBase::getDataName(%obj).shapefile == "rocket")
 		GameBase::setDamageLevel(%obj, 10);
 	else if(getObjectType(%obj) != "Player" || Player::isDead(%obj))
@@ -437,8 +505,8 @@ function LargeForceField::onDestroyed(%this)
 StaticShapeData LargeShockForceField { shapeFile = "forcefield"; debrisId = defaultDebrisLarge; maxDamage = 8.00; visibleToSensor = true; isTranslucent = true; description = "Large Shock Force Field"; };
 function LargeShockForceField::onCollision(%this,%obj)
 {
-	if(Player::getClient(%obj).inflyer == 1)
-		GameBase::setDamageLevel(%obj.vehicle, 10);
+	if(getobjecttype(%obj) == "Flier")
+		BumpUp(%obj); //HopOut(%obj); //GameBase::setDamageLevel(%obj.vehicle, 10);
 	else if(GameBase::getDataName(%obj).shapefile == "rocket")
 		GameBase::setDamageLevel(%obj, 10);
 	else if(getObjectType(%obj) != "Player" || Player::isDead(%obj))
@@ -475,8 +543,8 @@ StaticShapeData ShockFloor
 
 function ShockFloor::onCollision(%this,%obj)
 {
-	if(Player::getClient(%obj).inflyer == 1)
-		GameBase::setDamageLevel(%obj.vehicle, 10);
+	if(getobjecttype(%obj) == "Flier")
+		BumpUp(%obj); //GameBase::setDamageLevel(%obj.vehicle, 10);
 	else if(GameBase::getDataName(%obj).shapefile == "rocket")
 		GameBase::setDamageLevel(%obj, 10);
 	else if(getObjectType(%obj) != "Player" || Player::isDead(%obj))
@@ -497,11 +565,17 @@ function ShockFloor::onDestroyed(%this)
 }
 
 //============================================================================ Blast Wall
-StaticShapeData BlastWall { shapeFile = "newdoor5"; maxDamage = 12.0; debrisId = defaultDebrisLarge; explosionId = debrisExpLarge; description = "BlastWall"; damageSkinData = "objectDamageSkins"; };
+StaticShapeData BlastWall { shapeFile = "newdoor5"; maxDamage = 12.0; debrisId = defaultDebrisLarge; explosionId = debrisExpLarge; description = "BlastWall"; damageSkinData = "objectDamageSkins"; visibleToSensor = true; };
 function BlastWall::onDestroyed(%this)
 {
 	StaticShape::onDestroyed(%this);
 	$TeamItemCount[GameBase::getTeam(%this) @ "BlastWallPack"]--;	
+}
+
+function BlastWall::onCollision(%this,%obj)
+{
+	if(getobjecttype(%obj) == "Flier")
+		BumpUp(%obj); //GameBase::setDamageLevel(%obj, 10);
 }
 
 //============================================================================ Blast Floor
@@ -510,6 +584,16 @@ function BlastFloor::onDestroyed(%this)
 {
 	StaticShape::onDestroyed(%this);
 	$TeamItemCount[GameBase::getTeam(%this) @ "BlastFloorPack"]--;	
+}
+
+function BlastWall2::onCollision(%this,%obj)
+{
+}
+
+function BlastFloor::onCollision(%this,%obj)
+{
+	if(getobjecttype(%obj) == "Flier")
+		BumpUp(%obj);
 }
 
 //============================================================================ Blast Wall2
@@ -771,7 +855,7 @@ StaticShapeData AirAmmoBasePad //===============================================
         damageSkinData = "objectDamageSkins";
         shadowDetailMask = 16;
         explosionId = debrisExpLarge;
-        visibleToSensor = true;
+        //visibleToSensor = true;
         mapFilter = 4;
         description = "AirAmmoBasePad";
 };

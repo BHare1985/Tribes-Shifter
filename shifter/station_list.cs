@@ -97,6 +97,7 @@ $InvList[ShockPack] = 1;
 $InvList[Silencer] = 1;
 $InvList[SilencerAmmo] = 1;
 $InvList[SMRPack] = 1;
+$InvList[SMR2Pack] = 1;
 $InvList[SniperAmmo] = 1;
 $InvList[SniperRifle] = 1;
 $InvList[SpyPod] = 1;
@@ -231,6 +232,7 @@ $VehicleInvList[ScoutVehicle] = 1;
 $VehicleInvList[LAPCVehicle] = 1;
 $VehicleInvList[HAPCVehicle] = 1;
 
+
 $VehicleInvList[NapalmModule] = 0;
 $VehicleInvList[HellFireModule] = 1;
 $VehicleInvList[DetPackModule] = 1;
@@ -247,7 +249,7 @@ $VehicleInvList[MechPack] = 1;
 
 $DataBlockName[ScoutVehicle] = Scout;
 $DataBlockName[WraithVehicle] = Wraith;
-$DataBlockName[JetVehicle] = Jet;
+$DataBlockName[JetVehicle] = tiny;
 $DataBlockName[LAPCVehicle] = LAPC;
 $DataBlockName[HAPCVehicle] = HAPC;
 

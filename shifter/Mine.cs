@@ -320,7 +320,7 @@ MineData ShockMine
 	explosionRadius = 10.0;
 	damageValue = 0.25;
 	damageType = $MortarDamageType;
-	kickBackStrength = 1000;
+	kickBackStrength = 500;
 	triggerRadius = 2.0;
 	maxDamage = 2.0;
 };
@@ -329,6 +329,7 @@ function ShockMine::onAdd(%this)
 {
 	GameBase::setActive(%this,true);
 	%data = GameBase::getDataName(%this);
+	ShockMine::deployCheck(%this);
 	schedule("GameBase::startFadeOut(" @ %this @ ");",8.0,%this);
 }
 function ShockMine::onCollision(%this,%obj)
@@ -346,10 +347,22 @@ function ShockMine::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
 	GameBase::setDamageLevel(%this,%damageLevel + %value);
 }
 
+function ShockMine::deployCheck(%this)
+{
+	if (GameBase::isAtRest(%this))
+	{
+		%set = newObject("shockmineset",SimSet);
+		if(containerBoxFillSet(%set,$MineObjectType,GameBase::getPosition(%this),1,1,1,0) > 1)
+			GameBase::setDamageLevel(%this, ShockMine.maxDamage);
+		if(%set) deleteobject(%set);
+	}
+	else 
+		schedule("HoloMine::deployCheck(" @ %this @ ");", 3, %this);
+}	
+
 function ShockMine::Detonate(%this)
 {
-	%data = GameBase::getDataName(%this);
-	GameBase::setDamageLevel(%this, %data.maxDamage);
+	GameBase::setDamageLevel(%this, ShockMine.maxDamage);
 }
 
 //============================================================= Replicator

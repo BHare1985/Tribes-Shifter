@@ -226,7 +226,7 @@ MineData Nukebomb
 	shadowDetailMask = 4;
 	explosionId = rocketExp;
 	explosionRadius = 10.0;
-	damageValue = 2.0;
+	damageValue = 4.0;
 	damageType = $MortarDamageType;
 	kickBackStrength = 300;
 	triggerRadius = 0.5;

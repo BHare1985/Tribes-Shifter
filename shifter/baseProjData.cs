@@ -152,7 +152,7 @@ BulletData SniperBullet1
 //Contributed by Czar :), and edited
 BulletData SilencerBullet
 {
-	//bulletShapeName    = "tumult_small.dts";
+	//bulletShapeName    = "plasmabolt.dts";
 	bulletShapeName    = "bullet.dts";
 	explosionTag       = debrisExpsmall;
 	expRandCycle       = 0;
@@ -534,8 +534,8 @@ RocketData FlamerBolt
 	muzzleVelocity   = 30.0;
 	terminalVelocity = 30.0;
 	acceleration     = 30.0;
-	totalTime        = 0.69;
-	liveTime         = 0.69;
+	totalTime        = 1.0;
+	liveTime         = 1.0;
 	lightRange       = 1.0;
 	lightColor       = { 1, 1, 0 };
 	inheritedVelocityScale = 0.0;
@@ -784,6 +784,11 @@ SeekingMissileData TurretMissile
    soundId = SoundJetHeavy;
 };
 
+function TurretMissile::OnAdd(%this)
+{
+	echo(GameBase::getTeam(%object));
+}
+
 function SeekingMissile::updateTargetPercentage(%target)
 {
 	return rocketDodge(%target);
@@ -798,6 +803,8 @@ function rocketDodge(%target)
 {
 	%armor = Player::getArmor(%target);
 	if(%armor == "spyarmor" || %armor == "spyfemale")
+		%tp = 0;
+	else if(Player::getSensorSupression(%target) > 0)
 		%tp = 0;
 	else
 		%tp = GameBase::virtual(%target, "getHeatFactor");
@@ -1036,7 +1043,7 @@ RocketData StingerMissile
    mass            = 2.0;
 
    damageClass      = 1;       // 0 impact, 1, radius
-   damageValue      = 0.5;
+   damageValue      = 0.50;
    damageType       = $ExplosionDamageType;
 
    explosionRadius  = 12.5;
@@ -1072,8 +1079,8 @@ RocketData JuggStingerMissile
    damageValue      = 0.55;
    damageType       = $ExplosionDamageType;
 
-   explosionRadius  = 13.0;
-   kickBackStrength = 75.0;
+	explosionRadius  = 15.0;
+	kickBackStrength = 80.0;
 
    muzzleVelocity   = 200.0;
    terminalVelocity = 2000.0;
@@ -1091,7 +1098,6 @@ RocketData JuggStingerMissile
 	trailWidth  = 1.45;
    soundId = SoundJetHeavy;
 };
-
 
 //======================================================================== GodHammer Missile
 RocketData GodHammer
@@ -1251,28 +1257,27 @@ RocketData IonBolt
 
 RocketData IonGunBolt
 { 
-	bulletShapeName = "fusionbolt.dts"; 
+	bulletShapeName = "fusionbolt.dts";//"enbolt.dts";
 		explosionTag = IonGunExp;//turretExp; 
 	collisionRadius = 0.0;
-	mass = 0.0; 
+	mass = 2.0; 
 
 	damageClass = 1;
-   damageValue = 0.50; 
+   damageValue = 0.23; 
 	damageType = $ElectricityDamageType; 
 	explosionRadius = 4.0; 
 	kickBackStrength = 0; 
-
-	muzzleVelocity   = 150.0;
-	terminalVelocity = 150.0;
-	acceleration     = 150.0;
-	totalTime        = 0.9;
-	liveTime         = 0.4;
-	lightRange = 3.0; 
+	muzzleVelocity   = 200.0;
+	terminalVelocity = 200.0;
+	acceleration     = 0.0;
+	totalTime        = 1.7;
+	liveTime         = 0.7;
+	lightRange = 1.0; 
 	lightColor = { 1.0, 0.7, 0.5 }; 
 	inheritedVelocityScale = 0.0;
-	trailType   = 2;
-	trailString = "hflame.dts";
-	smokeDist   = 4.0;
+	trailType = 1;
+	trailLength = 50; 
+	trailWidth = 0.9; 
 	soundId = SoundJetHeavy;
 };
 
@@ -1619,7 +1624,7 @@ else
 
 LaserData sniperLaser1
 {
-   laserBitmapName   = "lightningNew.bmp";
+   laserBitmapName   = "blue_blink2.bmp";
    hitName           = "laserhit.dts";
 
    damageConversion  = %lasdam;
@@ -1937,7 +1942,7 @@ function gravCharge::damageTarget(%target, %timeSlice, %damPerSec, %enDrainPerSe
 		//%diffVector = Item::getVelocity(%target);
 		Item::setVelocity(%playerID, %diffVector); //the actual movement function
 	}
-	else if(getObjectType(%target) == "Player")
+	else// if(getObjectType(%target) == "Player")
 	{
 		if (%playerId.GravBolt == "0")
 		{
@@ -1965,7 +1970,6 @@ function gravCharge::damageTarget(%target, %timeSlice, %damPerSec, %enDrainPerSe
 		}
 	}
 }
-
 
 //=========================================================================
 //						    Repair Class Ammos
@@ -2305,7 +2309,7 @@ function HackBolt::onAcquire(%this, %player, %target)
 }
 
 // Drain Bolt - Same as Repair, But drains, used with regeneration pack and Eng option for Eng Gun
-// ======================================================================================
+//------------------------------------------------------------------------------------------------------------------------
 
 RepairEffectData DrainBolt
 {
@@ -2366,7 +2370,12 @@ function DrainBolt::onAcquire(%this, %player, %target)
 					%name = (GameBase::getDataName(%player.drainTarget)).description;
 				}
 			}
+
 			//============================================================= Get Damage Level Of Object
+
+			//echo ("Drain Target  " @ %target);
+			//echo ("Target Damage " @ (GameBase::getDataName(%target)).maxDamage);
+
 			if (GameBase::getDamageLevel(%player.drainTarget) < (GameBase::getDataName(%target)).maxDamage)
 			{
 				Client::sendMessage(%client,0,%name @ " being drained!");
@@ -2409,19 +2418,10 @@ function DrainBolt::checkDone(%this, %player)
 
 	if (Player::isTriggered(%player,$WeaponSlot) && (Player::getMountedItem(%player,$WeaponSlot) == Regen) && %target != -1)
 	{
-		%shape = (GameBase::getDataName(%target)).shapeFile;
 		
-		if (checkHackable(blah, %shape) == "1")
-		{
-			bottomprint(%Client, "RegenPack does not work on this." ,3);
-			Player::trigger(%player,$WeaponSlot,false);			
-			return;
-		}
 		//======================================================================================= USED AGAINST NME
 		if (gamebase::Getteam(%player) != gamebase::Getteam(%object) && gamebase::getteam(%object) != "-1")
 		{
-			%shape = (GameBase::getDataName(%target)).shapeFile;
-			
 			if (%object == %player)
 			{
 				if (GameBase::getDamageLevel(%player) >= (GameBase::getDataName(%object)).maxDamage)
@@ -2437,8 +2437,8 @@ function DrainBolt::checkDone(%this, %player)
 				{
 					if ($PlayerDraining[%player] = True)
 					{
-						%damage = (GameBase::getDataName(%object)).maxDamage / 50;
-						GameBase::applyDamage(%object,$GravDamageType, %damage,GameBase::getPosition(%player),"0 0 0","0 0 0",%player);
+						%damage = (GameBase::getDataName(%object)).maxDamage / 20;
+						GameBase::applyDamage(%object,$FlashDamageType, %damage,GameBase::getPosition(%player),"0 0 0","0 0 0",%player);
 						GameBase::repairDamage(%player,(%damage / 25));
 						if ($Debug) echo ("Damage Applied = " @ %damage);
 					}
@@ -2478,7 +2478,7 @@ function DrainBolt::checkDone(%this, %player)
 					{
 						Player::trigger(%player, $WeaponSlot, false); 
 						Client::sendMessage(%client,1, "Charging " @ Client::getName(%tc)); 
-						Client::sendMessage(%tc,1, "You are being charged by " @ Client::getName(%client)); 
+						Client::sendMessage(%tc,1, "Finished charging from " @ Client::getName(%client)); 
 						Player::trigger(%player, $WeaponSlot, false); 
 						return; 
 					} 
@@ -2489,15 +2489,14 @@ function DrainBolt::checkDone(%this, %player)
 					%tc.isPowered = true; 
 					%player.powerTarget = ""; 
 					%target.shieldStrength = 0.025; 
-					schedule ("" @ %target @ ".shieldStrength = 0;",240);
-					schedule ("Player::trigger("@%player@", $WeaponSlot, false);", 0.7);
+					schedule ("" @ %target @ ".shieldStrength = 0;",120);
+					Player::trigger(%player, $WeaponSlot, false); 
 					return; 
 				}
 				else if(%objType == "Flier")
 				{
 					%player.powerTarget = ""; 
-					%target.shieldStrength = 0.025;
-					schedule ("" @ %target @ ".shieldStrength = 0;",240);
+					%target.shieldStrength = 0.013; 
 					Client::sendMessage(%client,0, "Shielding " @ $VehicleToItem[GameBase::getDataName(%target)].description); 
 					Player::trigger(%player, $WeaponSlot, false); 
 					return; 
@@ -2524,7 +2523,7 @@ function DrainBolt::checkDone(%this, %player)
 						
 						%target.poweron = "True";
 						schedule ("" @ %target @ ".poweron = false;",$Shifter::HackedTime);
-						schedule ("GameBase::stopSequence(" @ %target @ ", 0.01);",$Shifter::HackedTime);
+						schedule ("GameBase::stopSequence(" @ %target @ ",0);",$Shifter::HackedTime);
 						schedule ("GameBase::pauseSequence(" @ %target @ ",1);",$Shifter::HackedTime);
 						schedule ("GameBase::pauseSequence(" @ %target @ ",2);",$Shifter::HackedTime);
 						schedule ("Station::checkTarget(" @ %target @ ");",$Shifter::HackedTime);
@@ -2534,7 +2533,7 @@ function DrainBolt::checkDone(%this, %player)
 					}
 				}
 				
-				if(%obj == "PlasmaTurret" || %obj == "ELFTurret" || %obj == "RocketTurret" || %obj == "IndoorTurret" || %obj == "PulseSensor" || %obj == "MediumPulseSensor" || %obj == "MortarTurret" || %obj == "FlamerTurret") 
+				if(%obj == "PlasmaTurret" || %obj == "ELFTurret" || %obj == "RocketTurret" || %obj == "IndoorTurret" || %obj == "PulseSensor" || %obj == "MediumPulseSensor" || %obj == "MortarTurret") 
 				{ 
 					%player.powerTarget = ""; 
 					Client::sendMessage(%client,1, "Upgrading Shielding on " @ %obj.description); 
@@ -2585,6 +2584,7 @@ function DrainBolt::onRelease(%this, %player)
 	%client = Player::getClient(%player);
 
 	$PlayerDraining[%player] = "False";
+	//echo ("***  Drain Progress Stopped " @ $PlayerDraining[%player]);
 	GameBase::repairDamage(%player,0);
 	
 	%object = %player.drainTarget;
@@ -3155,4 +3155,5 @@ RocketData StarShell
    trailWidth  = 0.3;
 	rotationPeriod = 0.25;
    soundId = SoundThrowItem;
+};
 };

@@ -5,7 +5,7 @@ StaticShapeData AmmoStation
    description = "Ammo Supply Unit";
 	shapeFile = "ammounit";
 	className = "Station";
-	visibleToSensor = true;
+	//visibleToSensor = true;
 	sequenceSound[0] = { "activate", SoundActivateAmmoStation };
 	sequenceSound[1] = { "power", SoundAmmoStationPower };
 	sequenceSound[2] = { "use", SoundUseAmmoStation };

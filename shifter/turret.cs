@@ -657,7 +657,7 @@ function DeployableShock::onEnabled(%this)
 TurretData DeployableSatchel
 {
 	className = "Turret";
-	shapeFile = "camera";
+	shapeFile = "grenammo";
 	//projectileType = "Undefined";
 	maxDamage = 0.01;
 	maxEnergy = 75;
@@ -684,7 +684,6 @@ TurretData DeployableSatchel
 	description = "Satchel Charge";
 	damageSkinData = "objectDamageSkins";
 };
-
 function DeployableSatchel::onCollision(%this,%object)
 {
 	%type = getObjectType(%object);
@@ -695,7 +694,7 @@ function DeployableSatchel::onCollision(%this,%object)
 
 function DeployableSatchel::onFire(%this)
 {
-	GameBase::applyRadiusDamage($MineDamageType, getBoxCenter(%this), 20, 0.75, 305, %this);
+	GameBase::applyRadiusDamage($MineDamageType, getBoxCenter(%this), 20, 5.2, 305, %this);
 }
 
 function DeployableSatchel::onAdd(%this)
@@ -706,7 +705,8 @@ function DeployableSatchel::onAdd(%this)
 function DeployableSatchel::deploy(%this)
 {
 
-	GameBase::playSequence(%this,1,"deploy");	
+	//GameBase::playSequence(%this,1,"deploy");	
+	DeployableSatchel::onEndSequence(%this);
 }
 
 function DeployableSatchel::onEndSequence(%this,%thread)
@@ -720,7 +720,7 @@ function DeployableSatchel::onEndSequence(%this,%thread)
 
 function DeployableSatchel::onControl(%this)
 {
-	GameBase::applyRadiusDamage($MineDamageType, getBoxCenter(%this), 20, 0.75, 305, %this);
+	GameBase::applyRadiusDamage($DebrisDamageType, getBoxCenter(%this), 20, 5.2, 305, %this);
 }
 
 function DeployableSatchel::onDestroyed(%this)
@@ -728,7 +728,9 @@ function DeployableSatchel::onDestroyed(%this)
 	%this.shieldStrength = 0;
 	GameBase::setRechargeRate(%this,0);
 	Turret::onDeactivate(%this);
-	CalcRadiusDamage(%this,$DebrisDamageType,30,0.2,25,20,20,1.5,0.5,200,100);
+	GameBase::applyRadiusDamage($DebrisDamageType, getBoxCenter(%this), 20, 5.2, 305, %this);
+
+	//CalcRadiusDamage(%this,$DebrisDamageType,30,0.2,25,20,20,1.5,0.5,200,100);
   	$TeamItemCount[GameBase::getTeam(%this) @ "SatchelPack"]--;
 }
 
@@ -1334,7 +1336,7 @@ function JammerBeacon::checkJammerBeacon(%this)
 
 		if ( %data == "DeployableSensorJammer" && gamebase::getteam(%obj) != gamebase::getteam(%this) )
 		{
-			GameBase::applyDamage(%this, $ImpactDamageType, 0.15,GameBase::getPosition(%obj),"0 0 0","0 0 0",%obj);
+			GameBase::applyDamage(%this, $ImpactDamageType, 0.37,GameBase::getPosition(%obj),"0 0 0","0 0 0",%obj);
 			return;
 		}
 	}
@@ -1909,5 +1911,4 @@ function DeployableLaserM2::onEnabled(%this)
 	GameBase::setRechargeRate(%this,3);
 	GameBase::setActive(%this,true);
 }	
-
 

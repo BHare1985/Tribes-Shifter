@@ -8,7 +8,7 @@ StaticShapeData DefaultBeacon
 	castLOS = true;
 	supression = false;
 	mapFilter = 2;
-	visibleToSensor = true;
+	//visibleToSensor = true;
 	explosionId = flashExpSmall;
 	debrisId = flashDebrisSmall;
 };
@@ -34,7 +34,7 @@ StaticShapeData BeaconTwo
 	castLOS = true;
 	supression = false;
 	mapFilter = 2;
-	visibleToSensor = true;
+	//visibleToSensor = true;
 	explosionId = flashExpSmall;
 	debrisId = flashDebrisSmall;
 };

@@ -140,7 +140,9 @@ function BuildItemList()
 	$ItemMax[aarmor,	SilencerAmmo] = 25;
 	$ItemMax[aarmor,	AutoRocketAmmo] = 12;	
 	$ItemMax[aarmor,	LaserRifle] = 1;
-	$ItemMax[aarmor,	FlightPack] = 1;
+	$ItemMax[aarmor,	FlightPack] = 0;
+	$ItemMax[aarmor,	Disclauncher] = 0;
+	$ItemMax[aarmor,	CloakingDevice] = 0;
 	CopyItemData(%max, aarmor, afemale);
 
 
@@ -160,7 +162,7 @@ function BuildItemList()
 	$ItemMax[barmor,	MineAmmo] = 6;
 	$ItemMax[barmor,	Mortar] = 1;
 	$ItemMax[barmor,	MortarAmmo] = 8;
-	$ItemMax[barmor,	PlasmaAmmo] = 50;
+	$ItemMax[barmor,	PlasmaAmmo] = 70;
 	$ItemMax[barmor,	PlasmaGun] = 1;
 	$ItemMax[barmor,	RailAmmo] = 10;
 	$ItemMax[barmor,	RocketAmmo] = 10;
@@ -323,7 +325,6 @@ function BuildItemList()
 	$ItemMax[sarmor,	RailAmmo] = 10;
 	$ItemMax[sarmor,	TranqAmmo] = 15;
 	$ItemMax[sarmor,	SilencerAmmo] = 25;
-	$ItemMax[sarmor,	IonGun] = 1;
 	CopyItemData(%max, sarmor, sfemale);
 	CopyItemData(%max, sarmor, stimarmor);
 	CopyItemData(%max, sarmor, stimfemale);
@@ -549,18 +550,19 @@ PlayerData jarmor
 
 	maxDamage = 2.0;
 
-	maxForwardSpeed = 4.8;
-	maxBackwardSpeed = 4.6;
+	maxForwardSpeed = 5.0;
+	maxBackwardSpeed = 4.0;
 	maxSideSpeed = 4.0;
 
 	groundForce = 35 * 22.0;
 	groundTraction = 4.5;
 
-	mass = 20.0;
+	mass = 18.5;
 	maxEnergy = 150;
-	
+
 	drag = 3.0;
 	density = 2.5;
+//   horzVelClamp = 3;
 	canCrouch = false;
 
 	minDamageSpeed = 25;
@@ -569,130 +571,21 @@ PlayerData jarmor
 	jumpImpulse = 125;
 	jumpSurfaceMinDot = 0.2;
 
-   // animation data:
-   // animation name, one shot, exclude, direction,
-	// firstPerson, chaseCam, thirdPerson, signalThread
+	animData[0]  = { "root", none, 1, true, true, true, false, 0 }; animData[1]  = { "run", none, 1, true, false, true, false, 3 }; animData[2]  = { "runback", none, 1, true, false, true, false, 3 }; animData[3]  = { "side left", none, 1, true, false, true, false, 3 }; animData[4]  = { "side left", none, -1, true, false, true, false, 3 }; animData[5] = { "jump stand", none, 1, true, false, true, false, 3 }; animData[6] = { "jump run", none, 1, true, false, true, false, 3 }; animData[7] = { "crouch root", none, 1, true, true, true, false, 3 }; animData[8] = { "crouch root", none, 1, true, true, true, false, 3 }; animData[9] = { "crouch root", none, -1, true, true, true, false, 3 }; animData[10] = { "crouch forward", none, 1, true, false, true, false, 3 }; animData[11] = { "crouch forward", none, -1, true, false, true, false, 3 }; animData[12] = { "crouch side left", none, 1, true, false, true, false, 3 }; animData[13] = { "crouch side left", none, -1, true, false, true, false, 3 }; animData[14]  = { "fall", none, 1, true, true, true, false, 3 }; animData[15]  = { "landing", SoundLandOnGround, 1, true, false, false, false, 3 }; animData[16]  = { "landing", SoundLandOnGround, 1, true, false, false, false, 3 }; animData[17]  = { "tumble loop", none, 1, true, false, false, false, 3 }; animData[18]  = { "tumble end", none, 1, true, false, false, false, 3 }; animData[19] = { "jet", none, 1, true, true, true, false, 3 }; animData[20] = { "PDA access", none, 1, true, false, false, false, 3 }; animData[21] = { "throw", none, 1, true, false, false, false, 3 }; animData[22] = { "flyer root", none, 1, false, false, false, false, 3 }; animData[23] = { "apc root", none, 1, true, true, true, false, 3 }; animData[24] = { "apc pilot", none, 1, false, false, false, false, 3 }; animData[25] = { "crouch die", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[26] = { "die chest", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[27] = { "die head", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[28] = { "die grab back", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[29] = { "die right side", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[30] = { "die left side", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[31] = { "die leg left", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[32] = { "die leg right", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[33] = { "die blown back", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[34] = { "die spin", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[35] = { "die forward", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[36] = { "die forward kneel", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[37] = { "die back", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[38] = { "sign over here",  none, 1, true, false, false, false, 2 }; animData[39] = { "sign point", none, 1, true, false, false, true, 1 }; animData[40] = { "sign retreat",none, 1, true, false, false, false, 2 }; animData[41] = { "sign stop", none, 1, true, false, false, true, 1 }; animData[42] = { "sign salut", none, 1, true, false, false, true, 1 };  animData[43] = { "celebration 1", none, 1, true, false, false, false, 2 }; animData[44] = { "celebration 2", none, 1, true, false, false, false, 2 }; animData[45] = { "celebration 3", none, 1, true, false, false, false, 2 }; animData[46] = { "taunt 1", none, 1, true, false, false, false, 2 }; animData[47] = { "taunt 2", none, 1, true, false, false, false, 2 }; animData[48] = { "pose kneel", none, 1, true, false, false, true, 1 }; animData[49] = { "pose stand", none, 1, true, false, false, true, 1 }; animData[50] = { "wave", none, 1, true, false, false, true, 1 }; jetSound = SoundJetHeavy; rFootSounds = { SoundHFootRSoft, SoundHFootRHard, SoundHFootRSoft, SoundHFootRHard, SoundHFootRSoft, SoundHFootRSoft, SoundHFootRSoft, SoundHFootRHard, SoundHFootRSnow, SoundHFootRSoft, SoundHFootRSoft, SoundHFootRSoft, SoundHFootRSoft, SoundHFootRSoft, SoundHFootRSoft };  lFootSounds = { SoundHFootLSoft, SoundHFootLHard, SoundHFootLSoft, SoundHFootLHard, SoundHFootLSoft, SoundHFootLSoft, SoundHFootLSoft, SoundHFootLHard, SoundHFootLSnow, SoundHFootLSoft, SoundHFootLSoft, SoundHFootLSoft, SoundHFootLSoft, SoundHFootLSoft, SoundHFootLSoft }; footPrints = { 4, 5 };
 
-   // movement animations:
-   animData[0]  = { "root", none, 1, true, true, true, false, 0 };
-   animData[1]  = { "run", none, 1, true, false, true, false, 3 };
-   animData[2]  = { "runback", none, 1, true, false, true, false, 3 };
-   animData[3]  = { "side left", none, 1, true, false, true, false, 3 };
-   animData[4]  = { "side left", none, -1, true, false, true, false, 3 };
-   animData[5] = { "jump stand", none, 1, true, false, true, false, 3 };
-   animData[6] = { "jump run", none, 1, true, false, true, false, 3 };
-   animData[7] = { "crouch root", none, 1, true, true, true, false, 3 };
-   animData[8] = { "crouch root", none, 1, true, true, true, false, 3 };
-   animData[9] = { "crouch root", none, -1, true, true, true, false, 3 };
-   animData[10] = { "crouch forward", none, 1, true, false, true, false, 3 };
-   animData[11] = { "crouch forward", none, -1, true, false, true, false, 3 };
-   animData[12] = { "crouch side left", none, 1, true, false, true, false, 3 };
-   animData[13] = { "crouch side left", none, -1, true, false, true, false, 3 };
-   animData[14]  = { "fall", none, 1, true, true, true, false, 3 };
-   animData[15]  = { "landing", SoundLandOnGround, 1, true, false, false, false, 3 };
-   animData[16]  = { "landing", SoundLandOnGround, 1, true, false, false, false, 3 };
-   animData[17]  = { "tumble loop", none, 1, true, false, false, false, 3 };
-   animData[18]  = { "tumble end", none, 1, true, false, false, false, 3 };
-   animData[19] = { "jet", none, 1, true, true, true, false, 3 };
+	boxWidth = 0.8;
+	boxDepth = 0.8;
+	boxNormalHeight = 2.6;
 
-   // misc. animations:
-   animData[20] = { "PDA access", none, 1, true, false, false, false, 3 };
-   animData[21] = { "throw", none, 1, true, false, false, false, 3 };
-   animData[22] = { "flyer root", none, 1, false, false, false, false, 3 };
-   animData[23] = { "apc root", none, 1, true, true, true, false, 3 };
-   animData[24] = { "apc pilot", none, 1, false, false, false, false, 3 };
-   
-   // death animations:
-   animData[25] = { "crouch die", SoundPlayerDeath, 1, false, false, false, false, 4 };
-   animData[26] = { "die chest", SoundPlayerDeath, 1, false, false, false, false, 4 };
-   animData[27] = { "die head", SoundPlayerDeath, 1, false, false, false, false, 4 };
-   animData[28] = { "die grab back", SoundPlayerDeath, 1, false, false, false, false, 4 };
-   animData[29] = { "die right side", SoundPlayerDeath, 1, false, false, false, false, 4 };
-   animData[30] = { "die left side", SoundPlayerDeath, 1, false, false, false, false, 4 };
-   animData[31] = { "die leg left", SoundPlayerDeath, 1, false, false, false, false, 4 };
-   animData[32] = { "die leg right", SoundPlayerDeath, 1, false, false, false, false, 4 };
-   animData[33] = { "die blown back", SoundPlayerDeath, 1, false, false, false, false, 4 };
-   animData[34] = { "die spin", SoundPlayerDeath, 1, false, false, false, false, 4 };
-   animData[35] = { "die forward", SoundPlayerDeath, 1, false, false, false, false, 4 };
-   animData[36] = { "die forward kneel", SoundPlayerDeath, 1, false, false, false, false, 4 };
-   animData[37] = { "die back", SoundPlayerDeath, 1, false, false, false, false, 4 };
+	boxNormalHeadPercentage  = 0.70;
+	boxNormalTorsoPercentage = 0.45;
 
-   // signal moves:
-	animData[38] = { "sign over here",  none, 1, true, false, false, false, 2 };
-   animData[39] = { "sign point", none, 1, true, false, false, true, 1 };
-   animData[40] = { "sign retreat",none, 1, true, false, false, false, 2 };
-   animData[41] = { "sign stop", none, 1, true, false, false, true, 1 };
-   animData[42] = { "sign salut", none, 1, true, false, false, true, 1 }; 
-
-    // celebraton animations:
-   animData[43] = { "celebration 1", none, 1, true, false, false, false, 2 };
-   animData[44] = { "celebration 2", none, 1, true, false, false, false, 2 };
-   animData[45] = { "celebration 3", none, 1, true, false, false, false, 2 };
-
-    // taunt anmations:
-   animData[46] = { "taunt 1", none, 1, true, false, false, false, 2 };
-   animData[47] = { "taunt 2", none, 1, true, false, false, false, 2 };
-
-    // poses:
-   animData[48] = { "pose kneel", none, 1, true, false, false, true, 1 };
-   animData[49] = { "pose stand", none, 1, true, false, false, true, 1 };
-
-	// Bonus wave
-   animData[50] = { "wave", none, 1, true, false, false, true, 1 };
-
-   jetSound = SoundJetHeavy;
-
-   rFootSounds = 
-   {
-     SoundHFootRSoft,
-     SoundHFootRHard,
-     SoundHFootRSoft,
-     SoundHFootRHard,
-     SoundHFootRSoft,
-     SoundHFootRSoft,
-     SoundHFootRSoft,
-     SoundHFootRHard,
-     SoundHFootRSnow,
-     SoundHFootRSoft,
-     SoundHFootRSoft,
-     SoundHFootRSoft,
-     SoundHFootRSoft,
-     SoundHFootRSoft,
-     SoundHFootRSoft
-  }; 
-   lFootSounds =
-   {
-      SoundHFootLSoft,
-      SoundHFootLHard,
-      SoundHFootLSoft,
-      SoundHFootLHard,
-      SoundHFootLSoft,
-      SoundHFootLSoft,
-      SoundHFootLSoft,
-      SoundHFootLHard,
-      SoundHFootLSnow,
-      SoundHFootLSoft,
-      SoundHFootLSoft,
-      SoundHFootLSoft,
-      SoundHFootLSoft,
-      SoundHFootLSoft,
-      SoundHFootLSoft
-   };
-
-   footPrints = { 4, 5 };
-
-   boxWidth = 0.8;
-   boxDepth = 0.8;
-   boxNormalHeight = 2.6;
-
-   boxNormalHeadPercentage  = 0.70;
-   boxNormalTorsoPercentage = 0.45;
-
-   boxHeadLeftPercentage  = 0.48;
-   boxHeadRightPercentage = 0.70;
-   boxHeadBackPercentage  = 0.48;
-   boxHeadFrontPercentage = 0.60;
+	boxHeadLeftPercentage  = 0.48;
+	boxHeadRightPercentage = 0.70;
+	boxHeadBackPercentage  = 0.48;
+	boxHeadFrontPercentage = 0.60;
 };
+
 
 //==============================================
 // Assassin Armour
@@ -1655,16 +1548,16 @@ PlayerData aarmor
 	shieldShapeName = "shield";
 	damageSkinData = "armorDamageSkins";
 	debrisId = playerDebris;
-	shadowDetailMask = 1;
+	shadowDetailMask = 0;
 	canCrouch = false;
-	visibleToSensor = True;
+	visibleToSensor = False;
 	mapFilter = 1;
 	mapIcon = "M_player";
 	maxJetSideForceFactor = 1.2; //1.0; //fem 1.2
 	maxJetForwardVelocity = 17;
 	minJetEnergy = 1;
 	jetForce = 325;
-	jetEnergyDrain = 0.9; //1.0; //fem 0.9
+	jetEnergyDrain = 0.8; //1.0; //fem 0.8
 	maxDamage = 1.0; //badfem 0.9
 	maxForwardSpeed = 11.0; //fem 11.0
 	maxBackwardSpeed = 9.0;
@@ -1711,15 +1604,15 @@ PlayerData afemale
 	shieldShapeName = "shield";
 	damageSkinData = "armorDamageSkins";
 	debrisId = playerDebris;
-	shadowDetailMask = 1;
-	visibleToSensor = True;
+	shadowDetailMask = 0;
+	visibleToSensor = False;
 	mapFilter = 1;
 	mapIcon = "M_player";
 	maxJetSideForceFactor = 1.2;
 	maxJetForwardVelocity = 17;
 	minJetEnergy = 1;
 	jetForce = 325;
-	jetEnergyDrain = 0.9;
+	jetEnergyDrain = 0.8;
 	canCrouch = false;
 	maxDamage = 1.0;
 	maxForwardSpeed = 11.0;

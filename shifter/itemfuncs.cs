@@ -206,6 +206,24 @@ function CheckForObjects(%pos, %l, %w, %h)
 	return True;
 }
 
+function VehicleCheck(%client, %pos)
+{
+  	%set = newObject("set",SimSet);
+	%num = containerBoxFillSet(%set,$VehicleObjectType,%pos,9,9,10,0);
+	%n = Group::objectCount(%set);	
+		
+	if(!%n)
+	{
+		if(%set)deleteobject(%set);
+		return 1;
+	}
+
+	if(%n > 0)
+		Client::sendMessage(%client,1,"Unable to deploy - Vehicle in the way");
+	
+	return 0;
+}
+
 //===========================================
 function CountObjects(%set,%name,%num) 
 {
@@ -331,6 +349,12 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 			%datab = GameBase::getDataName(%o);
 			%pos = $los::position;
 
+		if(%type == "StaticShape")
+		{
+			if(!VehicleCheck(%client, %pos))
+				return 0;
+		}
+
 			if (%surface)
 			{
 				if (%obj == "SimTerrain" || %obj == "InteriorShape" || %datab == "DeployablePlatform" || %datab == "LargeAirBasePlatform" || %datab == "BlastFloor" || %datab == "BlastWall" || %datab == "LargeEmplacementPlatform")
@@ -393,44 +417,6 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 					Client::sendMessage(%client,1,"Other objects in the way.");
 					return;
 				}				
-			}
-//greyflcn bugfix
-//Fix for airbase lasers
-//Fix for 4 lasers in the same spot
-			if (%name == "Laser Turret")
-			{
-				%posX = getWord(%Pos,0);
-				%posY = getWord(%Pos,1);
-				%posZ = getWord(%Pos,2) - 0.5;
-				%newpos = %posX @ " " @ %posY @ " " @ %posZ;
-				%set = newObject("laserset",SimSet);
-				%num0 = containerBoxFillSet(%Set, %Mask, %newpos, 1.0,1.0,2.0,0);
-				%num = CountObjects(%set,%deploy,%num0);
-				if(%set)deleteobject(%set);
-				//if(%num)
-				//{
-				//	Client::sendMessage(%client,1,"Frequency Overload - Too close to other " @ %deploy @ "s.");
-				//	return;
-				//}
-				if(%datab == "LargeAirBasePlatform")
-				{
-					if (Vector::dot($los::normal,"0 0 1") > 0.7)
-					{
-						%prot = GameBase::getRotation(%player);
-						%zRot = getWord(%prot,2);
-						if (Vector::dot($los::normal,"0 0 1") > 0.6)
-							%rot = "0 0 " @ %zRot;
-						else if (Vector::dot($los::normal,"0 0 -1") > 0.6)
-							%rot = "3.14159 0 " @ %zRot;
-						else
-							%rot = Vector::getRotation($los::normal);
-					}
-					else
-					{
-						Client::sendMessage(%client,1,"Can only deploy on flat surfaces");
-						return 0;
-					}
-				}
 			}
 
 			if (%angle == "True")
@@ -869,7 +855,7 @@ function Renegades_startShield(%clientId, %player)
 	%armor = Player::getArmor(%player);
 
 	if (%armor == "jarmor")
-		%player.shieldStrength = 0.016;
+		%player.shieldStrength = 0.017;
 	else
 		%player.shieldStrength = 0.009;
 
@@ -960,7 +946,7 @@ function checkPlayerCloak(%clientId, %player)
 	{
 		GameBase::playSound(%player,ForceFieldOpen,0);
 		Client::sendMessage(%clientId,0,"Cloaking Off");
-	
+		//GameBase::startFadeIn(%player);
 		%player.cloaked = 0;
 		Player::setSensorSupression(%player,0);
 	}
@@ -969,6 +955,7 @@ function checkPlayerCloak(%clientId, %player)
 //============================================================================================ Eng Missile Lock
 function EngMissileLock(%clientId, %player, %item)
 {
+	return;
 	%client = Player::getClient(%player);
 	if (GameBase::getLOSInfo(%player,5))
 	{
@@ -1092,7 +1079,7 @@ function EngBeacon(%clientId, %player, %bec)
 function EngCamera(%client, %player, %bec)
 {
 	%item = "CameraPack";
-	if (GameBase::getLOSInfo(%player,3))
+	if (GameBase::getLOSInfo(%player,6))
 	{
 		%prot = GameBase::getRotation(%player);
 		%zRot = getWord(%prot,2);

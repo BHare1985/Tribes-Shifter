@@ -263,14 +263,14 @@ function teamEnergyBuySell(%player,%cost)
 function remoteBuyFavorites(%client,%favItem0,%favItem1,%favItem2,%favItem3,%favItem4,%favItem5,%favItem6,%favItem7,%favItem8,%favItem9,%favItem10,%favItem11,%favItem12,%favItem13,%favItem14,%favItem15,%favItem16,%favItem17,%favItem18,%favItem19)
 {
 	$SpawnFav = "True";
-	if (isPlayerBusy(%client))
-		return;
+	//if (isPlayerBusy(%client))
+	//	return;
 
-   	%time = getIntegerTime(true) >> 4;
-   	if(%time <= %client.lastBuyFavTime)
-   	   	return;
+   //	%time = getIntegerTime(true) >> 4;
+   //	if(%time <= %client.lastBuyFavTime)
+   //	   	return;
 
-   	%client.lastBuyFavTime = %time;
+   //	%client.lastBuyFavTime = %time;
 
 	if( !%client.observerMode == "pregame" || %client.dead) { return; }
 
@@ -929,56 +929,13 @@ function fireGH(%player)
 		
 			if(GameBase::getLOSInfo(%player,500)) 
 			{
-				%object = getObjectType($los::object);
-				%targetId = GameBase::getOwnerClient($los::object);
-				%tarmor = Player::getArmor($los::object);
-
-				if(%object == "Player" && (%tarmor != "spyarmor" && %tarmor != "spyfemale"))
-				{
-					Player::decItemCount(%player,$WeaponAmmo[Hammer1Pack],2);
-					%name = Client::getName(%targetId);
-					Tracker(%client,%targetId);
-					Client::sendMessage(%client,0,"** Lock Aquired - " @ %name @ "~wmine_act.wav");
-					Projectile::spawnProjectile("JuggStingerMissileTracker",%trans,%player,%vel,$los::object);
-					playSound(SoundMissileTurretFire,%ppos);
-					Tracker(%client,%targetId);
-					Client::sendMessage(%client,0,"** Lock Aquired - " @ %name @ "~wmine_act.wav");
-					Projectile::spawnProjectile("JuggStingerMissileTracker",%trans,%player,%vel,$los::object);
-					playSound(SoundPlasmaTurretFire,%ppos);
-					playSound(SoundMissileTurretFire,%ppos);
-					godhammer::heatup(%client);	
-					%player.refire = 1;
-					schedule ("" @ %player @ ".refire = 0;", 0.5);
-				}
-				else if(%object == "Flier")
-				{			 
-					Player::decItemCount(%player,$WeaponAmmo[Hammer1Pack],2);
-					%pilot = ($los::object).clLastMount;
-					%name = GameBase::getDataName($los::object);
-					%target = $los::object;
-					if(%pilot.driver) Tracker(%client,%pilot);
-					Client::sendMessage(%client,0,"** Lock Aquired - " @ %name @ "~wmine_act.wav");
-					Projectile::spawnProjectile("JuggStingerMissileTracker",%trans,%player,%vel,%target);
-					playSound(SoundPlasmaTurretFire,%ppos);
-					if(%pilot.driver) Tracker(%client,%pilot);
-					Client::sendMessage(%client,0,"** Lock Aquired - " @ %name @ "~wmine_act.wav");
-					Projectile::spawnProjectile("JuggStingerMissileTracker",%trans,%player,%vel,%target);
-					playSound(SoundPlasmaTurretFire,%ppos);
-					playSound(SoundMissileTurretFire,%ppos);
-					godhammer::heatup(%client);
-					%player.refire = 1;
-					schedule ("" @ %player @ ".refire = 0;", 0.5);
-				}
-				else
-				{
-					Player::trigger(%player,4,true);	Player::trigger(%player,5,true);
-					Player::trigger(%player,4,false);	Player::trigger(%player,5,false);
-					playSound(SoundPlasmaTurretFire,%ppos);
-					playSound(SoundMissileTurretFire,%ppos);
-					%player.refire = 1;
-					schedule ("" @ %player @ ".refire = 0;", 0.5);
-					godhammer::heatup(%client);
-				}
+				Player::trigger(%player,4,true);	Player::trigger(%player,5,true);
+				Player::trigger(%player,4,false);	Player::trigger(%player,5,false);
+				playSound(SoundPlasmaTurretFire,%ppos);
+				playSound(SoundMissileTurretFire,%ppos);
+				%player.refire = 1;
+				schedule ("" @ %player @ ".refire = 0;", 0.5);
+				godhammer::heatup(%client);
 			}
 			else
 			{
@@ -2407,8 +2364,8 @@ function Beacon::onUse(%player,%item)
 						Client::sendMessage(Player::getClient(%player),0,"You use a Speed Booster."); 
 						Player::decItemCount(%player, %item);
 						schedule ("" @ %ClientId @ ".boosted = \"False\";",2);
-						schedule ("" @ %ClientId @ ".boostercool = \"False\";",6);
-						schedule ("" @ %ClientId @ ".boostpop = \"0\";",6);
+						schedule ("" @ %ClientId @ ".boostercool = \"False\";",4);
+						schedule ("" @ %ClientId @ ".boostpop = \"0\";",4);
 					}
 					schedule ("Player::trigger(" @ %player @ ",4,false);",1,%player);
 					schedule ("Player::trigger(" @ %player @ ",5,false);",1,%player);
@@ -2420,7 +2377,7 @@ function Beacon::onUse(%player,%item)
 	else if (%armor == "aarmor" || %armor == "afemale")
 	{    
 		Renegades_startCloak(%clientId, %player);
-		%clientId.empTime = 0;
+		//%clientId.empTime = 0;
 		Player::decItemCount(%player,%item);
 	}
 
@@ -2430,13 +2387,14 @@ function Beacon::onUse(%player,%item)
 		{
 			if(!%clientId.GolBeacon || %clientId.GolBeacon == 0)
 			{
-				if(%client.throwStrength = "") %client.throwStrength = 1.0;
-				
+
 				if(%player.throwTime < getSimTime() )
 				{
 					%obj = newObject("","Mine","Concussion2");
 					addToSet("MissionCleanup", %obj);
 					%client = Player::getClient(%player);
+					if(!%client.throwStrength)
+						%client.throwStrength = 1.0;
 					GameBase::throw(%obj,%client,20 * %client.throwStrength,false);
 					%player.throwTime = getSimTime() + 0.15;
 					Player::decItemCount(%player,%item);
@@ -2647,13 +2605,15 @@ function airbase::specialdeploy(%team,%playerPos,%playerRot,%player)
 	%plat3 = "Platform3";
 	%plat4 = "Platform4";
 
+%platrot = "0 0 1.5714";
+
 		//=== Bottom Platforms
 		instant StaticShape %plat2
 		{
 			dataBlock = "LargeAirBasePlatform";
 			name = %plat2@%pname;
-			position = Vector::add(%playerpos, "6.75 -0 50.00");
-			rotation = Vector::add(%playerrot, "0 0 0");
+			position = Vector::add(%playerpos, "6.75 0.5 50.00");
+			rotation = %platrot;
 			destroyable = "True";
 			deleteOnDestroy = "True";
 			VehiclePad = %name5;
@@ -2665,7 +2625,7 @@ function airbase::specialdeploy(%team,%playerPos,%playerRot,%player)
 			dataBlock = "LargeAirBasePlatform";
 			name = %plat3@%pname;
 			position = Vector::add(%playerpos, "-6.75 -5.0 50.00");
-			rotation = Vector::add(%playerrot, "0 0 0");
+			rotation = %platrot;
 			destroyable = "True";
 			deleteOnDestroy = "True";
 			VehiclePad = %name5;
@@ -2678,7 +2638,7 @@ function airbase::specialdeploy(%team,%playerPos,%playerRot,%player)
 			dataBlock = "LargeAirBasePlatform";
 			name = %plat1@%pname;
 			position = Vector::add(%playerpos, "-6.75 -9.5 58.00");
-			rotation = Vector::add(%playerrot, "0 0 0");
+			rotation = %platrot;
 			destroyable = "True";
 			deleteOnDestroy = "True";
 			VehiclePad = %name5;
@@ -2688,14 +2648,15 @@ function airbase::specialdeploy(%team,%playerPos,%playerRot,%player)
 		instant StaticShape %plat4
 		{
 			dataBlock = "LargeAirBasePlatform";
-			name = %plat4@%pname;
-			position = Vector::add(%playerpos, "6.75 -4.5 58.00");
-			rotation = Vector::add(%playerrot, "0 0 0");
+			name = "AB Fix thx to LT#56";
+			position = Vector::add(%playerpos, "6.75 -4.0 58.00");
+			rotation = %platrot;
 			destroyable = "True";
 			deleteOnDestroy = "True";
 			VehiclePad = %name5;
 			team = %team;
 		};
+
 
 		//=================== Airbase Radar
 		instant Sensor %name1
@@ -4223,7 +4184,10 @@ function LasCannoner::Charge(%clientId, %time)
 {
 	%player = client::getownedobject(%clientId);
 	%plDead = Player::isDead(%player);
-	if(!%plDead) Player::mountItem(%clientId, LasCannon, $WeaponSlot);
+	if(!%plDead && Player::getItemCount(%clientId,LasCannon))
+		Player::mountItem(%clientId, LasCannon, $WeaponSlot);
+	else
+		return;
 	
 	if (!%clientId.charging)
 		return;
@@ -4250,7 +4214,10 @@ function LasCannoner::Detonate(%clientId, %time)
 {
 	%player = client::getownedobject(%clientId);
 	%plDead = Player::isDead(%player);
-	if(!%plDead) Player::mountItem(%clientId, LasCannon, $WeaponSlot);
+	if(!%plDead && Player::getItemCount(%clientId,LasCannon))
+		Player::mountItem(%clientId, LasCannon, $WeaponSlot);
+	else
+		return;
 	
 	if (%clientId.lascharge != 15)
 		return;
@@ -4323,7 +4290,7 @@ ItemData PlasmaCannon
 	imageType = PlasmaCannonImage;
 	price = 2400;
 	showWeaponBar = true;
-	mass = 2.5;
+	mass = 1.1;
 };
 
 function PlasmaCannonImage::onFire(%player, %slot) 
@@ -4391,7 +4358,10 @@ function PlasmaCannoner::Charge(%clientId, %time)
 {
 	%player = client::getcontrolobject(%clientId);
 	%plDead = Player::isDead(%player);
-	if(!%plDead) Player::mountItem(%player, PlasmaCannon, $WeaponSlot);
+	if(!%plDead && Player::getItemCount(%clientId,PlasmaCannon))
+		Player::mountItem(%clientId, PlasmaCannon, $WeaponSlot);
+	else
+		return;
 
 	if (!%clientId.charging)
 		return;
@@ -4418,7 +4388,10 @@ function PlasmaCannoner::Detonate(%clientId, %time)
 {
 	%player = client::getownedobject(%clientId);
 	%plDead = Player::isDead(%player);
-	if(!%plDead) Player::mountItem(%player, PlasmaCannon, $WeaponSlot);
+	if(!%plDead && Player::getItemCount(%clientId,PlasmaCannon))
+		Player::mountItem(%clientId, PlasmaCannon, $WeaponSlot);
+	else
+		return;
 	
 	if (%clientId.plasmacharge != 15)
 		return;

@@ -4,8 +4,8 @@ $curVoteOption = "";
 $curVoteCount = 0;
 $Shifter::TKDefault = $Shifter::TeamKillOn;
 $pskin = $Shifter::PersonalSkin;
-$CPU::estimatedSpeed = 061902;
-$greyflcn::newdate = "6-19-2002";
+$CPU::estimatedSpeed = 091202;
+$greyflcn::newdate = "9-12-2002";
 $Server::Info = $Server::Info @ "\nRunning Shifter_v1G " @ $greyflcn::newdate;
 //if($dedicated) 
 if(!$noTabChange) $ModList = "Shifter_v1G";
@@ -997,7 +997,7 @@ function processMenuOptions(%clientId, %option)
 
 	else if (%opt == "update")
 	{
-		%helpmsg1 = "Shifter052702 Lot of goodies";
+		%helpmsg1 = "Would be 9/11.. but I couldn't do that";
 		//%helpmsg1 = "Shifter040402 Added the teamchange hack fix.";
 		//%helpmsg1 = "Shifter021302 Sensor Jammer replaces Jammer Device, Nuke/Det/Missile/Score Counter in reg mode, and a bunch of stuff to smooth out matches";
 		//%helpmsg1 = "Shifter232 Damn 222 was a cool date, fixed my dumb MDM mistake, also put builder as an option, and not standard for ceasefire.  Made it so ppl can't lag out servers w/ droppers."; 
@@ -1791,7 +1791,7 @@ function processMenuOptions(%clientId, %option)
 		%cl.voteTarget = true;
 		Admin::startVote(%clientId, "kick " @ Client::getName(%cl), "kick", %cl);
    }
-   else if(%opt == "vadmin") //grey, doubled check
+   else if($Shifter::VoteAdmin && %opt == "vadmin") //grey, doubled check
    {
       %cl.voteTarget = true;
       Admin::startVote(%clientId, "admin " @ Client::getName(%cl), "admin", %cl);

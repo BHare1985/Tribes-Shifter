@@ -4,7 +4,7 @@ StaticShapeData CommandStation
    	description = "Command Station";
 	shapeFile = "cmdpnl";
 	className = "Station";
-	visibleToSensor = true;
+	//visibleToSensor = true;
 	sequenceSound[0] = { "activate", SoundActivateCommandStation };
 	sequenceSound[1] = { "power", SoundCommandStationPower };
 	sequenceSound[2] = { "use", SoundUseCommandStation };

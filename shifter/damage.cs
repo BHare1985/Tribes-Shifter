@@ -38,7 +38,10 @@ function InitDamageRatios()
 	{
 		%thing = %damageId[%k];
 		for(%i = -1; %i < 35; %i++)
+		{
 			$DamageScale[%thing, %i] = 1.0;
+			$DamageScale[parmor,	%i] = 0.0;
+		}
 		$DamageScale[%thing,	$CloakDamageType] = 0.0;
 		$DamageScale[%thing, $GravDamageType]	= 0.1;
 	}
@@ -53,15 +56,14 @@ function CopyDamageRatio(%armor1, %armor2)
 
 //===== Arbitor Armor
 $DamageScale[aarmor,	$BlasterDamageType] 	= 0.5;
-//$DamageScale[aarmor,	$DebrisDamageType] 	= 1.2;
 $DamageScale[aarmor,	$ElectricityDamageType] = 0.2;
-$DamageScale[aarmor,	$EnergyDamageType] 	= 0.1;//0.3;
+$DamageScale[aarmor,	$EnergyDamageType] 	= 0.15;
 $DamageScale[aarmor,	$FlashDamageType] 	= 0.5;
 $DamageScale[aarmor,	$IDamageType] 	 	= 0.7;
 $DamageScale[aarmor,	$ImpactDamageType] 	= 0.4;
 $DamageScale[aarmor,	$LandingDamageType] 	= 0.1;
-$DamageScale[aarmor,	$LaserDamageType] 	= 0.1;//0.5;
-$DamageScale[aarmor,	$Laser2DamageType] 	= 0.5;
+$DamageScale[aarmor,	$LaserDamageType] 	= 0.37;
+$DamageScale[aarmor,	$Laser2DamageType] 	= 0.37;
 $DamageScale[aarmor,	$MissileDamageType] 	= 0.9;
 CopyDamageRatio(aarmor, afemale);
 
@@ -125,7 +127,6 @@ $DamageScale[larmor,	$EnergyDamageType] = 1.3;
 $DamageScale[larmor,	$IDamageType]	 = 0.7;
 $DamageScale[larmor,	$MineDamageType] = 1.2;
 $DamageScale[larmor,	$MortarDamageType] = 1.3;
-//$DamageScale[larmor,	$LaserDamageType] 	= 0.1;
 $DamageScale[larmor,	$ShrapnelDamageType] = 1.2;
 CopyDamageRatio(larmor, lfemale);
 
@@ -185,38 +186,9 @@ $DamageScale[jarmor,	$ImpactDamageType] = 0.5;
 $DamageScale[jarmor,	$LandingDamageType] = 0.2;
 $DamageScale[jarmor,	$LaserDamageType] = 0.5;
 $DamageScale[jarmor,	$Laser2DamageType] = 0.5;
-$DamageScale[jarmor,	$MortarDamageType] = 1.2;
 $DamageScale[jarmor,	$PlasmaDamageType] = 2.0;
 $DamageScale[jarmor,	$BoomStickDamageType] 	= 1.2;
 $DamageScale[jarmor,	$HBlasterDamageType] 	= 1.1;
-
-//===== Cursed Armor
-$DamageScale[parmor,	$BlasterDamageType] 	= 0.0;
-$DamageScale[parmor,	$BulletDamageType] 	= 0.0;
-$DamageScale[parmor,	$CloakDamageType]  	= 0.0;
-$DamageScale[parmor,	$CrushDamageType] 	= 0.0;
-$DamageScale[parmor,	$DebrisDamageType] 	= 0.0;
-$DamageScale[parmor,	$ElectricityDamageType] = 0.0;
-$DamageScale[parmor,	$EnergyDamageType] 	= 0.0;
-$DamageScale[parmor,	$EqualizerDamageType]   = 0.0;
-$DamageScale[parmor,	$ExplosionDamageType] 	= 0.0;
-$DamageScale[parmor,	$FlashDamageType] 	= 0.0;
-$DamageScale[parmor,	$IDamageType]  	 	= 0.0;
-$DamageScale[parmor,	$ImpactDamageType] 	= 0.0;
-$DamageScale[parmor,	$LandingDamageType] 	= 0.0;
-$DamageScale[parmor,	$LaserDamageType] 	= 0.0;
-$DamageScale[parmor,	$Laser2DamageType] 	= 0.0;
-$DamageScale[parmor,	$MineDamageType] 	= 0.0;
-$DamageScale[parmor,	$MissileDamageType] 	= 0.0;
-$DamageScale[parmor,	$MortarDamageType] 	= 0.0;
-$DamageScale[parmor,	$NukeDamageType] 	= 0.0;
-$DamageScale[parmor,	$MDMDamageType] 	= 0.0;
-$DamageScale[parmor,	$PlasmaDamageType] 	= 0.0;
-$DamageScale[parmor,	$ShellDamageType] 	= 0.0;
-$DamageScale[parmor,	$ShrapnelDamageType] 	= 0.0;
-$DamageScale[parmor,	$SniperDamageType] 	= 0.0;
-$DamageScale[parmor,	$BoomStickDamageType] 	= 0.0;
-$DamageScale[parmor,	$HBlasterDamageType] 	= 0.0;
 
 //================================================================================ Flyers
 

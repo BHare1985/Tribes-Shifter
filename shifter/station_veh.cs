@@ -3,7 +3,7 @@ StaticShapeData VehicleStation
    	description = "Station Vehicle Unit";
 	shapeFile = "vehi_pur_pnl";
 	className = "Station";
-	visibleToSensor = true;
+	//visibleToSensor = true;
 	sequenceSound[0] = { "activate", SoundActivateInventoryStation };
 	sequenceSound[1] = { "power", SoundInventoryStationPower };
 	sequenceSound[2] = { "use", SoundUseInventoryStation };
@@ -42,6 +42,7 @@ function VehicleStation::onBuyingVechicle(%this)
 				%this.target = %client;
 				%this.clTeamEnergy = %client.TeamEnergy;
 				Client::setGuiMode(%client,4);
+				Client::sendMessage(%client,0,"Accessing Vehicle Station");
 				Client::sendMessage(%client,0,"Station Access On");
 				%player.Station = %this;
 			 	%numItems = Group::objectCount(GetGroup(%this));
@@ -99,6 +100,13 @@ function VehicleStation::checkBuying(%client,%item)
   		%set = newObject("vehicleset",SimSet);
 		%mask = $VehicleObjectType | $SimPlayerObjectType | $ItemObjectType;
 		%objInWay = containerBoxFillSet(%set,%mask,%markerPos,6,5,14,1);
+
+		%mask = $StaticObjectType;
+  		%Tset = newObject("vehicleTestset",SimSet);
+		%dway = containerBoxFillSet(%Tset,%mask,%markerPos,6,5,14,1);
+		%objInWay += (%dway - 1);
+		if(%Tset)deleteobject(%Tset);
+
 		%station = %player.Station;
 		
 		if(%objInWay == 1) 
@@ -225,7 +233,7 @@ StaticShapeData VehiclePad
    description = "Vehicle Pad";
 	shapeFile = "vehi_pur_poles";
 	className = "Station";
-	visibleToSensor = true;
+	//visibleToSensor = true;
 	sequenceSound[0] = { "activate", SoundActivateInventoryStation };
 	sequenceSound[1] = { "power", SoundInventoryStationPower };
 	sequenceSound[2] = { "use", SoundUseInventoryStation };
@@ -278,11 +286,26 @@ function VehiclePad::onAdd(%this)
 }
 
 function VehiclePad::onCollision(%this, %obj)
-{	%damageLevel = GameBase::getDamageLevel(%this);
+{
+	%damageLevel = GameBase::getDamageLevel(%this);
 	%disable = GameBase::getDisabledDamage(%this);
-	if(getObjectType(%obj) == "Player" && %damagelevel >= %disable && GameBase::getTeam(%this) == GameBase::getTeam(%obj))
-	{	%client = Player::getClient(%obj);
-		Client::sendMessage(%client,1,"Unit is not powered or disabled.");
+	if(getObjectType(%obj) == "Player" && GameBase::getTeam(%this) == GameBase::getTeam(%obj))
+	{
+		%armor = Player::getArmor(%obj);
+		if (%armor == "earmor" || %armor == "efemale")
+		{
+			if(GameBase::getDamageLevel(%this)) 
+			{
+				GameBase::repairDamage(%this,0.10);
+				GameBase::playSound(%this,ForceFieldOpen,0);
+	     	}
+		}
+
+		if(%damagelevel >= %disable)
+		{
+			%client = Player::getClient(%obj);
+			Client::sendMessage(%client,1,"Unit is not powered or disabled.");
+		}
 	}
 }
 

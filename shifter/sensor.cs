@@ -112,7 +112,7 @@ SensorData PulseSensor
 	dopplerVelocity = 0;
 	castLOS = true;
 	supression = false;
-	visibleToSensor = true;
+	//visibleToSensor = true;
 	sequenceSound[0] = { "power", SoundSensorPower };
 	mapFilter = 4;
 	mapIcon = "M_Radar";
@@ -135,7 +135,7 @@ SensorData SatSensor
    	dopplerVelocity = 0;
    	castLOS = true;
    	supression = false;
-	visibleToSensor = true;
+	//visibleToSensor = true;
 	sequenceSound[0] = { "power", SoundSensorPower };
 	mapFilter = 4;
 	mapIcon = "M_Radar";
@@ -158,7 +158,7 @@ SensorData MediumPulseSensor
 	dopplerVelocity = 0;
 	castLOS = true;
 	supression = false;
-	visibleToSensor = true;
+	//visibleToSensor = true;
 	sequenceSound[0] = { "power", SoundSensorPower };
 	mapFilter = 4;
 	mapIcon = "M_Radar";
@@ -183,7 +183,7 @@ SensorData DeployableMotionSensor
 	damageLevel = {0.8, 1.0};
 	maxDamage = 0.4;
 	debrisId = defaultDebrisSmall;
-	range = 75;
+	range = 35;
 	dopplerVelocity = 1;
    	castLOS = false;
    	supression = false;
