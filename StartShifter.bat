@@ -1,0 +1,1 @@
+InfiniteSpawn.exe *tribes -mod shifter +exec serverConfig.cs -dedicated

@@ -1,0 +1,22 @@
+Normal Admin Abilities :
+1) Change Players Team		- Player Selected
+2) Globally Mute/UnMute		- Player Selected
+3) Lock/Unlock Players Team	- Player Selected
+4) Set Mission Time Limit
+5) Select Touney/FFA Mode
+6) Change Mission
+7) Cycle Mission
+8) Grant/Revoke Lead Status	- Player Selected - Tourney Mode
+
+Super Admin Abilities :
+1) Kill,Ban or Kick Players	- Player Selected
+2) Clear Players TK Count	- Player Selected
+3) Grant/Revoke No Ban Status	- Player Selected
+4) Admin/DeAdmin Players	- Player Selected
+5) Give/Remove Penis Curse	- Player Selected
+6) Enable MATCH Mode
+7) Reset Server To Defaults
+
+Optional Super-Admin
+8) Locking Missle On/Off Toggle.
+9) Turn On/Off Kill Counts For Turrets.

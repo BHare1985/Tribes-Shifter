@@ -1,0 +1,973 @@
+<html>
+
+	<head>
+		<meta http-equiv="content-type" content="text/html;charset=iso-8859-1">
+		<meta name="generator" content="Microsoft FrontPage 4.0">
+		<title>Shifter FAQ</title>
+		<meta http-equiv="Content-Language" content="en-us">
+        <style fprolloverstyle><!--
+a:hover { color: #ff0000; font-weight: bold; text-decoration: overline; text-transform: capitalize }-->
+		</style>
+	</head>
+
+	<body>
+		<font size="5" face="Arial"><b>Shifter Server setup/configuration FAQ</b></font>
+		<p><font size="3" face="Arial"><b><i>9-01-2000 Release features</i></b>:&nbsp;&nbsp;
+        (<a href="#The following is a quick series of questions/answers  for Shifter server operators.&nbsp;">Scew
+        the new stuff, take me to the Q&amp;A!!</a>)</font></p>
+		<p><font size="3" face="Arial"><b>New configuration options </b>:<br>
+		These options are implemented in the serverConfig.cs /
+        matchConfig.cs&nbsp;<br>
+		<br>
+		<b>1) Tourney Chat Options </b>-<br>
+		==================================================================================================<br>
+		<b>$Shifter::GlobalTChat = True;</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        // True - All players can chat global in Tourney Mode<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        // False - Only players marked as Leader, Admin or SuperAdmin can chat.<br>
+		<br>
+		<b>2) New Admin options</b> -<br>
+		==================================================================================================<br>
+		A) Clear Players TK Counts (For those super FUN indoor crazy matches where you know people can help but TK here and there.<br>
+		B) Grant / Revoke No Ban - Allows admin to do just that... Only valid for the length of time a player is logged on to the server, this is NOT saved to a
+        file.<br>
+		C) Kill / Ban / Kick players now has a separate menu.<br>
+		<br>
+		<b>3)</b> <b>AutoAdmining</b> - Automatically placing players as Admin, SuperAdmin and NoBan has become very easy. The server admin now has the option to Admin or SuperAdmin players, each permitting different abilities. (see list):<br>
+		==================================================================================================<br>
+		<b>Normal Admin Abilities :<br>
+		</b>1) Change Players Team- Player Selected<br>
+		2) Globally Mute/UnMute- Player Selected<br>
+		3) Lock/Unlock Players Team- Player Selected<br>
+		4) Set Mission Time Limit<br>
+		5) Select Touney/FFA Mode<br>
+		6) Change Mission<br>
+		7) Cycle Mission<br>
+		<br>
+		<b>Super Admin Abilities :<br>
+		</b>1) Kill,Ban or Kick Players- Player Selected<br>
+		2) Clear Players TK Count- Player Selected<br>
+		3) Grant/Revoke No Ban Status- Player Selected<br>
+		4) Admin/DeAdmin Players- Player Selected<br>
+		5) Give/Remove Penis Curse- Player Selected<br>
+		6) Enable MATCH Mode<br>
+		7) Reset Server To Defaults<br>
+		<br>
+		<b>Optional Super-Admin Abilities<br>
+		</b>8) Locking Missile On/Off Toggle.<br>
+		9) Turn On/Off Kill Counts For Turrets.<br>
+        <br>
+		This will allow server admins a greater range of control over the Admin - SuperAdmin - NoBanned - SAD features.<br>
+		A sample block is given below:<br>
+        //--------------------------------------------== 1 Turns ON AutoAdmin (If player has IP mask they will be autoadmined)<br>
+        <b>
+		$Server::Admin[&quot;autoa&quot;, &quot;Emo1313&quot;] = 1;</b><br>
+		<br>
+		//--------------------------------------------== 1 Adds player to NOBan list<br>
+        <b>
+		$Server::Admin[&quot;noban&quot;, &quot;Emo1313&quot;] = 1;</b><br>
+		<br>
+		//--------------------------------------------== Ip mask for AutoAdmining check<br>
+		//--------------------------------------------== (Left blank will NOT Autoadmin, MUST contain an IP mask to Autoadmin)<br>
+        <b>
+		$Server::Admin[&quot;ipadr&quot;, &quot;Emo1313&quot;] = &quot;IP:208.188.5&quot;;</b><br>
+		<br>
+		//--------------------------------------------== Optional SAD password for user -<br>
+		//--------------------------------------------== Left blank user will NOT be able to use SAD<br>
+		//--------------------------------------------== ability and will need to be auto-admined<br>
+        <b>
+		$Server::Admin[&quot;sadpw&quot;, &quot;Emo1313&quot;] = &quot;password&quot;;</b><br>
+		<br>
+		//--------------------------------------------== 1 Sets User to Normal Admin<br>
+        <b>
+		$Server::Admin[&quot;admin&quot;, &quot;Emo1313&quot;] = 1;</b><br>
+		<br>
+		//--------------------------------------------== 1 Sets User to BOTH Normal/SuperAdmin<br>
+        <b>
+		$Server::Admin[&quot;super&quot;, &quot;Emo1313&quot;] = 1;</b><br>
+		<br>
+		Setting any of the numbered options from 1 to 0 will set that attribute to OFF<br>
+		Super Admin will of course set players to both Normal and Super admin.<br>
+		<br>
+		So the block of info per player would look something like this.<br>
+		<br>
+		$Server::Admin[&quot;autoa&quot;, &quot;Dastardly&quot;] = 1;<br>
+		$Server::Admin[&quot;noban&quot;, &quot;Dastardly&quot;] = 0;<br>
+		$Server::Admin[&quot;ipadr&quot;, &quot;Dastardly&quot;] = &quot;IP:208.188.5&quot;;<br>
+		$Server::Admin[&quot;sadpw&quot;, &quot;Dastardly&quot;] = &quot;password&quot;;<br>
+		$Server::Admin[&quot;admin&quot;, &quot;Dastardly&quot;] = 1;<br>
+		$Server::Admin[&quot;super&quot;, &quot;Dastardly&quot;] = 0;<br>
+		<br>
+		This player would be AutoAdmined at log on.<br>
+		This player would also be able to use SAD(&quot;password&quot;); on the console if playing from a different machine.<br>
+		This player would NOT be on the NO BAN list.<br>
+		This player would ONLY be a normal Admin.<br>
+		<br>
+		<br>
+        <b>
+		4) No Swearing</b> - Will mute and eventually ban players for swearing.<br>
+		==================================================================================================<br>
+        <b>
+		$Shifter::noSwearing =
+        True;&nbsp;&nbsp;&nbsp;</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //True = On / False = Off<br>
+        <b>
+        <br>
+        $Shifter::NoSwearing=&quot;True&quot;;&nbsp;</b>&nbsp;&nbsp;&nbsp; // == True means disallow swearing on your server? (update the SHBadwordlist.cs file)<br>
+        <b>
+        $Shifter::BadWordsMax=1;&nbsp;</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        // == If no swearing, This value is the limit at which the client starts being killed for swearing<br>
+        <b>
+        $Shifter::BadWordskick=2;&nbsp;</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        // == If no swearing, This value is the limit at which the client is kicked for swearing<br>
+		<br>
+		This function relies on a file in the /Tribes/Config directory called SHBadwordlist.cs<br>
+		A sample file is included in the Shifter Zip file.<br>
+		<br>
+        <b>
+		5) Missile Limits</b> - If ANY of these are set they will over ride the default settings for Missile limits.<br>
+		==================================================================================================<br>
+		$Shifter::Missile_EMP - EMP MissileDefault - 25<br>
+		$Shifter::Missile_GAS - Poison MissileDefault - 25<br>
+		$Shifter::Missile_PHE - Phoenix MissileDefault - 35<br>
+		$Shifter::Missile_NAP - Napalm MissileDefault - 15<br>
+		$Shifter::Missile_BOM - Havoc MissileDefault - 15<br>
+		$Shifter::Missile_SPY - Spy PodsDefault - 100</font></p>
+		<p><font size="3" face="Arial">example: <b> $Shifter::Missile_EMP=&quot;15&quot;;</b>
+        would limit the EMP missiles to 15 per team.</font></p>
+        <p><font size="3" face="Arial">
+        <b>
+		6) Scoring Options</b>:&nbsp; These options allow you to turn On and Off Objective Scoring and Player Kill scoring<br>
+		Using these options is NOT suggested, they are for DEBUG ONLY. If they are not included these will default<br>
+		to ON/TRUE.<br>
+		==================================================================================================<br>
+        <b>
+		$Shifter::ObjScore = &quot;True&quot;;</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        // Allow Objects Being Destroyed To Award Bonus Points<br>
+        <b>
+		$Shifter::PlrScore = &quot;True&quot;;&nbsp;&nbsp;</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        // Allow Player Bonus Points To Be Awarded<br>
+		<br>
+		<br>
+        <b>
+		7) Public Notice</b> - If this is set to something besides NULL (&quot;&quot;), the message will be displayed every so often<br>
+		after a player spawns.<br>
+		==================================================================================================<br>
+        <b>
+		$Shifter::PublicNotice = &quot;This server is in testing mode. If things are odd, please dont complain.&quot;;<br>
+        </b>
+		<br>
+        <b>
+		8) Other New Options</b><br>
+		==================================================================================================<br>
+        <b>
+		$Shifter::TwoMinute = &quot;True&quot;;&nbsp;&nbsp;</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        // == Two Minute Warning Notice On/Off (Default = True)<br>
+        <b>$Shifter::LooseScore = 0.75;&nbsp;</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        // == This is the score ratio for the loosing team. 0.5 for instance would cut a loosing players score by 1/4.<br>
+		==================================================================================================<br>
+        <br>
+        <b>Miscellaneous bug fixes:<br>
+        </b>1) Fixed - GodHammer Bug/Exploit.<br>
+        2) Fixed - Observers getting placed on team when teams are juggled.<br>
+        3) Fixed - Players spawning in the wrong base when teams are juggled.<br>
+        4) Missile Station limits and other wise... We have made the Missile Station NON-Deployable on Air-Bases... Emplacements are still ok, just NOT on an AirBase. Unseen Missile
+        Jockeys who have ABSOLUTELY NO RISK involved in missile firing are REALLY annoying.<br>
+	Also the ASTRONOMICAL points that you gain for missile kills will be removed... More normal points will be gained. Its not like it takes any real effort to plow over something with a missile. Point values are now a little more like the normal way of killing things... I really
+        don't want to here any complaints about this because the scoring system was not originally designed with the Guided Missiles in mind, and the absurd scores where certainly not intended to happen the way they have been... Sorry, no more 1000+ points games for some one who sits in the same place for the whole mission.<br>
+        5) Missile trails functions correctly now, (again)...<br>
+        6) Flyer trails have been tweaked a good deal and look very nice and realistic...<br>
+        7) Added Chase Cam options for observer modes... Allows you to follow the player including keeping the players facing at all times. This certainly will add to a ref's ability to moderate games and keep an eye on the players.<br>
+        8) Plasma Gun tweaked...&nbsp;<br>
+        8a) Multi-Fire has been tweaked to provide a perfectly even spread, no more condensed spreads some times and complete spreads the other times. The pattern is perfectly
+        consistent no matter what the facing of the player.<br>
+        8b) The normal mode has gotten a new image and been supped up as far as speed and power go.<br>
+        8c) The Multi-Fire mode uses 2 Ammo now instead of the standard 1.<br>
+        8d) Rapid-Fire has increased in power and speed.<br>
+        9) Flyers have received a new effect.&nbsp; When flyers become damaged they now smoke... Twin smoke trains will let the enemy know that the flyer that is
+        approaching is damaged. Flyers that receive more damage will also catch on fire, this does NOT add more damage to the flyer but produces a large burning trail that follows the flyer. (Trails will be made server configurable, so that server admins can turn them on and off).<br>
+        10) Flame Thrower has gotten a new effect as well, looks MUCH more like a flamer.<br>
+        11) Added BoomStick death messages that actually work.<br>
+        12) Fixed a particularly nasty bug in the Telepad... (Thanks for the info
+        Quik!)<br>
+        13) Fixed up a slight cheat with the deployable Generator<br>
+        14) Arbitor device bug fixed.&nbsp;<br>
+        15) Nuke explosion tweaked a little.<br>
+        16) The Interceptor PACK has been limited. If you are interested in using interceptors after the pack limit has been used, It
+        is suggested you keep your flyer pad working.<br>
+        17) Small bug with one of the flyers was also fixed up.<br>
+        18) The deployable sensor jammer has now been limited to the Engineer, Chem and Merc. The Sensor Jammer will now, within the radius of a Missile Jammer, completely nullify the effects of the missile jammer beacon.<br>
+        19) Missle Jammer beacon for Engineer is now gone. We have added a new Beacon, like the EMP or Shield beacon that will jam missiles at up to 75m. There is a new "dead" missile effect also which looks really nice.<br>
+        20) Engineer energy has been supped up a little to help in deployment of
+        defense and offense.<br>
+        21) AirBases and Emplacements are now completely destroyable ONLY by Nuke damaging weapons<br>
+        22) Fixed up the Regen-pack bug for the Arbitor<br>
+        23) Added WireGuided missiles<br>
+        24) Enabled the 1.11 code to defeat cheats such as HappyMod, autobeacons
+        etc..<br>
+        25) New observer Mode options added<br>
+        26) Floating mortar bug fixed, along with more miscellaneous fixes and
+        tweaks...</font></p>
+		<p><font size="3" face="Arial">Pre 9-01-2000 information (still important though)...</font></p>
+		<p><font size="3" face="Arial">For those who have ran Shifter in the past, there are some new rules that apply.</font></p>
+		<ul>
+			<li><font size="3" face="Arial">The latest release adds support for a serverside language filter. To use this, place the SHBadwordlist.cs file in your config directory and update these new variables in your config files:<br>
+			<b>$Shifter::NoSwearing=&quot;True&quot;;</b> // == True means disallow swearing on your server? (update the SHBadwordlist.cs file)<br>
+			<b>$Shifter::BadWordsMax=3;</b> // == If no swearing, This value is the limit at which the client starts being killed for swearing<br>
+			<b>$Shifter::BadWordskick=6;</b> // == If no swearing, This value is the limit at which the client is kicked for swearing<br>
+			<br>
+			Those who do not want this feature simple leave the NoSwearing variable set to false.<br>
+			</font>
+			<li><font size="3" face="Arial">The new code allows for only 2 configuration files on the server... The first (<i><b>serverConfig.cs</b></i>) is the default server configuration you always run, and the second (<i><b>matchConfig.cs</b></i>) is what you wish the server to be configured to when the match option is selected. The easiest way to make these files is to create the serverConfig.cs file, then make a copy of it, rename the copy to matchConfig.cs and then change the appropriate variables in the match file. Any variables used should have a 'duplicate' or corresponding value in the opposite configuration file. So if you $Server::Password=&quot;password&quot;; in your matchConfig file, you should have a corresponding $Server::Password=&quot;&quot;; in your serverConfig.cs (to remove the password).<br>
+			</font>
+			<li><font size="3" face="Arial">There no longer a shifter_v1.cs file. You should copy all your variables from the shifter_v1.cs (and serverPrefs.cs) file and paste them into your serverConfig.cs file. Then <b>DELETE</b> or <b>RENAME</b> the shifter_v1.cs (and serverPrefs.cs) file. This is MOST IMPORTANT! the way the new code keeps track of variables has changed, and the appropriate configuration file is executed when you select match or default from the new admin TAB menus<br>
+			</font>
+			<li><font size="3" face="Arial">There are a few new variables as well:<br>
+			<b>$Shifter::Tag0=&quot;|00|&quot;;</b> // Tribe 'tag' for autoassign team 1<br>
+			<b>$Shifter::Tag1=&quot;|XX|&quot;;</b> // Tribe 'tag' for autoassign team 2<br>
+			<br>
+			This works as follows... If the server is set to Tournament mode (put in your matchConfig.cs file $Server::TourneyMode = &quot;True&quot;;) the server will automatically assign players to each team according to the tag id you assign... so this means if you're playing tribes *EMO* against :|SPC|: then set the config file to be - $Shifter::Tag0=&quot;*EMO*&quot;; and $Shifter::Tag1=&quot;:|SPC|:&quot;; -<br>
+			<br>
+			The server checks players at mission cycle and connect for the tag and auto assigns the team, if the tag does not exist, they are put in observer mode and the Admin must assign their team. (in the above example, player :|SPC|: MrHankey would be assigned to team2... (note: the tag can be anywhere in the name)<br>
+			</font>
+			<li><font size="3" face="Arial">There are new options in the TAB menu, allowing tourney mode (using current configuration), match configuration (executing the matchConfig.cs file - recommended over default tourney mode-), and reset to defaults (puts the server back to the default configuration set in the serverConfig.cs)<br>
+			</font>
+			<li><font size="3" face="Arial">The requested option for Vote and Admin menu change options to include to MORE MISSION TYPES option has been added.<br>
+			</font>
+			<li><font size="3" face="Arial">Several bug fixes and tweaks, including Godhammer, AA Turrets, DetBug crash, Elf Turret, restructured Vote menu, Tournament mode support, etc.<br>
+			</font>
+			<li><font size="3" face="Arial"><b>NB</b> - Whenever you update any code or variables on the server, <b>delete</b> the contents of your tribes\temp directory. This simple precaution solves many unforseen headaches.</font>
+		</ul>
+		<p><font size="3" face="Arial">The way it works is like this...<br>
+		<br>
+		The in-game admin prepares to start the match, so they select the 'Enable match configuration' option from the TAB menu. The server executes the matchConfig.cs file and saves the new configuration to the temp directory. each mission cycle from here on reloads the stored data from the temp dir to maintain the match configuration. (the reason why we deleted the shifter_v1.cs file, to prevent overwriting the data at mission cycle)<br>
+		When the server starts in tourney mode, teams are assigned by the tags set in the configuration file (matchConfig.cs) and any non matching players are set to observer for manual assignment.<br>
+		<br>
+		When the match is finished, the admin then selects the option 'reset to server defaults' from the TAB menu, and the default serverConfig.cs file is executed and stored in the temp data directory.<br>
+		<br>
+		This update should allow matches to be run without server admin intervention, and in a ladder situation, one default matchConfig.cs file can be created and distributed to all match servers to provide a contiguous and level playing field.<br>
+		</font>
+		<hr>
+		<p><font size="3" face="Arial"><b><a name="The following is a quick series of questions/answers  for Shifter server operators.&nbsp;">The following is a quick series of questions/answers&nbsp; for Shifter server operators.&nbsp;</a></b></font></p>
+		<p><a href="#Q: What is Shifter?"><font size="3" face="Arial">Q: What is Shifter?</font></a></p>
+		<p><a href="#Q: Where can I get Shifter?"><font size="3" face="Arial">Q: Where can I get Shifter?</font></a></p>
+		<p><a href="#Q: How do I install Shifter?"><font size="3" face="Arial">Q: How do I install Shifter?</font></a></p>
+        <p><font size="3" face="Arial"><a href="#Q: Players can no longer connect to my server...  They get some error message about a DTS file or something?">Q:
+        Players can no longer connect to my server...&nbsp; They get some error
+        message about a DTS file or something?</a></font></p>
+        <blockquote>
+        </blockquote>
+		<p><a href="#Q: Can I play Shifter on my personal machine to practice with the armors and new stuff without having to run a server?"><font size="3" face="Arial">Q: Can I play Shifter on my personal machine to practice with the armors and new stuff without having to run a server?</font></a></p>
+		<p><a href="#Q: What is the difference between a dedicated server and a listen server?"><font size="3" face="Arial">Q: What is the difference between a dedicated server and a listen server?</font></a></p>
+		<p><a href="#Q: What is LAG?"><font size="3" face="Arial">Q: What is LAG?</font></a></p>
+		<p><a href="#Q: I've found a problem, where can I report it?"><font size="3" face="Arial">Q: I've found a problem, where can I report it?</font></a></p>
+		<p><a href="#Q: My server is running, but people get kicked every time the mission cycles!"><font size="3" face="Arial">Q: My server is running, but people get kicked every time the mission cycles?!</font></a></p>
+		<p><a href="#Q: Can I have custom skins on my server?"><font size="3" face="Arial">Q: Can I have custom skins on my server?</font></a></p>
+		<p><a href="#Q: What is the difference between server side and client side maps?"><font size="3" face="Arial">Q: What is the difference between server side and client side maps?</font></a></p>
+		<p><a href="#Q: I added some maps and now people are getting kicked/dropped when it changes to them!?"><font size="3" face="Arial">Q: I added some maps and now people are getting kicked/dropped when it changes to them!?</font></a></p>
+		<p><a href="#Q: I installed the MOD, but when I connect it's still base?"><font size="3" face="Arial">Q: I installed the MOD, but when I connect it's still base?</font></a></p>
+		<p><a href="#Q: How can I tell from the console if shifter has started up and is running correctly?"><font size="3" face="Arial">Q: How can I tell from the console if shifter has started up and is running correctly?</font></a></p>
+		<p><a href="#Q: I get the error message Game::refreshClientScore: Unknown command and nobody can connect"><font size="3" face="Arial">Q: I get the error message <i><b>Game::refreshClientScore: Unknown command</b></i> and nobody can connect</font></a></p>
+		<p><a href="#Q: How do I remove missions I do not want in rotation?"><font size="3" face="Arial">Q: How do I remove missions I do not want in rotation?</font></a></p>
+		<p><a href="#Q: Can I create my own missionlist to run the missions in the order I want?"><font size="3" face="Arial">Q: Can I create my own missionlist to run the missions in the order I want?</font></a></p>
+		<p><a href="#Q: My dog ate my serverConfig.cs file,... can I have yours?"><font size="3" face="Arial">Q: My dog ate my serverConfig.cs file,... can I have yours?</font></a></p>
+		<p><a href="#Q: What happened to the shifter_v1.cs file?"><font size="3" face="Arial">Q: What happened to the shifter_v1.cs file?</font></a></p>
+		<p><a href="#Q: How do I make the teams be assigned automatically in tournament or match mode?"><font size="3" face="Arial">Q: How do I make the teams be assigned automatically in tournament or match mode?</font></a></p>
+		<p><a href="#Q How do I use the new Match or Tournament features?"><font size="3" face="Arial">Q How do I use the new Match or Tournament features?</font></a></p>
+		<p><a href="#Q: I get an error invalid first mission/last mission?"><font size="3" face="Arial">Q: I get an error invalid first mission/last mission?</font></a></p>
+		<p><a href="#Q: My server is running, but I can't see it in the server lists..."><font size="3" face="Arial">Q: My server is running, but I can't see it in the server lists...</font></a></p>
+		<p><a href="#Q: I can't see a server in the browser list... is there a way I can add it manually?"><font size="3" face="Arial">Q: I can't see a server in the browser list... is there a way I can add it manually?</font></a></p>
+		<p><a href="#Q: How do I talk to players in the game from the console?"><font size="3" face="Arial">Q: How do I talk to players in the game from the console?</font></a></p>
+		<p><a href="#Q: Can I see how many players are connected to my server from the console?"><font size="3" face="Arial">Q: Can I see how many players are connected to my server from the console?</font></a></p>
+		<p><a href="#Q: I have an abusive player connected. How do I kick someone from the console?"><font size="3" face="Arial">Q: I have an abusive player connected. How do I kick someone from the console?</font></a></p>
+		<p><a href="#Q: Can I give someone Admin/SuperAdmin status from the console?"><font size="3" face="Arial">Q: Can I give someone Admin/SuperAdmin status from the console?</font></a></p>
+		<p><a href="#Q: When I start the dedicated server I notice that there are a lot of UNDEFINED so and so error lines popping up. Is that just because Shifter is running or is this not a good thing?"><font size="3" face="Arial">Q: When I start the dedicated server I notice that there are a lot of UNDEFINED so and so error lines popping up. Is that just because Shifter is running or is this not a good thing?</font></a></p>
+		<p><a href="#Q: Can I change the list of words my server considers swearing?"><font size="3" face="Arial">Q: Can I change the list of words my server considers swearing?</font></a></p>
+		<p><a href="#Q: How do I create my own SHBadwordlist file?"><font size="3" face="Arial">Q: How do I create my own SHBadwordlist file?</font></a></p>
+		<p><a href="#Q: My spawnfaves is still working when I set the $Shifter::PowerCheck = &quot;true&quot;;... Why?"><font face="Arial" size="3">Q: My spawnfaves is still working when I set the $Shifter::PowerCheck = &quot;true&quot;;... Why?</font></a></p>
+        <p><font face="Arial" size="3"><a href="#Q: I loaded a new map and now my forcefeilds and teleporters are gone?">Q:
+        I loaded a new map and now my forcefeilds and teleporters are gone?</a></font></p>
+        <p><font face="Arial" size="3"><a href="#Q: How do I use the new Auto Admin features?">Q:
+        How do I use the new Auto Admin features?</a></font></p>
+        <p><font face="Arial" size="3"><a href="#Q: My players can't talk to each other anymore...  What's going on?">Q:
+        My players can't talk to each other anymore...&nbsp; What's going on?</a></font></p>
+        <p>&nbsp;</p>
+		<p>
+        &nbsp;
+		<hr>
+		<p><a href="#Q: What is Shifter?"><font size="3" face="Arial">Q: What is Shifter?</font></a></p>
+		<p><a name="Q: What is Shifter?"></a><font size="3" face="Arial">A:</font> <font size="3" face="Arial">Shifter is a server MOD for the game Starsiege Tribes. (MOD being a reworking of the codebase allowing additional functionality, which may include rules, equipment, and/or additional features)</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: Where can I get Shifter?"><font size="3" face="Arial">Q: Where can I get Shifter?</font></a></p>
+		<p><a name="Q: Where can I get Shifter?"></a><font size="3" face="Arial">A:</font> <font size="3" face="Arial">You can download Shifter from <a href="http://www.dopplegangers.com" target="_blank">http://www.dopplegangers.com</a></font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: How do I install Shifter?"><font size="3" face="Arial">Q: How do I install Shifter?</font></a></p>
+		<p><a name="Q: How do I install Shifter?"></a><font size="3" face="Arial">A:</font> <font size="3" face="Arial">Shifter is installed in a similar method to any other MOD.</font></p>
+		<ol>
+			<li><font size="3" face="Arial">Extract the archive and place the files in the following structure: tribes\config\<b>serverConfig.cs</b>, Tribes\shifter_v1\<b>scripts.vol</b></font>
+			<li><font size="3" face="Arial">If you have an existing shifter_v1.cs file or serverPrefs.cs file, copy the contents into the ServerConfig.cs file and <i><b>remove</b></i> them. Shifter will operate properly with only one configuration file...&nbsp; as of the latest release, additional obsolete ones will cause problems.</font>
+			<li><font face="Arial" size="3">Make a <i>copy</i> your serverConfig.cs file and rename it to <b>matchConfig.cs</b>. (place this new file in your tribes\config directory)&nbsp;<br>
+			Change any variables you want to have when the server is running in match mode in this file. Specifically, <b>$Server::TourneyMode = &quot;true&quot;;</b> and others...&nbsp; This is the configuration file that will be run when you place the server into match (tournament) mode.</font>
+			<li><font size="3" face="Arial">Remove any files in your tribes\temp directory.&nbsp;</font>
+			<li><font size="3" face="Arial">Start your dedicated server with the command line or shortcut:&nbsp;<br>
+			<i><b>x:\Tribes\InfiniteSpawn.exe *tribes -mod shifter_v1 +exec serverConfig.cs -dedicated</b></i></font>
+		</ol>
+		<p>
+		<hr>
+		<p><a href="#Q: What is the difference between a dedicated server and a listen server?"><font size="3" face="Arial">Q: What is the difference between a dedicated server and a listen server?</font></a></p>
+		<p><a name="Q: What is the difference between a dedicated server and a listen server?"></a><font size="3" face="Arial">A:</font> <font size="3" face="Arial">A dedicated server is a server which uses the -dedicated commandline switch, and runs the game in a <i>dedicated </i>fashion. You are unable to play locally on a server of this type, but must connect to it from an additional PC. This is the preferred method of running a server. A <i>listen</i> server is one in which you host a game and play at the same time, on the same PC. Any users attempting to connect to this type of game will be at a severe disadvantage, and most likely experience severe lag.</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: What is LAG?"><font size="3" face="Arial">Q: What is LAG?</font></a></p>
+		<p><a name="Q: What is LAG?"></a><font size="3" face="Arial">A:</font> <font size="3" face="Arial">LAG is a term used to describe poor performance or connection to the server, which is usually associated with high ping times and packet loss. This is not to be confused with poor frame rates caused by inadequate gaming hardware.</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: I've found a problem, where can I report it?"><font size="3" face="Arial">Q: I've found a problem, where can I report it?</font></a></p>
+		<p><a name="Q: I've found a problem, where can I report it?"></a><font size="3" face="Arial">A:</font> <font size="3" face="Arial">If you find a bug or similar problem, please report it on the Shifter forum, it can be found at <a href="http://www.dopplegangers.com/cgi-bin/forum/Shifter/forum.pl">http://www.dopplegangers.com/cgi-bin/forum/Shifter/forum.pl</a></font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: Can I have custom skins on my server?"><font size="3" face="Arial">Q: Can I have custom skins on my server?</font></a></p>
+		<p><a name="Q: Can I have custom skins on my server?"></a><font size="3" face="Arial">A:</font> <font size="3" face="Arial">Shifter supports custom skins with the server variable <i><b>$Shifter::PersonalSkin = True;&nbsp;</b></i> If you wish to assign a custom skin to a team, follow this example: <i><b>$Server::teamSkin0 = &quot;arioch&quot;;&nbsp;</b></i> This will assign ARIOCH skin to team0. You should <i><b>never </b></i>place the actual skin.vol files on the server itself. This will cause clients without the file to be kicked at mission cycle.</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: My server is running, but people get kicked every time the mission cycles!"><font size="3" face="Arial">Q: My server is running, but people get kicked every time the mission cycles?!</font></a></p>
+		<p><a name="Q: My server is running, but people get kicked every time the mission cycles!"></a><font size="3" face="Arial">A:</font> <font size="3" face="Arial">When running a dedicated server, you should not have any additional skin files, scripts (ie presto-pack), voicepacks etc installed on the server. Tribes will kick/drop any clients who do not have the same files stored on the server. This can also happen when running client side maps that the client does not have.</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: What is the difference between server side and client side maps?"><font size="3" face="Arial">Q: What is the difference between server side and client side maps?</font></a></p>
+		<p><a name="Q: What is the difference between server side and client side maps?"></a><font size="3" face="Arial">A:</font> <font size="3" face="Arial">Server side maps use map data from existing missions to create a 'new' mission. These maps usually only come with 2 files, *.dsc and *.mis. Client side maps use custom terrain and/or objects which require an additional download for the client to play on a server. Client side maps usually come with additional files with *.ted or *.vol extensions.</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: I added some maps and now people are getting kicked/dropped when it changes to them!?"><font size="3" face="Arial">Q: I added some maps and now people are getting kicked/dropped when it changes to them!?</font></a></p>
+		<p><a name="Q: I added some maps and now people are getting kicked/dropped when it changes to them!?"></a><font size="3" face="Arial">A:</font> <font size="3" face="Arial">The maps you added were more than likely <a href="#Q: What is the difference between server side and client side maps?">client side</a>, meaning the client requires a copy of them on their machine to play on it.</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: I installed the MOD, but when I connect it's still base?"><font size="3" face="Arial">Q: I installed the MOD, but when I connect it's still base?</font></a></p>
+		<p><a name="Q: I installed the MOD, but when I connect it's still base?"></a><font size="3" face="Arial">A:</font> <font size="3" face="Arial">The first thing to check is your logfile.. be sure it's including the shifter stuff in the path. You'll find a line that should read as follows: <i><b>config;Shifter_v1;Shifter_v1\missions;Shifter_v1\fonts;Shifter_v1\skins;Shifter_v1\voices;Shifter_v1\scripts;base;base\missions;base\fonts;base\skins;base\voices;base\scripts;recordings;temp<br>
+		<br>
+		</b></i>If the line isn't in the console or logfile, shifter isn't loading. (you'll probably see one similar without the shifter part)<br>
+		If so check the following:</font></p>
+		<ol>
+			<li><font size="3" face="Arial">delete the contents of the tribes\temp directory (clears out old variables etc)</font>
+			<li><font size="3" face="Arial">be sure your commandline is -mod shifter_v1 +exec serverConfig.cs -dedicated</font>
+			<li><font size="3" face="Arial">You should only have one config file, serverConfig.cs. If you have a serverPrefs or shifter_v1, take any missing commands and put them in the serverconfig.cs file and delete the serverprefs.cs and shifter_v1.cs files (this seems to be the most common issue)</font>
+			<li><font size="3" face="Arial">place the serverConfig.cs file in the tribes\config directory and be sure there aren't any more lurking around anywhere</font>
+			<li><font size="3" face="Arial">restart the server and check the console/logfile for the path statement referenced above... if you see it, shifter is up and running.</font>
+		</ol>
+		<p>
+		<hr>
+		<p><a href="#Q: I get the error message Game::refreshClientScore: Unknown command and nobody can connect"><font size="3" face="Arial">Q: I get the error message <i><b>Game::refreshClientScore: Unknown command</b></i> and nobody can connect</font></a></p>
+		<p><a name="Q: I get the error message Game::refreshClientScore: Unknown command and nobody can connect"></a><font size="3" face="Arial">A: </font><font size="3" face="Arial">This is a generic type of error caused when the server does not initialize correctly. The first item to check is your configuration. Next, you may wish to check your <i><b>$pref::LastMission</b></i> and verify it points to a valid mission. </font></p>
+		<p><font size="3" face="Arial">(Note: if you leave this variable blank, Shifter will generate its own valid and random mission from the missionlist)</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: How do I remove missions I do not want in rotation?"><font size="3" face="Arial">Q: How do I remove missions I do not want in rotation?</font></a></p>
+		<p><a name="Q: How do I remove missions I do not want in rotation?"></a><font size="3" face="Arial">A:</font> <font size="3" face="Arial">The simplest way is to remove the *.DSC files of the missions you do not wish to have from the tribes\base\missions directory. If you feel extremely cleaver you can try your hand at a custom missionlist.&nbsp;<br>
+		(Do not remove the *.ted or *.vol files of any missions... These files are shared, and removal may cause your server to crash during mission cycles).</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: Can I create my own missionlist to run the missions in the order I want?"><font size="3" face="Arial">Q: Can I create my own missionlist to run the missions in the order I want?</font></a></p>
+		<p><a name="Q: Can I create my own missionlist to run the missions in the order I want?"></a><font size="3" face="Arial">A:</font> <font size="3" face="Arial">Sure you can. To create a custom missionlist follow this formula and place the commands at the end of your serverConfig.cs file. (Note: Shifter will create a missionlist for you automatically. This method is only if you require the missions to run is a specific order)<br>
+		<b>exec(missionlist);<br>
+		MissionList::clear();<br>
+		Missionlist::initNextMission();<br>
+		$pref::lastmission = map1;<br>
+		MissionList::addMission(map1);<br>
+		MissionList::addMission(map2);<br>
+		MissionList::addMission(map3);<br>
+		MissionList::addMission(map4);<br>
+		$nextMission[map1] = map2;<br>
+		$nextMission[map2] = map3;<br>
+		$nextMission[map3] = map4;<br>
+		$nextMission[map4] = map1;<br>
+		<br>
+		</b>Make sure the last line wraps the last mission back to the first mission.</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: My dog ate my serverConfig.cs file,... can I have yours?"><font size="3" face="Arial">Q: My dog ate my serverConfig.cs file,... can I have yours?</font></a></p>
+		<p><font size="3" face="Arial"><a name="Q: My dog ate my serverConfig.cs file,... can I have yours?"></a>A: That's one helluva dog you have there... Here's one you can cut/paste into yours, but I'd put the canine outside first...</font></p>
+        <blockquote>
+		<p><font size="2">//=========================================================================================================================================<br>
+        // Server Config.CS<br>
+        //=========================================================================================================================================<br>
+        <br>
+        $Server::HostName = "Dopplegangers TRIBES Shifter";	// The name of your<br>
+        $Server::MaxPlayers = "10"; 				// Max Players On Your Server<br>
+        $Server::HostPublicGame = "true";			// Server will be publicly listed<br>
+        $Console::LogMode = "1"; 	   			// save the console to a log file<br>
+        $Server::Password = "password";				// Server Password - for passworded matches<br>
+        $TelnetPort = "23";					// Telnet port number<br>
+        $TelnetPassword = "password";				// Telnet password<br>
+        <br>
+        //=== These are for Debug - Do not change these lines<br>
+        //$Shifter::ObjScore = "";				// Allow Objects Being Destroyed To Award Bonus Points<br>
+        //$Shifter::PlrScore = "";				// Allow Player Bonus Points To Be Awarded<br>
+        <br>
+        $Shifter::PublicNotice = "This server is in testing mode. If things are odd, please dont complain.";<br>
+        <br>
+        //============================== Server Information That Players Can See.<br>
+        $Server::Info 		= "SERVERSIDE ONLY MODS: Shifter . Skins\nAdmin: you ICQ#5555555\nEmail: your@address.com\n2 TeamKill KickBan in effect.\nIf you LAG, leave... Don't whine about it.";<br>
+        $Server::JoinMOTD 	= "&lt;jc>&lt;f1>Welcome to TRIBES Shifter!\nMODs: Shifter - Personal Skins\nIf you LAG, leave... Don't whine about it.\n2 TeamKill kick-ban active.";<br>
+        $Server::MODInfo 	= "MODS: Shifter . Personal Skins\nGrab our custom skins from http://members.home.com/fubarascain\nEmail Admin for private scrimmage details\nIf you LAG, leave... Don't whine about it.";<br>
+        $MODInfo = $Server::MODInfo;<br>
+        <br>
+        $Server::AutoAssignTeams = "true";		// Places players on teams automatically<br>
+        $Server::FloodProtectionEnabled = "true";	// Check for chat flooding players<br>
+        $Server::HostPublicGame = "true";		// List your server with the master list.<br>
+        $pref::noIpx = "true";				// Disallow IPX/SPX binding<br>
+        <br>
+        $Server::Port = "28001";			// Port To Run Server On<br>
+        $Server::respawnTime = "2";			// Time after death to respawn.<br>
+        $Server::TeamDamageScale = "1";			// Team Damage On/Off<br>
+        <br>
+        //========================================= Team Names and Default Skins and Time Limits<br>
+        $Server::teamName0 = "Emos Executioners";		$Server::teamSkin0 = "cphoenix";<br>
+        $Server::teamName1 = "Ascains Anhilators";		$Server::teamSkin1 = "swolf";&nbsp;<br>
+        $Server::teamName2 = "Dastardlys Devistators";		$Server::teamSkin2 = "beagle";<br>
+        $Server::teamName3 = "Methods Mutilators";		$Server::teamSkin3 = "dsword";<br>
+        $Server::teamName4 = "Karayas Kastrators";		$Server::teamSkin4 = "base";<br>
+        <br>
+        $Server::timeLimit = "70";			// Mission Time Limit In Minutes<br>
+        <br>
+        //========================================= Voting Variables<br>
+        $Server::MinVotes = "1";			// Minimum Votes to count<br>
+        $Server::MinVotesPct = "0.85";			// Percentage of votes needed to pass a vote<br>
+        $Server::MinVoteTime = "45";			// Time a vote lasts<br>
+        $Server::VoteFailTime = "30";			// Length Of Votes if people are NOT voting.<br>
+        $Server::VoteWinMargin = "0.699999";		// Ratio of Yeh to Neh to win vote.<br>
+        $Server::VotingTime = "20";			// Length Of Votes if people are voting.<br>
+        <br>
+        $Server::TourneyMode = "False";			// Set Tourney Mod Initially.<br>
+        $Server::warmupTime = "10";			// Mission Start Time (Delay before missions starts)<br>
+        $Server::PacketRate = "10";     		// recommended rate for a cable modem<br>
+        $Server::PacketSize = "200";    		// recommended rate for a cable modem<br>
+        <br>
+        <br>
+        //=========================================================================================================================================<br>
+        // Shifter_v1.cs - The Following Options Pertain Strictly To The Functionality Of Shifter.<br>
+        //=========================================================================================================================================<br>
+        <br>
+        <br>
+        //=========================================================================================================================================<br>
+        // Client Options<br>
+        //=========================================================================================================================================<br>
+        $Debug = "False";		// == Turns on Debug - If you have problems you can turn Debug on here.<br>
+        <br>
+        <br>
+        $Shifter::TwoMinute = "True";	// == Two Minute Warning Notice On/Off (Default = True)<br>
+        <br>
+        $Shifter::NoSwearing="True"; 	// == True means disallow swearing on your server? (update the SHBadwordlist.cs file)<br>
+        $Shifter::BadWordsMax=1; 	// == If no swearing, This value is the limit at which the client starts being killed for swearing<br>
+        $Shifter::BadWordskick=2; 	// == If no swearing, This value is the limit at which the client is kicked for swearing<br>
+        <br>
+        $Shifter::LooseScore = 0.75;	// == This is the score ratio for the loosing team. 0.5 for instance would cut a loosing players score by half.<br>
+        <br>
+        $Shifter::Guided = True;<br>
+        $Shifter::SpawnType = "Random"; 	//== Must be 'Standard' or 'Random'<br>
+        $Shifter::Racer = True;<br>
+        $Shifter::SaveOn = True;<br>
+        $Shifter::SpawnFavs = True;<br>
+        $Shifter::EngHealAll = True;<br>
+        <br>
+        $Shifter::VoteDTD = True;<br>
+        $Shifter::VoteKick = True;<br>
+        $Shifter::VoteAdmin = True;<br>
+        $Shifter::HelpOn = True;<br>
+        $Shifter::SwitchPerm = True;<br>
+        <br>
+        $Shifter::ScoreTracker = True;<br>
+        $Shifter::CheckScores = 30;<br>
+        $Shifter::WarnScore1 = "-10";<br>
+        $Shifter::WarnScore2 = "-20";<br>
+        $Shifter::WarnScore3 = "-30";<br>
+        $Shifter::WarnScoreFinal = "-40";<br>
+        $pref::LastMission = "Annihilator";<br>
+        <br>
+        //=========================================================<br>
+        <br>
+        $Shifter::RandomStart = False;		//-- Start server with a Random mission<br>
+        $Shifter::Reactions = True;		//-- Damage knocks player back<br>
+        $Shifter::Refresh = False;		//-- Refresh the server after last player drops&nbsp;<br>
+        <br>
+        //=========================================================<br>
+        <br>
+        $Shifter::HackedTime = 90;	// -- Time hacked items will remain hacked. 0 = Must be hacked back... -
+        Defaults To 90<br>
+        $Shifter::HackTime = 5;		// -- Length Of Time To Complete Hacking - Defaults To 5<br>
+        $Shifter::HackLock = 90;	// -- Length of time a hacked item will be disabled for after being hacked. - Defaults To 0<br>
+        $Shifter::LaserMineLive = 5;	// -- Live Time For Laser Mines - Defaults To 5 Seconds<br>
+        $Shifter::ItemLimit = True;	// -- Makes it so that ONLY the armors that can buy a given item can see it in the invo list.<br>
+        $Shifter::DetPackLimit = 15;	// -- Limit of DetPacks per match<br>
+        $Shifter::NukeLimit = 15;	// -- Limit of Nukes per match<br>
+        //=========================================================<br>
+        <br>
+        $Shifter::LocalNetMask = "IP:208.188.5";<br>
+        $Shifter::NukeLimit = 15;<br>
+        $Shifter::PowerCheck = True;<br>
+        $Shifter::TeamJuggle = 3;<br>
+        $Shifter::AmmoBoom = True;<br>
+        $Shifter::HeadShot = 5;<br>
+        $Shifter::KillTime = 120;<br>
+        <br>
+        $Shifter::Guided = True;	// -- Allow Guided Missiles and Launcher in game.<br>
+        <br>
+        //=========================================================================================================================================<br>
+        // AutoAdmin Options<br>
+        //=========================================================================================================================================<br>
+        <br>
+        //==== Wild card IP's must just be left blank. Do NOT use the * in place of an octet. Note below for an example.<br>
+        //==== NEW AutoAdmin - SAD Password Assignments<br>
+        <br>
+        $Server::Admin["autoa", "Emo1313"] = 1;			//== 1 Turns ON AutoAdmin<br>
+        $Server::Admin["noban", "Emo1313"] = 1;			//== 1 Adds player to NOBan list<br>
+        $Server::Admin["ipadr", "Emo1313"] = "IP:208.188.5";	//== Ip mask for AutoAdmining check (Left blank will NOT Autoadmin, MUST contain an IP mask to Autoadmin)<br>
+        $Server::Admin["sadpw", "Emo1313"] = "passworded";	//== Optional SAD password for user - Left blank user will NOT be able to use SAD ability.<br>
+        $Server::Admin["admin", "Emo1313"] = 1;			//== 1 Sets User to Normal Admin&nbsp;<br>
+        $Server::Admin["super", "Emo1313"] = 1;			//== 1 Sets User to BOTH Normal/SuperAdmin<br>
+        <br>
+        $Server::Admin["autoa", "Dastardly"] = 1;<br>
+        $Server::Admin["noban", "Dastardly"] = 1;<br>
+        $Server::Admin["ipadr", "Dastardly"] = "IP:208.188.5";<br>
+        $Server::Admin["sadpw", "Dastardly"] = "passworded";<br>
+        $Server::Admin["admin", "Dastardly"] = 1;<br>
+        $Server::Admin["super", "Dastardly"] = 1;<br>
+        <br>
+        //=========================================================================================================================================<br>
+        // Server Options<br>
+        //=========================================================================================================================================<br>
+        <br>
+        $Shifter::Weapons = True;                               //== Advanced Weapon Options On<br>
+        <br>
+        $Shifter::LockOn = True;				//== Missile locks<br>
+        <br>
+        $Shifter::emailAddress = "emo1313@dopplegangers.com";	//== Email address to show banned users for reinstatement<br>
+        $Shifter::VoteAdmin =  False;				//== Can players initiate vote to admin<br>
+        $Shifter::VoteKick = True;				//== Can players initiate vote to kick<br>
+        $Shifter::RandomMissions = True;			//== Random Missions on/off<br>
+        $Shifter::RandomStart = False;				//== Random Missions on/off<br>
+        <br>
+        $Shifter::KeepBalanced = True;				//== Keep Balanced<br>
+        $Shifter::SpawnRandom = True;				//== Turn on Random Spawn Setup?<br>
+        $Shifter::NoOutside = True;				//== Turn on Outside of mission area damage<br>
+        $Shifter::TurretKill = False;                           //== Turret Kills Count For Player<br>
+        $Shifter::PersonalSkin = True;				//== Personal Skins On or Off<br>
+        <br>
+        //=========================================================================================================================================<br>
+        // Advanced Flag Options<br>
+        //=========================================================================================================================================<br>
+        $Shifter::FlagNoReturn = "True";<br>
+        $Shifter::FlagReturnTime = "400";<br>
+        <br>
+        //=========================================================================================================================================<br>
+        // Advanced Scoring System<br>
+        //=========================================================================================================================================<br>
+        $ScoreOn = True;		    	//== If True will show client their score on change in a bottom print message for 3 seconds.<br>
+        <br>
+        $Score::25Meters = "5";     		//== Less Than 25 Meters To Flag<br>
+        $Score::75Meters = "3";     		//== From 25 to 75 Meters<br>
+        $Score::150Meters = "2";    		//== From 75 to 150 Meters<br>
+        $Score::250Meters = "1";    		//== From 150 to 250 Meters<br>
+        <br>
+        $Score::FlagCapture = "15";		//== Points For A Successful Flag Capture&nbsp;<br>
+        $Score::FlagKill = "7";  		//== Bonus For Killing Flag Runner<br>
+        $Score::FlagDef  = "3";   		//== Bonus Points For Defending The Runner<br>
+        $Score::FlagReturn = "3";   		//== Points For Returning Dropped<br>
+        <br>
+        $Score::CaptureOdj = "2";   		//== Points For Capturing An Objective<br>
+        $Score::HoldingObj = "5";   		//== Points For Holding An Objective For 60 Seconds.<br>
+        $Score::InitialObj = "2";   		//== Points For Getting The Objective First<br>
+        <br>
+        $Score::ObjDestroy = "15";      	//== Objective Destroyed<br>
+        <br>
+        //=========================================================================================================================================<br>
+        // Note about the following section... These points are awarded for destroying the enemy stations, generators, etc.&nbsp;<br>
+        // These points are also used in a calculation to give points for repairing things on your own team and to deduct points for<br>
+        // repairing things on the enemy's team.<br>
+        //<br>
+        // The Lower option, Score::RepairObject is a base repair score. You can make this zero if you do not want players to get the&nbsp;<br>
+        // base 1 point of repairing...&nbsp;<br>
+        //<br>
+        // You do NOT just get points for walking up and shooting something with a repair gun for a couple seconds. There is a detailed<br>
+        // calculation that gets the total points for a repair job. The (amount the item was damaged X the point value below) + the&nbsp;<br>
+        // Score::RepairObject... This amount is given for repairing the players own teams equipment. It will also deduct this amount<br>
+        // if the player repairs enemy equipment.&nbsp;<br>
+        //<br>
+        // You will only gain points for repairing an object COMPLETELY... Points are calculated from the time you start the repair to the&nbsp;<br>
+        // time you finish, if you want full points you had better not stop...<br>
+        //<br>
+        // What stops a player from just shooting and repairing his own stuff to horde points?! If the player is the last person to have<br>
+        // damaged the object he will receive NO points.<br>
+        //=========================================================================================================================================<br>
+        <br>
+        $Score::ObjStationS = "7";      //== Destroy Supply Station&nbsp;<br>
+        $Score::ObjStationA = "5";      //== Destroy Ammo Station or Command<br>
+        $Score::ObjStationR = "3";      //== Destroy Remote Station<br>
+        $Score::ObjFlier = "3";         //== Destroy Flyer Pad or Station<br>
+        $Score::ObjGeneratorB = "10";   //== Destroy Large Generator<br>
+        $Score::ObjGeneratorS = "5";    //== Destroy Small Generator including - Panels<br>
+        $Score::ObjSensorL = "5";       //== Destroy Large Sensors<br>
+        $Score::ObjSensorS = "2";       //== Destroy Deployable Sensors<br>
+        <br>
+        $Score::ObjTurretL = "3";       //== Large Turrets<br>
+        $Score::ObjTurretS = "1";       //== Deployable Turrets<br>
+        <br>
+        $Score::Kill15Meters = "0";	//== Player Makes A Kill With In 15m<br>
+        $Score::Kill50Meters = "1";	//== Kill From 15 to 50m<br>
+        $Score::Kill100Meters = "1";	//== Kill From 50 to 100m<br>
+        $Score::Kill250Meters = "2";	//== Kill From 100 to 250m<br>
+        $Score::Kill250Plus = "3";	//== Kill 250m Or More<br>
+        <br>
+        $Score::RepairObject = "1";     //== Repair Bonus. Base Points For Repair...<br>
+        <br>
+        $Shifter::SpawnSafe = "10";   	//== If the player is killed before X - Only Half Points Are Awarded.<br>
+        <br>
+        //=========================================================================================================================================<br>
+        // Fair Teams Variables<br>
+        //=========================================================================================================================================<br>
+        <br>
+        $Shifter::FairTeams = False;  //== Is Fair Teams Is On<br>
+        $Shifter::FairCheck = "30";  //== Number in seconds that Shifter will check the teams evenness and warn players<br>
+        $Shifter::FairEvens = "120"; //== Number in seconds that Shifter will move the last connected player to the un even team.<br>
+        <br>
+        //=========================================================================================================================================<br>
+        // Team Killing Options<br>
+        //=========================================================================================================================================<br>
+        <br>
+        $Shifter::TeamKillOn 	= "True";		//== Is Anti TK On/Off<br>
+        $Shifter::KillTerm 		= "1";		//== Number Of Time A Player Can Team Kill<br>
+						//== Before Being Terminated (Killed By Server<br>
+        $SHAntiTeamKillWarnKills 	= "1";         	//== Number Of Team Kills Before Player Gets Warning.<br>
+        $SHAntiTeamKillBanTime 		= "600";	//== Length Of Time In Seconds Player Is Banded For.<br>
+        $SHAntiTeamKillMaxKills 	= "2";		//== Maximum Team Kills Before Kicked - Banned.<br>
+        $SHAntiTeamKillProximity	= "50";        	//== Proximity Distance For Accidental Damage.<br>
+        <br>
+        //=========================================================================================================================================<br>
+        // Varrious Server Messages To The Client<br>
+        //=========================================================================================================================================<br>
+        <br>
+        //================================================================= Message To Banned Team Killer<br>
+        $Shifter::TeamKillMsg = "You have been kick and banned for team killing, i hope you enjoyed it. Email:" @ $Shifter::emailAddress @ " for reinstatement.";<br>
+        <br>
+        //================================================================= Show When Client Spawns For The First Time<br>
+        <br>
+        $Shifter::WelcomeMsg = "&lt;jc>&lt;f2>Welcome to Dopplegangers Inc. Tribes\nMOD: Shifter V1.0 Beta 6-19-99\nServer site:www.dopplegangers.com/tribes\nMission: &lt;f1>" @ $missionName @ " &lt;f0>Mission Type: &lt;f1>" @ $Game::missionType @ "\n&lt;f0>2 TeamKill KickBan in effect.\nIf you LAG, leave...  Don't whine. We dont want to hear it!";<br>
+        <br>
+        $Shifter::WelcomeDelay = "20";  //== Amount in seconds that the message is shown. If "0" message will not be displayed.<br>
+        <br>
+        //=========================================================================================================================================<br>
+        // Set Default Anti-TK Functions<br>
+        //=========================================================================================================================================<br>
+        <br>
+        if($SHAntiTeamKillWarnKills == "")<br>
+	$SHAntiTeamKillWarnKills = 1;<br>
+        if($SHAntiTeamKillBanTime == "")<br>
+	$SHAntiTeamKillBanTime = 600;<br>
+        if($SHAntiTeamKillMaxKills == "")<br>
+	$SHAntiTeamKillMaxKills = 2;<br>
+        if($SHAntiTeamKillProximity == "")<br>
+    $SHAntiTeamKillProximity = 50;<br>
+        <br>
+        <br>
+        //=========== Master Server Listing (Dont frell with this).<br>
+        $Server::CurrentMaster = "0";<br>
+        $Server::numMasters = "3";<br>
+        $Server::Master1 = "t1m1.masters.dynamix.com:28000 t1m2.masters.dynamix.com:28000 t1m3.masters.dynamix.com:28000";<br>
+        $Server::Master2 = "IP:BROADCAST:28001";<br>
+        <br>
+        $Server::XLMaster1 = "IP:198.74.38.23:28000";<br>
+        $Server::XLMaster2 = "IP:Broadcast:28001";<br>
+        $Server::XLMasterN0 = "IP:209.67.28.148:28000";<br>
+        $Server::XLMasterN1 = "IP:209.1.233.139:28000";<br>
+        $Server::XLMasterN2 = "IP:198.74.40.68:28000";<br>
+        <br>
+        $Server::MasterAddress0 = "IP:tribes.dynamix.com:28000";<br>
+        $Server::MasterAddressN0 = "t1m1.masters.dynamix.com:28000 t1m2.masters.dynamix.com:28000 t1m3.masters.dynamix.com:28000";<br>
+        $Server::MasterAddressN1 = "t1ukm1.masters.dynamix.com:28000 t1ukm2.masters.dynamix.com:28000 t1ukm3.masters.dynamix.com:28000";<br>
+        $Server::MasterAddressN2 = "t1aum1.masters.dynamix.com:28000 t1aum2.masters.dynamix.com:28000 t1aum3.masters.dynamix.com:28000";<br>
+        $Server::MasterName0 = "Tribes Master";<br>
+        $Server::MasterName1 = "UK Tribes Master";<br>
+        $Server::MasterName2 = "Australian Tribes Master";<br>
+        //==========================================================</font></p>
+        </blockquote>
+		<hr>
+		<p><a href="#Q: What happened to the shifter_v1.cs file?"><font size="3" face="Arial">Q: What happened to the shifter_v1.cs file?</font></a></p>
+		<p><font size="3" face="Arial"><a name="Q: What happened to the shifter_v1.cs file?"></a>A: In the latest build additional functionality for tournaments and clan matches was added. As a result the MOD has been restructured. The need for one configuration file is required to prevent server variables from being overwritten. If you previously used multiple configuration files, you will now be required to consolidate them into one, entitled ServerConfig.cs.</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: How do I make the teams be assigned automatically in tournament or match mode?"><font size="3" face="Arial">Q: How do I make the teams be assigned automatically in tournament or match mode?</font></a></p>
+		<p><font size="3"><a name="Q: How do I make the teams be assigned automatically in tournament or match mode?"></a></font><font face="Arial" size="3">A: </font><font face="Arial" size="3">To assign someone to a team, two new server variables have been introduced: <i><b>$Shifter::Tag0=&quot;|00|&quot;; ,$Shifter::Tag1=&quot;|XX|&quot;; </b></i>Simply place these tags in your matchConfig.cs file and change the values of the string (the stuff in the quotes) to the tag used by the clan/tribe to be assigned to that team.&nbsp;<br>
+		</font><font size="3">For instance: Tribe1 tag used is |BoF|... so </font><font face="Arial" size="3"><i><b>$Shifter::Tag0=&quot;|BoF|&quot;; </b></i>would place them automatically on team0 when the server is in match or tourney mode. The tag can be matched anywhere in the players handle. |BoF|Leader, player|BoF|, i.Am|BoF|like are all valid matches.</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q How do I use the new Match or Tournament features?"><font size="3" face="Arial">Q How do I use the new Match or Tournament features?</font></a></p>
+		<p><font face="Arial" size="3"><a name="Q How do I use the new Match or Tournament features?"></a>A: Here's the skinny:</font></p>
+		<ul>
+			<li><font size="3" face="Arial">The new code allows for only 2 configuration files on the server... The first (<i><b>serverConfig.cs</b></i>) is the default server configuration you always run, and the second (<i><b>matchConfig.cs</b></i>) is what you wish the server to be configured to when the match option is selected. The easiest way to make these files is to create the serverConfig.cs file, then make a copy of it, rename the copy to matchConfig.cs and then change the appropriate variables in the match file. Any variables used should have a 'duplicate' or corresponding value in the opposite configuration file. So if you $Server::Password=&quot;password&quot;; in your matchConfig file, you should have a corresponding $Server::Password=&quot;&quot;; in your serverConfig.cs (to remove the password).<br>
+			</font>
+			<li><font size="3" face="Arial">There no longer a shifter_v1.cs file. You should copy all your variables from the shifter_v1.cs file and paste them into your serverConfig.cs file. Then <b>DELETE</b> or <b>RENAME</b> the shifter_v1.cs file. This is MOST IMPORTANT! the way the new code keeps track of variables has changed, and the appropriate configuration file is executed when you select match or default from the new admin TAB menus<br>
+			</font>
+			<li><font size="3" face="Arial">There are a few new variables as well:<br>
+			<b>$Shifter::Tag0=&quot;|00|&quot;;</b> // Tribe 'tag' for autoassign team 1<br>
+			<b>$Shifter::Tag1=&quot;|XX|&quot;;</b> // Tribe 'tag' for autoassign team 2<br>
+			<br>
+			This works as follows... If the server is set to Tournament mode (put in your matchConfig.cs file $Server::TourneyMode = &quot;True&quot;;) the server will automatically assign players to each team according to the tag id you assign... so this means if you're playing tribes *EMO* against :|SPC|: then set the config file to be - $Shifter::Tag0=&quot;*EMO*&quot;; and $Shifter::Tag1=&quot;:|SPC|:&quot;; -<br>
+			<br>
+			The server checks players at mission cycle and connect for the tag and auto assigns the team, if the tag does not exist, they are put in observer mode and the Admin must assign their team. (in the above example, player :|SPC|: MrHankey would be assigned to team2... (note: the tag can be anywhere in the name)<br>
+			</font>
+			<li><font size="3" face="Arial">There are new options in the TAB menu, allowing tourney mode (using current configuration), match configuration (executing the matchConfig.cs file - recommended over default tourney mode-), and reset to defaults (puts the server back to the default configuration set in the serverConfig.cs)<br>
+			</font>
+		</ul>
+		<p><font face="Arial" size="3">The way it works is like this...<br>
+		<br>
+		The in-game admin prepares to start the match, so they select the 'Enable match configuration' option from the TAB menu. The server executes the matchConfig.cs file and saves the new configuration to the temp directory. each mission cycle from here on reloads the stored data from the temp dir to maintain the match configuration. (the reason why we deleted the shifter_v1.cs file, to prevent overwriting the data at mission cycle)<br>
+		When the server starts in tourney mode, teams are assigned by the tags set in the configuration file (matchConfig.cs) and any non matching players are set to observer for manual assignment.<br>
+		<br>
+		When the match is finished, the admin then selects the option 'reset to server defaults' from the TAB menu, and the default serverConfig.cs file is executed and stored in the temp data directory.<br>
+		<br>
+		This update should allow matches to be run without server admin intervention, and in a ladder situation, one default matchConfig.cs file can be created and distributed to all match servers to provide a contiguous and level playing field.<br>
+		</font>
+		<hr>
+		<p><a href="#Q: I get an error invalid first mission/last mission?"><font size="3" face="Arial">Q: I get an error invalid first mission/last mission?</font></a></p>
+		<p><font size="3" face="Arial"><a name="Q: I get an error invalid first mission/last mission?"></a>A: Chances are your<i><b> $pref::LastMission&nbsp; </b></i>is pointing to a mission you do not have, or you've incorrectly created your own <a href="#Q: Can I create my own missionlist to run the missions in the order I want?">missionlist</a>. Check the spelling, verify all the files for the mission are present, or simply remove the variable. Shifter will automatically assign one from the dynamic missionlist created at startup.</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: My server is running, but I can't see it in the server lists..."><font size="3" face="Arial">Q: My server is running, but I can't see it in the server lists...</font></a></p>
+		<p><font size="3" face="Arial"><a name="Q: My server is running, but I can't see it in the server lists..."></a>A: First thing, check to see that you have <i><b>$Server::HostPublicGame = &quot;true&quot;; </b></i>set in your serverConfig.cs file. If so, have a buddy update his list... sometimes the master lists just take time to update. Worst case scenario, you and your friends can manually add it to your browser with this <a href="#Q: I can't see a server in the browser list... is there a way I can add it manually?">command</a>.</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: I can't see a server in the browser list... is there a way I can add it manually?"><font size="3" face="Arial">Q: I can't see a server in the browser list... is there a way I can add it manually?</font></a></p>
+		<p><font size="3" face="Arial"><a name="Q: I can't see a server in the browser list... is there a way I can add it manually?"></a>A: To add a server to your browser list edit your tribes\config\GameServerList.cs file in your favourite editor and add a line to the end following this syntax:<br>
+		</font><font face="Arial" size="2"><b>addGameServer(&quot;IP:</b></font><font color="navy" face="Arial" size="2"><b>address:port</b></font><font face="Arial" size="2"><b>&quot;, &quot;</b></font><b><font color="green" face="Arial" size="2">ServerName</font><font face="Arial" size="2">&quot;, &quot;1.11&quot;, &quot;100&quot;, &quot;TRUE&quot;, &quot;shifter_v1 base&quot;, &quot;Scarabrae&quot;, &quot;CTF&quot;, &quot;333&quot;, &quot;FALSE&quot;);<br>
+		</font></b><font face="Arial" size="3">Where </font><font color="navy" face="Arial" size="3">&quot;IP:address:port&quot; </font><font face="Arial" size="3">would be something like </font><font color="navy" face="Arial" size="3">&quot;IP:169.254.0.1:28001&quot;</font><font face="Arial" size="3"> and </font><font color="green" face="Arial" size="3">ServerName</font><font face="Arial" size="3"> is the name of the server you're trying to add.</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: How can I tell from the console if shifter has started up and is running correctly?"><font size="3" face="Arial">Q: How can I tell from the console if shifter has started up and is running correctly?</font></a></p>
+		<p><font size="3" face="Arial"><a name="Q: How can I tell from the console if shifter has started up and is running correctly?"></a>A: Good question... unless you try to connect to it from another machine it's difficult to tell. As a general rule, you should see something like the following in your console...</font></p>
+		<blockquote>
+			<p><font size="1"><b>MSG: &quot;Server: Team \&quot;\&quot; added - id = -1&quot;<br>
+			Executing missions\Broadside.mis.<br>
+			MSG: &quot;Server: Team \&quot;Blood Eagle\&quot; added - id = 0&quot;<br>
+			MSG: &quot;Server: Team \&quot;Diamond Sword\&quot; added - id = 1&quot;<br>
+			Executing Objectives.cs.<br>
+			Executing game.cs.<br>
+			Executing comchat.cs.<br>
+			Executing shban.cs.<br>
+			config;Shifter_v1;Shifter_v1\missions;Shifter_v1\fonts;Shifter_v1\skins;Shifter_v1\voices;Shifter_v1\scripts;base;base\missions;base\fonts;base\skins;base\voices;base\scripts;recordings;temp<br>
+			exec: invalid script file SHBanList19620.cs.<br>
+			Ban List Loaded<br>
+			SHBan Loaded.<br>
+			Executing scoretracker.cs.<br>
+			Executing fairteams.cs.<br>
+			No drones exist...<br>
+			Dedicated Server Initialized</b></font></p>
+		</blockquote>
+		<p>
+		<hr>
+		<p><a href="#Q: How do I talk to players in the game from the console?"><font size="3" face="Arial">Q: How do I talk to players in the game from the console?</font></a></p>
+		<p><font size="3" face="Arial"><a name="Q: How do I talk to players in the game from the console?"></a>A: You can use applications like Tricon etc, or simply type the following commands in from the server console:<b><br>
+		topprintall(&quot;message here&quot;,30)</b>; , <b>centerprintall(&quot;message here&quot;,30);</b> , <b>bottomprintall(&quot;message here&quot;,30);</b> will each respectively print a message on the top/center/bottom of every clients screen the &quot;message here&quot; message for 30 seconds.<br>
+		Similarly, the command <b>bottomrprint(2049,&quot;message here&quot;,30);</b> will print a message on client 2049's screen only.</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: Can I see how many players are connected to my server from the console?"><font size="3" face="Arial">Q: Can I see how many players are connected to my server from the console?</font></a></p>
+		<p><font size="3" face="Arial"><a name="Q: Can I see how many players are connected to my server from the console?"></a>A: Yes, type in<b> listplayers();</b> at the console to see the number of clients connected.</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: I have an abusive player connected. How do I kick someone from the console?"><font size="3" face="Arial">Q: I have an abusive player connected. How do I kick someone from the console?</font></a></p>
+		<p><font size="3" face="Arial"><a name="Q: I have an abusive player connected. How do I kick someone from the console?"></a>A: The format for kicking a client is as follows: <b>Net::Kick(%clientId,&quot;message&quot;);</b></font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: Can I give someone Admin/SuperAdmin status from the console?"><font size="3" face="Arial">Q: Can I give someone Admin/SuperAdmin status from the console?</font></a></p>
+		<p><font size="3" face="Arial"><a name="Q: Can I give someone Admin/SuperAdmin status from the console?"></a>A: Yes, obtain the client's id# (<i><b>listplayers();</b></i>) and use the following format for the command:<br>
+		&nbsp;&nbsp;&nbsp;&nbsp; <b>%clientId.isadmin=&quot;true&quot;</b> , <b>%clientId.isSuperAdmin=&quot;true&quot;</b> . The values are exclusive, so you need to assign both if required.</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: When I start the dedicated server I notice that there are a lot of UNDEFINED so and so error lines popping up. Is that just because Shifter is running or is this not a good thing?"><font size="3" face="Arial">Q: When I start the dedicated server I notice that there are a lot of UNDEFINED so and so error lines popping up. Is that just because Shifter is running or is this not a good thing?</font></a></p>
+		<p><font size="3" face="Arial"><a name="Q: When I start the dedicated server I notice that there are a lot of UNDEFINED so and so error lines popping up. Is that just because Shifter is running or is this not a good thing?"></a>A: This is caused by the order in which the functions are being declared. I wouldn't worry about it. =)</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: Can I play Shifter on my personal machine to practice with the armors and new stuff without having to run a server?"><font size="3" face="Arial">Q: Can I play Shifter on my personal machine to practice with the armors and new stuff without having to run a server?</font></a></p>
+		<p><font size="3" face="Arial"><a name="Q: Can I play Shifter on my personal machine to practice with the armors and new stuff without having to run a server?"></a>A: Yes you can!&nbsp; Install the MOD as described in this FAQ, and create a new shortcut for Tribes to run it, then just add -mod shifter_v1 in the target&nbsp; to the shortcut you use to start tribes... </font><font face="Arial" size="2">(<b>-</b><strong>mod shifter_v1 +exec serverConfig.cs </strong>in the target window after the quotation mark.. there should be a space between the &quot; and the -mod (like this: </font><font color="navy" face="Arial" size="2"><strong>...tribes.exe&quot; -mod shifter_v1 +exec serverConfig.cs</strong></font><font face="Arial" size="2">)</font></p>
+		<ul>
+			<li><font size="3" face="Arial">&nbsp;Right-click tribes.exe, select create shortcut</font>
+			<li><font size="3" face="Arial">&nbsp;make the commandline look something like this: x:\tribes\Tribes.exe -mod shifter_v1 +exec serverConfig.cs</font>
+			<li><font size="3" face="Arial">&nbsp;put the included serverConfig.cs file from the zipfile in your tribes\config directory</font>
+			<li><font size="3" face="Arial">&nbsp;put the included scripts.vol file from the zipfile in your tribes\shifter_v1 directory (create&nbsp;the dir if necessary)</font>
+		</ul>
+		<p><font size="3" face="Arial">Start tribes with the new shortcut, host a game with the regular tribes menus and when it starts, it will be a shifter 'listen' server good to practice your stuff on.</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: Can I change the list of words my server considers swearing?"><font size="3" face="Arial">Q: Can I change the list of words my server considers swearing?</font></a></p>
+		<p><font size="3" face="Arial"><a name="Q: Can I change the list of words my server considers swearing?"></a>A: Yes, simply edit the SHBadwordlist.cs file and modify the words between the quotes to reflect those you desire.</font></p>
+		<p>
+		<hr>
+		<p><a href="#Q: How do I create my own SHBadwordlist file?"><font size="3" face="Arial">Q: How do I create my own SHBadwordlist file?</font></a></p>
+		<p><font size="3" face="Arial"><a name="Q: How do I create my own SHBadwordlist file?"></a>A: Create a text file named SHBadwordlist.cs in your config directory and follow the example below. You can continue the sequence as far as you like, there is no preset upper limit.</font></p>
+		<blockquote>
+			<p><font size="3" face="Arial">$Shifter::badwordlist0=&quot;word&quot;;<br>
+			$Shifter::badwordlist1=&quot;word&quot;;<br>
+			$Shifter::badwordlist2=&quot;word&quot;;</font></p>
+		</blockquote>
+		<p>
+		<hr>
+		<p><a href="#Q: My spawnfaves is still working when I set the $Shifter::PowerCheck = &quot;true&quot;;... Why?"><font face="Arial" size="3">Q: My spawnfaves is still working when I set the $Shifter::PowerCheck = &quot;true&quot;;... Why?</font></a></p>
+		<p><font face="Arial" size="3"><a name="Q: My spawnfaves is still working when I set the $Shifter::PowerCheck = &quot;true&quot;;... Why?"></a>A: We have found a potentially large bug in the feature that disables the spawnfaves option when a teams power is down. Because of this, we felt it best to temporarily disable the option until a more complete resolution can be found.</font></p>
+		<hr>
+        <p><font face="Arial" size="3"><a name="Q: I loaded a new map and now my forcefeilds and teleporters are gone?" href="#Q: I added some maps and now people are getting kicked/dropped when it changes to them!?">Q:
+        I loaded a new map and now my forcefeilds and teleporters are gone?</a></font></p>
+        <p><font face="Arial" size="3">A: The map you added probably contained
+        extra files named objects.cs or staticshapes.cs...&nbsp; Look in your
+        base or mission directories for these files and remove them.</font></p>
+        <hr>
+        <p><font face="Arial" size="3"><a name="Q: How do I use the new Auto Admin features?" href="#Q: How do I use the new Auto Admin features?">Q:
+        How do I use the new Auto Admin features?</a></font></p>
+		<p><font size="3" face="Arial">
+		<b>A: </b> AutoAdmining - Automatically placing players as Admin, SuperAdmin and NoBan has become very easy. The server admin now has the option to Admin or SuperAdmin players, each permitting different abilities. (see list):<br>
+		==================================================================================================<br>
+		<b>Normal Admin Abilities :<br>
+		</b>1) Change Players Team- Player Selected<br>
+		2) Globally Mute/UnMute- Player Selected<br>
+		3) Lock/Unlock Players Team- Player Selected<br>
+		4) Set Mission Time Limit<br>
+		5) Select Touney/FFA Mode<br>
+		6) Change Mission<br>
+		7) Cycle Mission<br>
+		<br>
+		<b>Super Admin Abilities :<br>
+		</b>1) Kill,Ban or Kick Players- Player Selected<br>
+		2) Clear Players TK Count- Player Selected<br>
+		3) Grant/Revoke No Ban Status- Player Selected<br>
+		4) Admin/DeAdmin Players- Player Selected<br>
+		5) Give/Remove Penis Curse- Player Selected<br>
+		6) Enable MATCH Mode<br>
+		7) Reset Server To Defaults<br>
+		<br>
+		<b>Optional Super-Admin Abilities<br>
+		</b>8) Locking Missile On/Off Toggle.<br>
+		9) Turn On/Off Kill Counts For Turrets.<br>
+        <br>
+		This will allow server admins a greater range of control over the Admin - SuperAdmin - NoBanned - SAD features.<br>
+		A sample block is given below:<br>
+        //--------------------------------------------== 1 Turns ON AutoAdmin (If player has IP mask they will be autoadmined)<br>
+        <b>
+		$Server::Admin[&quot;autoa&quot;, &quot;Emo1313&quot;] = 1;</b><br>
+		<br>
+		//--------------------------------------------== 1 Adds player to NOBan list<br>
+        <b>
+		$Server::Admin[&quot;noban&quot;, &quot;Emo1313&quot;] = 1;</b><br>
+		<br>
+		//--------------------------------------------== Ip mask for AutoAdmining check<br>
+		//--------------------------------------------== (Left blank will NOT Autoadmin, MUST contain an IP mask to Autoadmin)<br>
+        <b>
+		$Server::Admin[&quot;ipadr&quot;, &quot;Emo1313&quot;] = &quot;IP:208.188.5&quot;;</b><br>
+		<br>
+		//--------------------------------------------== Optional SAD password for user -<br>
+		//--------------------------------------------== Left blank user will NOT be able to use SAD<br>
+		//--------------------------------------------== ability and will need to be auto-admined<br>
+        <b>
+		$Server::Admin[&quot;sadpw&quot;, &quot;Emo1313&quot;] = &quot;password&quot;;</b><br>
+		<br>
+		//--------------------------------------------== 1 Sets User to Normal Admin<br>
+        <b>
+		$Server::Admin[&quot;admin&quot;, &quot;Emo1313&quot;] = 1;</b><br>
+		<br>
+		//--------------------------------------------== 1 Sets User to BOTH Normal/SuperAdmin<br>
+        <b>
+		$Server::Admin[&quot;super&quot;, &quot;Emo1313&quot;] = 1;</b><br>
+		<br>
+		Setting any of the numbered options from 1 to 0 will set that attribute to OFF<br>
+		Super Admin will of course set players to both Normal and Super admin.<br>
+		<br>
+		So the block of info per player would look something like this.<br>
+		<br>
+		$Server::Admin[&quot;autoa&quot;, &quot;Dastardly&quot;] = 1;<br>
+		$Server::Admin[&quot;noban&quot;, &quot;Dastardly&quot;] = 0;<br>
+		$Server::Admin[&quot;ipadr&quot;, &quot;Dastardly&quot;] = &quot;IP:208.188.5&quot;;<br>
+		$Server::Admin[&quot;sadpw&quot;, &quot;Dastardly&quot;] = &quot;password&quot;;<br>
+		$Server::Admin[&quot;admin&quot;, &quot;Dastardly&quot;] = 1;<br>
+		$Server::Admin[&quot;super&quot;, &quot;Dastardly&quot;] = 0;<br>
+		<br>
+		This player would be AutoAdmined at log on.<br>
+		This player would also be able to use SAD(&quot;password&quot;); on the console if playing from a different machine.<br>
+		This player would NOT be on the NO BAN list.<br>
+		This player would ONLY be a normal Admin.</font></p>
+        <hr>
+        <p><font face="Arial" size="3"><a name="Q: My players can't talk to each other anymore...  What's going on?" href="#Q: My players can't talk to each other anymore...  What's going on?">Q:
+        My players can't talk to each other anymore...&nbsp; What's going on?</a></font></p>
+        <p><font face="Arial" size="3">A: There's a new feature that will
+        disable the client option to use global voices unless authorized. Check
+        the variable below for the proper value.&nbsp;</font></p>
+        <p><font face="Arial" size="3">
+		<b>$Shifter::GlobalTChat = True;</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        // True - All players can chat global in Tourney Mode<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        // False - Only players marked as Leader, Admin or SuperAdmin can chat.</font></p>
+        <hr>
+        <p><font size="3" face="Arial"><a name="Q: Players can no longer connect to my server...  They get some error message about a DTS file or something?" href="#Q: Players can no longer connect to my server...  They get some error message about a DTS file or something?">Q:
+        Players can no longer connect to my server...&nbsp; They get some error
+        message about a DTS file or something?</a></font></p>
+        <p><font size="3" face="Arial">A: The latest build uses the 1.11 code
+        functionality to defeat certain cheats some people were using. As a
+        result, the server will validate the clients' model and skins for the
+        following items: </font><font size="3" face="Arial">mines, beacons,
+        sniper rifle, armors, turrets, camera, flags, and remote inv/ammo
+        stations. Here's a quick blurb on the situation:</font></p>
+        <blockquote>
+          <p><font face="Arial" size="2"><i><b>Try connecting to a 1.11 base
+          server, and you'll find that you do have modified files on your
+          system. The new code (updated, server ops should check the forum)
+          validates the model and skins of the following items: mines, beacons,
+          sniper rifle, armors, turrets, camera, flags, and remote inv/ammo
+          stations. If you connect and get dropped from the server, you are
+          running a modified version of one of these items... you just may not
+          realize it. The server will inform you of the offending item after you
+          have been dropped. Just because you don't have any scripts installed
+          does not mean you may be affected. Early (pre 1.11) skinvols may have
+          included custom skins for the sniper rifle or inventory stations. The glamour
+          pack is a prime example of this. Granted the glamour pack is not a
+          cheat, but it did include custom skins for the remote inventory items
+          which will not work with 1.11. As a side note, the pack has been
+          updated to operate under 1.11, but some items were removed. The
+          kicking of the players is not a shifter issue, it is a result of the
+          1.11 validation checks. Again, I stress... Try a base 1.11 server and
+          the same thing will happen. The solution? Remove the offending *.dts
+          or skinfiles from your system. It's your call... do you want to run a
+          mod that will support the cheat scripts or not? For those who don't
+          believe they exist, I managed to get a copy and took some screenshots
+          with the checks disabled to show you just how unfair they are. You can
+          see them from this <a href="http://members.home.com/fubarascain/cheats/">LINK.</a>
+          Several people have reported the same problem, and the solution has
+          been the same for all of them. The removal of the offending items
+          allowed them to connect. (An amendment: Apparently MrPoops Skinchooser
+          scripts come with some offending 1.11 skins as well... check for gp*.avl.vol
+          files and remove them)</b></i></font></p>
+        </blockquote>
+        <hr>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<center>
+			<p><font size="1">this space intentionally left blank =)</font></p>
+		</center>
+		<div align="left">
+			<p>&nbsp;</p>
+		</div>
+		<div align="left">
+			<p>&nbsp;</p>
+		</div>
+		<div align="left">
+			<p>&nbsp;</p>
+		</div>
+		<div align="left">
+			<p>&nbsp;</p>
+		</div>
+		<div align="left">
+			<p>&nbsp;</p>
+		</div>
+		<div align="left">
+			<p><font size="2"><b>Last revised August 29, 2000</b></font></div>
+	</body>
+
+</html>

@@ -1,0 +1,31 @@
+:Copyright Stuff:
+
+The phrase "Dopplegangers News And Non-Sence", "Dopplegangers Tribes Archive" and "Shifter" are copyright (1998,1999,2000) Taylor Suchan (aka Emo1313).
+The Shifter Mod is a modification to the Tribes-Base FPS game release by Sierra-Dynamix and while no right to the originating product are expressed or implied, the modification to StarSeige-Tribes called "Shifter" is an intellectual property wholly owned by myself (Taylor Suchan). With the exception of code/modifications that have been contributed by third parties (who are noted in the code base) all modification in the Shifter Mod are owned wholly by myself (Taylor Suchan).
+
+Any changes/modification/additions/subtractions to the Shifter mod's base code by third parties while retaining or containing the name "Shifter" are expressly denied with out prior consent of the afore mentioned "owner" (Taylor Suchan).
+
+All modification to be made to the Shifter code base must be presented as potential modifications to the Shifter base code must be submitted in full (including the portion of the code to be added or modified) to the author/owner of Shifter (emo1313@dopplegangers.com) if the modifying parties so chooses to retain or contain references to the Shifter mod.
+
+Any changes/modification/additions/subtractions to the Shifter mod's base code by third parties that DO NOT wish to retain or contain the "Shifter" name must however retain the "Based On Shifter" in their title, (E.G. > TribesModification1 Base One Shifter or SoandSo'sMod Based On Shifter) until such a point as the "new" modification can no longer be reasonably differentiate from the original "Shifter" code in all manners including playability concepts, functionality, and then original ideas and concepts introduced with the Shifter mod.
+
+Any changes that have been made to versions of "Shifter" previous to this document do not fall under its coverage, however any versions of "Shifter" that do not contain the original code for the version in question can not be considered "Shifter" as it was originally intended. 
+
+
+Some words from the author.
+---
+The entire reason that this document and notice have been created, is to keep the concepts, ideas and functionality intended by the author, intact. As well as keeping these concepts and ideas in parallel with the Tribes modification known as Shifter.
+
+There are several Tribes mods out that are based in part on Shifter code, or that include some Shifter originating code in them. I do NOT discourge the use of my code, infact I encourage people to take apart the code and look at it... The code is in my opinion, very well laid out and very well commented.
+
+Any one interested in Shifter or other mod and mod writting are more than welcome to take a look at the code that I have worked on since April 1999.
+
+The Shifter code contains functions that were also contributed from other mods, a full listing of aknowledgements is available on the Shifter web site at www.dopplegangers.com/tribes/shifter ... We do not take thier code and claim it to be ours, however so much of this code has been altered to make Shifter what it is as far as playability, balance, and functionality are concerned.
+
+If you are interested in seeing certain modification to be added to Shifter for what ever purposes and would like to inquire about these modification being added as a feature or option in future releases of Shifter, please do not hesitate to send your suggestions to the Author, emo1313@dopplegangers.com
+
+Emo1313
+
+
+
+
