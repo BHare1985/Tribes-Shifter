@@ -257,10 +257,10 @@ function Station::itemsToResupply(%player)
 	%cnt = %cnt + AmmoStation::resupply(%player,ChainGun,BulletAmmo,20);
 	%cnt = %cnt + AmmoStation::resupply(%player,PlasmaGun,PlasmaAmmo,5);
 	%cnt = %cnt + AmmoStation::resupply(%player,GrenadeLauncher,GrenadeAmmo,2);
-	%cnt = %cnt + AmmoStation::resupply(%player,DiscLauncher,DiscAmmo,2);
+	%cnt = %cnt + AmmoStation::resupply(%player,Disclauncher,DiscAmmo,2);
 	%cnt = %cnt + AmmoStation::resupply(%player,Mortar,MortarAmmo,2);
 
-	%cnt = %cnt + AmmoStation::resupply(%player,RocketLauncher,RocketAmmo,1);
+	%cnt = %cnt + AmmoStation::resupply(%player,Rocketlauncher,RocketAmmo,1);
 	%cnt = %cnt + AmmoStation::resupply(%player,SMRPack,AutoRocketAmmo,1);
 	%cnt = %cnt + AmmoStation::resupply(%player,SniperRifle,SniperAmmo,5);
 	%cnt = %cnt + AmmoStation::resupply(%player,Railgun,RailAmmo,2);

@@ -325,7 +325,7 @@ ItemData RepairPack
 
 function RepairPack::onUnmount(%player,%item)
 {
-	if (Player::getMountedItem(%player,$WeaponSlot) == RepairGun)
+	if (Player::getMountedItem(%player,$WeaponSlot) == repairgun)
 	{
 		Player::unmountItem(%player,$WeaponSlot);
 	}
@@ -339,7 +339,7 @@ function RepairPack::onUse(%player,%item)
 	}
 	else
 	{
-		Player::mountItem(%player,RepairGun,$WeaponSlot);
+		Player::mountItem(%player,repairgun,$WeaponSlot);
 	}
 }
 
@@ -348,7 +348,7 @@ function RepairPack::onDrop(%player,%item)
 	if($matchStarted)
 	{
 		%mounted = Player::getMountedItem(%player,$WeaponSlot);
-		if (%mounted == RepairGun)
+		if (%mounted == repairgun)
 		{
 			Player::unmountItem(%player,$WeaponSlot);
 		}

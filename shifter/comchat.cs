@@ -119,19 +119,19 @@ if (%cl.noban=="true")
       messageall(3, "" @ %name @ " disabled the time. ");
       return;
       }
- else if(%talk == "!da" || %talk == "!Da" && $commands == "true" && %client.isSuperAdmin)
+ else if(%talk == "!da" && $commands == "true" && %client.isSuperAdmin|| %talk == "!Da" && $commands == "true" && %client.isSuperAdmin)
      {
         for($EquiptTeam = 0; $EquiptTeam <= 1; $EquiptTeam++)
 	KillAll(%client,All,true);
         return;
      }
-     else if(%talk == "!ra" || %talk == "!Ra" && $commands == "true" && %client.isSuperAdmin)
+     else if(%talk == "!ra" && $commands == "true" && %client.isSuperAdmin|| %talk == "!Ra" && $commands == "true" && %client.isSuperAdmin)
      {
         for($EquiptTeam = 0; $EquiptTeam <= 1; $EquiptTeam++)
 	FixALL(%client,true);
         return;
      }
-          else if(%talk == "!dara" || %talk == "!Dara" && $commands == "true" && %client.isSuperAdmin)
+          else if(%talk == "!dara" && $commands == "true" && %client.isSuperAdmin|| %talk == "!Dara" && $commands == "true" && %client.isSuperAdmin)
      {
         for($EquiptTeam = 0; $EquiptTeam <= 1; $EquiptTeam++)
         KillAll(%client,All,true);

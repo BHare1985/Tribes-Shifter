@@ -10,7 +10,7 @@
 //                                    Orignal by: Emo
 //================================================================================
 
-$Server::HostName = "Shifter 2K4 v0.8";	// The name of your Server -- Default: Shifter2K4
+$Server::HostName = "Shifter 2K4 v0.85";	// The name of your Server -- Default: Shifter2K4
 $Server::MaxPlayers = "20"; 			// Max Players On Your Server -- Default: 20
 $Server::timeLimit = "240";			// Mission Time Limit In Minutes -- Default: 240
 $Server::Password = "";				// Server Main Password - One that is on when started

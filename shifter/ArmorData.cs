@@ -166,7 +166,7 @@ function BuildItemList()
 	$ItemMax[barmor,	PlasmaGun] = 1;
 	$ItemMax[barmor,	RailAmmo] = 10;
 	$ItemMax[barmor,	RocketAmmo] = 10;
-	$ItemMax[barmor,	RocketLauncher] = 1;
+	$ItemMax[barmor,	Rocketlauncher] = 1;
 	$ItemMax[barmor,	RocketPack] = 1;
 	$ItemMax[barmor,	SuicidePack] = 1;
 	$ItemMax[barmor,	SMRPack] = 1;
@@ -223,7 +223,7 @@ function BuildItemList()
 	$ItemMax[earmor,	RailAmmo] = 10;
 	$ItemMax[earmor,	Railgun] = 1;
 	$ItemMax[earmor,	RocketAmmo] = 5;
-	$ItemMax[earmor,	RocketLauncher] = 1;
+	$ItemMax[earmor,	Rocketlauncher] = 1;
 	$ItemMax[earmor,	RocketPack] = 1;
 	$ItemMax[earmor,	ShockPack] = 1;
 	$ItemMax[earmor,	TargetPack] = 1;
@@ -289,7 +289,7 @@ function BuildItemList()
 	$ItemMax[marmor,	PlasmaGun] = 1;	
 	$ItemMax[marmor,	RailAmmo] = 10;	
 	$ItemMax[marmor,	RocketAmmo] = 10;
-	$ItemMax[marmor,	RocketLauncher] = 1;
+	$ItemMax[marmor,	Rocketlauncher] = 1;
 	$ItemMax[marmor,	TranqAmmo] = 20;
 	$ItemMax[marmor,	TurretPack] = 1;
 	$ItemMax[marmor,	Vulcan] = 1;
@@ -382,7 +382,7 @@ function BuildItemList()
 	$ItemMax[darmor,	PlasmaTurretPack] = 1;
 	$ItemMax[darmor,	RailAmmo] = 10;
 	$ItemMax[darmor,	RocketAmmo] = 15;
-	$ItemMax[darmor,	RocketLauncher] = 1;
+	$ItemMax[darmor,	Rocketlauncher] = 1;
 	$ItemMax[darmor,	SMRPack] = 1;
 	$ItemMax[darmor,	TranqAmmo] = 20;
 	$ItemMax[darmor,	TurretPack] = 1;
@@ -402,7 +402,7 @@ function BuildItemList()
 	$ItemMax[jarmor,	Mortar] = 1;
 	$ItemMax[jarmor,	MortarAmmo] = 25;
 	$ItemMax[jarmor,	RocketAmmo] = 25;
-	$ItemMax[jarmor,	RocketLauncher] = 1;
+	$ItemMax[jarmor,	Rocketlauncher] = 1;
 	$ItemMax[jarmor,	SMRPack2] = 1;
 	$ItemMax[jarmor, 	PlasmaCannon] = 1;
 	$ItemMax[jarmor,	Hammer1Pack] = 1;
@@ -773,7 +773,7 @@ PlayerData harmor
 PlayerData lfemale
 {
 	className = "Armor";
-	shapeFile = "larmor";
+	shapeFile = "lfemale";
 	flameShapeName = "lflame";
 	shieldShapeName = "shield";
 	damageSkinData = "armorDamageSkins";
@@ -838,7 +838,7 @@ PlayerData lfemale
 PlayerData mfemale
 {
 	className = "Armor";
-	shapeFile = "marmor";
+	shapeFile = "mfemale";
 	flameShapeName = "mflame";
 	shieldShapeName = "shield";
 	damageSkinData = "armorDamageSkins";
@@ -897,7 +897,7 @@ PlayerData mfemale
 PlayerData sarmor
 {
 	className = "Armor";
-	shapeFile = "lfemale";
+	shapeFile = "larmor";
 	damageSkinData = "armorDamageSkins";
 	debrisId = playerDebris;
 	flameShapeName = "lflame";
@@ -1017,7 +1017,7 @@ PlayerData stimfemale
 PlayerData stimarmor
 {
 	className = "Armor";
-	shapeFile = "lfemale"; //larmor
+	shapeFile = "larmor"; //larmor
 	damageSkinData = "armorDamageSkins";
 	debrisId = playerDebris;
 	flameShapeName = "lflame";
@@ -1133,7 +1133,7 @@ PlayerData barmor
 PlayerData bfemale
 {
 	className = "Armor";
-	shapeFile = "marmor";
+	shapeFile = "mfemale";
 	flameShapeName = "mflame";
 	shieldShapeName = "shield";
 	damageSkinData = "armorDamageSkins";
@@ -1377,7 +1377,7 @@ PlayerData spyarmor
 PlayerData spyfemale
 {
 	className = "Armor";
-	shapeFile = "larmor";
+	shapeFile = "lfemale";
 	flameShapeName = "lflame";
 	shieldShapeName = "shield";
 	damageSkinData = "armorDamageSkins";
@@ -1484,7 +1484,7 @@ PlayerData earmor
 PlayerData efemale
 {
 	className = "Armor";
-	shapeFile = "marmor";
+	shapeFile = "mfemale";
 	flameShapeName = "mflame";
 	shieldShapeName = "shield";
 	damageSkinData = "armorDamageSkins";
@@ -1599,7 +1599,7 @@ PlayerData aarmor
 PlayerData afemale
 {
 	className = "Armor";
-	shapeFile = "marmor";
+	shapeFile = "mfemale";
 	flameShapeName = "mflame";
 	shieldShapeName = "shield";
 	damageSkinData = "armorDamageSkins";

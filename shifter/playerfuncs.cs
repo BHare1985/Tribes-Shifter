@@ -387,6 +387,7 @@ function processMenuPlayerFuncs(%clientId, %Choice)
 	{
    	%curItem = 0;
    	Client::buildMenu(%clientId, "Plastique Options", "PlayerFuncs", true);
+   	if($Shifter::1secPlastique == "true")
    	Client::addMenuItem(%clientId, %curItem++ @ "1 Sec. Delay", "weapon_plastic_plas1");
    	Client::addMenuItem(%clientId, %curItem++ @ "2 Sec. Delay", "weapon_plastic_plas2");
    	Client::addMenuItem(%clientId, %curItem++ @ "5 Sec. Delay", "weapon_plastic_plas5");
@@ -524,7 +525,7 @@ function processMenuPlayerFuncs(%clientId, %Choice)
 		}
 		else
 		{		
-			if (Player::getItemCount(%clientId, FixIt))
+			if (Player::getItemCount(%clientId, Fixit))
 				bottomprint(%clientId, "<jc><f1>Your Engineer Gun Is Already Set To Repair Mode.", 3);
 			else			
 				bottomprint(%clientId, "<jc><f1>You do not possess a Engineer Gun.", 3);
@@ -533,7 +534,7 @@ function processMenuPlayerFuncs(%clientId, %Choice)
 	}
 	else if (%Choice == "weapon_eng_hack")
 	{
-		if (Player::getItemCount(%clientId, FixIt) || Player::getItemCount(%clientId, DisIt))
+		if (Player::getItemCount(%clientId, Fixit) || Player::getItemCount(%clientId, DisIt))
 		{
 			%clientId.Eng = 1;
 			Player::setItemCount(%clientId, Fixit, 0);
@@ -553,7 +554,7 @@ function processMenuPlayerFuncs(%clientId, %Choice)
 	}
 	else if (%Choice == "weapon_eng_disa")
 	{
-		if (Player::getItemCount(%clientId, HackIt) || Player::getItemCount(%clientId, FixIt))
+		if (Player::getItemCount(%clientId, HackIt) || Player::getItemCount(%clientId, Fixit))
 		{
 			%clientId.Eng = 1;
 			Player::setItemCount(%clientId, Fixit, 0);
@@ -573,7 +574,7 @@ function processMenuPlayerFuncs(%clientId, %Choice)
 	}
 
 	//========================================================= Plastique
-	else if(%Choice == "weapon_plastic_plas1")
+	else if(%Choice == "weapon_plastic_plas1" && $Shifter::1secPlastique == "true")
 	{
 		%clientId.Plastic = 1;
 		bottomprint(%clientId, "<jc><f1>Plastique Delay Set To 1 Sec.", 3);

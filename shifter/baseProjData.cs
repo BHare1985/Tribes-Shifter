@@ -1593,7 +1593,7 @@ function FgcShell::Deploy(%this)
 if($Shifter::WeakLaserRifle == "true")
 	%lasdam = 0.01;
 else
-	%lasdam = 0.014;
+	%lasdam = 0.016;
 
 if($Shifter::RedLaserRifle == "true")
 	%lascolor = "red_blink2.bmp";
@@ -2072,7 +2072,7 @@ function RepairBolt1::onRelease(%this, %player)
 function RepairBolt1::checkDone(%this, %player)
 {
 	%client = Player::getClient(%player);
-	if (Player::isTriggered(%player,$WeaponSlot) && (Player::getMountedItem(%player,$WeaponSlot) == RepairGun || Player::getMountedItem(%player,$WeaponSlot) == FixIt) && %target != -1)
+	if (Player::isTriggered(%player,$WeaponSlot) && (Player::getMountedItem(%player,$WeaponSlot) == repairgun || Player::getMountedItem(%player,$WeaponSlot) == Fixit) && %target != -1)
 	{
 		%object = %player.repairTarget;
 		
@@ -2175,7 +2175,7 @@ function RepairBolt1::checkDone(%this, %player)
 }
 
 //------------------------------------------------------------------------------------------------
-// Hack Gun Beam Used this from the RSP - Is now alternate weapon setting for EngRepairGun
+// Hack Gun Beam Used this from the RSP - Is now alternate weapon setting for Engrepairgun
 //------------------------------------------------------------------------------------------------
 RepairEffectData HackBolt
 {
@@ -3066,7 +3066,7 @@ function LockJawFire(%player, %target) //This is HeatSeeker Code , %rnd)
 		%targetid = Player::getClient(%target);
 		//This is HeatSeeker Code 	LockJawWarn(%client, %targetID);
 		
-		Player::decItemCount(%player,$WeaponAmmo[RocketLauncher],1);
+		Player::decItemCount(%player,$WeaponAmmo[Rocketlauncher],1);
 		%trans = GameBase::getMuzzleTransform(%player);
 		%vel = Item::getVelocity(%player);	
 		$targetingmissile = %client.target;
@@ -3085,7 +3085,7 @@ function LockJawFire(%player, %target) //This is HeatSeeker Code , %rnd)
 	//This is HeatSeeker Code 	%targetid = Player::getClient(%target);
 	//This is HeatSeeker Code 	%pilot = %target.clLastMount;
 	//This is HeatSeeker Code 	if(%pilot.driver) LockjawWarn(%client, %pilot);
-	//This is HeatSeeker Code 	Player::decItemCount(%player,$WeaponAmmo[RocketLauncher],1);
+	//This is HeatSeeker Code 	Player::decItemCount(%player,$WeaponAmmo[Rocketlauncher],1);
 	//This is HeatSeeker Code 	%trans = GameBase::getMuzzleTransform(%player);
 	//This is HeatSeeker Code 	%vel = Item::getVelocity(%player);	
 	//This is HeatSeeker Code 	$targetingmissile = %client.target;

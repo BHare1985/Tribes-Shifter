@@ -402,7 +402,7 @@ function SBA::duelSpawnSetup2(%clientId, %type, %rndpick)
 		$spawnBuyList[0, %client] = MediumArmor;
 		$spawnBuyList[1, %client] = Silencer;
 		$spawnBuyList[2, %client] = PlasmaGun;
-		$spawnBuyList[3, %client] = RocketLauncher;
+		$spawnBuyList[3, %client] = Rocketlauncher;
 		$spawnBuyList[4, %client] = BoomStick; 
 		$spawnBuyList[5, %client] = Vulcan; 
 		$spawnBuyList[6, %client] = TargetingLaser; 
@@ -425,7 +425,7 @@ function SBA::duelSpawnSetup2(%clientId, %type, %rndpick)
 	{
 		$spawnBuyList[0, %client] = DragArmor;
 		$spawnBuyList[1, %client] = Mortar;
-		$spawnBuyList[2, %client] = RocketLauncher;
+		$spawnBuyList[2, %client] = Rocketlauncher;
 		$spawnBuyList[3, %client] = ConCun;
 		$spawnBuyList[4, %client] = Vulcan; 
 		$spawnBuyList[5, %client] = TargetingLaser; 
@@ -462,8 +462,8 @@ function SBA::duelSpawnSetup2(%clientId, %type, %rndpick)
 	{
 		$spawnBuyList[0, %client] = EngArmor;
 		$spawnBuyList[1, %client] = RailGun;
-		$spawnBuyList[2, %client] = DiscLauncher;
-		$spawnBuyList[3, %client] = RocketLauncher;
+		$spawnBuyList[2, %client] = Disclauncher;
+		$spawnBuyList[3, %client] = Rocketlauncher;
 		$spawnBuyList[4, %client] = RepairKit; 
 		$spawnBuyList[5, %client] = Grenade; 
 		$spawnBuyList[6, %client] = Grenade; 

@@ -261,7 +261,7 @@ function remoteweapon_eng_repair(%clientId)
 	}
 	else
 	{		
-		if (Player::getItemCount(%clientId, FixIt))
+		if (Player::getItemCount(%clientId, Fixit))
 			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Your Engineer Gun Is Already Set To Repair Mode.\", 3);", 0.01);
 		else			
 			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You do not possess a Engineer Gun.\", 3);", 0.01);
@@ -272,7 +272,7 @@ function remoteweapon_eng_repair(%clientId)
 
 function remoteweapon_eng_hack(%clientId)
 {
-	if (Player::getItemCount(%clientId, FixIt) || Player::getItemCount(%clientId, DisIt))
+	if (Player::getItemCount(%clientId, Fixit) || Player::getItemCount(%clientId, DisIt))
 	{
 		%clientId.Eng = 1;
 		Player::setItemCount(%clientId, Fixit, 0);
@@ -294,7 +294,7 @@ function remoteweapon_eng_hack(%clientId)
 
 function remoteweapon_eng_disa(%clientId)
 {
-	if (Player::getItemCount(%clientId, FixIt) || Player::getItemCount(%clientId, HackIt))
+	if (Player::getItemCount(%clientId, Fixit) || Player::getItemCount(%clientId, HackIt))
 	{
 		%clientId.Eng = 1;
 		Player::setItemCount(%clientId, Fixit, 0);

@@ -377,11 +377,11 @@ ItemData DiscAmmo
 	price = 2;
 };
 
-ItemImageData DiscLauncherImage
+ItemImageData DisclauncherImage
 {
 	shapeFile = "disc";
 	mountPoint = 0;
-	weaponType = 3; // DiscLauncher
+	weaponType = 3; // Disclauncher
 	ammoType = DiscAmmo;
 	//projectileType = DiscShell1;
 	accuFire = true;
@@ -395,7 +395,7 @@ ItemImageData DiscLauncherImage
 	sfxReady = SoundDiscSpin;
 };
 
-ItemData DiscLauncher
+ItemData Disclauncher
 {
 	description = "Disc Launcher";
 	className = "Weapon";
@@ -403,29 +403,29 @@ ItemData DiscLauncher
 	hudIcon = "disk";
    	heading = "bWeapons";
 	shadowDetailMask = 4;
-	imageType = DiscLauncherImage;
+	imageType = DisclauncherImage;
 	price = 150;
 	showWeaponBar = true;
 //	//validateShape = true;
 //	validateMaterials = true;
 };
 
-function DiscLauncherImage::onFire(%player, %slot) 
+function DisclauncherImage::onFire(%player, %slot) 
 {
 	%client = GameBase::getOwnerClient(%player);
-	if(Player::getItemCount(%player, $WeaponAmmo[DiscLauncher])) 
+	if(Player::getItemCount(%player, $WeaponAmmo[Disclauncher])) 
 	{
 		%trans = GameBase::getMuzzleTransform(%player);
 		%vel = Item::getVelocity(%player);
 		if (!%client.disc || %client.disc == 0)
 		{
-			Player::decItemCount(%player,$WeaponAmmo[DiscLauncher],1);
+			Player::decItemCount(%player,$WeaponAmmo[Disclauncher],1);
 			playSound(SoundFireDisc,GameBase::getPosition(%player));
 			Projectile::spawnProjectile("DiscShell1",%trans,%player,%vel);
 		}
 		else if (%client.disc == 1)
 		{
-			Player::decItemCount(%player,$WeaponAmmo[DiscLauncher],1);
+			Player::decItemCount(%player,$WeaponAmmo[Disclauncher],1);
 			playSound(SoundFireDisc,GameBase::getPosition(%player));
 			Projectile::spawnProjectile("DiscShell2",%trans,%player,%vel);
 		}			
@@ -506,7 +506,7 @@ ItemData EnergyRifle
 };
 
 //======================================================================== Repair Gun
-ItemImageData RepairGunImage
+ItemImageData repairgunImage
 {
 	shapeFile = "repairgun";
 	mountPoint = 0;
@@ -525,20 +525,20 @@ ItemImageData RepairGunImage
 	sfxFire = SoundRepairItem;
 };
 
-ItemData RepairGun
+ItemData repairgun
 {
 	description = "Repair Gun";
 	shapeFile = "repairgun";
 	className = "Weapon";
 	shadowDetailMask = 4;
-	imageType = RepairGunImage;
+	imageType = repairgunImage;
 	price = 125;
 	showInventory = true;
 	//validateShape = true;
 //	validateMaterials = true;
 };
 
-function RepairGun::onMount(%player,%imageSlot)
+function repairgun::onMount(%player,%imageSlot)
 {
 	%armor = Player::getArmor(%player);
 	if (%armor != "earmor" && %armor != "efemale")
@@ -546,7 +546,7 @@ function RepairGun::onMount(%player,%imageSlot)
 
 }
 
-function RepairGun::onUnmount(%player,%imageSlot)
+function repairgun::onUnmount(%player,%imageSlot)
 {
 	%armor = Player::getArmor(%player);
 
@@ -622,7 +622,7 @@ ItemImageData RocketImage
 	
 function RocketImage::onFire(%player, %slot) 
 {
-	%Ammo = Player::getItemCount(%player, $WeaponAmmo[RocketLauncher]);
+	%Ammo = Player::getItemCount(%player, $WeaponAmmo[Rocketlauncher]);
 	%armor = Player::getArmor(%player);
 	%client = GameBase::getOwnerClient(%player);
 
@@ -634,13 +634,13 @@ function RocketImage::onFire(%player, %slot)
 	
 		if (!%client.rocket || %client.rocket == 0)	//== Standard Stinger Rocket
 		{
-			Player::decItemCount(%player,$WeaponAmmo[RocketLauncher],1);
+			Player::decItemCount(%player,$WeaponAmmo[Rocketlauncher],1);
 			playSound(SoundMissileTurretFire,%pos);
 			Projectile::spawnProjectile("JuggStingerMissile",%trans,%player,%vel);
 		}
 		else if(%client.rocket == 1)			//== Stinger w/ locking.
 		{	
-			Player::decItemCount(%player,$WeaponAmmo[RocketLauncher],1);
+			Player::decItemCount(%player,$WeaponAmmo[Rocketlauncher],1);
 			if(GameBase::getLOSInfo(%player,500)) 
 			{
 				%object = getObjectType($los::object);
@@ -697,7 +697,7 @@ function RocketImage::onFire(%player, %slot)
 		}
 		else if (%client.rocket == 3)
 		{	
-			Player::decItemCount(%player,$WeaponAmmo[RocketLauncher],1);
+			Player::decItemCount(%player,$WeaponAmmo[Rocketlauncher],1);
 			playSound(SoundMissileTurretFire,%pos);
 			%obj1 = (Projectile::spawnProjectile("GodHammerMortar",%trans,%player,%vel));
 			%obj1.deployer = %client;
@@ -708,7 +708,7 @@ function RocketImage::onFire(%player, %slot)
 		Client::sendMessage(%client, 0,"You have no Ammo for the Rocket Launcher");
 }
 
-ItemData RocketLauncher
+ItemData Rocketlauncher
 {
 	description = "Rocket Launcher";
 	className = "Weapon";
@@ -976,7 +976,7 @@ ItemImageData RailgunImage
 	ammoType = RailAmmo;
 	projectileType = RailRound;
 	accuFire = true;
-	reloadTime = 0.45;
+	reloadTime = 0.2;
 	fireTime = 0.99;
 	lightType = 3;  // Weapon Fire
 	lightRadius = 6;

@@ -471,7 +471,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 		}
 
 		//======================================= Snipe Off
-		else if(%type != $SniperDamageType && %snipeoff && %quadrant == "front_right" && (%weaponType != -1 && %weaponType != "RepairGun"))
+		else if(%type != $SniperDamageType && %snipeoff && %quadrant == "front_right" && (%weaponType != -1 && %weaponType != "repairgun"))
 		{
 			Player::dropItem(%this,%weaponType);
 			%dlevel = GameBase::getDamageLevel(%this) + 0.05;

@@ -11,6 +11,7 @@ function processMenuShifter2K4Tabmenu(%clientId, %Choice)
 		%clientId.weaponHelp = "";
 		%clientId.GettingInfo = 1;
 		Client::buildMenu(%clientId, "LastestUpdates", "Shifter2K4Updates", true);
+		Client::addMenuItem(%clientId, %curItem++ @ "Version 8.5", "85");
 		Client::addMenuItem(%clientId, %curItem++ @ "Version 8.0", "8");
 		Client::addMenuItem(%clientId, %curItem++ @ "Version 7.5b", "75b");
 		Client::addMenuItem(%clientId, %curItem++ @ "Version 7.5", "75");
@@ -77,7 +78,29 @@ function processMenuShifter2K4Tabmenu(%clientId, %Choice)
 
 function processMenuShifter2K4Updates(%clientId, %Choice)
 {
-	if (%Choice == "8")
+	if (%Choice == "85")
+	{
+		$GettingInfoMax = 15;
+		%clientId.GettingInfoType = "updates"@%Choice;
+		%Header = "<jc><f3>Lastest Updates<f1> - Page "@%clientId.GettingInfo@"\n\n";
+		%Footer = "\n\n<f3>Hit Next Weapon<f1> for the next message...";
+		
+		%msg[%num++]= "<f2>Railgun: <f1>Changed back to normal ShifterK speed.";
+		%msg[%num++]= "<f2>Armors: <f1> All armor sexes are back to normal.";
+		%msg[%num++]= "<f2>Bugs: <f1> Fixed a bug for when !da is said you can destroy all even when you dont have admin.";
+		%msg[%num++]= "<f2>Spawns: <f1> Re-did the random spawns to have better armors.";
+		%msg[%num++]= "<f2>Options: <f1> Added option to disabled 1 sec plastique.";
+			for( %num = %clientId.GettingInfo; %num < 15; %num++ )
+			{
+				if(%msg[%num] == ""){
+				$GettingInfoMax = %num - 1;
+				break;}
+			%message = %Header@""@%msg[%num]@""@%Footer;
+			break;
+			}
+		centerprint(%clientId,%message,30);	
+	}
+	else if (%Choice == "8")
 	{
 		$GettingInfoMax = 15;
 		%clientId.GettingInfoType = "updates"@%Choice;
@@ -296,6 +319,8 @@ function NextInfoLine(%client)
 			processMenuShifter2K4Updates(%client, "75b");
 			else if(%client.GettingInfoType == "updates8")
 			processMenuShifter2K4Updates(%client, 8);
+			else if(%client.GettingInfoType == "updates85")
+			processMenuShifter2K4Updates(%client, 85);
 			else if(%client.GettingInfoType == "commands")
 			AdminCommands(%client);
 			else if(%client.GettingInfoType == "favhelp")

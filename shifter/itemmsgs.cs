@@ -30,7 +30,7 @@ function LasCannon::onUse(%player,%item)
 }
 
 
-function DiscLauncher::onUse(%player,%item)
+function Disclauncher::onUse(%player,%item)
 {
 	Weapon::onUse(%player,%item);
 	%client = GameBase::getOwnerClient(%player);
@@ -179,7 +179,7 @@ function HyperB::onUse(%player,%item)
 	bottomprint(Player::getClient(%player), "<jc><f2>Using Hyper Blaster", 2);
 }
 
-function RocketLauncher::onUse(%player,%item)
+function Rocketlauncher::onUse(%player,%item)
 {
 	Weapon::onUse(%player,%item);
 	%client = GameBase::getOwnerClient(%player);
@@ -271,7 +271,7 @@ function GravGun::onUse(%player,%item)
 		bottomprint(%client, "<jc><f2>Using Grav Gun - Grapler Setting", 2);
 }
 
-function FixIt::onUse(%player,%item)
+function Fixit::onUse(%player,%item)
 {
 	Weapon::onUse(%player,%item);
 	bottomprint(Player::getClient(%player), "<jc><f2>Using Engineer Repair-Gun", 2);

@@ -13,9 +13,9 @@ function standardSpawnlist(%client)
 
 	if ($Debug) echo ("----------------------->Spawning Standard");
 	$spawnBuyList[0, %client] = MediumArmor;
-	$spawnBuyList[1, %client] = Blaster;
-	$spawnBuyList[2, %client] = Chaingun;
-	$spawnBuyList[3, %client] = Disclauncher;
+	$spawnBuyList[1, %client] = Rocketlauncher;
+	$spawnBuyList[2, %client] = Vulcan;
+	$spawnBuyList[3, %client] = Silencer;
 	$spawnBuyList[4, %client] = RepairKit; 
 	$spawnBuyList[5, %client] = GrenadeLauncher; 
 	$spawnBuyList[6, %client] = Grenade; 
@@ -27,7 +27,8 @@ function standardSpawnlist(%client)
 	$spawnBuyList[12, %client] = Beacon;
 	$spawnBuyList[13, %client] = TargetingLaser;
 	$spawnBuyList[14, %client] = RepairPack;
-	$spawnBuyList[15, %client] = "";
+	$spawnBuyList[15, %client] = Blaster;
+	$spawnBuyList[16, %client] = "";
 	$fa_armor = "Mercenary";
 	$fa_pack = "RepairPack";
 	
@@ -120,42 +121,37 @@ function randomSpawnList(%client)
 
 		%rnd = floor(getRandom() * 50);	
 		if ($debug) echo("Setting Up Gear For Random Spawn" @ %rnd @ " - ");
-		if (%rnd <= 20) //=========================== Most of the time 
+		if (%rnd <= 10) //=========================== Most of the time 
 		{
 			standardSpawnlist(%client);
 		}
 	
-		if ((%rnd >= 21) && (%rnd <= 35))
+		if ((%rnd >= 11) && (%rnd <= 15))
 		{
-			if ($debug) echo("Spawn - Drednaught");
-			$spawnBuyList[0, %client] = DragArmor;
+			if ($debug) echo("Spawn - Jugg GH");
+			$spawnBuyList[0, %client] = Juggernaught;
 			$spawnBuyList[1, %client] = Mortar;
-			$spawnBuyList[2, %client] = Vulcan;
-			$spawnBuyList[3, %client] = Disclauncher;
-			$spawnBuyList[4, %client] = RepairKit; 
-			$spawnBuyList[5, %client] = GrenadeLauncher; 
-			$spawnBuyList[6, %client] = Grenade; 
-			$spawnBuyList[7, %client] = Grenade; 
-			$spawnBuyList[8, %client] = Grenade;
-			$spawnBuyList[9, %client] = Beacon;
-			$spawnBuyList[10, %client] = Beacon;
-			$spawnBuyList[11, %client] = Beacon;
-			$spawnBuyList[12, %client] = Beacon;
-			$spawnBuyList[13, %client] = TargetingLaser;
-			$spawnBuyList[14, %client] = EnergyPack;
-			$spawnBuyList[15, %client] = "";
-			$fa_pack = "EnergyPack";
-			$fa_armor = "Dreadnaught";
+			$spawnBuyList[2, %client] = Rocketlauncher;
+			$spawnBuyList[3, %client] = RepairKit; 
+			$spawnBuyList[4, %client] = Beacon;
+			$spawnBuyList[5, %client] = Beacon;
+			$spawnBuyList[6, %client] = Beacon;
+			$spawnBuyList[7, %client] = Beacon;
+			$spawnBuyList[8, %client] = Beacon;
+			$spawnBuyList[9, %client] = Hammer1Pack;
+			$spawnBuyList[10, %client] = "";
+			$fa_pack = "Hammer1Pack";
+			$fa_armor = "Juggernaught";
 		}
 	
-		if ((%rnd >= 36) && (%rnd <= 40))
+		if ((%rnd >= 16) && (%rnd <= 25))
 		{
 			$spawnBuyList[0, %client] = BursterArmor;
 			$spawnBuyList[1, %client] = Mortar;
-			$spawnBuyList[2, %client] = RocketLauncher;
-			$spawnBuyList[3, %client] = Flamer;
+			$spawnBuyList[2, %client] = Flamer;
+			$spawnBuyList[5, %client] = Rocketlauncher;
 			$spawnBuyList[4, %client] = RepairKit; 
-			$spawnBuyList[5, %client] = GrenadeLauncher; 
+			$spawnBuyList[3, %client] = GrenadeLauncher; 
 			$spawnBuyList[6, %client] = Grenade; 
 			$spawnBuyList[7, %client] = Grenade; 
 			$spawnBuyList[8, %client] = Grenade;
@@ -170,61 +166,36 @@ function randomSpawnList(%client)
 			$fa_armor = "Goliath";
 		}
 	
-		if ((%rnd >= 41) && (%rnd <= 45))
+		if ((%rnd >= 25) && (%rnd <= 43))
 		{
-			if ($debug) echo("Spawn - Arbitor");
-			$spawnBuyList[0, %client] = AlArmor;
-			$spawnBuyList[1, %client] = HyperB;
-			$spawnBuyList[2, %client] = Volter;
-			$spawnBuyList[3, %client] = IonGun;
-			$spawnBuyList[4, %client] = RepairKit; 
-			$spawnBuyList[5, %client] = ConCun; 
-			$spawnBuyList[6, %client] = Grenade; 
+			if ($debug) echo("Spawn - Assassin");
+			$spawnBuyList[0, %client] = LightArmor;
+			$spawnBuyList[1, %client] = SniperRifle;
+			$spawnBuyList[3, %client] = Disclauncher;
+			$spawnBuyList[4, %client] = TranqGun;
+			$spawnBuyList[5, %client] = RepairKit; 
+			$spawnBuyList[6, %client] = Grenade;
 			$spawnBuyList[7, %client] = Grenade; 
-			$spawnBuyList[8, %client] = Grenade;
-			$spawnBuyList[9, %client] = Beacon;
+			$spawnBuyList[8, %client] = Grenade; 
+			$spawnBuyList[9, %client] = Grenade;
 			$spawnBuyList[10, %client] = Beacon;
 			$spawnBuyList[11, %client] = Beacon;
 			$spawnBuyList[12, %client] = Beacon;
-			$spawnBuyList[13, %client] = TargetingLaser;
-			$spawnBuyList[14, %client] = EnergyPack;
+			$spawnBuyList[13, %client] = Beacon;
+			$spawnBuyList[14, %client] = FlightPack;
 			$spawnBuyList[15, %client] = "";
-			$fa_pack = "EnergyPack";
-			$fa_armor = "Arbitor";
+			$fa_pack = "FlightPack";
+			$fa_armor = "Assassin";
 		}
-	
-		if ((%rnd >= 46) && (%rnd <= 48))
+		if ((%rnd == 43) || (%rnd == 50))
 		{
-			if ($debug) echo("Spawn - Engineer 1");
+			if ($debug) echo("Spawn - Engineer");
 			$spawnBuyList[0, %client] = EngArmor;
 			$spawnBuyList[1, %client] = RailGun;
-			$spawnBuyList[2, %client] = FixIt;
-			$spawnBuyList[3, %client] = DiscLauncher;
+			$spawnBuyList[2, %client] = Disclauncher;
+			$spawnBuyList[5, %client] = Rocketlauncher;
 			$spawnBuyList[4, %client] = RepairKit; 
-			$spawnBuyList[5, %client] = RocketLauncher; 
-			$spawnBuyList[6, %client] = Grenade; 
-			$spawnBuyList[7, %client] = Grenade; 
-			$spawnBuyList[8, %client] = Grenade;
-			$spawnBuyList[9, %client] = Beacon;
-			$spawnBuyList[10, %client] = Beacon;
-			$spawnBuyList[11, %client] = Beacon;
-			$spawnBuyList[12, %client] = Beacon;
-			$spawnBuyList[13, %client] = TargetingLaser;
-			$spawnBuyList[14, %client] = RepairPack;
-			$spawnBuyList[15, %client] = "";
-			$fa_pack = "RepairPack";
-			$fa_armor = "Engineer1";
-		}
-	
-		if ((%rnd == 49) || (%rnd == 50))
-		{
-			if ($debug) echo("Spawn - Engineer 2");
-			$spawnBuyList[0, %client] = EngArmor;
-			$spawnBuyList[1, %client] = RailGun;
-			$spawnBuyList[2, %client] = DiscLauncher;
-			$spawnBuyList[3, %client] = RocketLauncher;
-			$spawnBuyList[4, %client] = RepairKit; 
-			$spawnBuyList[5, %client] = Grenade; 
+			$spawnBuyList[3, %client] = Grenade; 
 			$spawnBuyList[6, %client] = Grenade; 
 			$spawnBuyList[7, %client] = Grenade; 
 			$spawnBuyList[8, %client] = Grenade;

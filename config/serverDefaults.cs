@@ -56,7 +56,7 @@ $Shifter::SuicideTimer = "0";			// Seconds before they can Ctrl K
 $Shifter::KickMessage = "Go away Idiot!";	// Center print player sees before being kicked
 $Cheating::Ban = false;				// Ban anyone who brings up the cheat message 5 times
 $Cheating::DeployCheck = true;  		// Deploy Cheat Check On/Off -- Default: True (On)
-$Server::AutoAssignTeams = "true";	// Places players on teams automatically
+$Server::AutoAssignTeams = "true";		// Places players on teams automatically
 $Server::PacketRate = "14";     		// Cable Modem rate, Mess with this alittle.
 $Server::PacketSize = "300";    		// Cable Modem rate, Mess with this alittle.
 
@@ -68,6 +68,7 @@ $Server::PacketSize = "300";    		// Cable Modem rate, Mess with this alittle.
 $Flag::ManualReturn = "True";			// True -  Manaual Flag return || False - Auto Return
 $Flag::TimeTeamcanHold = 120;			// Time a player can hold the flag until its returned.
 $Duel::DamageDelay = 2.0;			// Time before damage can be done in the In-game Duelfa
+$Shifter::1secPlastique = true;			// Allow chem 1 second plastique
 $Shifter::PowerCheck = false;//buggy		//== If True - Spawns players in Standard armor if power is down
 $Shifter::ComChat = false;			// If true =   Players can't use teamchat or commands with sensors down
 $Shifter::SafeBase = false;			// Undestroyable Generators and stations
@@ -76,10 +77,10 @@ $Shifter::BaseRepairRate = 0.025;		// How Fast Base Repairs itself - Repairgun =
 $Shifter::UnlimitedCapping = false;  		// Capping Out On/Off -- Default: False (Off)
 $Shifter::Capping = true;  			// Capping On/Off -- Default: True (On)
 $Server::JetEffect = false;  			// Different Jet Effects
-$Server::Smurf = true;//buggy			// Smurf Detection
+$Server::Smurf = false;//buggy			// Smurf Detection
 $Server::MuteSP = false;			// Mute Soundpacks
 $Server::SuicideCountasDeath = false;		// Do Suicides count as a death
-$Cheating::UsageCheck = false;  			// Scheduled Use Cheat Check On/Off -- Default: True (On)
+$Cheating::UsageCheck = false;  		// Scheduled Use Cheat Check On/Off -- Default: True (On)
 $Cheating::AutoJJCheck = true;  		// Auto JJ Cheat Check On/Off -- Default: True (on)
 $Cheating::Nofog = false;//buggy		// Spawn Bots under the Map to make fake Arrows
 $Cheating::NofogBots = "8";			// How many Orignal Bots do you want to start with
@@ -91,5 +92,5 @@ $Cheating::NofogBotNames = "enV.3zer0 KiLL(--) GonzoTheClown GreyFlcn Plasmica C
 // ================================================
 // This can be used for a Tag or a Name ban
 // If any client has this in their name, they are banned.
-$Server::NameBan[1] = "Lethedethius";		// A hypocritical idiot
+$Server::NameBan[1] = "Lethed";			// A hypocritical idiot
 $Server::NameBan[2] = "=|ROS|=";		// The idiot's Clan

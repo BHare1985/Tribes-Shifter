@@ -124,7 +124,7 @@ $AutoUse[LaserRifle] = False;
 $AutoUse[EnergyRifle] = False;
 $AutoUse[TargetingLaser] = False;
 $AutoUse[Fixit] = False;
-$AutoUse[RocketLauncher] = False;
+$AutoUse[Rocketlauncher] = False;
 $AutoUse[BoomStick] = False;
 $AutoUse[SniperRifle] = False;
 $AutoUse[ConCun] = False;
@@ -209,7 +209,7 @@ if ($Shifter::Missile_SPY){$TeamItemMax[SpyPod] 	= $Shifter::Missile_SPY;}else{$
 $WeaponAmmo[Blaster] = "";
 $WeaponAmmo[PlasmaGun] = PlasmaAmmo;
 $WeaponAmmo[Chaingun] = BulletAmmo;
-$WeaponAmmo[DiscLauncher] = DiscAmmo;
+$WeaponAmmo[Disclauncher] = DiscAmmo;
 $WeaponAmmo[GrenadeLauncher] = GrenadeAmmo;
 $WeaponAmmo[Mortar] = MortarAmmo;
 $WeaponAmmo[Mortar0] = MortarAmmo;
@@ -218,7 +218,7 @@ $WeaponAmmo[Mortar2] = MortarAmmo;
 $WeaponAmmo[LaserRifle] = "";
 $WeaponAmmo[EnergyRifle] = "";
 $WeaponAmmo[GravGun] = "";
-$WeaponAmmo[RocketLauncher] = RocketAmmo;
+$WeaponAmmo[Rocketlauncher] = RocketAmmo;
 $WeaponAmmo[SniperRifle] = SniperAmmo; 
 $WeaponAmmo[Railgun] = RailAmmo;
 $WeaponAmmo[ConCun] = "";
@@ -586,7 +586,7 @@ function buyItem(%client,%item)
 						checkMax(%client,%armor);
 						//========================================================= Set Weapons
 						Player::setItemCount(%client, Juggernaught, 1);
-						Player::setItemCount(%client, RocketLauncher, 1);
+						Player::setItemCount(%client, Rocketlauncher, 1);
 						Player::setItemCount(%client, Mortar,1);
 						Player::setItemCount(%client, RocketAmmo,25);
 						Player::setItemCount(%client, SMRPack2,1);
@@ -594,7 +594,7 @@ function buyItem(%client,%item)
 						Player::setItemCount(%client, MortarAmmo,20);
 
 						//========================================================= Mount Items
-						Player::mountItem(%client, RocketLauncher, $WeaponSlot);
+						Player::mountItem(%client, Rocketlauncher, $WeaponSlot);
 						Player::mountItem(%client, SMRPack2, $BackPackSlot);
 					}
 					else
@@ -867,7 +867,7 @@ function remoteSellItem(%client,%type)
 				{
 					Player::setItemCount(%client, Hammer2Pack,0);
 				}			
-				if(%item == "Mortar" || %item == "RocketLauncher")
+				if(%item == "Mortar" || %item == "Rocketlauncher")
 				{
 					Client::sendMessage(%client,1,"Juggernaught Can Not Sell These Items.");
 					return;
@@ -1266,7 +1266,7 @@ function remoteDropItem(%client,%type)
 	{
 		if (%armor == "jarmor")
 		{
-			if(%item == "Mortar" || %item == "RocketLauncher" || %item == "PlasmaCannon" || %item == "LasCannon" || %item == "Mfgl" )
+			if(%item == "Mortar" || %item == "Rocketlauncher" || %item == "PlasmaCannon" || %item == "LasCannon" || %item == "Mfgl" )
 			{
 				Client::sendMessage(%client,1,"Juggernaught Can Not Drop These Items.");
 				return;
@@ -1334,7 +1334,7 @@ function Item::BuildWeaponArray()
 	$WeaponList[6] = "LaserRifle";
 	$WeaponList[7] = "EnergyRifle";
 	$WeaponList[8] = "HyperB";
-	$WeaponList[9] = "RocketLauncher";
+	$WeaponList[9] = "Rocketlauncher";
 	$WeaponList[10] = "SniperRifle";
 	$WeaponList[11] = "BoomStick";
 	$WeaponList[12] = "TranqGun";
@@ -1346,7 +1346,7 @@ function Item::BuildWeaponArray()
 	$WeaponList[18] = "Flamer";
 	$WeaponList[19] = "IonGun";
 	$WeaponList[20] = "Volter";
-	$WeaponList[21] = "FixIt";
+	$WeaponList[21] = "Fixit";
 	$WeaponList[22] = "GravGun";
 	$WeaponList[23] = "HackIt";
 	$WeaponList[24] = "DisIt";
@@ -1396,7 +1396,7 @@ function Item::BuildWeaponArrayB()
 	$WeaponListB[4] = "GrenadeLauncher";
 	$WeaponListB[5] = "Mortar";
 	$WeaponListB[6] = "LaserRifle";
-	$WeaponListB[7] = "RocketLauncher";
+	$WeaponListB[7] = "Rocketlauncher";
 	$WeaponListB[8] = "SniperRifle";
 	$WeaponListB[9] = "ConCun";
 	$WeaponListB[10] = "EnergyRifle";
@@ -1409,7 +1409,7 @@ function Item::BuildWeaponArrayB()
 	$WeaponListB[17] = "TranqGun";
 	$WeaponListB[18] = "HyperB";
 	$WeaponListB[19] = "Volter";
-	$WeaponListB[20] = "FixIt";
+	$WeaponListB[20] = "Fixit";
 	$WeaponListB[21] = "HackIt";
 	$WeaponListB[22] = "DisIt";
 	$WeaponListB[23] = "GravGun";
@@ -1480,6 +1480,7 @@ function remoteNextWeapon(%client)
               // changed %weapon != %item; to %weapon != mortar; -tubs
 			for (%weapon = $NextWeaponB[mortar]; %weapon != %item; %weapon = $NextWeaponB[%weapon])
 			{
+				
 				if (isSelectableWeapon(%client,%weapon))
 				{
 					Player::useItem(%client,%weapon);
@@ -1500,7 +1501,8 @@ function remoteNextWeapon(%client)
 				if (isSelectableWeapon(%client,%weapon))
 				{
 					Player::useItem(%client,%weapon);
-					if (Player::getMountedItem(%client,$WeaponSlot) == %weapon || Player::getNextMountedItem(%client,$WeaponSlot) == %weapon)
+					%cur = Player::getMountedItem(%client,$WeaponSlot);
+					if (%cur == %weapon || Player::getNextMountedItem(%client,$WeaponSlot) == %weapon)	
 						break;
 					if (%weapon == mortar)
 						break;
@@ -2357,7 +2359,9 @@ function Grenade::onUse(%player,%item)
 		else if (%armor == "spyarmor" || %armor == "spyfemale")
 		{
 			%obj = newObject("","Mine","Nukebomb");
-			%timer = %client.plastic;	
+			%timer = %client.plastic;
+			if(%timer <= 1 && $Shifter::1secPlastique == "false")
+			%timer = 2;	
 			Client::sendMessage(%client,1, "Plastique Explosive will explode in " @ %timer @ " seconds"); 
 			schedule("GameBase::setDamageLevel(" @ %obj @ ", 3.0);", %timer, %obj);
 		}

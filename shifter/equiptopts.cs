@@ -369,52 +369,52 @@ function FixAll(%clientId, %base)//	'Gonzo'
 		{
 			if(String::findSubStr(%name,"Turret") >= 0 && GameBase::getTeam(%i) == $EquiptTeam) 
 			{
-				$FixIt = true;
+				$Fixit = true;
 			}
 			else if(String::findSubStr(%name, "Deployable") >= 0 && GameBase::getTeam(%i) == $EquiptTeam) 
 			{
-				$FixIt = true;
+				$Fixit = true;
 			}
 			else if(String::findSubStr(%name, "ForceField") >= 0 && GameBase::getTeam(%i) == $EquiptTeam) 
 			{
-				$FixIt = true;
+				$Fixit = true;
 			}
 			else if(String::findSubStr(%name, "Floor") >= 0 && GameBase::getTeam(%i) == $EquiptTeam) 
 			{
-				$FixIt = true;
+				$Fixit = true;
 			}
 			else if(String::findSubStr(%name, "Wall") >= 0 && GameBase::getTeam(%i) == $EquiptTeam) 
 			{
-				$FixIt = true;
+				$Fixit = true;
 			}
 			else if(String::findSubStr(%name, "Station") >= 0 && GameBase::getTeam(%i) == $EquiptTeam) 
 			{
-				$FixIt = true;
+				$Fixit = true;
 			}
 			else if(String::findSubStr(%name, "Generator") >= 0 && GameBase::getTeam(%i) == $EquiptTeam) 
 			{
-				$FixIt = true;
+				$Fixit = true;
 			}
 			else if(String::findSubStr(%name, "Beacon") >= 0 && GameBase::getTeam(%i) == $EquiptTeam) 
 			{
-				$FixIt = true;
+				$Fixit = true;
 			}
 			else if(String::findSubStr(%name, "Pad") >= 0 && GameBase::getTeam(%i) == $EquiptTeam) 
 			{
-				$FixIt = true;
+				$Fixit = true;
 			}
 			else if(String::findSubStr(%name, "Sensor") >= 0 && GameBase::getTeam(%i) == $EquiptTeam) 
 			{
-				$FixIt = true;
+				$Fixit = true;
 			}
 			else if(String::findSubStr(%name, "Solar") >= 0 && GameBase::getTeam(%i) == $EquiptTeam) 
 			{
-				$FixIt = true;
+				$Fixit = true;
 			}
 
-			if($FixIt)
+			if($Fixit)
 			{
-				$FixIt = "";
+				$Fixit = "";
 				GameBase::setDamageLevel(%i, 0);
 			}
 		}
