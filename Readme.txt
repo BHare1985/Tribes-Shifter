@@ -1,171 +1,51 @@
-   ____        _       ShifterK 8-01-03    _   _         _
+   ____        _       			   _   _         _
   |  _ \  ___ | |  ___   __ _  ___   ___  | \ | |  ___  | |_  ___  ___
   | |_) |/ _ \| | / _ \ / _` |/ __| / _ \ |  \| | / _ \ | __|/ _ \/ __|
   |  _ <|  __/| ||  __/| (_| |\__ \|  __/ | |\  || (_) || |_|  __/\__ \
   |_| \_\\___||_| \___| \__,_||___/ \___| |_| \_| \___/  \__|\___||___/
-                    +-------------------------------------------+
- %%%%%%%%%%%%%%%%%%%|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|%%%%%%%%
-  +-----------------+-----+                                     |
-  |                 |     | New Features                        |
-  |   @@S@@@     @@@|@@@@ |                                     |
-  |    @@@@      @@@|K@   |	In-Game Duel                    |
-  |    @@@S     @@@@|     |	Admin Global commands           |
-  |    @@@S    @@@@ |  	  |	Less lag during Tourny mode     |
-  |    @@@@   @@@@  |     |                                     |
-  |    S@@@@ @@@@   |  	  |	 Fixes                          |
-  |    S@@@@@@@@    |     |         Save info works.            |
-  |    S@@@@@@@     |  	  |         Readable echos.             |
-  |    S@@@@@@@     |     |         Console config errors.      |
-  |    S@@@@@@@K    +-----|-------------------------------------+
-  |    @@@@SS@@@@         |
-  |    @@@@@  @@@S        |
-  |    @@@@@    @@@       |
-  |   @@@@@@    %@@@#     |
-  |  @@@@SSSSS   @@@@@%@@ |
-  |        +--------------+----------------------------------+
-  +--------+What-is-duel?-+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|
-           |                                                 |
-           |First off, In normal game play (that is, when    |
-           |its not in tournment or anything) you press tab, |
-           |and then you press on the person you want to     |
-           |duel. Once you do that options come up and it    |
-           |says "Challege to a duel" and "View duel stats"  |
-           |The it asks what armor you wanna challege them   |
-           |in, scout, sniper, chem, merc, dread. and if     |        
-           |they accpet it. You both go way out of bounds,   |
-           |away from anyone...and you duel. when one wins.  |
-           |you both go back in game                         |
-           |                                                 |
-           +-------------------------------------------------+
-
-For those of you who get Shifter_K Base...Read the "How to run dedicated server"
-For those of you who cant spawn favs...Read the "How to run dedicated server"
-For those of you whose menus close...Read the "How to run dedicated server"
+------------------------------------------------------------------------------
+ShifterK
+http://www.tribeshifter.com/k/
+Created by: KiLL(-) & enV.3zer0
+   ShifterK is a MOD for the Starsiege TRIBES. It is based on another popular MOD called renegades. The MOD started back 1999 when a programmer by the name of Emo1313.
+   Then in 2002, a young and very bright modder played the mod and decided the make his own set of changes. His mod was called Shifter_V1G. He modified Shifter to the max, making it a better MOD for all, after a year or so he decided to move on to other things.
+   Finally in 2003, KiLL(-) decided to make some changes and fix some problems of the left off mod. After a little while a interested gamer, enV.3zer0. He  decided to help out KiLL(-) and that become the first official team of Shifter. KiLL(-) felt that ShifterK was safe in the hands of his new partner and decided to help out Tribes 2 Shifter. 
+   Today enV.3zer0 is the current modder of Shifter and is currently helping out yet another programmer to join the history of Shifter.
 
 
-New in 8-1
--------------------
-Redid builder so you could talk during it 
-Jammers take 2 missiles 
-Changed back to old Las cannon
-Fixed return flag
-Added menu to uneven teams
-Made shocks more straight
+ShifterK 8-3-03 Updates
+------------------------------------------
+· Added a repetitive trigger for Sticky and Auto Usages
+· Made an option to have a custom password typed in
+· Re-did Deploy cheat detection to work better
+· Re-did the Gameplay modes :: Match,Scrimage,Practice,Builder
+· Added a LeaderAll Admin command, the command is !la 
+· Made it so Create and Destroy D is only aviable in Practice mode 
+· Males are now as fast as Females, and Have no difference what so ever 
+· Support for AutowayPoint to Flags
+
+Added Notes
+-----------
+I highly recommend this download for it detects alot of more cheats.
+Anything that schedules a "use" or "deploy" will be detected.
+This means Sticky, Osiris, Force rocket, Force Mortar
+or anything where the computer is trying to help you with schedules.
+
+Also, Scrimage is a great way to set up a scrim, you dont even have
+change the map. The time and score and everything gets reset, be sure
+to not look at the D or be inside of it to prevent crashes when destroyed.
 
 
-New in 7-25
--------------------
-Re-Organized Admin Menus 
-Added Possess torture Option 
-Added PDA Access torture Option 
-Redid the Strip torture Option to Strip everything including flag 
-Added a Drop menu in Termination
-Added a Permanent Ban variable in the serverDefaults.cs File 
-Re-Did enV's Fastopts message 
-Re-did Penis message 
-Re-did the kick/ban function to do more
-Fixed return flag bug 
-Added playerfuncs.cs
-Boosted up HyperBlaster a bit, Still worthless
-Decreased distance on blaster
-Added Private message system 
-Added AFK message system
-Fixed EMP bug with Shocks
-Added Mute Options in Player Funcs
-Totally re-did the Equipment options
-Able to set or destroy on a Team rather than everything
+If you need help with running a server, please visit:
+Http://www.tribeshifter.com/k/howto.php
 
-New in 7-21
-----------------------
-Weaken fast disc by half 
-Chem touch now changes your arrow to green for enemies 
-Assassin shockcharges hurt more, throw faster, and explode after 1.5 seconds  
-Dart rifle is has slower dart, but faster reload
-adds 5 deaths if they try to suicide while satcheled or poisoned
-Fixed problem with engineer mines 
-announces when a dart hit someone
+For previous updates, Please visit the K website.
 
-Added a New variable in shifter_k.cs:
-$Shifter::SuicideTimer = "1";
+If you have an Idea you'd like to submit for the next release
+Please ethier Contact enV.3zer0 or post at the tribeshifter.com forums
 
-This is the ammount of time before you can suicide, its set at
-one to help reduce when a player suicide before getting killed
-so they cant be cheap.
-
-I also un-attached the Laser rifle, alot of non-skillful laser
-snipers started to whine.
-
-I redid the Shifter Training map, You can now EMP juggs and they wont
-shoot HP. also they shoot more than once.
-
-I redid serverconfig, so that it doesnt depend on download.
-The variables are now located in serverDefaults.cs
-New variables:
-
-$Shifter::noOTurrets = true;  			// Check Offensive Turrets On/Off -- Default: True (On)
-$Shifter::Newairbase = true; 			// Toggle New/Old Airbase -- Default: True (New)
-$Shifter::Turrets = true; 			// Turrets On/Off -- Default: True (On)
-$Shifter::Deployables = true; 			// Deployables On/Off -- Default: True (On)
-$Shifter::HelpOn = false;			// Shifter Help On/Off -- Default: False (Off)
-$Shifter::Osniping = false;    		        // Offensive Sniping Check On/Off -- Default: False (Off)
-$Shifter::Stationdeploy = true;   		// Deploy in Invostation On/Off -- Default: True (On)
-$Shifter::Capping = true;  			// Capping Out On/Off -- Default: True (On)
-$Shifter::PlayerDamage = true; 		        // Player Damage On/Off -- Default: True (On)
-$Shifter::DetsNukesMCS = true; 		        // Nukes,Dets,MCS On/Off -- Default: True (On)
-$Cheating::DeployCheck = true;  		// Deploy Cheat Check On/Off -- Default: True (On)
-$Shifter::WeakLaserRifle = false;		// Weak is set to 0.010, Whereas normal is 0.014
-$Shifter::RedLaserRifle = false; 		// Red laser/Blue laser
-$Shifter::AttachedLaserRifle = true;		// Laser travels with weapon.
-$Server::PacketRate = "14";     		// Cable Modem rate, Mess with this alittle.
-$Server::PacketSize = "300";    		// Cable Modem rate, Mess with this alittle.
-
-
-What did I change?
-Re-Organized Menus 
-Fixed blank messages of flag returns and shocks 
-Added annoucements to satchel & Duel Re-did Creation of shocks better 
-Added options to mess with Itemcounts 
-Added option to set deploy speed
-Added toggles for certain deployables 
-Re-did some Admin Commands 
-Added toggles for Player damage and Turret kills
-Added support for Shifter Training Maps
-Gave Osniping more range 
-Added raindance for duel
-Fixed New Airbase problem with not be able to use vechicles
-Took away dart rifle for chem 
-Boosting poison damage
-Assassin more prone to lasers 
-Assassin Shock charges faster throw rate & added EMP damage & Doubled live time
-Added a new menu called ShiferK
-New download place at tribeshifter.com
-Blaster is stronger
-Points for taken away when poisoned
-Points given for satchels and taken
-Kills given and deaths given when satcheled
-
-
-Why is there Infinite Spawn in the Zip?
-Thats a new updated 1.1 Infinite Spawn - patched up, less crashes
-Used for hosting dedicated servers.
-Never included in an update for Tribes
-
-Whats the deal with Shifter Training maps?
-Well right now the map is buggy, and only has juggbots. But in next release ill have it like it was
-on GTC, then ill add more bots, such as capping scouts, detters. Some cool stuff.
-
-Why did you mess with Assassin?
-The idea behind doing so much with assassin is to get it played more. Id rather see people snipe
-with a lower projectile weapon than a fast one such as laser. Maybe this will convert some people.
-
-I owned in assassin already, now its too easy
-Try a dart rifle and a blaster for a new challege, if mastered, both can own.
-
-Why are there .dsc files that I already have in the zip?
-Those are fixed .dsc files that I redid so you wont have 20 map error when you
-start
-
-I highly suggest peopel take a look at ShifterK help menu, it tells you how to spawn favorites
-without an invo, and other FAQ.
-
-If you havent been keeping track of ShifterK... There is a in-game dueling system now.
+enV.3zer0
+-----------
+AIM: enV3zer0
+ICQ: 41511002
+MSN: ek_opteron@hotmail.com

@@ -10,18 +10,21 @@ function processMenuShifterKTabmenu(%clientId, %Choice)
 	}
 	else if (%Choice == "LastestUpdates")
 	{
-		%msg = "ShifterK 8-1-2003\nRedid builder so you could talk during it :: Jammers take 2 missiles :: Changed back to old Las cannon :: Fixed return flag :: Added menu to uneven teams :: Made shocks more straight";
-		//%msg2 = "Added a Permanent Ban variable in the serverDefaults.cs File :: Re-Did enV's Fastopts message :: Re-did Penis message :: Re-did the kick/ban function to do more :: Fixed return flag bug :: Added playerfuncs.cs";
+		%msg = "ShifterK 8-3-2003\nAdded a repetitive trigger for Sticky :: Made an option to have a custom password :: Re-did Deploy cheat detection to work better :: Re-did the Gameplay modes";
+		%msg2 = "Added a LeaderAll Admin command, the command is !la :: Made it so Create and Destroy D is only aviable in Practice mode :: Males are now as fast as Females :: Support for AutowayPoint to Flags";
 		//%msg3 = "Boosted up HyperBlaster a bit, Still worthless :: Decreased distance on blaster :: Added Private message system :: Added AFK message system :: Fixed EMP bug with Shocks :: Added Mute Options in Player Funcs";
 		//%msg4 = "Totally re-did the Equipment options :: Able to set or destroy on a Team rather than everything";
 		//%msg = "";
 		centerprint(%clientId,%msg, 20);
-		//schedule("centerprint(" @ %clientId @ ",\"" @ %msg2@ "\", 20);", 20);
+		schedule("centerprint(" @ %clientId @ ",\"" @ %msg2@ "\", 20);", 20);
 		//schedule("centerprint(" @ %clientId @ ",\"" @ %msg3@ "\", 10);", 20);
-		
+		//ShifterK 8-01-2003
+		//-------------------
+		//Redid builder so you could talk during it :: Jammers take 2 missiles :: Changed back to old Las cannon :: Fixed return flag :: Added menu to uneven teams :: Made shocks more straight
+		//
 		//ShifterK 7-29-2003
 		//-------------------
-		//Made Blaster go a bit farther :: Toned down Godhammer :: Fixed mortar problems :: Got rid of invincable AFK";
+		//Made Blaster go a bit farther :: Toned down Godhammer :: Fixed mortar problems :: Got rid of invincable AFK
 		//
 		//ShifterK 7-25-2003
 		//-------------------
@@ -63,7 +66,7 @@ function processMenuShifterKTabmenu(%clientId, %Choice)
 	}
 	else if (%Choice == "AdminCommandsHelp")
 	{
-		%msg = "!nba - Nobans All\!undonba - Un-Nobans All\n!time - Disables Time\n!da - Destroys All\n!ra - Repairs All\n!cease - Cease fire mode\n!ceaseoff - Disables cease fire";
+		%msg = "!nba - Nobans All\!undonba - Un-Nobans All\n!time - Disables Time\n!la - Leader everyone\n!undola - Un-Leader everyone\n!cease - Cease fire mode\n!ceaseoff - Disables cease fire";
 		%msg2= "!allobs - Puts everyone in observer  ::  !alltoteam1 - Puts everyone to team 1  ::  !alltoteam2 - Puts everyone to team 2  ::  !sortteams - sorts teams by tag";
 		%msg3= "!teleport - Teleports to mouse aim  ::  !heal - Heals you   ::  !hide - Hides you   ::  !comeout - Un-Hides you";
 		centerprint(%clientId,%msg, 10);

@@ -89,7 +89,7 @@ function Station::onEndSequence(%this,%thread)
 
 function Station::onPower(%this,%power,%generator)
 {
-	if (%power || $builder == true)
+	if (%power || $GameMode == "Builder")
 	{
 		GameBase::playSequence(%this,0,"power");
 		GameBase::playSequence(%this,1);
@@ -105,7 +105,7 @@ function Station::onPower(%this,%power,%generator)
 
 function Station::onEnabled(%this)
 {
-	if (GameBase::isPowered(%this) || $builder == true)
+	if (GameBase::isPowered(%this) || $GameMode == "Builder")
 	{		
 		GameBase::playSequence(%this,0,"power");
 		GameBase::playSequence(%this,1);

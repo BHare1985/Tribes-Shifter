@@ -710,7 +710,7 @@ function Server::loadMission(%missionName, %immed)
 		deleteObject("ConsoleScheduler");
 	}
 	//envlogo-f
-
+	resetOsicheat();
 	resetPlayerManager();
 	resetGhostManagers();
 	$matchStarted = false;

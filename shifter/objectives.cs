@@ -758,7 +758,7 @@ function Mission::init()
 	{
 		$match::ceaseFireBegin = false;
 		$ceasefire = false;
-		$builder = false;
+		$GameMode = Normal;
 	}
 	else if($server::tourneymode == "true")
 	{
@@ -989,7 +989,7 @@ function TowerSwitch::getObjectiveString(%this, %forTeam)
 //=========================================================================================================== Player Touches A Tower Switch
 function TowerSwitch::onCollision(%this, %object)
 {
-	if($builder) return;
+	if($GameMode) return;
    if($debug) echo("switch collision ", %object);
    if(getObjectType(%object) != "Player")
       return;
@@ -1457,7 +1457,7 @@ function flagcheck(%flag)
 //======================================================================================================================= Touching The Flag
 function Flag::onCollision(%this, %object)
 {
-	if($builder) return;
+	if($GameMode) return;
 	if(getObjectType(%object) != "Player")
 		return;
 
@@ -1717,7 +1717,22 @@ function Flag::clearWaypoint(%client, %success)
       setCommandStatus(%client, 0, "Objective failed.");
 }
 
-
+function ReturnAllFlags()
+{
+	for(%client = Client::getFirst(); %client != -1; %client = Client::getNext(%client))
+	{
+	%flag = (Player::getMountedItem(%client, $FlagSlot));
+	Player::dropItem(%client, %flag);
+	}
+   $numTeams = getNumTeams();
+   	for(%team = 0; %team < $numTeams; %team++){
+	%flag= $teamFlag[%team];
+		if(%flag.atHome != "true")
+		{
+		returnflag(%flag);
+		}	
+	}
+}
 //====================================================================================================== Set Waypoint For Flag Carrier
 function Flag::setWaypoint(%client, %flag)
 {

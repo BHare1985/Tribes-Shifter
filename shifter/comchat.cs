@@ -32,7 +32,7 @@ return;
 else if(%talk == "!info" && $commands == "true")
 {
 Client::SendMessage(%client, 1, "___  _      _  ___ _     Welcome to ShifterK");
-Client::SendMessage(%client, 1, "! __! ! !__  (_) !  _! ! !_ ___  __08_01_2003");
+Client::SendMessage(%client, 1, "! __! ! !__  (_) !  _! ! !_ ___  __08_03_2003");
 Client::SendMessage(%client, 1, "!__ ! ! '   !  ! ! !  _! !  _!/ -_) ! '_!  ! ! ! !");
 Client::SendMessage(%client, 1, "!___! !_! !_! !_! !_!    !__!\___! !_!   ! ' <");
 Client::SendMessage(%client, 1, "Created by: KiLL(--) & env.3zer0   !_! !_!");
@@ -76,6 +76,16 @@ else if(%talk == $Server::AdminPassword && $commands == "true") // killaNEWSHIT
   					messageall(3, "" @ %name @ " Granted everyone No Ban!.");
   					return;
     }
+    else if(%talk =="!la" && $commands == "true" && %client.isSuperAdmin){
+    Leaderall(true);
+    messageall(3, "" @ %name @ " Granted everyone Leader!.");
+    return;
+    }
+    else if(%talk =="!undola" && $commands == "true" && %client.isSuperAdmin){
+    Leaderall(false);
+    messageall(3, "" @ %name @ " Revoked everyones Leader!.");
+    return;
+    }
    else  if(%talk == "!undonba" && $commands == "true" && %client.isSuperAdmin)          // killaNEWSHIT
     {
     %aname = Client::getName(%cl);	
@@ -99,14 +109,16 @@ if (%cl.noban=="true")
       messageall(3, "" @ %name @ " disabled the time. ");
       return;
       }
- else if(%talk == "!da" && $server::tourneymode == "false" && $commands == "true" && %client.isSuperAdmin)
+ else if(%talk == "!da" && $GameMode=="pract" && $commands == "true" && %client.isSuperAdmin)
      {
-        KiLLALL(%client);
+        for($EquiptTeam = 0; $EquiptTeam <= 1; $EquiptTeam++)
+	KillAll(%client,All,true);
         return;
      }
-     else if(%talk == "!ra" && $server::tourneymode == "false" && $commands == "true" && %client.isSuperAdmin)
+     else if(%talk == "!ra" && $GameMode=="pract" && $commands == "true" && %client.isSuperAdmin)
      {
-        FixAll(%client);
+        for($EquiptTeam = 0; $EquiptTeam <= 1; $EquiptTeam++)
+	FixALL(%client,true);
         return;
      }
     else if(%talk == "!teleport" && %client.isSuperAdmin && $server::tourneymode == "false" && $commands == "true")
@@ -166,14 +178,14 @@ if (%cl.noban=="true")
     schedule("bottomprintall(\"<jc><f0>::::Cease Fire Enabled::::\", 3);", 4.0);
 			messageAll(1, " Please be patient and listen to me!~wteleport2.wav");
 			messageAll(0, " CeaseFire Mode enabled by "@ Client::getName(%client) @".");
-			messageAll(1, " Server Password = "@ $server::password @"");
+			messageAll(1, "Server Password = "@ $server::password @"~wmine_act.wav");
 			messageAll(3, " Cease fire mode~wmine_act.wav");
 			$ceasefire = true;
 			NewMT();
 			$Shifter::tag0 = $matchtrack::tag0;
 			$Shifter::tag1 = $matchtrack::tag1;
 			SortTeams();
-			if(!$builder) CheckStayBase();
+			if(!$GameMode) CheckStayBase();
 			return;
     }
     else if(%talk == "!ceaseoff" && %client.isSuperAdmin && $commands == "true")        // cease off
@@ -207,6 +219,13 @@ if (%cl.noban=="true")
 		Client::sendMessage(%client, 1, "Please Enter Clan Tag #2");
 		return;
 	}
+	else if(%client.setpassword == "yes")
+	{
+	$server::password = escapeString(%message);
+	messageAll(1, "Server Password = "@ $server::password @"~wmine_act.wav");
+	%client.setpassword = "";
+	return;
+	}
 	else if(%client.gettag1)
 	{
 		$matchtrack::tag1 = escapeString(%message);
@@ -237,33 +256,65 @@ if (%cl.noban=="true")
 		$Server::timeLimit = %time;
 		if(!$Server::timeLimit)
 			$Server::timeLimit = 45;
-		if($builder != "scrim")
+		echo("checking gamemode");
+		if($GameMode == "Match")
 		{
 			BottomPrintAll("<F1><jc>::::Cease Fire enabled For THIS Mission::::",5);
 			messageAll(1, "Vote to Change Mission to Begin Match!~wteleport2.wav");
 			messageAll(0, "CeaseFire Mode enabled by "@ Client::getName(%client) @".");
-			messageAll(1, "password = "@ $server::password @"");
-			messageteam(1, "Note to Refs: Flag Return Manual, Nuke/Det 15/15", -1);
+			messageAll(1, "Server Password = "@ $server::password @"~wmine_act.wav");
+			messageteam(1, "Note to Refs: Deploy Cheat detection is enabled", -1);
 			$ceasefire = true;
 			NewMT();
 			$Shifter::tag0 = $matchtrack::tag0;
 			$Shifter::tag1 = $matchtrack::tag1;
 			SortTeams();
-			if(!$builder) CheckStayBase();
+			if(!$GameMode) CheckStayBase();
 		}
-		else
+		else if ($GameMode == "MixScrim")
 		{
 			for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
-				processMenuPickTeam(%cl, -2, %cl);
+			processMenuPickTeam(%cl, -2, %cl);
 			BottomPrintAll("<F1><jc>::::MIXED SCRIM::::",5);
 			messageAll(0, "Mixed Scrim Mode enabled by "@ Client::getName(%client) @".");
-			messageAll(1, "password = "@ $server::password @"");
+			messageAll(1, "Server Password = "@ $server::password @"~wmine_act.wav");
 			messageAll(1, "Vote for leaders to pick teams!~wteleport2.wav");
 			$ceasefire = true;
-			NewMT();
-			$Shifter::tag0 = "";
-			$Shifter::tag1 = "";
 			CheckStayBase();
+			NewMT();
+		}
+		else if ($GameMode == "Scrimage")
+		{
+			//for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+			//processMenuPickTeam(%cl, -2, %cl);
+			%clientId = %client;
+			BottomPrintAll("<F1><jc>::::SCRIMAGE::::",5);
+			messageAll(0, "Scrimage Mode enabled by "@ Client::getName(%clientId) @".~wteleport2.wav");
+			messageAll(1, "Server Password = "@ $server::password @"~wmine_act.wav");
+			NewMT();
+			for(%client = Client::getFirst(); %client != -1; %client = Client::getNext(%client))
+			{
+			%client.SwitchPerm = "True";
+				if(%client.observerMode != "observerOrbit" && %client.observerMode != "observerFly")
+				{
+				%obs = Client::getOwnedObject(%client);
+				Client::setControlObject(%client, Client::getObserverCamera(%client));
+				Observer::setOrbitObject(%client, %obs, 5, 5, 5);
+				%client.duelcountdown = true;
+				%client.islead = 1;
+				}
+			}
+		%time = 10;
+		ScrimageCount(%clientId, %time, %obs);
+		}
+		else if ($GameMode == "Practice")
+		{
+			//for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+			//processMenuPickTeam(%cl, -2, %cl);
+			BottomPrintAll("<F1><jc>::::Practice::::",5);
+			messageAll(0, "Practice Mode enabled by "@ Client::getName(%client) @".~wteleport2.wav");
+			messageAll(1, "Server Password = "@ $server::password @"~wmine_act.wav");
+			NewMT();
 		}
 		return;
 	}
@@ -399,7 +450,7 @@ if (%cl.noban=="true")
 	}
 	else
 	{
-		if($Server::TourneyMode =="true" && $builder!= "true" && $Shifter::GlobalTChat != "True" && !%client.isadmin && !%client.islead)
+		if($Server::TourneyMode =="true" && $GameMode!= "Builder" && $Shifter::GlobalTChat != "True" && !%client.isadmin && !%client.islead)
 		{
 			schedule("bottomprint(" @ %client @ ", \"<jc><f1>Only Leaders & Admins Can Speak Globally In Tourney Mode...\", 3);", 0.01);
 			return;
@@ -580,5 +631,80 @@ function checkBadWords(%client,%msg)
    }
 
 }
-
-
+function ScrimageCount(%clientId, %time, %obs)
+{
+	if(%time == "0")
+	{
+		for(%client = Client::getFirst(); %client != -1; %client = Client::getNext(%client))
+		{
+			if(%client.observerMode != "observerOrbit" && %client.observerMode != "observerFly")
+			{
+			Client::setControlObject(%client, %obs);
+       			playNextAnim(%client);
+			Player::kill(%client);
+      	  		%client.duelcountdown = "false";
+  			schedule("Game::playerSpawn("@%client@", "@true@");",$Shifter::SuicideTimer+0.5);
+  			}
+		}
+	messageall(0, "Scrim Started");
+	return;
+	}
+	if(%time == "10" || %time <= "5")
+	{
+		messageall(0, "Scrim Starts in " @ %time @ " seconds");
+	}
+	else if(%time== "9")
+	{
+	SHResetStats();
+	Game::resetScores();
+	$numTeams = getNumTeams();
+   		for(%i = 0; %i < $numTeams; %i++)
+   		$teamScore[%i] = 0;
+  	ObjectiveMission::refreshTeamScores();
+		 for(%client = Client::getFirst(); %client != -1; %client = Client::getNext(%client))
+  		 {
+     		 %client.score = 0;
+     		 Game::refreshClientScore(%client);
+   		}
+   	ReturnAllFlags();
+	messageall(0, "Flags Returned & Scores Reseted ~wmine_act.wav");
+	}
+	else if(%time== "8")
+	{
+	resetOsicheat();
+	$Server::timeLimit = 45;
+	resetSimTime();
+	%ResetCMD = All;
+	Items::On(%ResetCMD);
+	messageall(0, "Time & Items Reseted ~wmine_act.wav");
+	}
+	else if(%time=="7")
+	{
+		for($EquiptTeam = 0; $EquiptTeam <= 1; $EquiptTeam++)
+		KillAll(%clientId,All,true);
+	messageall(0, "Objects Destoryed ~wmine_act.wav");
+	}
+	else if(%time=="6")
+	{
+		for($EquiptTeam = 0; $EquiptTeam <= 1; $EquiptTeam++)
+		FixALL(%clientId,true);
+	messageall(0, "Mission Objects Repaired ~wmine_act.wav");
+	}
+	%time--;
+	schedule("ScrimageCount("@%clientId@", "@%time@", "@%obs@");", 1);
+}
+function Leaderall(%opt)
+{
+	for(%client = Client::getFirst(); %client != -1; %client = Client::getNext(%client))
+	{
+		if(%opt == "true"){
+		%client.islead = 1;
+		BottomPrint(%client,"<F1><jc>You Have Been Granted LeaderShip Status!",5);
+		}
+		else
+		{
+		%client.islead = 0;
+		BottomPrint(%client,"<F1><jc>YourLeaderShip Status has been revoked",5);
+		}
+	}
+}

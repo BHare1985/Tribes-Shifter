@@ -37,7 +37,7 @@ if (%Choice == "MyTeam" || %Choice == "OtherTeam")
       KillAll(%clientId,lasers,true);
       }
       else if(%Choice == "DestroyAll"){
-      KillAll(%clientId,all,true);
+      KillAll(%clientId,All,true);
      // %KillOpt = "all";
       }
       
@@ -153,6 +153,7 @@ function Makeshocks(%player, %shockdiff){
 	addToSet("MissionCleanup", %ssf[%num]);
 }
 }	
+}
 function KillAll(%clientId,%KillOpt,%base)//	'Gonzo'
 {
 	%start = nameToID("MissionCleanup");
@@ -163,7 +164,7 @@ function KillAll(%clientId,%KillOpt,%base)//	'Gonzo'
 		if(%name != "" && %name != "DropPointMarker" && %name != "False")
 		{
 			if(GameBase::getTeam(%i) == $EquiptTeam){
-				if(%KillOpt == "all"){
+				if(%KillOpt == "All"){
 			if(String::findSubStr(%name,"Turret") >= 0)
 			{
 				$NukeIt = true;
@@ -252,7 +253,7 @@ function KillAll(%clientId,%KillOpt,%base)//	'Gonzo'
 		}
 		}
 	}
-	if(%KillOpt == "all")		messageAll(1, Client::getName(%clientId) @ " destroyed all Objects for "@%teamname@". ~wmine_act.wav");
+	if(%KillOpt == "All" && $GameMode == "Practice")	messageAll(1, Client::getName(%clientId) @ " destroyed all Objects for "@%teamname@". ~wmine_act.wav");
 			else if(%KillOpt == "flag")	messageAll(1, Client::getName(%clientId) @ " destroyed Flag Defense for "@%teamname@". ~wmine_act.wav");
 			else if(%KillOpt == "lasers")	messageAll(1, Client::getName(%clientId) @ " destroyed Laser Box for "@%teamname@". ~wmine_act.wav");
 }
@@ -319,6 +320,5 @@ function FixAll(%clientId, %base)//	'Gonzo'
 			}
 		}
 	}
-	messageAll(1, Client::getName(%clientId) @ " fixed ALL Objects. ~wmine_act.wav");
-}
+	if($GameMode == "Practice")messageAll(1, Client::getName(%clientId) @ " fixed ALL Objects. ~wmine_act.wav");
 }

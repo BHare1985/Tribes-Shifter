@@ -1,13 +1,4 @@
-if($DPSAllowedChanged == "")
-$DPSAllowed = 0.0;
-else{
-$DPSAllowed = $DPSAllowedChanged;
-$DPSAllowedChanged = "";}
 
-if($Cheating::DeployCheck == "true")
-$DPSCheat = 0.075;
-else
-$DPSCheat = 0.000001;
 
 
 
@@ -330,7 +321,7 @@ $TurretBoxMinHeight = 15;    	//Define Min Height from another turret
 
 function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area,%surface,%range,%limit,%flag, %kill, %deploy, %count)
 {
-	if($builder == "true")
+	if($GameMode == "Builder")
 	{
 		%angle   = false;
 		%freq    = False;
@@ -371,16 +362,16 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 	//	return false;
 	//}
 	
-		if(%player.deploytimemsg > getsimtime()){
-	centerprint(%clientId, "This server wont allow you to deploy that fast, slow down!", 5.0);
-        $warn++;
-        if($warn >= 3){
-      		    	messageall(1, %clname @ " is using a deploying cheat. WHAT A LOSER!! ");
-      		}
-	}
-	if(%player.deploytime > getsimtime()){
-		return false;
-	}
+	//if(%player.deploytimemsg > getsimtime()){
+	//centerprint(%clientId, "This server wont allow you to deploy that fast, slow down!", 5.0);
+       // $warn[%clientId]++;
+       // if($warn[%clientId] >= 3){
+      //		    	messageall(1, %clname @ " is using a cheat. WHAT A LOSER!! ");
+      //	}
+	//}
+	//if(%player.deploytime > getsimtime()){
+	//	return false;
+	//}
 	%playerteam = Client::getTeam(%client);
 	%playerpos = GameBase::getPosition(%player);
 	%homepos = ($teamFlag[%playerteam]).originalPosition;
@@ -388,36 +379,6 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 
 	if($TeamItemCount[%playerteam @ %count] < $TeamItemMax[%count])
 	{
-		if(!%player.startedDeploy)
-{
-      %player.deployCount = 0;
-      %player.startedDeploy = (getSimTime() + 0.25);
-}
-else
-{
-      %player.deployCount++;
-	%buttonpushesasec = (0.25/$DPSCheat);
-       if(%player.deployCount >= %buttonpushesasec && %player.startedDeploy >= getSimTime())
-       {
-    
-                   centerprint(%client, "This server wont allow you to deploy that fast, slow down!", 5.0);
-                   $warn++;
-      		   %player.deployCount = 0;
-      		   %player.startedDeploy = false;
-      		   if($warn >= 3){
-      		    	messageall(1, %clname @ " is using a deploying cheat. WHAT A LOSER!! ");
-      		}
-      		   
-        }
-        else
-        {
-                  if(%player.deployCount >= 6){
-                  	      		   %player.deployCount = 0;
-      		    %player.startedDeploy = false;
-      		}
-                  	
-}
-}
 
 
 		if (GameBase::getLOSInfo(%player,%range))
@@ -593,7 +554,7 @@ else
 			Client::sendMessage(%client,0,"" @ %name @ " deployed");
 			//GameBase::startFadeIn(%turret);
 			playSound(SoundPickupBackpack,%pos);
-			if(!$builder)
+			if(!$GameMode)
 				$TeamItemCount[%playerteam @ "" @ %count @ ""]++;
 			else
 			{

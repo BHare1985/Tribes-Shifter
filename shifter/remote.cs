@@ -25,7 +25,7 @@ function remoteCommandMode(%clientId)
 function remoteInventoryMode(%clientId)
 {
 	%player = Client::getOwnedObject(%clientId);
-	if($builder && !%clientId.guiLock && !Observer::isObserver(%clientId) && %player != -1)
+	if($GameMode && !%clientId.guiLock && !Observer::isObserver(%clientId) && %player != -1)
 	{
 		remoteSCOM(%clientId, -1);
 		Client::sendMessage(%clientID,0,"Station Access On");
@@ -170,7 +170,7 @@ function remoteKilldone(%client)
 				addToSet("MissionCleanup", %obj);
 				GameBase::throw(%obj,%client,22 * %client.throwStrength,false);
 				%team = GameBase::getTeam(%player);
-				if(!$builder)
+				if(!$GameMode)
 				{
 					$TeamItemCount[%team @ "SuicidePack"]++;
 					if($Server::TourneyMode == true)

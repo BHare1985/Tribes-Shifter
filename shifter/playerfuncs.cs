@@ -126,10 +126,6 @@ function processMenuPlayerFuncs(%clientId, %Choice)
 	}
 	if (%Choice == "weaponoptions") 
   	{ 	
-  		Client::sendMessage(%clientId, 0, "Still using Wep opts? Download enV's redone Fastopts.");
-  		Client::sendMessage(%clientId, 0, "Set/Save Spawn & Wep Options with 1 button!");
-  		Client::sendMessage(%clientId, 0, "Now includes 1 sec. plastique and rapid disc!");
-  		Client::sendMessage(%clientId, 0, "Download at http://www.tribeshifter.com/");
   		%curItem = 0;
   		Client::buildMenu(%clientId, "Weapon Options", "PlayerFuncs", true);
   		Client::addMenuItem(%clientId, %curItem++ @ "Plasma Options", "weapon_plasma");

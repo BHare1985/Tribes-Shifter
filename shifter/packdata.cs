@@ -1205,7 +1205,7 @@ function SuicidePack::deployShape(%player,%item)
 		GameBase::throw(%obj,%player,5 * %client.throwStrength,false);
 		%team = GameBase::getTeam(%player);
 		Client::sendMessage(%client,1,"Det Pack will destruct in 20 seconds");
-		if(!$builder) $TeamItemCount[%team @ "SuicidePack"]++;
+		if(!$GameMode) $TeamItemCount[%team @ "SuicidePack"]++;
 		if($Server::TourneyMode == true)
 			messageteam(1, getTeamName(%team) @ " used DetPack #" @ $TeamItemCount[%team @ "SuicidePack"], -1);
 		messageteam(1, Client::getName(%client) @ " used DetPack #" @ $TeamItemCount[%team @ "SuicidePack"], %team);

@@ -119,7 +119,8 @@ function throwRelease(%desc)
 }
 
 function deploy(%desc)
-{
+{	
+	echo("client deploying use");
 	%type = getItemType(%desc);
 	if (%type != -1)
 	{

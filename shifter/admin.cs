@@ -5,7 +5,7 @@ $curVoteCount = 0;
 $Shifter::TKDefault = $Shifter::TeamKillOn;
 $pskin = $Shifter::PersonalSkin;
 $CPU::estimatedSpeed = 130803;
-$killa::newdate = "08-01-2003";
+$killa::newdate = "08-03-2003";
 $Server::Info = $Server::Info @ "\nRunning ShifterK " @ $killa::newdate;
 $ModList = "ShifterK";
 $Server::TourneyMode = false;
@@ -352,13 +352,17 @@ function Admin::setModeFFA(%clientId)
 	{
 		$Server::TeamDamageScale = 0;
 		if(%clientId == -1)
-			messageAll(0, "Server switched to Free-For-All Mode.");
+			messageAll(0, "Server switched to Normal Mode.");
 		else
-			messageAll(0, "Server switched to Free-For-All Mode by " @ Client::getName(%clientId) @ ".");
+			messageAll(0, "Server switched to Normal Mode by " @ Client::getName(%clientId) @ ".");
 
 		$Server::TourneyMode = false;
-		$builder = false;
+		$GameMode = Normal;
 		$ceasefire = false;
+			for(%client = Client::getFirst(); %client != -1; %client = Client::getNext(%client))
+			{
+			%client.SwitchPerm = "False";
+			}
 		$Shifter::PlayerDamage = true;
 		
         $ModList = "ShifterK";
@@ -980,7 +984,7 @@ function processMenuOptions(%clientId, %option)
 			{
 				if($server::tourneymode == "true")
 				{
-					Client::addMenuItem(%clientId, %curItem++ @ "Vote to enter FFA mode", "vcffa");
+					Client::addMenuItem(%clientId, %curItem++ @ "Vote to enter Normal mode", "vcffa");
 					if(!$CountdownStarted && !$matchStarted)
 						Client::addMenuItem(%clientId, %curItem++ @ "Vote to start the match", "vsmatch");
 				}
@@ -1037,13 +1041,13 @@ function processMenuOptions(%clientId, %option)
                 //Client::addMenuItem(%clientId, %curItem++ @ "Send SS Command", "sscommand");    // next release
 				if($server::tourneymode == "true")																	//============ Toggle Tourney Mode
 				{
-					Client::addMenuItem(%clientId, %curItem++ @ "Change to FFA mode", "cffa");
+					Client::addMenuItem(%clientId, %curItem++ @ "Change to Normal mode", "cffa");
 					if(!$CountdownStarted && !$matchStarted)
 						Client::addMenuItem(%clientId, %curItem++ @ "Start the match", "smatch");
 
 				}
 				else if(%clientId.isSuperAdmin)
-					Client::addMenuItem(%clientId, %curItem++ @ "Enable Tournament mode", "ctourney");
+					Client::addMenuItem(%clientId, %curItem++ @ "Change Gameplay mode", "ctourney");
 			}
 		}
 		
@@ -1067,7 +1071,7 @@ function processMenuOptions(%clientId, %option)
         
 				Client::addMenuItem(%clientId, %curItem++ @ "Server Configuration", "serversetup");
 				Client::addMenuItem(%clientId, %curItem++ @ "Game Configuration", "gamesetup");
-				 if($server::tourneymode != "true" || $builder == "true")
+				 if($GameMode == "Practice" || $GameMode == "Builder")
 				Client::addMenuItem(%clientId, %curItem++ @ "Equipment Options", "EquiptTeam");    // equip opts    
 
 // server config				//Client::addMenuItem(%clientId, %curItem++ @ "Reset Server Defaults", "reset");
@@ -1176,12 +1180,7 @@ else if (%opt == "Punish" && %clientId.selClient)
  }
 else if (%opt == "returnflag")
 {
-	for(%team=0; %team<5; %team++){
-	%this= $teamFlag[%team];
-		if(%this.atHome != "true"){
-		GameBase::setPosition(%this,"-40000 4000.822 40000.0023");
-		}	
-	}
+	ReturnAllFlags();
 	 messageAll(1, Client::getName(%clientId) @ " Returned all flags.~wmine_act.wav");
 }
 else if (%opt == "fairteams")
@@ -1299,7 +1298,35 @@ else if (%opt == "EquiptTeam")
 		Client::addMenuItem(%clientId, %curItem++ @ "Download", "DownloadShifterK");
 		Client::addMenuItem(%clientId, %curItem++ @ "Help", "ShifterKHelp");
 	}
+		else if (%opt == "nmeflag")
+	{
+		%playerteam = GameBase::getTeam(%clientId);
+		%playerpos = GameBase::getPosition(%clientId);
 
+		if (%playerteam == 0)
+		{
+			%pos = GameBase::getPosition($teamFlag[1]);
+			%posX = getWord(%pos,0);
+			%posY = getWord(%pos,1);
+			%distance = Vector::getDistance(%pos, %playerpos);
+		}
+		else if (%playerteam == 1)
+		{
+			%pos = GameBase::getPosition($teamFlag[0]);
+			%posX = getWord(%pos,0);
+			%posY = getWord(%pos,1);
+			%distance = Vector::getDistance(%pos, %playerpos);
+		}
+		else if (%playerteam > 1)
+		{
+			bottomprint(%clientId, "<jc><f1>Locate does not work in multi team.", 3);
+			return;
+		}
+		issueCommand(%clientId, %clientId, 0,"Waypoint set to enemy flag. ", %posX, %posY);
+		bottomprint(%clientId, "<jc><f1>The enemy flag is " @ %distance @ " meters away.", 3);
+			return;
+	}
+	
 	else if (%clientid.isadmin && %opt == "tcrights")
 	{
 		if (%cl.SwitchPerm)
@@ -1325,6 +1352,18 @@ else if (%opt == "EquiptTeam")
 			%cl.ismuted = "True";
 			bottomprint(%cl, "<jc><f1>You have been globally muted by admin, NO ONE CAN HEAR YOU ANY MORE...", 3);
 		}
+	}
+		else if (%opt == "frdflag")
+	{
+		%playerteam = GameBase::getTeam(%clientId);
+		%playerpos = GameBase::getPosition(%clientId);
+		%pos = GameBase::getPosition($teamFlag[%playerteam]);
+		%posX = getWord(%pos,0);
+		%posY = getWord(%pos,1);
+		%distance = Vector::getDistance(%pos, %playerpos);
+		issueCommand(%clientId, %clientId, 0,"Way point set to your flag. Your flag is " @ %distance @ "meters away.", %posX, %posY);
+		bottomprint(%clientId, "<jc><f1>Your flag is " @ %distance @ " meters away.", 3);
+		return;
 	}	
 
 
@@ -1484,11 +1523,13 @@ if (%opt == "playerfuncs")
    }
    else if(%clientid.isadmin && %opt == "ctourney")
    {
-      Client::buildMenu(%clientId, "Tourney Mode:", "faffirm", true);
-      Client::addMenuItem(%clientId, "1New Match", "new");
-      Client::addMenuItem(%clientId, "2Continue Saved Match", "old");
-      Client::addMenuItem(%clientId, "mMixed Scrim", "scrim");
-      Client::addMenuItem(%clientId, "bBuilder Mode", "builder");
+      Client::buildMenu(%clientId, "Gameplay Modes:", "faffirm", true);
+      Client::addMenuItem(%clientId, "mMatch", "new");
+      //Client::addMenuItem(%clientId, "2Continue Saved Match", "old");
+      Client::addMenuItem(%clientId, "sScrimage", "scrim");
+      Client::addMenuItem(%clientId, "mMixed Scrim", "mixscrim");
+      Client::addMenuItem(%clientId, "pPractice", "practice");
+      Client::addMenuItem(%clientId, "bBuilder", "builder");
       return;
    }
    else if(%opt == "voteYes" && %cl == $curVoteCount) //=================================================== Yes
@@ -1553,7 +1594,7 @@ if (%opt == "playerfuncs")
    {
 
         %sel = %clientId.selClient;
-		%name = Client::getName(%sel);
+	%name = Client::getName(%sel);
         Player::blowUp(%sel);
         remoteKill(%sel);
       	messageAll(0, Client::getName(%clientId) @ " respawned " @ %name);
@@ -1934,8 +1975,19 @@ else if(%opt == "1dps"){
    
       else if(%opt == "pw")
    {
-       getpass();
+  %curItem = 0;
+ Client::buildText(%clientId, "Password Setup:", "options", true);
+ Client::addMenuItem(%clientId, %curItem++ @ "Enable Server Password", "pwd");
+ Client::addMenuItem(%clientId, %curItem++ @ "Enter Custom Password", "pwc");     
    }
+   else if(%opt == "pwd")
+   getpass();
+    else if(%opt == "pwc")
+    {
+    %clientId.setpassword = "yes";
+    Client::sendMessage(%clientId, 1, "Please Enter Server Password");	
+    }
+  
    else if(%opt == "pw2")
    {
       getpassold();
@@ -2153,7 +2205,7 @@ function processMenuRAffirm(%clientId, %opt)
       exec("serverConfig.cs");
 		$server::tourneymode = false;
 		$ceasefire = false;
-		$builder = false;
+		$GameMode = Normal;
 		if ($Shifter::DetPackLimit == ""){ $Shifter::DetPackLimit = "15"; }
 		if ($Shifter::NukeLimit == ""){ $Shifter::NukeLimit = "15"; }
 		$TeamItemMax[SuicidePack] = $Shifter::DetPackLimit;
@@ -2174,16 +2226,17 @@ function processMenuFAffirm(%clientId, %opt)
    if(%opt == "new" && %clientId.isAdmin)
    {
 		echo(" Server set to Tournament Mode By " @ Client::getName(%clientId));
+		$GameMode = Match;
 		%clientid.gettag0 = 1;
 		%clientid.getpass = 0;
-		       $DPSAllowedChanged = 0.15;
-       exec("itemfuncs.cs");
+		$DPSAllowedChanged = 0.15;
+    		exec("itemfuncs.cs");
 		%clientid.gettag1 = 0;
 		%clientid.getglobal = 0;
 		$matchtrack::global = "False";
 		Client::sendMessage(%clientId, 1, "Please Enter Clan Tag #1");
 		$Server::TeamDamageScale = 1;
-         $ModList = "Shifter| k |SBA";
+         	$ModList = "Shifter| k |Match";
    }
 	else if(%opt == "old" && %clientId.isAdmin)
    {
@@ -2193,8 +2246,8 @@ function processMenuFAffirm(%clientId, %opt)
 		%clientid.getpass = 0;
 		%clientid.gettag1 = 0;
 		%clientid.gettag0 = 0;
-		       $DPSAllowedChanged = 0.15;
-       exec("itemfuncs.cs");
+		$DPSAllowedChanged = 0.15;
+      		exec("itemfuncs.cs");
 		%clientid.getglobal = 0;
 		$server::tourneymode = true;
 		$ceasefire = true;
@@ -2214,27 +2267,11 @@ function processMenuFAffirm(%clientId, %opt)
 		CheckStayBase();
   //$ModList = "Shifter|SvdMatch";
    }
-   //else if(%opt == "1v1" && %clientId.isAdmin)
-   //{
-   //
-	//	%clientid.getpass = true;
-	//	$builder = "scrim";
-	//	$ceasefire = "true";
-	//	$Shifter::tag0 = "";
-	//	$Shifter::tag1 = "";
-	//	$matchtrack::global = "False";
-	//	$Shifter::DetPackLimit = 15;         hopefully next release
-	//	$Shifter::NukeLimit = 15;
-	//	$Shifter::FlagNoReturn = "True";
-	//	$Shifter::FlagReturnTime = "400";
-	//	Client::sendMessage(%clientId, 1, "Please Enter Server Password");
- // $ModList = "Shifter| k |1v1";
-	//}
-	else if(%opt == "scrim" && %clientId.isAdmin)
+	else if(%opt == "mixscrim" && %clientId.isAdmin)
    {
 
 		%clientid.getpass = true;
-		$builder = "scrim";
+		$GameMode = MixScrim;
 		$ceasefire = "true";
 		$Shifter::tag0 = "";
 		$Shifter::tag1 = "";
@@ -2246,12 +2283,40 @@ function processMenuFAffirm(%clientId, %opt)
 		$Shifter::FlagNoReturn = "True";
 		$Shifter::FlagReturnTime = "400";
 		Client::sendMessage(%clientId, 1, "Please Enter Server Password");
-  //$ModList = "Shifter| k |Scrim";
+  $ModList = "Shifter| k |MixScrim";
+}
+else if(%opt == "scrim" && %clientId.isAdmin)
+   {
+
+		%clientid.getpass = true;
+		$GameMode = Scrimage;
+		$DPSAllowedChanged = 0.15;
+     		exec("itemfuncs.cs");
+		$Shifter::DetPackLimit = 15;
+		$Shifter::NukeLimit = 15;
+		$Shifter::FlagNoReturn = "True";
+		$Shifter::FlagReturnTime = "400";
+		Client::sendMessage(%clientId, 1, "Please Enter Server Password");
+  $ModList = "Shifter| k |Scrim";
+}
+	else if(%opt == "practice" && %clientId.isAdmin)
+   {
+
+		%clientid.getpass = true;
+		$GameMode = Practice;
+		$DPSAllowedChanged = 0.15;
+     		exec("itemfuncs.cs");
+		$Shifter::DetPackLimit = 15;
+		$Shifter::NukeLimit = 15;
+		$Shifter::FlagNoReturn = "True";
+		$Shifter::FlagReturnTime = "400";
+		Client::sendMessage(%clientId, 1, "Please Enter Server Password");
+  $ModList = "Shifter| K |Practice";
 	}
 	else if(%opt == "builder" && %clientId.isAdmin)
    {
 
-		$builder = "true";
+		$GameMode = Builder;
 		$ceasefire = "true";
 		$server::tourneymode = true;
 		$Shifter::tag0 = "";
@@ -2265,7 +2330,7 @@ function processMenuFAffirm(%clientId, %opt)
 		messageAll(0, "You now have Full Access to Inventory Station, Press i, and Set your Faves!");
 		messageAll(2, "Builder mode - GO BUILD STUFF~wteleport2.wav");
   $ModList = "Shifter| K |Builder";
-	}
+}
 }
 
 function processMenuCTLimit(%clientId, %opt)
@@ -2283,7 +2348,7 @@ function processMenuMAffirm(%clientId, %opt)
      	exec("matchConfig.cs");
 		$server::tourneymode = false;
 		$ceasefire = false;
-		$builder = false;
+		$GameMode = Normal;
 		if ($Shifter::DetPackLimit == ""){ $Shifter::DetPackLimit = "15"; }
 		if ($Shifter::NukeLimit == ""){ $Shifter::NukeLimit = "15"; }
 		$TeamItemMax[SuicidePack] = $Shifter::DetPackLimit;
@@ -2373,7 +2438,7 @@ function beginMatchMode()
 	exec("matchConfig.cs");
 	$server::tourneymode = false;
 	$ceasefire = false;
-	$builder = false;
+	$GameMode = Normal;
    	if ($Shifter::DetPackLimit == ""){ $Shifter::DetPackLimit = "15"; }
 		if ($Shifter::NukeLimit == ""){ $Shifter::NukeLimit = "15"; }
 		$TeamItemMax[SuicidePack] = $Shifter::DetPackLimit;

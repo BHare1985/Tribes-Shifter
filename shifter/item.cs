@@ -885,10 +885,89 @@ function remoteSellItem(%client,%type)
 	remoteDropItem(%client,%type);
 }
 
+if($DPSAllowedChanged == "")
+$DPSAllowed = 0.15;
+else{
+$DPSAllowed = $DPSAllowedChanged;
+$DPSAllowedChanged = "";}
+
+if($Cheating::DeployCheck == "true")
+$DPSCheat = 0.075;
+else
+$DPSCheat = 0.000001;
+function resetOsicheat(){
+	for(%clientId = Client::getFirst(); %clientId != -1; %clientId = Client::getNext(%clientId)){
+	%clientId.startedDeploy = "";	
+	}
+	}
 function remoteUseItem(%player,%type)
 {
+%clientId = Player::getClient(%player);	
+		if(!$TimeStart[%clientId])
+		{
+		$TimeStart[%clientId] = getSimTime();	
+		//Messageall(0,Client::getname(%clientId)@" Time Started: "@$TimeStart[%clientId]);
+		}					
+	%Timeofthisdeploy[%clientId] = getSimTime(); 
+	$NumberofDeployTries[%clientId]++;
+		if($Timeoflastdeploy[%clientId])
+		{ 							
+		%TimeBetweenDeploys[%clientId] = (%Timeofthisdeploy[%clientId] - $Timeoflastdeploy[%clientId]); // Count the Time bewteen deploys
+		//Messageall(0,Client::getname(%clientId)@" This deploy: "@%Timeofthisdeploy[%clientId]);
+		//Messageall(0,Client::getname(%clientId)@" Last Deploy: "@$Timeoflastdeploy[%clientId]);
+			if(%TimeBetweenDeploys[%clientId] >0.50)							// If Time between deploys is more than half second
+			{									       //Reset Timer
+			$NumberofDeployTries[%clientId]=0;								       //Reset deploy tries
+			%TimeBetweenDeploys[%clientId] =0;
+			$TotalTimeBetweenDeploys[%clientId] = 0;
+			$TimeFinished[%clientId] = $Timeoflastdeploy[%clientId];
+			//Messageall(0,Client::getname(%clientId)@" Finished Time: "@$TimeFinished[%clientId]);
+			$DeployTime[%clientId] = ($TimeFinished[%clientId] - $TimeStart[%clientId]);
+			if($DeployTime[%clientId] <0)
+			$DeployTime[%clientId] = 0;
+			//Messageall(0,Client::getname(%clientId)@" Deploy Time: "@$DeployTime[%clientId]);
+			$TotalTimeofDeploy[%clientId] = $TotalTimeofDeploy[%clientId] + $DeployTime[%clientId];
+			//Messageall(0,Client::getname(%clientId)@" Total Time: "@$TotalTimeofDeploy[%clientId]);
+			$TimeStart[%clientId] = "";
+				if($TotalTimeofDeploy[%clientId] > 5)
+				{
+				$TimeStart[%clientId] = "";
+				$TotalTimeofDeploy[%clientId] = 0;
+				$RepeatedDeploytimes[%clientId] = 0;
+				}
+			}
+			$TotalTimeBetweenDeploys[%clientId] = $TotalTimeBetweenDeploys[%clientId] + %TimeBetweenDeploys[%clientId];
+			%AverageTimeBetweenDeploys[%clientId] = ($TotalTimeBetweenDeploys[%clientId]/$NumberofDeployTries[%clientId]);
+			%LowAverageTimeBetweenDeploys[%clientId]= (%AverageTimeBetweenDeploys[%clientId] -0.01);
+			%HighAverageTimeBetweenDeploys[%clientId]= (%AverageTimeBetweenDeploys[%clientId] +0.01);
+				if($TotalTimeofDeploy[%clientId] <= 5)
+				{
+					if(%LowAverageTimeBetweenDeploys[%clientId] < %TimeBetweenDeploys[%clientId] && %TimeBetweenDeploys[%clientId] < %HighAverageTimeBetweenDeploys[%clientId] && $NumberofDeployTries[%clientId] > 5)
+					{
+					$RepeatedDeploytimes[%clientId]++;
+					//Messageall(0,(%Timeofthisdeploy[%clientId] - $TimeStart[%clientId]));
+					//echo(Client::getname(%clientId)@" Counted:"@$RepeatedDeploytimes[%clientId]);
+						if($RepeatedDeploytimes[%clientId] >= 15)
+						{
+						$RepeatedDeploytimes[%clientId] = 0;
+						Client::sendMessage(%clientId, 0, "This server wont allow you to deploy that fast, slow down!~wteleport");
+						centerprint(%clientId, "This server wont allow you to deploy that fast, slow down!", 5.0);
+						$warn[%clientId]++;
+						CheckOsiWarnings(%clientId);
+						}
+					}
+				}
+		$Timeoflastdeploy[%clientId] = %Timeofthisdeploy[%clientId]; // This deploy is now the recorded as the last
+		}
+		else												// If he hasnt deployed before
+		{ 	
+		$Timeoflastdeploy[%clientId] = %Timeofthisdeploy[%clientId];					
+		}
+	
 	if (Player::isDead(%player)) 
 		return;
+
+
   
     if (%player > 4000) %cl=GameBase::getOwnerClient(%player); // for debug echo
 	dbecho("USE: "@ %cl @"," @ %player @ "," @ %type); // debug echo -tub
@@ -901,7 +980,38 @@ function remoteUseItem(%player,%type)
 		return;
 
 	%item1 = Player::getMountedItem(%player,4);
-	%item2 = Player::getMountedItem(%player,5);	
+	%item2 = Player::getMountedItem(%player,5);
+if(!%clientId.startedDeploy)
+{
+      %clientId.deployCount = 0;
+      %clientId.startedDeploy = (getSimTime() + 0.25);
+}
+else
+{
+	%clientId.deployCount++;
+	%buttonpushesasec = (0.25/$DPSCheat);
+       if(%clientId.deployCount >= %buttonpushesasec && %clientId.startedDeploy >= getSimTime())
+       {
+    
+                   centerprint(%clientId, "This server wont allow you to deploy that fast, slow down!", 5.0);
+                   $warn[%clientId]++;
+                   CheckOsiWarnings(%clientId);
+      		   %clientId.deployCount = 0;
+      		   %clientId.startedDeploy = "";
+      		   
+        }
+        else
+        {
+                  if(%clientId.deployCount >= 6){
+                  %clientId.deployCount = 0;
+      		  %clientId.startedDeploy = "";
+      		}
+                  	
+}
+}
+
+
+	
 	if (%item == "Hammer1Pack" || %item == "Hammer2Pack")
 	{
 		%item = "Backpack";
@@ -923,7 +1033,12 @@ function remoteUseItem(%player,%type)
 	else if(!%player.charging)
 		Player::useItem(%player,%item);	
 }
-
+function CheckOsiWarnings(%clientId)
+{
+	 if($warn[%clientId] >= 3)
+      		   messageallexcept(%clientId,1, Client::getName(%clientId) @ " is using a cheat. BAN THE FAGGOT!!~wteleport2.wav");	
+      		   //messageall(1, Client::getName(%clientId) @ " is using a deploy cheat. BAN THE FAGGOT!!~wteleport2.wav");	
+}
 function fireGH(%player)
 {
 	%Ammo = Player::getItemCount(%player, $WeaponAmmo[Hammer1Pack]);
@@ -1006,8 +1121,9 @@ function remoteDropItem(%client,%type)
 	%client.throwStrength = 1;
 	%item = getItemData(%type);
 	%armor = Player::getArmor(%client);
+	
 	//echo(%player.dropcount);
-	if(!$builder)
+	if(!$GameMode)
 	{
 		if(( $Shifter::dropccheck == false || $Shifter::dropccheck == "") && %player.dropcount > 50)
 		{

@@ -586,7 +586,40 @@ function Game::initialMissionDrop(%clientId)
 	Client::setGuiMode(%clientId, $GuiModePlay);
 	if(!%clientID.isadmin) Shifter::Autoadmin(%clientId);
 	if(!%clientID.noban) CheckNoBans(%clientId);
-	if($builder == "scrim")
+	if($GameMode == "MixScrim")
+	{
+		%clientId.observerMode = "observerFly";
+		%clientid.notready = "true";
+		%clientId.notreadyCount = "";
+		GameBase::setTeam(%clientId, -1);
+		Shifter::Autoadmin(%clientId);
+		SHCheckTransportAddress(%clientid);
+		CheckNoBans(%clientId);
+		Client::setControlObject(%clientId, Client::getObserverCamera(%clientId));
+		%camSpawn = Game::pickObserverSpawn(%clientId);
+		Observer::setFlyMode(%clientId, GameBase::getPosition(%camSpawn), 
+		GameBase::getRotation(%camSpawn), true, true);
+		bottomprint(%clientid, "<F1><jc>::::MIXED SCRIM::::",10);
+		return;
+	}
+		else if($GameMode == "Scrimage")
+	{
+		%clientId.observerMode = "observerFly";
+		%clientid.notready = "true";
+		%clientId.notreadyCount = "";
+		%clientId.SwitchPerm = "True";
+		GameBase::setTeam(%clientId, -1);
+		Shifter::Autoadmin(%clientId);
+		SHCheckTransportAddress(%clientid);
+		CheckNoBans(%clientId);
+		Client::setControlObject(%clientId, Client::getObserverCamera(%clientId));
+		%camSpawn = Game::pickObserverSpawn(%clientId);
+		Observer::setFlyMode(%clientId, GameBase::getPosition(%camSpawn), 
+		GameBase::getRotation(%camSpawn), true, true);
+		bottomprint(%clientid, "<F1><jc>::::: Scrimage ::::",10);
+		return;
+	}
+	else if($GameMode == "Practice")
 	{
 		%clientID.observerMode = "observerFly";
 		%clientid.notready = "true";
@@ -599,7 +632,7 @@ function Game::initialMissionDrop(%clientId)
 		%camSpawn = Game::pickObserverSpawn(%clientId);
 		Observer::setFlyMode(%clientId, GameBase::getPosition(%camSpawn), 
 		GameBase::getRotation(%camSpawn), true, true);
-		bottomprint(%clientid, "<F1><jc>::::MIXED SCRIM::::",10);
+		bottomprint(%clientid, "<F1><jc>::::: Practice ::::",10);
 		return;
 	}
    if($Server::TourneyMode =="true" && ($Shifter::Tag0 != "" && $Shifter::Tag1 != "") && !$ceasefire)
