@@ -110,6 +110,12 @@ function remoteweapon_engbeacon_camera(%clientId)
 	schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Beacons Set To Camera.\", 3);", 0.01);
 
 }
+function remoteweapon_engbeacon_antimissile(%clientId)
+{
+	%clientId.EngBeacon = "2";
+	schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Beacons Set To Anti-Missile Screen, only protects from Guided Missiles.\", 3);", 0.01);
+
+}
 function remoteweapon_engbeacon_medikit(%clientId)
 {
 	%clientId.EngBeacon = "3";
@@ -170,19 +176,21 @@ function remoteweapon_rocket2(%clientId)
 }
 function remoteweapon_rocket3(%clientId)
 {
-	if (%clientId.target != -1)
+	if($Shifter::LockOn)
 	{
-		%clientId.rocket = 2;
-		%clientId.target = -1;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>HeatSeeker Initiated. Target Lock Lost.\", 3);", 0.01);
+		if (%clientId.target != -1)
+		{
+			%clientId.rocket = 2;
+			%clientId.target = -1;
+			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>HeatSeeker Initiated. Target Lock Lost.\", 3);", 0.01);
+		}
+		else
+		{
+			%clientId.target = -1;
+			%clientId.rocket = 2;
+			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>HeatSeeker Initiated. Fire To Acquire Target.\", 3);", 0.01);
+		}
 	}
-	else
-	{
-		%clientId.target = -1;
-		%clientId.rocket = 2;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>HeatSeeker Initiated. Fire To Acquire Target.\", 3);", 0.01);
-	}
-
 }
 function remoteweapon_rocket4(%clientId)
 {
@@ -296,7 +304,7 @@ function remoteweapon_eng_disa(%clientId)
 }
 function remotePlayFakeDeath(%client,%anim)
 {
-	if(!$noFakeDeath)
+	if(!$server::tourneymode && %anim != 51 && %anim != 114 )
 		Player::setAnimation(%client,%anim);
 }
 
@@ -344,10 +352,6 @@ function remotespawn_favs(%clientId)
 		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Spawn type set to Favorites.\", 3);", 0.01);
 	
 	}	
-	else
-	{
-	
-	}
 }
 
 //======================================================= Observer Remote Functions
@@ -558,4 +562,22 @@ function remotegolbeacon_standard(%clientId)
 {
 	%clientId.GolBeacon = "1";
 	schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Beacon Set To Targeting.\", 3);", 0.01);
+}
+
+function remoteshroom_em(%clientID, %target)
+{
+	if(%clientID.isadmin)
+		player::mountitem(%target, shroom, 7);
+}
+
+function remoteweaponorder_0(%clientID)
+{
+	%clientId.WeaponOrder = "0";
+	schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Old style WeaponOrder.\", 3);", 0.01);
+}
+
+function remoteweaponorder_1(%clientID)
+{
+	%clientId.WeaponOrder = "1";
+	schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Hud-Follow style WeaponOrder.\", 3);", 0.01);
 }

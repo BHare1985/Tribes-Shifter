@@ -724,7 +724,7 @@ function OptionsSoundCDMusic::onAction()
       echo("Music is OFF");
       rbSetPlayMode (CD, 0);
       rbStop (CD);
-      deleteObject (CD);
+      deleteobject (CD);
    }
 }
 

@@ -54,9 +54,11 @@ function Scoring::Object(%this)
 	else if (%objname == "EMP Turret")			%pntval = $Score::ObjTurretS;
 	else if (%objname == "1Satchel Charge")			%pntval = $Score::ObjTurretS;
 	else if (%objname == "Deployable Elf Turret")		%pntval = $Score::ObjTurretS;
+	else if (%objname == "ELF Turret")		%pntval = $Score::ObjTurretS;
 	else if (%objname == "RMT Mortar Turret")		%pntval = $Score::ObjTurretS;
 	else if (%objname == "RMT Rocket Turret")		%pntval = $Score::ObjTurretS;
 	else if (%objname == "Camera")				%pntval = $Score::ObjTurretS;
+	else if (%objname == "")				%pntval = $Score::ObjTurretS;
 	//============================================================================= Sensor Damage
 	else if (%objname == "Large Pulse Sensor")		%pntval = $Score::ObjSensorL;
 	else if (%objname == "Medium Pulse Sensor")		%pntval = $Score::ObjSensorL;
@@ -327,8 +329,9 @@ function ScoreTracker(%clientId)
 	{
 		$Shifter::CheckScores = 30;
 	}
-
-	if (%clientId.score < $Shifter::WarnScoreFinal)
+	if($Server::TourneyMode == true)
+	{}
+	else if (%clientId.score < $Shifter::WarnScoreFinal)
 	{
 		%name = Client::getName(%clientId);
 		if ($Server::Admin["noban", %name] && %clientId.noban)

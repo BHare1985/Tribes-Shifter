@@ -28,7 +28,6 @@ MineData Handgrenade
 	explosionRadius = 10.0;
 	damageValue = 0.5;
 	damageType = $ShrapnelDamageType;
-	//damageType = $EnergyDamageType;
 
 	kickBackStrength = 200;
 	triggerRadius = 0.5;
@@ -259,19 +258,18 @@ function Nukebomb::onCollision(%this,%obj)
 	%armor = Player::getArmor(%obj);
 	if (%armor == "earmor" || %armor == "efemale")
 	{
-		%rnd = floor(getRandom() * 10);
-		if(%rnd > 6)
+		%g = Player::getMountedItem(%obj,$WeaponSlot);
+		if(%g == Fixit || %g == DisIt || %g == HackIt)
+		{}
+		else if(floor(getRandom() * 10) > 6)
 		{	
 			Client::sendMessage(%c,1,"OOPS! You cut the wrong wire...");
 			%data = GameBase::getDataName(%this);
 			GameBase::setDamageLevel(%this, %data.maxDamage);
 			return;
 		}
-		else
-		{	
-			if(%this)deleteObject(%this);
-			Client::sendMessage(%c,1,"You disarm the Plastique Explosive.");
-		}
+		if(%this) deleteobject(%this);
+		Client::sendMessage(%c,1,"You disarm the Plastique Explosive.");
 	}  
 }
 
@@ -369,10 +367,9 @@ MineData Detbomb
 	friction = 1.0;
 	className = "Handgrenade";
 	description = "Handgrenade";
-   	shapeFile = "armorPatch";
+   	shapeFile = "mine";
 	shadowDetailMask = 0;
 	explosionId = flashExpLarge;
-
 	explosionRadius = 3.0;
 	damageValue = 0.5;
 	damageType = $EnergyDamageType;
@@ -384,7 +381,7 @@ MineData Detbomb
 function Detbomb::onAdd(%this)
 {
 	%data = GameBase::getDataName(%this);
-	schedule("Mine::Detonate(" @ %this @ ");",50.0,%this);
+	schedule("Mine::Detonate(" @ %this @ ");",10.0,%this);
 }
 
 function Detbomb::onDestroyed(%this)
@@ -404,7 +401,6 @@ function Detbomb::onCollision(%this, %object)
 	%objClient = Player::getClient(%object);
 	%thisTeam = GameBase::getTeam(%thisClient);
 	%objTeam = GameBase::getTeam(%object);
-	//echo("ThisTeam: "@%thisTeam@" - ObjTeam: "@%objTeam@" - %type"@%type@" - %thisClient"@%thisClient@" - %objClient"@%objClient);
    if ((%type == "Player" && (%objTeam != %thisTeam || %objClient == %thisClient)) || (%type == "Turret" && %objTeam != %thisTeam))
 	{	
 		%data = GameBase::getDataName(%this);

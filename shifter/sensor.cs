@@ -70,6 +70,12 @@ function Sensor::onDestroyed(%this)
 	else if(%sensorName == DeployablePulseSensor) 
    	$TeamItemCount[GameBase::getTeam(%this) @ "PulseSensorPack"]--;
 	calcRadiusDamage(%this, $DebrisDamageType, 2.5, 0.05, 25, 13, 2, 0.40, 0.1, 250, 100);
+	if(%this > 3000)
+	{
+			$dlist = string::greplace($dlist, %this, "");
+			//echo("Killing sensor:" @ %this);
+			//echo($dlist);
+	}
 }
 
 function Sensor::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
@@ -234,15 +240,34 @@ function DeployableSensor::onAdd(%this)
 
 function DeployableSensor::deploy(%this)
 {
+	GameBase::setActive(%this,true);
 	GameBase::playSequence(%this,1,"deploy");
 }
 
 function DeployableSensor::onEndSequence(%this,%thread)
 {
-	GameBase::setActive(%this,true);
 	GameBase::playSequence(%this,0,"power");
 }
 
 //------------------------------------------------------------------------
 
-
+function DeployableSensorJammer::onAdd(%this)
+{
+	schedule("DeployableSensorJammer::deploy(" @ %this @ ");",1,%this);
+	GameBase::setRechargeRate(%this,5);
+	if (GameBase::getMapName(%this) == "") 
+		GameBase::setMapName (%this, "Jammer Box");
+}
+function DeployableSensorJammer::deploy(%this)
+{	
+	GameBase::setActive(%this,true);
+	GameBase::playSequence(%this,1,"deploy");
+}
+function DeployableSensorJammer::onEndSequence(%this,%thread)
+{	
+	GameBase::playSequence(%this,0,"power");
+}
+function DeployableSensorJammer::onDisabled(%this) { Sensor::onDisabled(%this); %this.broke = "1"; }
+function DeployableSensorJammer::onDestroyed(%this) { Sensor::onDestroyed(%this); }
+function DeployableSensorJammer::onPower(%this,%power,%generator) {}
+function DeployableSensorJammer::onEnabled(%this) {}

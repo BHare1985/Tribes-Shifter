@@ -70,7 +70,7 @@ function DumpStats()
 function EvenTeams()
 {
 	
-	if ($Shifter::FairTeams == "False")
+	if ($Shifter::FairTeams == "False" || $server::tourneymode)
 	{
 		echo("ADMINMSG: *** Fair Teams Is OFF");
 		return;

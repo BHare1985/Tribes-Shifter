@@ -2,7 +2,7 @@ function ScoreTracker(%clientId)
 {
 	%addr = Client::getTransportAddress(%clientId);
 
-	if ($Shifter::ScoreTracker)
+	if ($Shifter::ScoreTracker && !$Server::TourneyMode)
 	{
 		//echo ("Checking For Crappy Score");
 		
@@ -10,8 +10,9 @@ function ScoreTracker(%clientId)
 		{
 			$Shifter::CheckScores = 30;
 		}
-
-		if (%clientId.score < $Shifter::WarnScoreFinal)
+		if($Server::TourneyMode == true)
+		{}
+		else if(%clientId.score < $Shifter::WarnScoreFinal)
 		{
 			%name = Client::getName(%clientId);
 			if ($Server::Admin["noban", %name] && %clientId.noban)

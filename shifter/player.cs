@@ -44,7 +44,7 @@ function Player::onRemove(%this)
 
 function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%object)
 {
-	if (%type == $GravDamageType || $ceasefire) return;
+	if (%type == $GravDamageType || $builder) return;
 	if (Player::isDead(%this)) return;
 	%damagedClient = Player::getClient(%this);
 	%damTeam = Client::getTeam(%damagedClient);
@@ -78,16 +78,19 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 		if($teamplay && %damagedClient != %shooterClient && %td && %shooterClient)
 		{
 			%curTime = getSimTime();
-		   if ((%curTime - %this.DamageTime > 1.5 || %this.LastHarm != %shooterClient) && %damagedClient != %shooterClient && $Server::TeamDamageScale > 0) 
+		   if ((%curTime - %this.DamageStamp > 1.5 || %this.LastHarm != %shooterClient) && %damagedClient != %shooterClient && $Server::TeamDamageScale > 0) 
 		   {
-				if(%type == $ElectricityDamageType)
+				if(%type == $ElectricityDamageType || %type == $BulletDamageType || %type == $HBlasterDamageType)
 				{
    				if(!%shooterClient.NRGTDOff || %shooterClient.NRGTDOff == 0)
 					{	
 						Client::sendMessage(%shooterClient,0,"You just harmed Teammate " @ Client::getName(%damagedClient) @ "!");
 						Client::sendMessage(%damagedClient,0,"You took Friendly Fire from " @ Client::getName(%shooterClient) @ "!");
-	           		%shooterClient.score -= 1;
-						if ($ScoreOn) bottomprint(%shooterClient, "You harmed your team mate... Score -1 = " @ %shooterClient.score @ " Total Score");
+						if(!$Server::TourneyMode)
+						{
+	           			%shooterClient.score -= 1;
+							if ($ScoreOn) bottomprint(%shooterClient, "You harmed your team mate... Score -1 = " @ %shooterClient.score @ " Total Score");
+						}
 						%shooterClient.NRGTDOff = 1;
 						schedule(%shooterClient @ ".NRGTDOff = 0;", 0.7, %shooterClient);
 					}
@@ -96,8 +99,11 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 				{
 					Client::sendMessage(%shooterClient,0,"You just harmed Teammate " @ Client::getName(%damagedClient) @ "!");
 					Client::sendMessage(%damagedClient,0,"You took Friendly Fire from " @ Client::getName(%shooterClient) @ "!");
-           		%shooterClient.score -= 1;
-					if ($ScoreOn) bottomprint(%shooterClient, "You harmed your team mate... Score -1 = " @ %shooterClient.score @ " Total Score");
+					if(!$Server::TourneyMode)
+					{
+	           		%shooterClient.score -= 1;
+						if ($ScoreOn) bottomprint(%shooterClient, "You harmed your team mate... Score -1 = " @ %shooterClient.score @ " Total Score");
+					}
 				}
 				else
 				{
@@ -142,17 +148,17 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 					Player::dropItem(%damagedClient,%packtype);
 				}
 			}
-			if(%snipeType)
-			{
-				if(%heavyArmor)
-				{	if(%quadrant == "middle_back"  || %quadrant == "middle_front" || %quadrant == "middle_middle")
-						%value = (%value * 0.85);
-					else
-						%value = (%value * 0.65);
-				}
-				else
-					%value = (%value * 0.85);
-			}
+			//if(%snipeType)
+			//{
+			//	if(%heavyArmor)
+			//	{	if(%quadrant == "middle_back"  || %quadrant == "middle_front" || %quadrant == "middle_middle")
+			//			%value = (%value * 0.85);
+			//		else
+			//			%value = (%value * 0.65);
+			//	}
+			//	else
+			//		%value = (%value * 0.85);
+			//}
 		}
 		else if (%legs)
 		{
@@ -166,17 +172,17 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 				%kick = (%value * 200);
 				ixApplyKickback(%damagedClient, -%kick, -%kick);
 			}
-			if(%snipeType)
-			{
-				if(%heavyArmor)
-				{	if(%quadrant == "middle_back"  || %quadrant == "middle_front" || %quadrant == "middle_middle")
-						%value = (%value * 0.85);
-					else
-						%value = (%value * 0.65);
-				}
-				else
-					%value = (%value * 0.85);
-			}
+			//if(%snipeType)
+			//{
+			//	if(%heavyArmor)
+			//	{	if(%quadrant == "middle_back"  || %quadrant == "middle_front" || %quadrant == "middle_middle")
+			//			%value = (%value * 0.85);
+			//		else
+			//			%value = (%value * 0.65);
+			//	}
+			//	else
+			//		%value = (%value * 0.85);
+			//}
 		}
 		else if (%head)
 		{
@@ -200,7 +206,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 					else if(%quadrant == "back_left" || %quadrant == "back_right") //- Back
 						%value *= 0.65;
      			}
-				else %value += (%value * 0.5);
+				else %value += (%value * 0.8);
 			}
 		}
 		//=============================================== Shield Pack On
@@ -240,7 +246,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 		else //========================================== Merc Booster Pop
 		if (%armor == "marmor" || %armor == "mfemale")
 		{
-			if (%clientId.boostercool && %clientID.boostpop <= 10)
+			if (%clientId.boostercool)
 			{
 				%rnd = (getRandom());
 				if((%snipeType || %type == $BulletDamageType)
@@ -251,22 +257,28 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 						Player::blowUp(%this);
 						%value = %value * 10;
 						bottomprint(%clientId, "Your booster popped!");
-						//DeployFrags(%this, 5, %clientId);
-						//GameBase::applyRadiusDamage($PlasmaDamageType, gamebase::getposition(%player), 5, 0.02, 2, %shooterClient); 
+						if (%clientID.boostpop < 2)
+							DeployFrags(%this, 5, %clientId);
+						else if(%clientID.boostpop <= 5)
+							quietDeployFrags(%this, 5, %clientId);
+						GameBase::applyRadiusDamage($PlasmaDamageType, gamebase::getposition(%player), 5, 0.02, 2, %shooterClient); 
 						GameBase::applyDamage(%player, $PlasmaDamageType, 5.2, "0 0 0", "0 0 0", "0 0 0", %shooterClient);
 						%clientID.boostpop++;
 					}
 				}
 				else
 				if ( (%type == $ExplosionDamageType || %type == $ShrapnelDamageType || %type== $MortarDamageType || %type == $MissileDamageType
-					|| %type == $ElectricityDamageType || %type == $NukeDamageType) && !%td)
+					|| %type == $ElectricityDamageType || %type == $NukeDamageType  || %type == $MDMDamageType) && !%td)
 				{
 					if (%rnd > 0.6)
 					{
 						Player::blowUp(%this);
 						%value = %value * 10;
 						bottomprint(%clientId, "Your booster popped!");
-						DeployFrags(%this, 5, %clientId);
+						if (%clientID.boostpop < 2)
+							DeployFrags(%this, 5, %clientId);
+						else if(%clientID.boostpop <= 4)
+							quietDeployFrags(%this, 5, %clientId);
 						GameBase::applyRadiusDamage($PlasmaDamageType, gamebase::getposition(%player), 5, 0.02, 2, %shooterClient); 
 						GameBase::applyDamage(%player, $PlasmaDamageType, 5.2, "0 0 0", "0 0 0", "0 0 0", %shooterClient);
 						%clientID.boostpop++;
@@ -280,7 +292,9 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 		if (%armor == "jarmor" && !%this.shieldStrength)
 			Renegades_startShield(%damagedClient, %this);
 		//==================================== Flash Damage Does EMP Effect
-		if(%type == $FlashDamageType || %type == $NukeDamageType)
+		if(%type == $FlashDamageType || %type == $nukedamagetype)
+			Insomniax_startEMP(%damagedClient, %this, 14);
+		else if(%type == $MDMDamageType && %value > 0.3)
 			Insomniax_startEMP(%damagedClient, %this, 14);
 		else //============================================ Cloaking Blast
 		if(%type == $CloakDamageType)
@@ -291,7 +305,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 		if (%type == $EnergyDamageType && !%td && (%armor != "aarmor" && %armor != "afemale"))
 			Renegades_startBlind(%damagedClient, %this);
 		else //======================= Plasma Damage Catches Player On Fire
-		if ((%type == $PlasmaDamageType || %type == $NukeDamageTyp) && !%td && %armor != "barmor" && %armor != "bfemale")
+		if ((%type == $PlasmaDamageType || %type == $NukeDamageType || %type == $MDMDamageType) && !%td && %armor != "barmor" && %armor != "bfemale")
 		{	%rnd = floor(getRandom() * 10);
 			if(%rnd > 5)
 				Renegades_startBurn(%damagedClient, %this);
@@ -302,8 +316,10 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 		%hitdamageval = 0.05;
 		%hittolerance = 0.25;
 		%weaponType = Player::getMountedItem(%this,$WeaponSlot);
+		if(%weapontype == mortar0 || %weapontype == mortar1 || %weapontype == mortar2)
+			%weapontype = "mortar";
 		%packType = Player::getMountedItem(%this,$BackpackSlot);
-		if (%value > %hittolerance && %snipetype && %torso) 
+		if (%value > %hittolerance && (%type == $BulletDamageType || %type == $LaserDamageType) && %torso && %quadrant == "front_left") 
 			%snipeoff = 1;
 		//======================================= Suicide Pack Explodes
 		if(%snipeoff && Player::getMountedItem(%player,4) == "Hammer1Pack" || Player::getMountedItem(%player,5) == "Hammer2Pack" && !%td && %type == $SniperDamageType)
@@ -318,14 +334,16 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 			if((%weaponType == "PlasmaCannon" || %weaponType == "LasCannon" || %weaponType == "Mfgl") && !td && %type == $SniperDamageType)
 			{
 				if(%weaponType == "LasCannon")
-				{	%clientId.charging = "";
+				{
+					%clientId.charging = "";
 					%clientId.lascharge = "0";
-					Client::sendMessage(Player::getClient(%damagedClient),0,"*LasCannon Stablizer field puncture leak!~waccess_denied.wav*");
+					Client::sendMessage(Player::getClient(%damagedClient),0,"*LasCannon Stablizer field puncture leak!*~waccess_denied.wav");
 				}
 				else if(%weaponType == "PlasmaCannon")
-				{	%clientId.charging = "";
+				{
+					%clientId.charging = "";
 					%clientId.plasmacharge = "0";
-					Client::sendMessage(Player::getClient(%damagedClient),0,"*PlasmaCannon Stablizer field puncture leak!~waccess_denied.wav*");
+					Client::sendMessage(Player::getClient(%damagedClient),0,"*PlasmaCannon Stablizer field puncture leak!*~waccess_denied.wav");
 				}
 				else if(%weaponType == "Mfgl")
 				{	Client::sendMessage(Player::getClient(%damagedClient),0,"*Tactical Nuke Stablizer field puncture leak!*~waccess_denied.wav");
@@ -337,7 +355,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 					}
 				}
 				//it go boom
-				//Player::blowUp(%damagedClient);
+				Player::blowUp(%damagedClient);
 				%obj = newObject("","Mine","HavocBlast");
 				GameBase::throw(%obj,%shooterClient,0,false);		
 				addToSet("MissionCleanup", %obj);
@@ -352,6 +370,8 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 		}
 		else //IT DOES ACTUAL DAMAGE
 		{
+			if(%damagedClient.JustSpawned)
+				%value = 0;
 			%value = $DamageScale[%armor, %type] * %value * %friendFire;
 			%dlevel = GameBase::getDamageLevel(%this) + %value;
 		}
@@ -387,7 +407,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 					itemfuncs::ammoboom(%this);
 				}
 				if (%type== $ExplosionDamageType || %type == $ShrapnelDamageType || %type== $MortarDamageType
-					|| %type == $MissileDamageType || %type == $ElectricityDamageType || %type == $NukeDamageType)
+					|| %type == $MissileDamageType || %type == $ElectricityDamageType || %type == $NukeDamageType || %type == $MDMDamageType)
 				{
 					Player::trigger(%this, $WeaponSlot, false);
 					%weaponType = Player::getMountedItem(%this,$WeaponSlot);
@@ -401,7 +421,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%quadrant,%
 			else
 			{
 				if ((%value > 0.40 && (%type== $ExplosionDamageType || %type == $ShrapnelDamageType || %type== $MortarDamageType
-					|| %type == $MissileDamageType || %type == $NukeDamageType )) || Player::getLastContactCount(%this) > 6)
+					|| %type == $MissileDamageType || %type == $NukeDamageType || %type == $MDMDamageType )) || Player::getLastContactCount(%this) > 6)
 				{
 					if(%quadrant == "front_left" || %quadrant == "front_right") 
 						%curDie = $PlayerAnim::DieBlownBack;
@@ -628,6 +648,23 @@ function Player::onCollision(%this,%object)
 				Client::sendMessage(Player::getClient(%object),1,"You drain " @ Client::getName(%thisId) @ "'s energy...");
 				return;
 			}	
+			//============================================= Juggy Crunch :)   by  -Kind-Defeat
+			else if (%armor == "jarmor" && %tarmor != "jarmor") // || %armor == "darmor")
+			{
+				%tpos = GameBase::getPosition(%this);
+				%oZpos = getword(GameBase::getPosition(%object), 2);
+				%tZpos = getword(%tpos, 2) + 1.5;
+				//%armor is object
+				//echo("CRUNCHY!");
+				if(%tZpos < %oZpos)
+				{
+					Player::blowUp(%this);
+					GameBase::applyDamage(%this,$CrushDamageType,10.0,%tpos,"0 0 0","0 0 0",%object);  
+					GameBase::playSound(%object,SoundFlierCrash,0);
+					Client::sendMessage(Player::getClient(%this),0,"CRUNCH!");
+					Client::sendMessage(Player::getClient(%object),0,"CRUNCH!");
+				}
+			}
 			//============================================ Assassin Death Touch
 			else if ((%armor == "larmor" || %armor == "lfemale") && (%tarmor != "larmor") && (%tarmor != "lfemale"))
 	    	{
@@ -641,16 +678,15 @@ function Player::onCollision(%this,%object)
 			else if (%armor == "spyarmor" || %armor == "spyfemale")
 		   {
 				%grabskin = Client::getSkinBase(%thisId);
-				if ($Shifter::SkinDiff)
-					%origskin = Client::getSkinBase(%cliendId);
-				$Shifter::SkinDiff = "True";
-				Client::setSkin(%cliendId,(%grabskin));
+				%origskin = Client::getSkinBase(%clientId);
+				Client::setSkin(%clientId,%grabskin);
 				GameBase::playSound(%this,ForceFieldOpen,0);
-				Client::sendMessage(%cliendId,0,"You went undercover disguised as " @ Client::getName(%thisId) @ " !");
+				Client::sendMessage(%clientId,0,"You went undercover disguised as " @ Client::getName(%thisId) @ " !");
 				Client::sendMessage(Player::getClient(%object),1,"You go undercover disguised as "  @ Client::getName(%thisId) @ "!" );
-     			schedule("Client::setSkin(" @ %cliendId @ ",(" @(%origskin)@ "));", 120);
-				schedule("$Shifter::SkinDiff = False;",120);
-				return;
+     			schedule("Client::setSkin("@ %clientId @"," @ %origskin @");", 120);
+				//EVIL EVIL EVIL GREY
+				//Player::setDetectParameters(%this, 1000, 3000);
+				Shifter_startHide(%this, 30);
 			}
 		}		
 	}
@@ -731,6 +767,8 @@ function penisCurse(%cl)
 		 Player::setArmor(%cl,parmor);
 		 checkMaxDrop(%cl,parmor);
 		 armorChange(%cl);
+       for(%i=0;%i<=$WeaponAmmt;%i++) 
+         Player::dropItem(%cl,$WeaponList[%i]); 
 		 Player::setItemCount(%cl, $ArmorName[%armor], 0);
 		 messageAll(0, " The Penis Curse Has Returned To " @ Client::getName(%cl) @ ", and you thought it was over. " @ Client::getName(%cl) @ " should have played nicer...");
 		 Player::setItemCount(%cl, Penis, 1);
@@ -753,6 +791,8 @@ function Player::enterMissionArea(%player)
 
 function Player::leaveMissionArea(%player)
 {
+	%flag = Player::getMountedItem(%player,$flagSlot);
+	
 
 	%pack = Player::getMountedItem(%player,$BackpackSlot);
 	
@@ -779,18 +819,22 @@ function Player::leaveMissionArea(%player)
 		Game::refreshClientScore(%cl);
 		return;
 	}
+	if (%pack == "DeployableInvPack")
+	{
+		Player::setItemCount(%player, DeployableInvPack, 0);
+	}
   	if($Shifter::NoOutside)
   	{
-		if($Game::missionType == "CTF")
-		{
+		//if($Game::missionType == "CTF")
+		//{
 		  dbecho("Player " @ %player @ " has left the mission area. 10 Sec to Death");
 
-		   	%cl = Player::getClient(%player);
-			Client::sendMessage(%cl,1,"You have left the mission area. In 10 secs, you start to die!");
-			%player.outArea=1;
-			alertPlayer(%player, 5);
-		}
-		else dbecho("Player " @ %player @ " has left the mission area.");
+	   	%cl = Player::getClient(%player);
+		Client::sendMessage(%cl,1,"You have left the mission area. In 10 secs, you start to die!");
+		%player.outArea=1;
+		alertPlayer(%player, 5);
+		//}
+		//else dbecho("Player " @ %player @ " has left the mission area.");
   	}
 }
 
@@ -904,59 +948,66 @@ function checkControlUnmount(%clientId)
 }
 
 //============================================================================= EMP Effects
-
-function Insomniax_startEMP(%clientId, %player, %time)
+//==========================================EMP bug fixed on 12/22/2001  By |LGS| Gonzo T.C.
+function Insomniax_startEMP(%clientId, %player)
 {
-
 	Client::sendMessage(%clientId,1,"You were hit with EMP!");
-	Player::unmountItem(%player,$WeaponSlot);
 	%armor = player::getarmor(%player);
+	%pack = Player::getMountedItem(%player,$BackpackSlot);
 
 	if(%clientId.empTime == 0)
 	{
 		if (%armor == earmor || %armor == efemale)
 		{
 			GameBase::setEnergy(%player,45);
-			GameBase::setRechargeRate(%player,2);
-			%clientId.empTime = 8;
-			checkPlayerEMP(%clientId, %player);
+			if(%pack != energypack)
+			{
+				Player::unmountItem(%player,$WeaponSlot);
+				GameBase::setRechargeRate(%player,2);
+				%clientId.empTime = 8;
+				checkPlayerEMP(%clientId, %player);
+			}
+			else
+				Client::sendMessage(%clientId,1,"EMP Effects have dissapated.");
 		}
 		else
 		{
 			GameBase::setEnergy(%player,0);
-			GameBase::setRechargeRate(%player,0);
-			%clientId.empTime = 12;
-			checkPlayerEMP(%clientId, %player);
+			if(%pack != energypack)
+			{
+				Player::unmountItem(%player,$WeaponSlot);
+				GameBase::setRechargeRate(%player,0);
+				%clientId.empTime = 12;
+				checkPlayerEMP(%clientId, %player);
+			}
+			else
+				Client::sendMessage(%clientId,1,"EMP Effects have dissapated.");
 		}
 	}
-	else
-	{
-		if (%time)
-			%clientId.empTime = %time;
-		else
-			%clientId.empTime = 14;
-	}
+	else if(Player::isDead(%player))
+		%clientId.empTime = 0;
 }
 
 function checkPlayerEMP(%clientId, %player)
 {
+	if(Player::getMountedItem(%player,$BackpackSlot) == energypack)
+	{
+		%clientId.empTime = 0;
+		Player::trigger(%player,$BackpackSlot,true);
+	}
 
 	if(%clientId.empTime > 0)
 	{
-		%clientId.empTime -= 2;
-		if(!Player::isDead(%player)) 
-		{
-			schedule("checkPlayerEMP(" @ %clientId @ ", " @ %player @ ");",2,%player);
-		}
-		else
-		{
-			%clientId.empTime = 0;		
-		}
-   }
+		%clientId.empTime -= 2;  
+		schedule("checkPlayerEMP(" @ %clientId @ ", " @ %player @ ");",2,%player);
+		if(Player::isDead(%player))
+			%clientId.empTime = 0;
+	}
 	else
 	{
 		Client::sendMessage(%clientId,1,"EMP Effects have dissapated.");
 		GameBase::setRechargeRate(%player,8);
+		%clientId.empTime = 0;
 	}			
 }
 
@@ -1106,4 +1157,30 @@ function DoTheFlagDrop(%player, %shooterId)
 	schedule("Flag::checkReturn(" @ %flag @ ", " @ %flag.pickupSequence @ ");", $flagReturnTime);
 	%flag.dropFade = 1;
 	ObjectiveMission::ObjectiveChanged(%flag);
+}
+
+function Shifter_startHide(%player, %time)
+{
+	%armor = player::getarmor(%player);
+	if(%time == "")
+		%time = 18;
+
+	Player::setDetectParameters(%player, 1000, 3000);
+	%player.blindTime = %time;
+	checkPlayerHide(%player);
+}
+
+function checkPlayerHide(%player)
+{
+	if(%player.blindTime > 0)
+	{
+		%player.blindTime -= 1;
+		Player::setDetectParameters(%player, 1000, 3000);
+		schedule("checkPlayerHide("@ %player @");", 1.0);
+	}
+	else
+	{
+		Player::setDetectParameters(%player , 0.027, 0);
+		%player.blindTime = 0;
+	}			
 }

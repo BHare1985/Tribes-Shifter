@@ -22,18 +22,20 @@ function StaticShape::onDestroyed(%this)
 {
 	GameBase::stopSequence(%this,0);
 
-	if ($origTeam[%this] == "0" || $origTeam[%this] == "1" || $origTeam[%this] > 1)
+	//GreyFlcn
+	if (getObjectType(%this.lastDamageObject) != "Player") {}
+	else
+	StaticShape::objectiveDestroyed(%this);
+	//GreyFlcn, fine take this shit out.  Even though it's on every other beta, or mod
+	//calcRadiusDamage(%this, $DebrisDamageType, 2.5, 0.05, 25, 13, 2, 0.40, 0.1, 250, 100); 
+	if(%this > 3000)
 	{
-		schedule("GameBase::setTeam('" @ %this @ "','" @ $origTeam[%this] @ "');", 2);
-		if ($debug) echo (" THIS =  " @ %this @ " reverted back to its original team " @ $origTeam[%this] @ "." );
+			$dlist = string::greplace($dlist, %this, "");
+			//echo("Killing Wall:" @ %this);
+			//echo($dlist);
 	}
-
-	if (getObjectType(%this.lastDamageObject) != "Player")
-		return;
-
-  	StaticShape::objectiveDestroyed(%this);
-	calcRadiusDamage(%this, $DebrisDamageType, 2.5, 0.05, 25, 13, 2, 0.40, 0.1, 250, 100); 
 }
+
 
 function StaticShape::onCollision(%this,%obj)
 {
@@ -94,7 +96,7 @@ function StaticShape::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
 
 			if ((%type == $NukeDamageType) && (%shape == "inventory_sta" || %shape == "vehi_pur_poles" || %shape == "radar" || %shape == "vehi_pur_pnl" || %shape == "generator_p" || %shape == "cmdpnl"))
 			{
-				%value = %value / 8;
+				%value = %value * 0.125;
 			}		
 			else if ((%type != $NukeDamageType) && (%shape == "inventory_sta" || %shape == "vehi_pur_poles" || %shape == "radar" || %shape == "vehi_pur_pnl" || %shape == "generator_p" || %shape == "cmdpnl"))
 			{
@@ -263,6 +265,12 @@ function Generator::onDestroyed(%this)
 	//dbecho ("Generator::onDestroyed - Finish");	
 	//DumpObjectTree(); echo ("Gen Up Adding to Tree...");
 	calcRadiusDamage(%this, $DebrisDamageType, 2.5, 0.05, 25, 13, 3, 0.55, 0.30, 250, 170); 
+	if(%this > 3000)
+	{
+			$dlist = string::greplace($dlist, %this, "");
+			//echo("Killing PortGen:" @ %this);
+			//echo($dlist);
+	}
 }
 
 function Generator::onActivate(%this)
@@ -317,9 +325,9 @@ StaticShapeData YellowPanel 		{ shapeFile = "panel_yellow"; debrisId = defaultDe
 
 //========================================================================= Force Field Walls (Non-Movable)
 StaticShapeData ForceField 	{ shapeFile = "forcefield"; debrisId = defaultDebrisSmall; maxDamage = 10000.0; isTranslucent = true; description = "Force Field"; };
-StaticShapeData ForceField1 	{ shapeFile = "ForceField_3x4"; debrisId = defaultDebrisSmall; maxDamage = 360.0; isTranslucent = true; description = "Force Field"; };
+StaticShapeData ForceField1 	{ shapeFile = "ForceField_3x4"; debrisId = defaultDebrisSmall; maxDamage = 36.0; isTranslucent = true; description = "Force Field"; };
 StaticShapeData ForceField2 	{ shapeFile = "ForceField_4x17"; debrisId = defaultDebrisSmall; maxDamage = 10000.0; isTranslucent = true; description = "Force Field"; };
-StaticShapeData ForceField3 	{ shapeFile = "ForceField_4x8"; debrisId = defaultDebrisSmall; maxDamage = 360.0; isTranslucent = true; description = "Force Field"; };
+StaticShapeData ForceField3 	{ shapeFile = "ForceField_4x8"; debrisId = defaultDebrisSmall; maxDamage = 36.0; isTranslucent = true; description = "Force Field"; };
 StaticShapeData ForceField4 	{ shapeFile = "ForceField_5x5"; debrisId = defaultDebrisSmall; maxDamage = 10000.0; isTranslucent = true; description = "Force Field"; };
 StaticShapeData ForceField5 	{ shapeFile = "ForceField_4x14"; debrisId = defaultDebrisSmall; maxDamage = 10000.0; isTranslucent = true; description = "Force Field"; };
 StaticShapeData PlasmaWall 	{ shapeFile = "plasmawall"; debrisId = defaultDebrisSmall; maxDamage = 10000.0; isTranslucent = true; description = "PlasmaWall"; };
@@ -357,6 +365,31 @@ StaticShapeData SteamOnMud2 { shapeFile = "steamvent2_mud"; maxDamage = 999.0; i
 StaticShapeData TreeShape { shapeFile = "tree1"; maxDamage = 10.0; isTranslucent = "True"; description = "Tree"; };
 StaticShapeData TreeShapeTwo { shapeFile = "tree2"; maxDamage = 10.0; isTranslucent = "True"; description = "Tree"; };
 
+function ff::Open(%this, %delay)
+{
+	if(%this.originalpos == "")	
+	{
+		%this.originalpos = GameBase::getPosition(%this);
+		%this.isactive = false;
+	}
+	if(%this.isactive == false)
+	{
+		GameBase::startfadeout(%this);
+		%this.isactive = true;
+		schedule("ff::Open("@ %this @");",%delay);
+		%pos = %this.originalpos;
+		%newpos = Vector::add(%pos, "0 0 5000" );
+		GameBase::playSound(%this,ForceFieldOpen,0);
+		gamebase::setposition(%this, %newpos);
+	}
+	else
+	{
+		%this.isactive = false;
+		GameBase::setPosition(%this, %this.originalpos);
+		GameBase::startfadein(%this);
+		schedule("GameBase::playSound("@ %this @",ForceFieldClose,0);",0.35,%this);
+	}
+}
 
 //============================================================================ Small Force Field
 // Deployable Forcefield 
@@ -364,130 +397,34 @@ StaticShapeData TreeShapeTwo { shapeFile = "tree2"; maxDamage = 10.0; isTransluc
 StaticShapeData DeployableForceField { shapeFile = "forcefield_3x4"; debrisId = defaultDebrisSmall; maxDamage = 5.50; visibleToSensor = true; isTranslucent = true; description = "Small Force Field"; };
 function DeployableForceField::onCollision(%this,%obj)
 {
-	%clientId = Player::getClient(%obj);
-	%armor = Player::getArmor(%clientId);
-
-	%data = GameBase::getDataName(%obj); if(%data.shapefile == "rocket") {GameBase::setDamageLevel(%obj, 10); return;  }	
-
-	if(%this.isactive==True || getObjectType(%obj)!="Player" || Player::isDead(%obj))
-	{
-		return;
-	}
-
-	if (GameBase::getTeam(%clientId) == Gamebase::getTeam(%this) || ( (%armor == "spyarmor") || (%armor == "spyfemale") ) )
-	{	
-		%playerTeam = GameBase::getTeam(%obj);
-		%fieldTeam = GameBase::getTeam(%this);
-		DeployableForceField::Open(%this);
-		return;
-	}
-	if ($debug) echo ("Wrong Team");
-	return;
+	if(Player::getClient(%obj).inflyer == 1)
+		GameBase::setDamageLevel(%obj.vehicle, 10);
+	else if(GameBase::getDataName(%obj).shapefile == "rocket")
+		GameBase::setDamageLevel(%obj, 10);
+	else if(%this.isactive == True || getObjectType(%obj) != "Player" || Player::isDead(%obj))
+		{}
+	else if (GameBase::getTeam(%obj) == Gamebase::getTeam(%this) || (Player::getArmor(%obj) == "spyarmor" || Player::getArmor(%obj) == "spyfemale") )
+		ff::Open(%this, 1);
 }
-function DeployableForceField::Open(%this)
-{
-	if(%this.isactive == "false")
-	{
-		GameBase::startfadeout(%this);
-		%this.isactive=true;
-		schedule("LargeForceField::Open("@%this@");",1);
-		%pos=GameBase::getPosition(%this);
-		%posX = getWord(%pos,0);
-		%posY = getWord(%pos,1);
-		%posZ = getWord(%pos,2);
-		
-		%height = 5000;
-		%newpos = (%posX @ " " @ %posY @ " " @ (%posZ + %height));
-	
-		schedule("GameBase::playSound("@%this@",ForceFieldOpen,0);",0.35);
-		gamebase::setposition(%this, %newpos);
-		schedule("GameBase::setPosition("@%this@",\""@%pos@"\");",2.75);
-	}
-	else
-	{
-		%this.isactive = "false";
-		%pos=GameBase::getPosition(%this);
-		%posX = getWord(%pos,0);
-		%posY = getWord(%pos,1);
-		%posZ = getWord(%pos,2);
-		
-		%height = 5000;
-		%newpos = (%posX @ " " @ %posY @ " " @ (%posZ - %height));
-	
-		gamebase::setposition(%this, %newpos);
-		GameBase::setPosition(%this,%pos);
-		GameBase::startfadein(%this);
-		schedule("GameBase::playSound("@%this@",ForceFieldClose,0);",0.35);
-	}
-}
+
 function DeployableForceField::onDestroyed(%this)
 {
    StaticShape::onDestroyed(%this);
    $TeamItemCount[GameBase::getTeam(%this) @ "ForceFieldPack"]--;
-	
 }
 
 //============================================================================ Large Force Field
 StaticShapeData LargeForceField { shapeFile = "forcefield"; debrisId = defaultDebrisLarge; maxDamage = 8.00; visibleToSensor = true; isTranslucent = true; description = "Large Force Field"; };
 function LargeForceField::onCollision(%this,%obj)
 {
-	%clientId = Player::getClient(%obj);
-	%armor = Player::getArmor(%clientId);
-	%data = GameBase::getDataName(%obj); if(%data.shapefile == "rocket") {	GameBase::setDamageLevel(%obj, 10); return;  }	
-	if(%this.activated==True || getObjectType(%obj)!="Player" || Player::isDead(%obj))
-	{
-		return;
-	}
-
-	if (GameBase::getTeam(%clientId) == Gamebase::getTeam(%this) || ((%armor == "spyarmor" || %armor == "spyfemale")) )
-	{		
-		%playerTeam = GameBase::getTeam(%obj);
-		%fieldTeam = GameBase::getTeam(%this);
-		LargeForceField::Open(%this);
-		return;
-	}
-	if ($debug) echo ("Wrong Team");
-	return;
-}
-
-function LargeForceField::Open(%this)
-{
-	if(%this.isactive == "false")
-	{
-		GameBase::startfadeout(%this);
-		%this.isactive=true;
-		schedule("LargeForceField::Open("@%this@");",1);
-		%pos=GameBase::getPosition(%this);
-
-		%posX = getWord(%pos,0);
-		%posY = getWord(%pos,1);
-		%posZ = getWord(%pos,2);
-		
-		%height = 5000;
-		%newpos = (%posX @ " " @ %posY @ " " @ (%posZ + %height));
-
-		schedule("GameBase::setPosition("@%this@",\""@%pos@"\");",2.75);
-		schedule("GameBase::playSound("@%this@",ForceFieldOpen,0);",0.05);
-		gamebase::setposition(%this, %newpos);		
-	}
-	else
-	{
-		%this.isactive = "false";
-		%pos=GameBase::getPosition(%this);
-		
-		%posX = getWord(%pos,0);
-		%posY = getWord(%pos,1);
-		%posZ = getWord(%pos,2);
-		
-		%height = 5000;
-		%newpos = (%posX @ " " @ %posY @ " " @ (%posZ - %height));
-	
-		gamebase::setposition(%this, %newpos);
-	
-		GameBase::setPosition(%this,%pos);
-		GameBase::startfadein(%this);
-		schedule("GameBase::playSound("@%this@",ForceFieldClose,0);",0.05);
-	}
+	if(Player::getClient(%obj).inflyer == 1)
+		GameBase::setDamageLevel(%obj.vehicle, 10);
+	else if(GameBase::getDataName(%obj).shapefile == "rocket")
+		GameBase::setDamageLevel(%obj, 10);
+	else if(%this.isactive == True || getObjectType(%obj) != "Player" || Player::isDead(%obj))
+		{}
+	else if (GameBase::getTeam(%obj) == Gamebase::getTeam(%this) || (Player::getArmor(%obj) == "spyarmor" || Player::getArmor(%obj) == "spyfemale") )
+		ff::Open(%this, 2.75);
 }
 
 function LargeForceField::onDestroyed(%this)
@@ -500,68 +437,18 @@ function LargeForceField::onDestroyed(%this)
 StaticShapeData LargeShockForceField { shapeFile = "forcefield"; debrisId = defaultDebrisLarge; maxDamage = 8.00; visibleToSensor = true; isTranslucent = true; description = "Large Shock Force Field"; };
 function LargeShockForceField::onCollision(%this,%obj)
 {
-	%clientId = Player::getClient(%obj);
-	%player = %obj;
-	%armor = Player::getArmor(%clientId);
-	%data = GameBase::getDataName(%obj); if(%data.shapefile == "rocket") {if (GameBase::setDamageLevel(%obj, 10)) return;}	
-	if(%this.activated==True || getObjectType(%obj)!="Player" || Player::isDead(%obj))
-	{
-		return;
-	}
-
-	if (GameBase::getTeam(%clientId) == Gamebase::getTeam(%this))
-	{		
-		%playerTeam = GameBase::getTeam(%obj);
-		%fieldTeam = GameBase::getTeam(%this);
-		LargeForceField::Open(%this);
-		return;
-	}
+	if(Player::getClient(%obj).inflyer == 1)
+		GameBase::setDamageLevel(%obj.vehicle, 10);
+	else if(GameBase::getDataName(%obj).shapefile == "rocket")
+		GameBase::setDamageLevel(%obj, 10);
+	else if(%this.isactive == True || getObjectType(%obj) != "Player" || Player::isDead(%obj))
+		{}
+	else if (GameBase::getTeam(%obj) == Gamebase::getTeam(%this)) // || (Player::getArmor(%obj) == "spyarmor" || Player::getArmor(%obj) == "spyfemale") 
+		ff::Open(%this, 2.75);
 	else
 	{
 		schedule ("playSound(TargetingMissile,GameBase::getPosition(" @ %obj @ "));",0.1);
-		GameBase::applyDamage(%player,$FlashDamageType,0.30,GameBase::getPosition(%player),"0 0 0","0 0 0",%this);
-	}
-	if ($debug) echo ("Wrong Team");
-	return;
-}
-
-function LargeShockForceField::Open(%this)
-{
-	if(%this.isactive == "false")
-	{
-		GameBase::startfadeout(%this);
-		%this.isactive=true;
-		schedule("LargeForceField::Open("@%this@");",1);
-		%pos=GameBase::getPosition(%this);
-
-		%posX = getWord(%pos,0);
-		%posY = getWord(%pos,1);
-		%posZ = getWord(%pos,2);
-		
-		%height = 5000;
-		%newpos = (%posX @ " " @ %posY @ " " @ (%posZ + %height));
-
-		schedule("GameBase::setPosition("@%this@",\""@%pos@"\");",2.75);
-		schedule("GameBase::playSound("@%this@",ForceFieldOpen,0);",0.05);
-		gamebase::setposition(%this, %newpos);		
-	}
-	else
-	{
-		%this.isactive = "false";
-		%pos=GameBase::getPosition(%this);
-		
-		%posX = getWord(%pos,0);
-		%posY = getWord(%pos,1);
-		%posZ = getWord(%pos,2);
-		
-		%height = 5000;
-		%newpos = (%posX @ " " @ %posY @ " " @ (%posZ - %height));
-	
-		gamebase::setposition(%this, %newpos);
-	
-		GameBase::setPosition(%this,%pos);
-		GameBase::startfadein(%this);
-		schedule("GameBase::playSound("@%this@",ForceFieldClose,0);",0.05);
+		GameBase::applyDamage(%obj,$FlashDamageType,0.30,GameBase::getPosition(%obj),"0 0 0","0 0 0",%this);
 	}
 }
 
@@ -574,6 +461,7 @@ function LargeShockForceField::onDestroyed(%this)
 //============================================================================ Shock Floor ForceField
 // Created by Mark Williamson for his customized Shifter servers
 // contact mark@webpit.com (Customized by Emo1313 to Open by Teammates)
+//	Wow that was buggy, all nice and clean now
 
 StaticShapeData ShockFloor
 {
@@ -587,68 +475,18 @@ StaticShapeData ShockFloor
 
 function ShockFloor::onCollision(%this,%obj)
 {
-	%clientId = Player::getClient(%obj);
-	%player = %obj;
-	%armor = Player::getArmor(%clientId);
-	%data = GameBase::getDataName(%obj); if(%data.shapefile == "rocket") {	GameBase::setDamageLevel(%obj, 10); return; }	
-	if(%this.activated==True || getObjectType(%obj)!="Player" || Player::isDead(%obj))
-	{
-		return;
-	}
-
-	if (GameBase::getTeam(%clientId) == Gamebase::getTeam(%this))
-	{		
-		%playerTeam = GameBase::getTeam(%obj);
-		%fieldTeam = GameBase::getTeam(%this);
-		ShockFloor::Open(%this);
-		return;
-	}
+	if(Player::getClient(%obj).inflyer == 1)
+		GameBase::setDamageLevel(%obj.vehicle, 10);
+	else if(GameBase::getDataName(%obj).shapefile == "rocket")
+		GameBase::setDamageLevel(%obj, 10);
+	else if(%this.isactive == True || getObjectType(%obj) != "Player" || Player::isDead(%obj))
+		{}
+	else if (GameBase::getTeam(%obj) == Gamebase::getTeam(%this))// || (Player::getArmor(%obj) == "spyarmor" || Player::getArmor(%obj) == "spyfemale") 
+		ff::Open(%this, 2.75);
 	else
 	{
 		schedule ("playSound(TargetingMissile,GameBase::getPosition(" @ %obj @ "));",0.1);
-		GameBase::applyDamage(%player,$FlashDamageType,0.30,GameBase::getPosition(%player),"0 0 0","0 0 0",%this);
-	}
-	//echo ("Wrong Team");
-	return;
-}
-
-function ShockFloor::Open(%this)
-{
-	if(%this.isactive == "false")
-	{
-		GameBase::startfadeout(%this);
-		%this.isactive=true;
-		schedule("LargeForceField::Open("@%this@");",3);
-		%pos=GameBase::getPosition(%this);
-
-		%posX = getWord(%pos,0);
-		%posY = getWord(%pos,1);
-		%posZ = getWord(%pos,2);
-		
-		%height = 5000;
-		%newpos = (%posX @ " " @ %posY @ " " @ (%posZ + %height));
-
-		schedule("GameBase::setPosition("@%this@",\""@%pos@"\");",2.75);
-		schedule("GameBase::playSound("@%this@",ForceFieldOpen,0);",0.05);
-		gamebase::setposition(%this, %newpos);		
-	}
-	else
-	{
-		%this.isactive = "false";
-		%pos=GameBase::getPosition(%this);
-		
-		%posX = getWord(%pos,0);
-		%posY = getWord(%pos,1);
-		%posZ = getWord(%pos,2);
-		
-		%height = 5000;
-		%newpos = (%posX @ " " @ %posY @ " " @ (%posZ - %height));
-	
-		gamebase::setposition(%this, %newpos);
-	
-		GameBase::setPosition(%this,%pos);
-		GameBase::startfadein(%this);
-		schedule("GameBase::playSound("@%this@",ForceFieldClose,0);",0.05);
+		GameBase::applyDamage(%obj,$FlashDamageType,0.30,GameBase::getPosition(%obj),"0 0 0","0 0 0",%this);
 	}
 }
 
@@ -657,6 +495,7 @@ function ShockFloor::onDestroyed(%this)
 	StaticShape::onDestroyed(%this);
 	$TeamItemCount[GameBase::getTeam(%this) @ "ShockFloorPack"]--;	
 }
+
 //============================================================================ Blast Wall
 StaticShapeData BlastWall { shapeFile = "newdoor5"; maxDamage = 12.0; debrisId = defaultDebrisLarge; explosionId = debrisExpLarge; description = "BlastWall"; damageSkinData = "objectDamageSkins"; };
 function BlastWall::onDestroyed(%this)
@@ -818,7 +657,7 @@ StaticShapeData DeployableTeleport
 				
 function RemoveBeam(%b)
 {
-	if(%b)deleteObject(%b);
+	if(%b)deleteobject(%b);
 }				
 														 
 function DeployableTeleport::onDestroyed(%this)
@@ -881,22 +720,22 @@ function DeployableTeleport::onCollision(%this,%obj)
 		if(GameBase::getTeam(%o) == %playerteam && %o != %this)
 		{
 			%armor = Player::getArmor(%obj);
-			if(%armor == "harmor" || %armor == "darmor" || %armor == "jarmor")
-			{
-				   Client::SendMessage(%c,0,"Armor too Heavy to Teleport.");
-					return;
-			}
-			else
-			{
+			//if(%armor == "harmor" || %armor == "darmor") // || %armor == "jarmor"
+			//{
+			///	   Client::SendMessage(%c,0,"Armor too Heavy to Teleport.");
+			//		return;
+			//}
+			//else
+			//{
 				GameBase::playSound(%obj,ForceFieldOpen,0);
 				GameBase::playSound(%this,ForceFieldOpen,0);
-		           	GameBase::SetPosition(%obj,GameBase::GetPosition(%o));
+				GameBase::SetPosition(%obj,GameBase::GetPosition(%o));
 				%o.Disabled = true;
 				%this.Disabled = true;
 				schedule("DeployableTeleport::Reenable("@%o@");",5);
 				schedule("DeployableTeleport::Reenable("@%this@");",5);
 				return;
-			}
+			//}
 		}
 		else if((Player::getArmor(%obj) == "spyarmor") || (Player::getArmor(%obj) == "spyfemale"))
 		{
@@ -955,7 +794,7 @@ StaticShapeData LargeEmplacementPlatform
 {
         shapeFile = "elevator16x16_octo";
         debrisId = defaultDebrisLarge;
-        maxDamage = 360.0;
+        maxDamage = 36.0;
         damageSkinData = "objectDamageSkins";
         shadowDetailMask = 16;
         explosionId = debrisExpLarge;
@@ -1002,33 +841,30 @@ function AccelPadPack::onCollision(%this,%obj)
 	if(getObjectType(%obj) != "Player") {return;}
 	if(Player::isDead(%obj)) {return;}
 	%c = Player::getClient(%obj);
-	//if($debug == true) echo(client::getname(%c) @ " hit an accelpad.");
 	%pteam = GameBase::getTeam(%obj);
 	%oteam = GameBase::getTeam(%this);
 	%diffZ=getWord(GameBase::getPosition(%obj),2)-getWord(GameBase::getPosition(%this),2);
-	%tpos=GameBase::getPosition(%this);
-	%opos=GameBase::getPosition(%obj);
-	%tstartX=getWord(%tpos,0);
-	%tstartY=getWord(%tpos,1);
-	%tstartZ=getWord(%tpos,2);
-	%ostartX=getWord(%opos,0);
-	%ostartY=getWord(%opos,1);
-	%ostartZ=getWord(%opos,2);
-	%diffX=%ostartX-%tstartX;
-	%diffY=%ostartY-%tstartY;
-	%diffZ=%ostartZ-%tstartZ;
-//Math and stuff
-	//make sure to clear this greyflcn, on mapchange
-	//		%obj.accelpad=-1;
-	if(!%obj.accelpad || %obj.accelpad == 0) { %obj.accelpad = %this; }
-	//else { return; }
 
-	if(%pteam==%oteam)
+	if(!%obj.accelpad || %obj.accelpad == 0)
 	{
-		if(%obj.deployStandby!=1 && %this == %obj.accelpad)
+		%obj.accelpad = %this;
+		%obj.accelmulti = 1;
+	}
+	else if(%this != %obj.accelpad)
+	{
+		if(%obj.accelmulti < 2)
+			%obj.accelmulti++;
+		else
+			return;
+		echo("Accel multi = " @ %obj.accelmulti);
+	}
+
+	//if(%pteam==%oteam)
+	//{
+		if(%obj.deployStandby != 1)
 		{
 			if(%diffZ>0.950)
-			{	
+			{
 				%obj.deployStandby=1;
 				%msg="<f1>Accelerator Pad : <f0>Face the direction you want to go, then jump or use your jets.  You may walk off the platform to avoid being deployed.";
 				remoteEval(%c, "BP", %msg, 0);
@@ -1039,27 +875,17 @@ function AccelPadPack::onCollision(%this,%obj)
 		{
 			remoteEval(%c, "CP", "", 0);
 			%obj.deployStandby=0;
-			%obj.accelpad=0;
 		}
-	}
-	return;
+	//}
+	//return;
 }
 
 function AccelPadPack::CheckPlayer(%this,%obj)
-{	//if($debug == true) echo("Checking this object: " @ %obj);
-	if(%obj.accelpad == %this)
-	%tpos=GameBase::getPosition(%this);
-	%opos=GameBase::getPosition(%obj);
-	%tstartX=getWord(%tpos,0);
-	%tstartY=getWord(%tpos,1);
-	%tstartZ=getWord(%tpos,2);
-	%ostartX=getWord(%opos,0);
-	%ostartY=getWord(%opos,1);
-	%ostartZ=getWord(%opos,2);
+{
+	%opos = GameBase::getPosition(%obj);
+	%tpos = GameBase::getPosition(%this);
+	%diffZ=getWord(%opos,2)-getWord(%tpos,2)-0.92;
 
-	%diffX=%ostartX-%tstartX;
-	%diffY=%ostartY-%tstartY;
-	%diffZ=%ostartZ-%tstartZ-0.92;
 	%deploy=0;
 	%recall=1;
 
@@ -1076,51 +902,41 @@ function AccelPadPack::CheckPlayer(%this,%obj)
 		%rot=GameBase::getRotation(%obj);
 		%len=50;
 		%zlen=50;
-		%rnd=floor(getrandom()*30);
-		
-		//if (%armor == "scoutarmor" || %armor == "scoutfemale" || %armor == "spyarmor" || %armor == "spyfemale" || %armor == "larmor" || %armor == "lfemale" || %armor == "stimarmor" || %armor == "stimfemale")
- 		//{
-		//	playSound(debrisMediumExplosion,%tpos);
- 		//}
-		if (%armor == "barmor" || %armor == "bfemale" || %armor == "aarmor" || %armor == "afemale" || %armor == "earmor" || %armor == "efemale" || %armor == "marmor" || %armor == "mfemale")
- 		{
-			%len-=10;
-			//%zlen-=5; 
- 		}
-		if (%armor == "darmor" || %armor == "jarmor" || %armor == "parmor")
- 		{
-			%len-=35;
-			%zlen-=15;
- 		}
+
+			if (%armor == "barmor" || %armor == "bfemale" || %armor == "aarmor" || %armor == "afemale" || %armor == "earmor" || %armor == "efemale" || %armor == "marmor" || %armor == "mfemale")
+	 		{
+				%len = 40;
+				%zlen = 35; 
+	 		}
+			else if (%armor == "darmor" || %armor == "jarmor" || %armor == "parmor")
+ 			{
+				%len = 30;
+				%zlen = 30;
+	 		}
+
 		playSound(debrisMediumExplosion,%tpos);
 		playSound(bigExplosion2,%tpos);//debrisSmallExplosion
 
-
-		%mass=%armor.mass;
-		%trans=GameBase::getMuzzleTransform(%obj);
-		%normvec=GetWord(%trans, 3) @ " " @ GetWord(%trans, 4) @ " " @ GetWord(%trans, 5);
-		%rot=Vector::add( Vector::getRotation( %normvec ), "1.571 0 0" );
-		%vec=Vector::getFromRot(%rot, %len*%mass, 0);
-		Player::applyImpulse(%player,%vec);
-		playSound(debrisMediumExplosion,gamebase::getposition(%player));
-
 		%vec=Vector::getFromRot(%rot,%len*%mass,%zlen*%mass);
 		Player::applyImpulse(%obj,%vec);
-		schedule(%obj@".deployStandby=0;",0.04);
+		schedule(%obj@".deployStandby=0;",0.1);
+		schedule(%obj@".accelpad=0;",0.1);
+		schedule(%obj@".accelmulti=0;",0.1);
 		%recall=0;
-		//%obj.accelpad=0;
 	}
 	else if(%deploy<0)
 	{
 		%recall=0;
 		%obj.deployStandby=0;
+		%obj.accelpad=0;
+		%obj.accelmulti=0;
 	}
 	if(%recall)
 	{
 		schedule("AccelPadPack::CheckPlayer("@%this@","@%obj@");",0.05);
 	}
 	else
-	{	%obj.accelpad = 0;
+	{
 		remoteEval(%client, "CP", "", 0);
 	}
 }

@@ -26,6 +26,7 @@ function checkHackable(%name, %shape)
 	%shape == "cmdpnl" ||
 	%shape == "radar" ||
 	%shape == "turret" ||
+	%shape == "chainturret" ||
 	%shape == "vehi_pur_pnl" ||
 	%shape == "vehi_pur_poles")
 	{
@@ -69,7 +70,9 @@ function hackingItem(%target, %pTeam, %pName, %tName, %name, %team, %time, %clie
 			{
 				if ($debug) echo ("infecting");
 				%target.infected = "true";
-				schedule ("playSound(TargetingMissile,GameBase::getPosition(" @ %target @ "));",0.1);
+
+				playSound(TargetingMissile,GameBase::getPosition(%target));
+
 				Client::sendMessage(%client,1,"Your " @ %name @ " is now protected by viral infection, from hacking.");
 				return;
 			}
@@ -81,7 +84,7 @@ function hackingItem(%target, %pTeam, %pName, %tName, %name, %team, %time, %clie
 					%rnd = floor(getRandom() * 100);	
 					if (%rnd > 50)
 					{
-						schedule ("playSound(TargetingMissile,GameBase::getPosition(" @ %target @ "));",0.2);
+						playSound(TargetingMissile,GameBase::getPosition(%target));
 						Client::sendMessage(%client,1,"You disarm the protection virus in the " @ %name @ ", but it costs you!!!");
 						%player = Client::getOwnedObject(%client);
 						Player::blowUp(%this);
@@ -91,7 +94,7 @@ function hackingItem(%target, %pTeam, %pName, %tName, %name, %team, %time, %clie
 					}
 					else
 					{
-						schedule ("playSound(TargetingMissile,GameBase::getPosition(" @ %target @ "));",0.2);
+						playSound(TargetingMissile,GameBase::getPosition(%target));
 						Client::sendMessage(%client,1,"You safely disarm the protection virus in the " @ %name @ ".");					
 						%target.infected = "false";
 						//echo ("hackerror");
@@ -113,7 +116,7 @@ function hackingItem(%target, %pTeam, %pName, %tName, %name, %team, %time, %clie
 					    Client::sendMessage(%client,1,"You disarm the DetPack.");
 						%client.score = %client.score + 2;
 						Game::refreshClientScore(%client);
-						if(%target)deleteObject(%target);
+						if(%target)deleteobject(%target);
 					}
 				}
 				else
@@ -145,18 +148,18 @@ function hackingItem(%target, %pTeam, %pName, %tName, %name, %team, %time, %clie
 function checkDeployArea(%client,%pos)
 {
   	%set=newObject("set",SimSet);
-	%num=containerBoxFillSet(%set,$VehicleObjectType | $StaticObjectType | $ItemObjectType | $SimPlayerObjectType,%pos,1,1.5,1,0);
+	%num=containerBoxFillSet(%set,$VehicleObjectType | $StaticObjectType | $SimPlayerObjectType,%pos,1,1,1,1); //1,1,2,0 | $ItemObjectType
 	%n = Group::objectCount(%set);	
 	
 	if(!%num)
 	{
-		if(%set)deleteObject(%set);
+		if(%set)deleteobject(%set);
 		return 1;
 	}
 
 	%datab = GameBase::getDataName(Group::getObject(%set,0));
 	%obj = (getObjectType(Group::getObject(%set,0)));
-	if(%set)deleteObject(%set);
+	if(%set)deleteobject(%set);
 	if (%obj == "SimTerrain" || %obj == "InteriorShape" || %datab == "DeployablePlatform" || %datab == "LargeAirBasePlatform"  || %datab == "BlastFloor" || %datab == "BlastWall" || %datab == "LargeEmplacementPlatform")
 	{
 		return 1;
@@ -203,12 +206,12 @@ function CheckForObjects(%pos, %l, %w, %h)
 			}
 			else
 			{
-				if(%set)deleteObject(%set);
+				if(%set)deleteobject(%set);
 				return False;
 			}
 		}
 	}
-	if(%set)deleteObject(%set);
+	if(%set)deleteobject(%set);
 	return True;
 }
 
@@ -306,13 +309,29 @@ $TurretBoxMinHeight = 15;    	//Define Min Height from another turret
 
 function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area,%surface,%range,%limit,%flag, %kill, %deploy, %count)
 {
+	if($builder == "true")
+	{
+		%angle   = false;
+		%freq    = False;
+		%prox    = False;
+		%noinside= 0;
+		%area    = false;
+		%surface = false;
+		%range   = 1000;
+		%limit   = false;
+		%flag    = false;
+		%kill    = false;
+		if(%type == "Turret" || %type == "Sensor")
+			return;
+	}
+
 	%client = Player::getClient(%player);
 	%playerteam = Client::getTeam(%client);
 	%playerpos = GameBase::getPosition(%player);
 	%homepos = ($teamFlag[%playerteam]).originalPosition;
 	%flagdist = Vector::getDistance(%playerpos,%homepos);
 
-	if($TeamItemCount[GameBase::getTeam(%player) @ %count] < $TeamItemMax[%count])
+	if($TeamItemCount[%playerteam @ %count] < $TeamItemMax[%count])
 	{
 		if (GameBase::getLOSInfo(%player,%range))
 		{
@@ -337,7 +356,7 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 				%set = newObject("proxset",SimSet);
 				%num = containerBoxFillSet(%set,$StaticObjectType,%pos,$TurretBoxMinLength,$TurretBoxMinWidth,$TurretBoxMinHeight,0);
 				%num = CountObjects(%set,%deploy,%num);
-				if(%set)deleteObject(%set);
+				if(%set)deleteobject(%set);
 				if($MaxNumTurretsInBox > %num){}
 				else
 				{
@@ -348,10 +367,8 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 				%Mask = $StaticObjectType|$VehicleObjectType|$ItemObjectType;
 				%num = containerBoxFillSet(%Set, %Mask, %pos, 2.5,2.5,2.5, 0);
 				%num = CountObjects(%set,"",%num);
-				if(%set)deleteObject(%set);
-//greyflcn
-//Uhg, whats this crap doing?
-				if(!%num){}else
+				if(%set)deleteobject(%set);
+				if(%num)
 				{
 					Client::sendMessage(%client,1,"Frequency Overload - Too close to other remote turrets");
 					return;
@@ -377,9 +394,9 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 			if (%freq)
 			{
 				%set = newObject("freqset",SimSet);%Mask = $StaticObjectType|$VehicleObjectType|$ItemObjectType;
-				%num = containerBoxFillSet(%Set, %Mask, $los::position, $TurretBoxMaxLength/2,$TurretBoxMaxWidth/2,$TurretBoxMaxHeight/2, 0);
+				%num = containerBoxFillSet(%Set, %Mask, %pos, $TurretBoxMaxLength/2,$TurretBoxMaxWidth/2,$TurretBoxMaxHeight/2, 0);
 				%num = CountObjects(%set,"",%num);
-				if(%set)deleteObject(%set);
+				if(%set)deleteobject(%set);
 				if(%num > 0)
 				{
 					Client::sendMessage(%client,1,"Other objects in the way.");
@@ -392,18 +409,18 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 			if (%name == "Laser Turret")
 			{
 				%posX = getWord(%Pos,0);
-				%posY = getWord(%Pos,1) - 1;
-				%posZ = getWord(%Pos,2);
+				%posY = getWord(%Pos,1);
+				%posZ = getWord(%Pos,2) - 0.5;
 				%newpos = %posX @ " " @ %posY @ " " @ %posZ;
 				%set = newObject("laserset",SimSet);
-				%num0 = containerBoxFillSet(%Set, %Mask, %newpos, 1,2,1,0);
+				%num0 = containerBoxFillSet(%Set, %Mask, %newpos, 1.0,1.0,2.0,0);
 				%num = CountObjects(%set,%deploy,%num0);
-				if(%set)deleteObject(%set);
-				if(%num)
-				{
-					Client::sendMessage(%client,1,"Frequency Overload - Too close to other " @ %deploy @ "s.");
-					return;
-				}
+				if(%set)deleteobject(%set);
+				//if(%num)
+				//{
+				//	Client::sendMessage(%client,1,"Frequency Overload - Too close to other " @ %deploy @ "s.");
+				//	return;
+				//}
 				if(%datab == "LargeAirBasePlatform")
 				{
 					if (Vector::dot($los::normal,"0 0 1") > 0.7)
@@ -462,20 +479,48 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 
 			if (%area)
 			{
-				if(!checkDeployArea(%client,$los::position))
+				if(!checkDeployArea(%client,%pos))
 					return 0;
+			}
+
+			if(%type == "Turret" && $noOTurrets && !(%name == "Camera" || %name == "SatchelPack"))
+			{
+				if(%playerteam == 1)
+					%nmeteam = 0;
+				else
+					%nmeteam = 1;
+				%flagpos[0]	= ($teamFlag[0]).originalPosition;
+				%flagpos[1] = ($teamFlag[1]).originalPosition;
+				%flagrange = Vector::getDistance(%flagpos[0], %flagpos[1]);
+				if(%flagrange < 500)
+					%otrange = 0.45 * %flagrange;
+				else
+					%otrange = 200;
+				%plRange = Vector::getDistance(%playerpos, %flagpos[%nmeteam]);
+				if(%plRange < %otrange)
+				{
+					Client::sendMessage(%client,1,"No Offence Turreting!");
+					return;
+				}
+				echo(%name);
+				echo(%datab);
 			}
 
 			%turret = newObject(%name,%type, %deploy,true);
 			addToSet("MissionCleanup", %turret);
-			GameBase::setTeam(%turret,GameBase::getTeam(%player));
-			GameBase::setPosition(%turret,$los::position);
+			GameBase::setTeam(%turret,%playerteam);
+			GameBase::setPosition(%turret,%pos);
 			GameBase::setRotation(%turret,%rot);
 			Client::sendMessage(%client,0,"" @ %name @ " deployed");
 			GameBase::startFadeIn(%turret);
-			playSound(SoundPickupBackpack,$los::position);
-			$TeamItemCount[GameBase::getTeam(%player) @ "" @ %count @ ""]++;
-			
+			playSound(SoundPickupBackpack,%pos);
+			if(!$builder)
+				$TeamItemCount[%playerteam @ "" @ %count @ ""]++;
+			else
+			{
+				schedule("Player::setItemCount("@ %player @", "@ %item @", 1);", 0.1);
+				schedule("Player::mountItem("@ %player @", "@ %item @", $BackPackSlot);", 0.2);
+			}
 			//echo("MSG: ",%client," deployed a " @ %name);
 
 			if (%type == "Turret")
@@ -495,6 +540,8 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 				Client::setOwnedObject(%client, %turret);
 				Client::setOwnedObject(%client, %player);
 			}
+
+			deploy::record(%turret, %count, %playerteam, %pos, %rot);
 			return %turret;
 		}
 		else 
@@ -696,7 +743,7 @@ function ScoutStim(%clientId, %player, %item)
 	if (%clientId.stimTime > 0)
 	{
 		Client::sendMessage(%clientId,0,"Already Stimmed!");
-		%clientId.stimTime = %clientId.stimTime + 5;
+		//%clientId.stimTime = %clientId.stimTime + 2;
 	}
 	else
 	{
@@ -704,7 +751,7 @@ function ScoutStim(%clientId, %player, %item)
 			Player::setArmor(%player,stimarmor);
 		else if (%armor == "sfemale")
 			Player::setArmor(%player,stimfemale);
-		if(Player::getMountedItem(%player,$WeaponSlot) == laserRifle) GameBase::setEnergy(%player, 20);
+		//if(Player::getMountedItem(%player,$WeaponSlot) == laserRifle) GameBase::setEnergy(%player, 20);
 		Player::decItemCount(%player, %item);
 		Client::sendMessage(%clientId,0,"You used a Stim Pack!");
 		%clientId.stimTime = 10;
@@ -790,27 +837,11 @@ function CheckStim(%clientId, %player)
 		if (%armor == "stimarmor")
 		{
 			Player::setArmor(%player,sarmor);
-			//if(Player::getItemCount(%player,FAKElaserRifle))
-			//{
-			//	%rifle = Player::getMountedItem(%player,$WeaponSlot);
-			//	Player::setItemCount(%player, FAKElaserRifle, 0);
-			//	Player::setItemCount(%player, laserRifle, 1);
-			//	if(%rifle == FAKElaserRifle) Player::useItem(%player,laserRifle);
-			//	else Player::useItem(%player, %rifle);
-			//}
 			GameBase::setDamageLevel(%player,%clientId.damagelevel);
 		}
 		else if (%armor == "stimfemale")
 		{
 			Player::setArmor(%player,sfemale);
-			//if(Player::getItemCount(%player,FAKElaserRifle))
-			//{
-			//	%item = Player::getMountedItem(%player,$WeaponSlot);
-			//	Player::setItemCount(%player, FAKElaserRifle, 0);
-			//	Player::setItemCount(%player, laserRifle, 1);
-			//	if(%rifle == FAKElaserRifle) Player::useItem(%player,laserRifle);
-			//	else Player::useItem(%player, %rifle);
-			//}
 			GameBase::setDamageLevel(%player,%clientId.damagelevel);
 		}
 	}					
@@ -825,7 +856,7 @@ function Renegades_startShield(%clientId, %player)
 	%armor = Player::getArmor(%player);
 
 	if (%armor == "jarmor")
-		%player.shieldStrength = 0.018;
+		%player.shieldStrength = 0.016;
 	else
 		%player.shieldStrength = 0.009;
 
@@ -923,32 +954,118 @@ function checkPlayerCloak(%clientId, %player)
 	}
 }
 
+//============================================================================================ Eng Missile Lock
+function EngMissileLock(%clientId, %player, %item)
+{
+	%client = Player::getClient(%player);
+	if (GameBase::getLOSInfo(%player,5))
+	{
+		%obj = getObjectType($los::object);
+		%set=newObject("set",SimSet);
+		%num=containerBoxFillSet(%set,$StaticObjectType | $ItemObjectType | $SimPlayerObjectType,$los::position,0.3,0.3,0.3,1);
+		deleteobject(%set);
+		if(!%num)
+		{
+			%team = GameBase::getTeam(%player);
+			
+			%teleset = nameToID("MissionCleanup/MJammer");
+			
+			if(%teleset == -1)
+			{
+				newObject("MJammer",SimSet);
+				addToSet("MissionCleanup","MJammer");
+				%teleset = nameToID("MissionCleanup/MJammer");				
+			}
+			
+			%prot = GameBase::getRotation(%player);
+			%zRot = getWord(%prot,2);
+			if (Vector::dot($los::normal,"0 0 1") > 0.6)
+			{
+				%rot = "0 0 " @ %zRot;
+			}
+			else
+			{
+				if (Vector::dot($los::normal,"0 0 -1") > 0.6)
+				{
+					%rot = "3.14159 0 " @ %zRot;
+				}
+				else {
+					%rot = Vector::getRotation($los::normal);
+				}
+			}
+
+			%beacon = newObject("MJammer Jammer", "StaticShape", "BeaconTwo", true);
+			addToSet("MissionCleanup/MJammer", %beacon);
+			addToSet("MissionCleanup", %beacon);
+			GameBase::setTeam(%beacon,GameBase::getTeam(%player));
+			GameBase::setRotation(%beacon,%rot);
+			GameBase::setPosition(%beacon,$los::position);
+			Gamebase::setMapName(%beacon,"Missile Jammer");
+			Client::sendMessage(%client,0,"MJammer Disruptor deployed");
+			playSound(SoundPickupBackpack,$los::position);
+			return true;
+		}
+		else
+			Client::sendMessage(%client,0,"Unable to deploy - Item in the way");
+	}
+	else
+	{
+		Client::sendMessage(%client,0,"Deploy position out of range");
+	}
+	return false;
+}
+
+function CheckMissileJammer(%player)
+{
+	%teleset = nameToID("MissionCleanup/MJammer");
+	%pteam = GameBase::getTeam(%player);
+
+	if ($debug) echo ("checking jammer is set "  @ %teleset);
+	
+	for(%i = 0; (%o = Group::getObject(%teleset, %i)) != -1; %i++)
+	{
+		%oteam = GameBase::getTeam(%o);
+		%ppos = GameBase::getPosition(%player);
+		%opos = GameBase::getPosition(%o);
+
+		if ($Debug) echo ("MissileJammer = ", %o);
+		if ($debug) echo ("OTeam " @ %oteam);
+		if ($debug) echo ("PPos  " @ %ppos);
+		if ($debug) echo ("Opos  " @ %opos);
+		if ($debug) echo ("PTeam " @ %pteam);
+		
+		%dist = Vector::getDistance(%ppos,%opos);  	//== Player To Jammer Distance		
+		if ($debug) echo ("Distance " @ %dist);
+		
+		if (%dist < 125 && %pteam != %oteam)
+		{
+			if ($Debug) echo ("Jammed");
+			%data = GameBase::getDataName(%o);
+			if (GameBase::setDamageLevel(%o, %data.maxDamage))
+				if ($debug) echo ("BOOM");
+			return true;
+		}
+	}
+	return false;
+}
+
 //==================================================================================================== Engineer Beacon
 function EngBeacon(%clientId, %player, %bec)
 {
 	%client = Player::getClient(%player);
 	if (GameBase::getLOSInfo(%player,5))
 	{
-		//%obj = getObjectType($los::object);
-		//%set=newObject("set",SimSet);
-		//%num=containerBoxFillSet(%set,$StaticObjectType | $ItemObjectType | $SimPlayerObjectType,$los::position,0.3,0.3,0.3,1);
-		//if(%set)deleteObject(%set);
-		//if(!%num)
-		//{
-			%team = GameBase::getTeam(%player);
-			%beacon = newObject("Target Beacon", "StaticShape", "DefaultBeacon", true);
-			addToSet("MissionCleanup", %beacon);
-			GameBase::setTeam(%beacon,GameBase::getTeam(%player));
-			GameBase::setRotation(%beacon,%rot);
-			GameBase::setPosition(%beacon,$los::position);
-			Gamebase::setMapName(%beacon,"Target Beacon");
-			Beacon::onEnabled(%beacon);
-			Client::sendMessage(%client,0,"Beacon deployed");
-			playSound(SoundPickupBackpack,$los::position);
-			return true;
-		//}
-		//else
-		//	Client::sendMessage(%client,0,"Unable to deploy - Item in the way");
+		%team = GameBase::getTeam(%player);
+		%beacon = newObject("Target Beacon", "StaticShape", "DefaultBeacon", true);
+		addToSet("MissionCleanup", %beacon);
+		GameBase::setTeam(%beacon,GameBase::getTeam(%player));
+		GameBase::setRotation(%beacon,%rot);
+		GameBase::setPosition(%beacon,$los::position);
+		Gamebase::setMapName(%beacon,"Target Beacon");
+		Beacon::onEnabled(%beacon);
+		Client::sendMessage(%client,0,"Beacon deployed");
+		playSound(SoundPickupBackpack,$los::position);
+		return true;
 	}
 	else
 	{
@@ -998,128 +1115,6 @@ function EngCamera(%client, %player, %bec)
 	return false;
 }
 
-//==================================================================================================== Sniper Jammer
-
-function SniperJammer(%clientId, %player, %bec)
-{
-	%item = "DeployableSensorJammerPack";
-	%client = Player::getClient(%player);
-	if($TeamItemCount[GameBase::getTeam(%player) @ %item] < $TeamItemMax[%item])
-	{
-		if (GameBase::getLOSInfo(%player,3)) 
-		{
-			%obj = getObjectType($los::object);
-			if (%obj == "SimTerrain" || %obj == "InteriorShape" || %obj == "DeployablePlatform")
-			{
-				%prot = GameBase::getRotation(%player);
-				%zRot = getWord(%prot,2);
-				if (Vector::dot($los::normal,"0 0 1") > 0.6)
-				{
-					%rot = "0 0 " @ %zRot;
-				}
-				else 
-				{
-					if (Vector::dot($los::normal,"0 0 -1") > 0.6)
-					{
-						%rot = "3.14159 0 " @ %zRot;
-					}
-					else
-					{
-						%rot = Vector::getRotation($los::normal);
-					}
-				}
-				if(checkDeployArea(%client,$los::position))
-				{
-					%camera = newObject("sensor_jammer","Sensor",DeployableSensorJammer,true);
-	   	      			addToSet("MissionCleanup", %camera);
-					GameBase::setTeam(%camera,GameBase::getTeam(%player));
-					GameBase::setRotation(%camera,%rot);
-					GameBase::setPosition(%camera,$los::position);
-					Gamebase::setMapName(%camera,"SensorJammer");
-					Client::sendMessage(%client,0,"SensorJammer deployed");
-					playSound(SoundPickupBackpack,$los::position);
-					$TeamItemCount[GameBase::getTeam(%camera) @ "DeployableSensorJammerPack"]++;
-					if($debug) echo("MSG: ",%client," deployed a Sensor Jammer");
-					Player::decItemCount(%player,%bec);
-					return true;
-				}
-			}
-			else
-			{
-				Client::sendMessage(%client,0,"Can only deploy on terrain or buildings");
-			}
-		}
-		else
-		{
-			Client::sendMessage(%client,0,"Deploy position out of range");		
-		}
-	}
-	else																						  
-	 	Client::sendMessage(%client,0,"Deployable Item limit reached for " @ %item.description @ "s");
-	
-	return false;
-}
-
-//==================================================================================================== Scout Sensor
-
-function ScoutSensor(%clientId, %player, %bec)
-{
-	%item = "PulseSensorPack";
-	%client = Player::getClient(%player);
-	if($TeamItemCount[GameBase::getTeam(%player) @ %item] < $TeamItemMax[%item]) {
-		if (GameBase::getLOSInfo(%player,3))
-		{
-			%obj = getObjectType($los::object);
-			if (%obj == "SimTerrain" || %obj == "InteriorShape" || %obj == "DeployablePlatform")
-			{
-				%prot = GameBase::getRotation(%player);
-				%zRot = getWord(%prot,2);
-				if (Vector::dot($los::normal,"0 0 1") > 0.6)
-				{
-					%rot = "0 0 " @ %zRot;
-				}
-				else
-				{
-					if (Vector::dot($los::normal,"0 0 -1") > 0.6)
-					{
-						%rot = "3.14159 0 " @ %zRot;
-					}
-					else
-					{
-						%rot = Vector::getRotation($los::normal);
-					}
-				}
-				if(checkDeployArea(%client,$los::position))
-				{
-					%camera = newObject("radar_small","Sensor",DeployablePulseSensor,true);
-					addToSet("MissionCleanup", %camera);
-					GameBase::setTeam(%camera,GameBase::getTeam(%player));
-					GameBase::setRotation(%camera,%rot);
-					GameBase::setPosition(%camera,$los::position);
-					Gamebase::setMapName(%camera,"Pulse Sensor");
-					Client::sendMessage(%client,0,"Pulse Sensor deployed");
-					playSound(SoundPickupBackpack,$los::position);
-					$TeamItemCount[GameBase::getTeam(%camera) @ "PulseSensorPack"]++;
-					if($debug) echo("MSG: ",%client," deployed a Pulse Sensor");
-					Player::decItemCount(%player,%bec);
-					return true;
-				}
-			}
-			else
-			{
-				Client::sendMessage(%client,0,"Can only deploy on terrain or buildings");
-			}
-		}
-		else
-		{
-			Client::sendMessage(%client,0,"Deploy position out of range");		
-		}
-	}
-	else																						  
-		Client::sendMessage(%client,0,"Deployable Item limit reached for " @ %item.description @ "s");
-
-	return false;
-}
 
 function getflagtoplayer(%playerId, %dist)
 {
@@ -1164,8 +1159,6 @@ function itemFuncs::AmmoBoom(%playerId)
 	else if (%armor == "harmor")	  {%kval = 1000;}
 	else if (%armor == "aarmor")	  {%kval = 200;}
 	else if (%armor == "afemale")	  {%kval = 200;}
-	//else if (%armor == "dmarmor")	  {%kval = 500;}
-	//else if (%armor == "dmfemale")    {%kval = 500;}
 	else if (%armor == "parmor")      {%kval = 0;}
 	else if (%armor == "jarmor")	  {%kval = 1000;}
 	
@@ -1215,3 +1208,105 @@ function itemFuncs::AmmoBoom(%playerId)
 		}
 	}
 }
+
+
+function deploy::init()
+{
+	exec("dtrack.cs");
+	%check = $dlist;
+	for(%n = 0; getword(%check, %n) != -1; %n++) 	
+	{
+		%num = getword(%check, %n);
+		$dtemp[%n] = $deploy[%num];
+		$dlist = "";
+	}
+	echo("went n times" @ %n);
+	for(%i = 0; %i < %n; %i++) 
+	{
+		//%num = getword(%check, %i);
+		%msg = $dtemp[%i];
+		if(%msg != "")
+		{
+			%pack = getword(%msg, 0);
+			%item = $count[%pack];
+			%name = %item.description;
+			%class = %item.classname;
+			echo("%class:" @ %class);
+			%type = "StaticShape";
+			if(%class == "Turret")
+				%type = %class;
+			if(%class == "DeployableSensor")
+				%type = "Sensor";
+			%team = getword(%msg, 1);
+			%pos = getword(%msg, 2) @" "@ getword(%msg, 3) @" "@ getword(%msg, 4); 
+			%rot = getword(%msg, 5) @" "@ getword(%msg, 6) @" "@ getword(%msg, 7);
+
+			if(%item == "airbase")
+				airbase::specialdeploy(%team, %pos, %rot);
+			else if(%item == "EmplacementPack")
+				EmplacementPack::specialdeploy(%team, %pos, %rot);
+			else if(%item == "TeleportPack")
+				TeleportPack::specialdeploy(%team, %pos);
+			else
+			{
+				%turret = newObject(%name,%type,%item,true);
+				addToSet("MissionCleanup", %turret);
+				GameBase::setTeam(%turret,%team);
+				GameBase::setPosition(%turret,%pos);
+				GameBase::setRotation(%turret,%rot);
+				$TeamItemCount[%team @ "" @ %pack @ ""]++;
+				deploy::record(%turret, %pack, %team, %pos, %rot);
+			}
+		}
+	}
+	export("$dlist", "config\\dtrack.cs", true);
+}
+
+function deploy::record(%this, %pack, %team, %pos, %rot)
+{
+	if($server::tourneymode && !$ceasefire)
+	{
+		$deploy[%this] = %pack @" "@ %team @" "@ %pos @" "@ %rot;
+		export("$deploy"@ %this @"", "config\\dtrack.cs", true);
+		deleteVariables("$deploy"@ %this @"");
+		if(string::findsubstr($dlist, %this) == -1)
+			$dlist = $dlist @ " " @ %this;
+	}
+}
+
+$countArbitorBeaconPack = "ArbitorBeacon";
+$countBarragePack = "BarrageTurret";
+$countBlastFloorPack = "BlastFloor";
+$countBlastWallPack = "BlastWall";
+$countCameraPack = "CameraTurret";
+$countDeployableAmmoPack = "DeployableAmmoStation";
+$countDeployableComPack = "DeployableComStation";
+$countDeployableElf = "DeployableElfTurret";
+$countDeployableInvPack = "DeployableInvStation";
+$countDeployableSensorJammerPack = "DeployableSensorJammer";
+$countEMPBeaconPack = "EMPBeacon";
+$countForceFieldPack = "DeployableForceField";
+$countJammerBeaconPack = "JammerBeacon";
+$countLargeForceFieldPack = "LargeForceField";
+$countLargeShockForceFieldPack = "LargeShockForceField";
+$countLaserPack = "DeployableLaser";
+$countMotionSensorPack = "DeployableMotionSensor";
+$countPlasmaTurretPack = "DeployablePlasma";
+$countPlatformPack = "DeployablePlatform";
+$countPowerGeneratorPack = "PortGenerator";
+$countPulseSensorPack = "DeployablePulseSensor";
+$countRocketPack = "DeployableRocket";
+$countShieldBeaconPack = "ShieldBeacon";
+$countShockFloorPack = "ShockFloor";
+$countShockPack = "DeployableShock";
+$countTargetPack = "DeployableMortar";
+$countTurretPack = "DeployableTurret";
+
+//special deploy
+$countTreePack = "DeployableTree";
+$countPlantPack = "DeployableCactus1";
+$countTeleportPack = "TeleportPack";
+$countAccelPadPack = "AccelPadPack";
+$countDeployableLaunch = "DeployableLaunch";
+$countairbase = "airbase";
+$countEmplacementPack = "EmplacementPack";

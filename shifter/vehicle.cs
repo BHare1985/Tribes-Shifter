@@ -1,4 +1,3 @@
-
 $Vmodule[1] = "Napalm";
 $Vmodule[2] = "HellFire";
 $Vmodule[3] = "DetPack";
@@ -25,9 +24,9 @@ function LoadModule(%client,%this,%modNum,%ammo,%shield)
 //===================================================================================================================
 //											Flyer Data
 //===================================================================================================================
-FlierData Scout{ explosionId = flashExpLarge; debrisId = flashDebrisLarge; className = "Vehicle"; shapeFile = "flyer"; shieldShapeName = "shield_medium"; mass = 9.0; drag = 1.0; density = 1.2; maxBank = 1.2; maxPitch = 100.0; maxSpeed = 60; minSpeed = -15; lift = 1.10; maxAlt = 1550; maxVertical = 12; maxDamage = 0.8; damageLevel = {1.0, 1.0}; maxEnergy = 100; accel = 1.2; groundDamageScale = 1.0; reloadDelay = 0.2; repairRate = 0.1; damageSound = SoundFlierCrash; ramDamage = 1.5; ramDamageType = -1; mapFilter = 2; mapIcon = "M_vehicle"; visibleToSensor = true; shadowDetailMask = 2; mountSound = SoundFlyerMount; dismountSound = SoundFlyerDismount; idleSound = SoundFlyerIdle; moveSound = SoundFlyerActive; visibleDriver = true; driverPose = 22; }; // projectileType = "Undefined";  projectileType = "Undefined";
-FlierData LAPC { explosionId = flashExpLarge; debrisId = flashDebrisLarge; className = "Vehicle"; shapeFile = "hover_apc_sml"; shieldShapeName = "shield_large"; mass = 22.0; drag = 1.2; density = 1.2; maxBank = 0.8; maxPitch = 100.0; maxSpeed = 35; minSpeed = -5; lift = 0.75; maxAlt = 1550; maxVertical = 9; maxDamage = 1.9; damageLevel = {1.0, 1.0}; destroyDamage = 1.5; maxEnergy = 100; accel = 0.35; groundDamageScale = 0.50; repairRate = 0; ramDamage = 2; ramDamageType = -1; mapFilter = 2; mapIcon = "M_vehicle"; reloadDelay = 4.0; damageSound = SoundTankCrash; visibleToSensor = true; shadowDetailMask = 2; mountSound = SoundFlyerMount; dismountSound = SoundFlyerDismount; idleSound = SoundFlyerIdle; moveSound = SoundFlyerActive; visibleDriver = true; driverPose = 23; }; //projectileType = Undefined;
-FlierData HAPC { explosionId = flashExpLarge; debrisId = flashDebrisLarge; className = "Vehicle"; shapeFile = "hover_apc"; shieldShapeName = "shield_large"; mass = 25.0; drag = 1.6; density = 1.2; maxBank = 0.7; maxPitch = 100.0; maxSpeed = 50; minSpeed = -15; lift = 0.35; maxAlt = 1550; maxVertical = 6; maxDamage = 2.2; damageLevel = {1.0, 1.0}; maxEnergy = 100; accel = 0.20; groundDamageScale = 0.125; reloadDelay = 4.0; repairRate = 0; ramDamage = 4; ramDamageType = -1; mapFilter = 2; mapIcon = "M_vehicle"; fireSound = SoundFireFlierRocket; reloadDelay = 3.0; damageSound = SoundTankCrash; visibleToSensor = true; shadowDetailMask = 2; mountSound = SoundFlyerMount; dismountSound = SoundFlyerDismount; idleSound = SoundFlyerIdle; moveSound = SoundFlyerActive; visibleDriver = true; driverPose = 23; }; //projectileType = Undefined;
+FlierData Scout{ explosionId = flashExpLarge; debrisId = flashDebrisLarge; className = "Vehicle"; shapeFile = "flyer"; shieldShapeName = "shield_medium"; mass = 9.0; drag = 1.0; density = 1.2; maxBank = 1.2; maxPitch = 100; maxSpeed = 108; minSpeed = -15; lift = 1.10; maxAlt = 1550; maxVertical = 12; maxDamage = 0.8; damageLevel = {1.0, 1.0}; maxEnergy = 100; accel = 2.925; groundDamageScale = 1.0; reloadDelay = 0.2; repairRate = 0.1; damageSound = SoundFlierCrash; ramDamage = 1.5; ramDamageType = -1; mapFilter = 2; mapIcon = "M_vehicle"; visibleToSensor = true; shadowDetailMask = 2; mountSound = SoundFlyerMount; dismountSound = SoundFlyerDismount; idleSound = SoundFlyerIdle; moveSound = SoundFlyerActive; visibleDriver = true; driverPose = 22; }; // projectileType = "Undefined";  projectileType = "Undefined";
+FlierData LAPC { explosionId = flashExpLarge; debrisId = flashDebrisLarge; className = "Vehicle"; shapeFile = "hover_apc_sml"; shieldShapeName = "shield_large"; mass = 22.0; drag = 1.2; density = 1.2; maxBank = 0.9; maxPitch = 1.5; maxSpeed = 108; minSpeed = -5; lift = 0.75; maxAlt = 1550; maxVertical = 9; maxDamage = 1.9; damageLevel = {1.0, 1.0}; destroyDamage = 1.5; maxEnergy = 100; accel = 1.01675; groundDamageScale = 0.50; repairRate = 0; ramDamage = 25; ramDamageType = -1; mapFilter = 2; mapIcon = "M_vehicle"; reloadDelay = 4.0; damageSound = SoundTankCrash; visibleToSensor = true; shadowDetailMask = 2; mountSound = SoundFlyerMount; dismountSound = SoundFlyerDismount; idleSound = SoundFlyerIdle; moveSound = SoundFlyerActive; visibleDriver = true; driverPose = 23; }; //projectileType = Undefined;
+FlierData HAPC { explosionId = flashExpLarge; debrisId = flashDebrisLarge; className = "Vehicle"; shapeFile = "hover_apc"; shieldShapeName = "shield_large"; mass = 25.0; drag = 1.6; density = 1.2; maxBank = 0.8; maxPitch = 1.5; maxSpeed = 116.8; minSpeed = -15; lift = 0.35; maxAlt = 1550; maxVertical = 6; maxDamage = 2.2; damageLevel = {1.0, 1.0}; maxEnergy = 100; accel = 0.855; groundDamageScale = 0.5; reloadDelay = 4.0; repairRate = 0; ramDamage = 30; ramDamageType = -1; mapFilter = 2; mapIcon = "M_vehicle"; fireSound = SoundFireFlierRocket; reloadDelay = 3.0; damageSound = SoundTankCrash; visibleToSensor = true; shadowDetailMask = 2; mountSound = SoundFlyerMount; dismountSound = SoundFlyerDismount; idleSound = SoundFlyerIdle; moveSound = SoundFlyerActive; visibleDriver = true; driverPose = 23; }; //projectileType = Undefined;
 
 //===================================================================================================================
 //											Scout
@@ -66,7 +65,7 @@ function Scout::OnFire(%this)
 		}		
 		else if (Player::getItemCount(%player, ValkyrieModule))
 		{
-			LoadModule(%client,%this,12,10,0.002);
+			LoadModule(%client,%this,12,15,0.002);
 		}
 		else if (Player::getItemCount(%player, InterceptorModule))
 		{
@@ -85,22 +84,21 @@ function Scout::OnFire(%this)
 			%this.shieldStrength = 0.010;
 		}
 	}
-	else if (%module == "2") //== Hell Fire Bombs
+	else if (%module == "2") //== HellFire Bombs
 	{
-		%vel = "0 0 0";
-		%dir = (Vector::getfromrot(%rot));
-		%dir1 = Vector::add(%dir, "0.2 0 0");
-		%trans =  %rot @ " " @ %dir1 @ " 0 0 0 " @ %pos;
-		%fired = Projectile::spawnProjectile(Frag,%trans,%this,%vel); %fired.deployer = %client;
-		
-		%dir2 = Vector::add(%dir, "0 0 0");
-		%trans =  %rot @ " " @ %dir2 @ " 0 0 0 " @ %pos;
-		%fired = Projectile::spawnProjectile(Frag,%trans,%this,%vel); %fired.deployer = %client;
-		
-		%dir3 = Vector::add(%dir, "-0.2 0 0");
-		%trans =  %rot @ " " @ %dir3 @ " 0 0 0 " @ %pos;
-		%fired = Projectile::spawnProjectile(Frag,%trans,%this,%vel); %fired.deployer = %client;
-		
+		%slide = -2;
+		for(%i = 1; %i < 4; %i++)
+		{
+			%dir = Vector::getfromrot(%rot);
+			%trans1 = %rot @ " " @ %dir @ " " @ %dir @ " " @ %pos;
+			%r = %slide @ " 0 0";
+//			%vel1 = item::getvelocity(%this);
+			%vel1 = "0 0 0";
+			%vel2 = EmplacementPack::rotVector(%r, %rot);
+			%vel = Vector::add(%vel1, %vel2);
+			%obj = Projectile::spawnProjectile(Frag,%trans1,%this,%vel); %obj.deployer = %client;
+			%slide += 2;
+		}
 		%this.refire = 1;
 		%this.ammo -= 1;
 		schedule ("" @ %this @ ".refire = 0;", 3.0);
@@ -154,16 +152,16 @@ function Scout::OnFire(%this)
 	}
 	else if (%module == "12") //-- Valkyrie Module
 	{
-		%rot = gamebase::getrotation(%client);
-		%dir = (Vector::getfromrot(%rot));
-		%vel = item::getvelocity(%client);		
-		%k = Vector::getFromRot(gamebase::getrotation(%player));
-		%padd1 = getword (%k, 0) @ " " @ " 0 " @ "3";
-		%pos1 = (Vector::add(gamebase::getposition(%player), %padd1));
+		%vel = item::getvelocity(%this);		
+		%dir = Vector::getfromrot(%rot);
+		%fastdir = Vector::getfromrot(%rot, 6.0);
+		%pos0 = Vector::add(%pos, %fastdir);
+		%padding = "0 0 1";
+		%pos1 = Vector::add(%pos0, %padding);
+
 		%trans1 = %rot @ " " @ %dir @ " " @ %dir @ " " @ %pos1;
 		%fired = Projectile::spawnProjectile(FlierRocket, %trans1,%player,%vel);
 		playSound(SoundFireFlierRocket,%pos);
-		//echo("Fired = " @ %fired);
 		%this.refire = 1;
 		schedule ("" @ %this @ ".refire = 0;", 2.0);
 		%this.ammo -= 1;
@@ -181,6 +179,8 @@ function LAPC::OnFire(%this)
 	%client = gamebase::getcontrolclient(%this);
 	%player = Client::getOwnedObject(%client);
 	%module = %this.module;
+	%pos = gamebase::getposition(%this);
+	%rot = gamebase::getrotation(%this);
 	if (!%module || %this.ammo == 0)
 	{	
 		if (Player::getItemCount(%player, StealthModule))
@@ -189,7 +189,7 @@ function LAPC::OnFire(%this)
 		}
 		else if (Player::getItemCount(%player, GodHammerModule))
 		{
-			LoadModule(%client,%this,10,7,0.003);
+			LoadModule(%client,%this,10,15,0.003);
 		}
 		else if (Player::getItemCount(%player, BomberModule))
 		{
@@ -249,51 +249,28 @@ function LAPC::OnFire(%this)
 	}
 	else if (%module == "10" && %this.ammo) //== GodHammer Module
 	{
-		%obj1 = newObject("","Mine","GodHammerPod");
-		addToSet("MissionCleanup", %obj1);
-		%obj2 = newObject("","Mine","GodHammerPod");
-		addToSet("MissionCleanup", %obj2);
-		%obj3 = newObject("","Mine","GodHammerPod");
-		addToSet("MissionCleanup", %obj3);
-		%obj4 = newObject("","Mine","GodHammerPod");
-		addToSet("MissionCleanup", %obj4);
-		%obj5 = newObject("","Mine","GodHammerPod");
-		addToSet("MissionCleanup", %obj5);
-		GameBase::throw(%obj1,%this,8,false);
-		GameBase::throw(%obj2,%this,8,false);
-		GameBase::throw(%obj3,%this,8,False);
-		GameBase::throw(%obj4,%this,8,False);
-		GameBase::throw(%obj5,%this,8,False);
-		gamebase::setrotation(%obj1, gamebase::getrotation(%client));
-		gamebase::setrotation(%obj2, gamebase::getrotation(%client));
-		gamebase::setrotation(%obj3, gamebase::getrotation(%client));
-		gamebase::setrotation(%obj4, gamebase::getrotation(%client));
-		gamebase::setrotation(%obj5, gamebase::getrotation(%client));
-		%k = Vector::getFromRot(gamebase::getrotation(%obj1));
-		%padd = getword (%k, 0) @ " " @ " -10 " @ getword (%k, 1);
-		gamebase::setposition (%obj1, Vector::add(gamebase::getposition(%obj1), %padd));
-		%k = Vector::getFromRot(gamebase::getrotation(%obj2));
-		%padd = getword (%k, 0) @ " " @ " -5 " @ getword (%k, 1);
-		gamebase::setposition (%obj2, Vector::add(gamebase::getposition(%obj2), %padd));
-		%k = Vector::getFromRot(gamebase::getrotation(%obj3));
-		%padd = getword (%k, 0) @ " " @ " 0 " @ getword (%k, 1);
-		gamebase::setposition (%obj3, Vector::add(gamebase::getposition(%obj3), %padd));
-		%k = Vector::getFromRot(gamebase::getrotation(%obj4));
-		%padd = getword (%k, 0) @ " " @ " 5 " @ getword (%k, 1);
-		gamebase::setposition (%obj4, Vector::add(gamebase::getposition(%obj4), %padd));
-		%k = Vector::getFromRot(gamebase::getrotation(%obj5));
-		%padd = getword (%k, 0) @ " " @ " 10 " @ getword (%k, 1);
-		gamebase::setposition (%obj5, Vector::add(gamebase::getposition(%obj5), %padd));
-		%obj1.deployer = %client;
-		%obj2.deployer = %client;
-		%obj3.deployer = %client;
-		%obj4.deployer = %client;
-		%obj5.deployer = %client;
+		%slide = -15;
+		for(%i = 1; %i < 8; %i++)
+		{
+			%dir = Vector::getfromrot(%rot);
+			%fastdir = Vector::getfromrot(%rot, 7.0);
+			%pos0 = Vector::add(%pos, %fastdir);
+			%padding = "0 0 3";
+			%pos1 = Vector::add(%pos0, %padding);
+
+			%trans1 = %rot @ " " @ %dir @ " " @ %dir @ " " @ %pos1;
+			%r = %slide @ " 0 0";
+			%vel1 = item::getvelocity(%this);
+			%vel2 = EmplacementPack::rotVector(%r, %rot);
+			%vel = Vector::add(%vel1, %vel2);
+			%obj = Projectile::spawnProjectile("GodHammer",%trans1,%player,%vel);
+			%slide += 5;
+		}
 		%this.refire = 1;
 		%this.ammo -= 1;
-		schedule ("" @ %this @ ".refire = 0;", 0.8);
+		schedule ("" @ %this @ ".refire = 0;", 0.6);
 	}
-	else if (%module == "5") //== PickUp
+	else if (%module == "5" && %this.ammo) //== PickUp
 	{
 		%obj = newObject("","Mine","PickUpPack");		
 		addToSet("MissionCleanup", %obj);		
@@ -316,6 +293,8 @@ function HAPC::OnFire(%this)
 	%player = Client::getOwnedObject(%client);
 	%module = %this.module;
 	%modulename = $VModule[%module];
+	%pos = gamebase::getposition(%this);
+	%rot = gamebase::getrotation(%this);
 
 	if (!%module || %this.ammo == 0)
 	{
@@ -325,7 +304,7 @@ function HAPC::OnFire(%this)
 		}
 		else if (Player::getItemCount(%player, GodHammerModule))
 		{
-			LoadModule(%client,%this,10,15,0.003);
+			LoadModule(%client,%this,10,25,0.003);
 		}
 		else if (Player::getItemCount(%player, BomberModule))
 		{
@@ -381,28 +360,28 @@ function HAPC::OnFire(%this)
 	}
 	else if (%module == "10") //== GodHammer Module
 	{
-		%obj1 = newObject("","Mine","GodHammerPod"); addToSet("MissionCleanup", %obj1); %obj2 = newObject("","Mine","GodHammerPod"); addToSet("MissionCleanup", %obj2); %obj3 = newObject("","Mine","GodHammerPod"); addToSet("MissionCleanup", %obj3); %obj4 = newObject("","Mine","GodHammerPod"); addToSet("MissionCleanup", %obj4); %obj5 = newObject("","Mine","GodHammerPod"); addToSet("MissionCleanup", %obj5);
-		GameBase::throw(%obj1,%this,8,false);
-		GameBase::throw(%obj2,%this,8,false);
-		GameBase::throw(%obj3,%this,8,False);
-		GameBase::throw(%obj4,%this,8,False);
-		GameBase::throw(%obj5,%this,8,False);
-		gamebase::setrotation(%obj1, gamebase::getrotation(%client));
-		gamebase::setrotation(%obj2, gamebase::getrotation(%client));
-		gamebase::setrotation(%obj3, gamebase::getrotation(%client));
-		gamebase::setrotation(%obj4, gamebase::getrotation(%client));
-		gamebase::setrotation(%obj5, gamebase::getrotation(%client));
-		%k = Vector::getFromRot(gamebase::getrotation(%obj1)); %padd = getword (%k, 0) @ " " @ " -10 " @ getword (%k, 1); gamebase::setposition (%obj1, Vector::add(gamebase::getposition(%obj1), %padd));
-		%k = Vector::getFromRot(gamebase::getrotation(%obj2)); %padd = getword (%k, 0) @ " " @ " -5 " @ getword (%k, 1); gamebase::setposition (%obj2, Vector::add(gamebase::getposition(%obj2), %padd));
-		%k = Vector::getFromRot(gamebase::getrotation(%obj3)); %padd = getword (%k, 0) @ " " @ " 0 " @ getword (%k, 1); gamebase::setposition (%obj3, Vector::add(gamebase::getposition(%obj3), %padd));
-		%k = Vector::getFromRot(gamebase::getrotation(%obj4)); %padd = getword (%k, 0) @ " " @ " 5 " @ getword (%k, 1); gamebase::setposition (%obj4, Vector::add(gamebase::getposition(%obj4), %padd));
-		%k = Vector::getFromRot(gamebase::getrotation(%obj5)); %padd = getword (%k, 0) @ " " @ " 10 " @ getword (%k, 1); gamebase::setposition (%obj5, Vector::add(gamebase::getposition(%obj5), %padd));
-		%obj1.deployer = %client; %obj2.deployer = %client; %obj3.deployer = %client; %obj4.deployer = %client; %obj5.deployer = %client;
+		%slide = -15;
+		for(%i = 1; %i < 8; %i++)
+		{
+			%dir = Vector::getfromrot(%rot);
+			%fastdir = Vector::getfromrot(%rot, 7.0);
+			%pos0 = Vector::add(%pos, %fastdir);
+			%padding = 0 @ " " @ " 0 " @ "4";
+			%pos1 = Vector::add(%pos0, %padding);
+
+			%trans1 = %rot @ " " @ %dir @ " " @ %dir @ " " @ %pos1;
+			%r = %slide @ " 0 0";
+			%vel1 = item::getvelocity(%this);
+			%vel2 = EmplacementPack::rotVector(%r, %rot);
+			%vel = Vector::add(%vel1, %vel2);
+			%obj = Projectile::spawnProjectile("GodHammer",%trans1,%player,%vel);
+			%slide += 5;
+		}
 		%this.refire = 1;
 		%this.ammo -= 1;
-		schedule ("" @ %this @ ".refire = 0;", 0.8);
+		schedule ("" @ %this @ ".refire = 0;", 0.6);
 	}
-	else if (%module == "5") //== PickUp
+	else if (%module == "5" && %this.ammo) //== PickUp
 	{
 		%obj = newObject("","Mine","PickUpPack");		
 		addToSet("MissionCleanup", %obj);		
@@ -621,13 +600,13 @@ function Vehicle::passengerJump(%this,%passenger,%mom)
 	%armor = Player::getArmor(%passenger);
 	if(%armor == "larmor" || %armor == "lfemale")
 	{
-		%height = 2;
+		%height = 4;
 		%velocity = 70;
 		%zVec = 70;
 	}
 	else if(%armor == "marmor" || %armor == "mfemale")
 	{
-		%height = 2;
+		%height = 4;
 		%velocity = 100;
 		%zVec = 100;
 	}
@@ -671,13 +650,17 @@ function Vehicle::passengerJump(%this,%passenger,%mom)
 function Vehicle::jump(%this,%mom)
 { 
 	%data = GameBase::getDataName(%this);
-	
+	%client = gamebase::getcontrolclient(%this);
+	%player = Client::getOwnedObject(%client);
+	if(%player.refire == true)
+		return;
 	if(%data.shapefile == "rocket")
 	{
 		%data = GameBase::getDataName(%o);
 		if (GameBase::setDamageLevel(%this, 10))
 			if ($debug) echo ("BOOM");
 	}
+
   	
   	Vehicle::dismount(%this,%mom);
 }
@@ -687,10 +670,10 @@ function Vehicle::dismount(%this,%mom)
 	%cl = GameBase::getControlClient(%this);
 	if(%cl != -1)
 	{
-	      %pl = Client::getOwnedObject(%cl);
-	      if(getObjectType(%pl) == "Player")
-	      {
-	      		%pos = GameBase::getPosition(%pl);
+		%pl = Client::getOwnedObject(%cl);
+		if(getObjectType(%pl) == "Player")
+		{
+			%pos = GameBase::getPosition(%pl);
 			Player::setSensorSupression(%pl,0);
 
 			if(GameBase::testPosition(%pl, Vehicle::getMountPoint(%this,0)))
@@ -757,6 +740,7 @@ function Vehicle::onDestroyed (%this,%mom)
  
  	Client::setOwnedObject(%cl, %this);
 	Client::setOwnedObject(%cl, %pl);
+	Client::SendMessage(%cl, 0, "KaB00M!");
 	%cl.inflyer = 0;
 
 	if(%cl.module == 8)
@@ -800,78 +784,75 @@ function Vehicle::onDestroyed (%this,%mom)
 		if ($debug) echo ("POPPED " @ %this.popped);
 		%pos = GameBase::getPosition(%this);
 
-		if (%this.popped == "1")
+		if (!CheckMissileJammer(%this))
 		{
-			%this.popped = "";
-			bottomprint(%cl, "<jc><f2>You are being JAMMED! Control Lock Failed, War Head Did NOT Detonate, Jammer DESTROYED! ", 2);
-			return;
-		}
 
-		if (%this.missilegone != 1) { %this.missilegone = 1; }
-		else { return; }
-
-		if (%data == NapProj)
-		{
-			%cl.missilekill = 1;
-			schedule(%cl @ ".missilekill = 0;",20);
-
-			Aoe::deployShape(%this, 35, $PlasmaDamageType, 10, %cl, 0.32);
-			DeployFrags(%this, 10, %pl);
-			GameBase::applyRadiusDamage($PlasmaDamageType, %pos, 25, 0.50, 345, %pl);
-		}
-		else if (%data == EmpProj)
-		{
-			%cl.missilekill = 1;
-			schedule(%cl @ ".missilekill = 0;",20);
-			%obj = newObject("","Mine","EMPBlast");
-			GameBase::throw(%obj,%cl,0,false);		
-			addToSet("MissionCleanup", %obj);
-			%padd = "0 0 3.5";
-			%pos = Vector::add(%pos, %padd);
-			GameBase::setPosition(%obj, %pos);
-
-			%obj = newObject("","Mine","EMPBlast");
-			GameBase::throw(%obj,%cl,0,false);		
-			addToSet("MissionCleanup", %obj);
-			%padd = "0 0 3.5";
-			%poss = Vector::add(%pos, %padd);
-			GameBase::setPosition(%obj, %poss);					
-			Client::setOwnedObject(%cl, %pl);
-
-			Aoe::deployShape(%this, 18, $FlashDamageType, 15, %cl, 0.25);
-			GameBase::applyRadiusDamage($FlashDamageType, %pos, 20, 0.75, 300, %pl);
-		}
-		else if (%data == GasProj)
-		{
-			%cl.missilekill = 1;
-			schedule(%cl @ ".missilekill = 0;",20);
-			Aoe::deployShape(%this, 35, $EnergyDamageType, 25, %cl, 0.30);
-			GameBase::applyRadiusDamage($EnergyDamageType, %pos, 30, 0.55, 175, %pl);
-		}
-		else if (%data == BooProj)
-		{
-			%cl.missilekill = 1;
-			schedule(%cl @ ".missilekill = 0;",20);
-			Aoe::deployShape(%this, 35, $NukeDamageType, 10, %cl, 0.55);	                
-			GameBase::applyRadiusDamage($NukeDamageType, %pos, 6, 5.80, 50, %pl);
-		}
-		else if (%data == ShortCoolProj)
-		{
-			%cl.missilekill = 1;
-			schedule(%cl @ ".missilekill = 0;",20);
-			GameBase::applyRadiusDamage($MissileDamageType, %pos, 8, 1.0, 305, %pl);
-		}
-		else if (%data == SpyPodProj)
-		{
-			GameBase::applyRadiusDamage($MissileDamageType, %pos, 10, 1.52, 15, %pl);
-		}			
-		else	
-		{
-			%cl.missilekill = 1;
-			schedule(%cl @ ".missilekill = 0;",20);
-			GameBase::applyRadiusDamage($MissileDamageType, %pos, 8, 1.0, 600, %pl);
-		}
+			if (%data == NapProj)
+			{
+				%cl.missilekill = 1;
+				schedule(%cl @ ".missilekill = 0;",20);
 	
+				Aoe::deployShape(%this, 35, $PlasmaDamageType, 10, %cl, 0.32);
+				DeployFrags(%this, 10, %pl);
+				GameBase::applyRadiusDamage($PlasmaDamageType, %pos, 25, 0.50, 345, %pl);
+			}
+			else if (%data == EmpProj)
+			{
+				%cl.missilekill = 1;
+				schedule(%cl @ ".missilekill = 0;",20);
+				%obj = newObject("","Mine","EMPBlast");
+				GameBase::throw(%obj,%cl,0,false);		
+				addToSet("MissionCleanup", %obj);
+				%padd = "0 0 3.5";
+				%pos = Vector::add(%pos, %padd);
+				GameBase::setPosition(%obj, %pos);
+	
+				%obj = newObject("","Mine","EMPBlast");
+				GameBase::throw(%obj,%cl,0,false);		
+				addToSet("MissionCleanup", %obj);
+				%padd = "0 0 3.5";
+				%poss = Vector::add(%pos, %padd);
+				GameBase::setPosition(%obj, %poss);					
+				Client::setOwnedObject(%cl, %pl);
+	
+				Aoe::deployShape(%this, 18, $FlashDamageType, 15, %cl, 0.25);
+				GameBase::applyRadiusDamage($FlashDamageType, %pos, 20, 0.75, 300, %pl);
+			}
+			else if (%data == GasProj)
+			{
+				%cl.missilekill = 1;
+				schedule(%cl @ ".missilekill = 0;",20);
+				Aoe::deployShape(%this, 35, $EnergyDamageType, 25, %cl, 0.30);
+				GameBase::applyRadiusDamage($EnergyDamageType, %pos, 30, 0.55, 175, %pl);
+			}
+			else if (%data == BooProj)
+			{
+				%cl.missilekill = 1;
+				schedule(%cl @ ".missilekill = 0;",20);
+				Aoe::deployShape(%this, 35, $NukeDamageType, 10, %cl, 0.55);	                
+				GameBase::applyRadiusDamage($NukeDamageType, %pos, 6, 5.80, 50, %pl);
+			}
+			else if (%data == ShortCoolProj)
+			{
+				%cl.missilekill = 1;
+				schedule(%cl @ ".missilekill = 0;",20);
+				GameBase::applyRadiusDamage($MissileDamageType, %pos, 8, 1.0, 305, %pl);
+			}
+			else if (%data == SpyPodProj)
+			{
+				GameBase::applyRadiusDamage($MissileDamageType, %pos, 10, 1.52, 15, %pl);
+			}			
+			else	
+			{
+				%cl.missilekill = 1;
+				schedule(%cl @ ".missilekill = 0;",20);
+				GameBase::applyRadiusDamage($MissileDamageType, %pos, 8, 1.0, 600, %pl);
+			}
+		}
+		else
+		{
+			bottomprint(%cl, "<jc><f2>You are being JAMMED! Control Lock Failed, War Head Did NOT Detonate, Jammer DESTROYED! ", 2);
+		}
 	}
 	else
 	{
@@ -905,3 +886,42 @@ function Vehicle::getHeatFactor(%this)
 {
 	return 1.0;
 }
+
+FlierData tiny
+{
+explosionId = fakeExp;
+debrisId = flashDebrisLarge;
+className = "Vehicle";
+shapeFile = "bullet";
+shieldShapeName = "shield_medium";
+mass = 0.001;
+drag = 0.0;
+density = 0.2;
+maxBank = 1.2;
+maxPitch = 100.0;
+maxSpeed = 60;
+minSpeed = 0.01;
+lift = 800.10;
+maxAlt = 1550;
+maxVertical = 12;
+maxDamage = 8.8;
+damageLevel = {1.0, 1.0};
+maxEnergy = 10;
+accel = 0.01;
+groundDamageScale = 1.0;
+reloadDelay = 0.2;
+repairRate = 0.1;
+damageSound = SoundFlierCrash;
+ramDamage = 0.0;
+ramDamageType = -1;
+mapFilter = 2;
+mapIcon = "M_vehicle";
+visibleToSensor = true;
+shadowDetailMask = 2;
+mountSound = SoundFlyerMount;
+dismountSound = SoundFlyerDismount;
+idleSound = SoundFlyerIdle;
+moveSound = SoundFlyerActive;
+visibleDriver = false;
+driverPose = 22;
+};

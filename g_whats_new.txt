@@ -1,8 +1,150 @@
 \*        GreyFlcn Updates begin here:         =\*=\*=\*=\*=\*=\*=\*=
 =\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*
+
+What's New 05-27-2002
+---------------------------------
+-Dtrack added to match track
+-Fixed mix scrim mode :)
+-9-28 Stim Scout shield
+-9-28 engi laser mines
+-2x accel back
+-Jugg and dread tele
+-Jugg crush lighter armors
+-Godhammer = locking stinger
+-EMP/Shield device ignore enemy chems
+
+
+What's New 04-04-2002
+---------------------------------
+Small ass fix to make sure the teamchange hack doesn't work
+
+What's New 04-03-2002
+---------------------------------
+
+Gameplay Change:
+Chem touch makes ppl blind to red targets
+Teleport Pack doesn't delete beacon, act like targeting beacon
+Anti EMP for energy pack:  Energy drain, but no recharge effect or gun down
+EngRepGun (any option) mounted is 100% diffuse rate for dets
+Old old skool Engineer MJammer Beacon
+Redo "in the way" to ignore guns
+Vehicle Speed
+Launchpad deployable on Accel pad
+$stronglaser
+$noOTurrets
+
+Bugs:
+No Spawn kills
+Rail/sniper/laser damage not lowered by body shots (blah another emo thing)
+APC pitch tweak
+FIXED mission change spawn faves
+Tourney bug fixed
+Arbitor Device memory Leak fixed
+PRESS FIRE TO START
+Laser Deploy check
+Don't validate grenade.dts or flag.dts
+Non-builder ceasefire doesn't build
+Goliath bug
+Red voting/TK messages
+Vehicle loading fix
+Double check voodoo suicide bug
+ELF turret charge refresh
+Penis curse drops guns
+Set Faves while in tourney pre-match
+NO FairTeam in tourney
+Leader can change ppl's teams
+Sensor instant activation
+$Shifter::InstantLM = "true",
+Tourney Over, stop matchtrack
+Elevator fix
+Server Name asked for match setup
+
+
+What's New 02-14-02
+---------------------------------
+ score in reg mode
+ no counter for obs in reg mode
+ match track reset fixed
+ weapon order option, variable loading fixed
+
+What's New 02-13-02
+---------------------------------
+ Eng touch repairs ELF turrets
+ Team message for nuke/det/missile	
+ Put MCS back on BF
+ Sensor Jammer = Blocks one Missile
+ 10 jammers per team at a time
+ Remove Jammer Device
+ Las Cannon Back to 1.0x blastwall	
+ Player Count display in TAB
+ Vote for leader in tourney	
+//technical junk
+ MatchTrack missiles
+ Builder & Ceasfire off with FFA mode
+ MapTrigger fix on mission change
+ Fix station drop limit for v-station
+ No drop limit in builder
+ No autoadmin if already admin  %clientid.isadmin
+ less messy Merc Boost Pop Code
+ Map change for other than CTF $shifter::randommisson = false
+ registered shape files	
+ always returns from really high flag drops
+
+
+What's New 02-03-02
+---------------------------------
+Ah shit, messed up the MDM.  Ah well all good now.
+Fix so can't lag out servers w/ droppers
+Builder in ceasefire, as an option
+Builder "station access on" when press i (helps scripts)
+
+What's New 02-02-02
+---------------------------------
+Hella stuff 9-28'ized
+awesome tourney setup
+builder in ceasefire ;)
+jammer works.
+
+What's New 01-04-02
+---------------------------------
+Reheauled Heavy weapon code... ooh clean
+
+What's New 01-02-02
+---------------------------------
+Flag Out of Bounds
+Flag Off the Map
+Dets, 3x repair pack weight, switched "destroyed" and "suicide" explosion
+SuperHack Cheat removed
+Godhammer Hellfire Bomber Valkyrie module reworked
+ShifterProfiles stored into the temp folder
+Headshot message for Rail/Mag/Vulcan
+shockcharge only 10 seconds instead of 50
+static shape lag bug
+no laptops while in ceasefire mode
+$shifter::lockon does heatseeker instead of locking stinger
+Scout/Dread/Engineer damage ratios 9-28 spec
+Jugg/Goliath damage ratios 9-28 spec besides plasma
+EMP Mortar doesn't sink into hills
+SSS = Normal shield
+Mission Filter for CTF Style maps
+=/=/=/Tourney Mode changes=/=/=/=
+Tourney Mode Cycles to the same map
+Nuke/Det Counter, viewable by refs
+IS READY click start match
+Score Counter for flag caps and objectives
+
+What's New 11-03-01
+---------------------------------
+Fixed some bugs
+ion rifle better
+Godhammer module WORKS
+ion & elf for scout
+EMP on MDM hits first
+
 What's New 10-10
 ---------------------------------
-Redid the ceasefire mode code, clipped the help menu stuffs
+Redid the ceasefire mode code
+clipped the help menu stuffs
 
 What's New 9-30
 ---------------------------------
@@ -10,6 +152,13 @@ Goliath targeting beacon
 Vehicle bug
 Elf bug
 Mine bug
+
+What's New 9-26
+---------------------------------
+Accel lowered
+flamerTurret removed
+Cease Fire on match mode
+PlasmaCannon 9-28 spec
 
 What's New 9-26
 ---------------------------------
@@ -137,7 +286,6 @@ Trying some cleaned up code from Frag, Nuke and HP
 Whats's New 7-22
 ---------------------------------
 Just cleaned up all the laggy weapons
-satchels are silent
 
 Whats's New 7-21
 ---------------------------------

@@ -28,6 +28,7 @@ $IDamageType	        = 29;
 $TargetingDamageTpye	  = 30;
 $BoomStickDamageType	  = 31;
 $HBlasterDamageType	  = 32;
+$MDMDamageType	  		  = 33;
 
 
 
@@ -57,9 +58,9 @@ if ($Shifter::AllowHacking == "")
 if (!$Shifter::LaserMineLive || $Shifter::LaserMineLive == "")
 	$Shifter::LaserMineLive = 2;
 
-//=======================================================================================================================
+//================================================================================================
 //						    Bullet Class Ammos
-//=======================================================================================================================
+//================================================================================================
 
 
 //======================================================================== Interceptor Ammo 
@@ -154,7 +155,7 @@ BulletData SilencerBullet
 	//bulletShapeName    = "tumult_small.dts";
 	bulletShapeName    = "bullet.dts";
 	explosionTag       = debrisExpsmall;
-	expRandCycle       = 3;
+	expRandCycle       = 0;
 	mass               = 200.0;
 	bulletHoleIndex    = 0;
 	damageClass        = 0;
@@ -196,8 +197,8 @@ BulletData TranqDart
 //======================================================================== Vulcan Bullet
 BulletData VulcanBullet
 {
-	bulletShapeName    = "bullet.dts";
-	explosionTag       = bulletExp0;
+	bulletShapeName    = "breath.dts"; //bullet
+	explosionTag       = quietbulletExp0;
 	expRandCycle       = 3;
 	mass               = 0.06;
 	bulletHoleIndex    = 0;
@@ -209,8 +210,8 @@ BulletData VulcanBullet
 	totalTime          = 0.95;
 	inheritedVelocityScale = 1.0;
 	isVisible          = False;
-	tracerPercentage   = 1.0;
-	tracerLength       = 30;
+	tracerPercentage   = 3.0;
+	tracerLength       = 3;
 };
 
 //======================================================================== BoomStickBlast
@@ -230,7 +231,7 @@ BulletData BoomStickBlast
 	inheritedVelocityScale = 0.3;
 	isVisible          = False;
 	tracerPercentage   = 2.0;
-	tracerLength       = 30;
+	tracerLength       = 10;
 	soundId = SoundJetLight;
 };
 
@@ -514,7 +515,7 @@ RocketData Booster
 	trailType   = 0;
 	trailString = "plasmaex.dts";
 	smokeDist   = 5.0;
-	soundId = SoundJetHeavy;
+	soundId = NoCrashJetHeavy;
 };
 
 //======================================================================== Flamer Bolt
@@ -796,9 +797,9 @@ function TurretMissile::updateTargetPercentage(%target)
 function rocketDodge(%target)
 {
 	%tp = GameBase::virtual(%target, "getHeatFactor");
-	%pack = Player::getMountedItem(%target,$BackpackSlot);
-	if(%pack == flightpack || %pack == DeployableSensorJammerPack || %pack == SensorJammerPack || %pack == CloakingDevice)
-		%tp = 0;
+	//%pack = Player::getMountedItem(%target,$BackpackSlot);
+	//if(%pack == flightpack || %pack == DeployableSensorJammerPack || %pack == SensorJammerPack || %pack == CloakingDevice)
+	//	%tp = 0;
 	return %tp;
 }
 
@@ -811,8 +812,8 @@ RocketData Shock
    mass             = 2.0;
 
    damageClass      = 1;
-   damageValue      = 0.18;
-   damageType       = $ImpactDamageType;
+   damageValue      = 0.15;
+   damageType       = $MissileDamageType;
 
    explosionRadius  = 30.0;
    kickBackStrength = 350.0;
@@ -877,13 +878,13 @@ RocketData RailRound
    acceleration     = 5.0;
    totalTime        = 10.0;
    liveTime         = 11.0;
-   lightRange       = 25.0;
-   lightColor       = { 1.25, 1.25, 1.85 };
+   lightRange       = 10.0;
+   lightColor       = { 0.25, 0.25, 1 };
    inheritedVelocityScale = 1.0;
 
    trailType   = 1;         
    trailLength = 3000;
-   trailWidth  = 0.8;
+   trailWidth  = 0.6;
   
    soundId = SoundJetHeavy;
 };
@@ -1068,9 +1069,9 @@ RocketData JuggStingerMissile
    explosionRadius  = 13.0;
    kickBackStrength = 75.0;
 
-   muzzleVelocity   = 250.0;
+   muzzleVelocity   = 200.0;
    terminalVelocity = 2000.0;
-   acceleration     = 60.0;
+   acceleration     = 50.0;
 
    totalTime        = 8.5;
    liveTime         = 18.0;
@@ -1079,9 +1080,9 @@ RocketData JuggStingerMissile
    lightColor       = { 1.0, 0.7, 0.5 };
 
    inheritedVelocityScale = 0.5;
-   trailType   = 2;
-   trailString = "rsmoke.dts";
-   smokeDist   = 1.8;
+	trailType   = 1;
+	trailLength = 30;
+	trailWidth  = 1.45;
    soundId = SoundJetHeavy;
 };
 
@@ -1167,43 +1168,6 @@ GrenadeData DeadRocket
 
 };
 
-//======================================================================== GodHammer Pod
-MineData GodHammerPod
-{
-	className = "Mine";
-        description = "GodHammerPod";
-        shapeFile = "rocket";
-        shadowDetailMask = 4;
-        explosionId = ShockwaveFour;
-        explosionRadius = 5.0;
-        damageValue = 0.15;
-	damageType = $MineDamageType;
-	kickBackStrength = 450;
-	triggerRadius = 2.5;
-	maxDamage = 0.5;
-	shadowDetailMask = 0;
-	destroyDamage = 1.0;
-	damageLevel = {1.0, 1.0};
-};
-
-function GodHammerPod::OnAdd(%this)
-{
-	schedule("GodHammerPod::Release(" @ %this @ ");", 1.0);
-}
-
-function GodHammerPod::Release(%this)
-{
-	%client = %this.deployer;
-	%player = Client::GetOwnedObject(%client);
-	%rot = gamebase::getrotation(%player);
-	%dir = (Vector::getfromrot(%rot));
-	%vel = item::getvelocity(%this);
-	%pos = gamebase::getposition(%this);
-	%trans =  %rot @ " " @ %dir @ " " @ %dir @ " " @ %pos;
-	%fired.deployer = %client;
-	if(%this) deleteobject(%this);
-}
-
 //======================================================================== GodHammer Wire Guided Missle
 GrenadeData GodHammerMortar
 {
@@ -1259,9 +1223,9 @@ RocketData IonBolt
 	bulletShapeName = "enbolt.dts"; 
 	explosionTag = turretExp; 
 	collisionRadius = 0.0;
-	 mass = 2.0; 
+	mass = 2.0; 
 	damageClass = 1;
-    	damageValue = 0.25; 
+   damageValue = 0.25; 
 	damageType = $ElectricityDamageType; 
 	explosionRadius = 4; 
 	kickBackStrength = 0.0; 
@@ -1279,55 +1243,33 @@ RocketData IonBolt
 	soundId = SoundJetHeavy;
 };
 
-RocketData IonGunBolt2
-{ 
-	bulletShapeName = "enbolt.dts"; 
-	explosionTag = IonGunExp;//turretExp; 
-	collisionRadius = 0.0;
-	mass = 0.0; 
-	damageClass = 1;
-   damageValue = 0.30; 
-	damageType = $ElectricityDamageType; 
-	explosionRadius = 4; 
-	kickBackStrength = 0.0; 
-	muzzleVelocity = 250.0; 
-	terminalVelocity = 2000.0;
-	acceleration = 500.0; 
-	totalTime = 0.6; 
-	liveTime = 0.4; 
-	lightRange = 2.0; 
-	lightColor = { 1.0, 0.7, 0.5 }; 
-	inheritedVelocityScale = 0.2; 
-	trailType = 1;
-	trailLength = 250; 
-	trailWidth = 0.9; 
-	soundId = SoundJetHeavy;
-};
-
 RocketData IonGunBolt
 { 
-	bulletShapeName = "enbolt.dts"; 
-	explosionTag = IonGunExp;//turretExp; 
+	bulletShapeName = "fusionbolt.dts"; 
+		explosionTag = IonGunExp;//turretExp; 
 	collisionRadius = 0.0;
-	 mass = 0.0; 
+	mass = 0.0; 
+
 	damageClass = 1;
    damageValue = 0.50; 
 	damageType = $ElectricityDamageType; 
-	explosionRadius = 5.5; 
-	kickBackStrength = 0.2; 
-	muzzleVelocity = 230.0; 
-	terminalVelocity = 1800.0;
-	acceleration = 350.0; 
-	totalTime = 0.24; 
-	liveTime = 0.20; 
+	explosionRadius = 4.0; 
+	kickBackStrength = 0; 
+
+	muzzleVelocity   = 150.0;
+	terminalVelocity = 150.0;
+	acceleration     = 150.0;
+	totalTime        = 0.9;
+	liveTime         = 0.4;
 	lightRange = 3.0; 
 	lightColor = { 1.0, 0.7, 0.5 }; 
-	inheritedVelocityScale = 0.3; 
-	trailType = 1;
-	trailLength = 275; 
-	trailWidth = 0.9; 
+	inheritedVelocityScale = 0.0;
+	trailType   = 2;
+	trailString = "hflame.dts";
+	smokeDist   = 4.0;
 	soundId = SoundJetHeavy;
 };
+
 
 
 //======================================================================== GodHammer Pod
@@ -1463,7 +1405,7 @@ GrenadeData DelayMortarShell
 
    damageClass        = 1;       // 0 impact, 1, radius
    damageValue        = 1.0;
-   damageType         = $MortarDamageType;
+   damageType         = $MDMDamageType;
 
    explosionRadius    = 20.0;
    kickBackStrength   = 150.0;
@@ -1510,15 +1452,15 @@ GrenadeData EMPMortar
 	explosionTag       = LargeShockwave;
 	collideWithOwner   = True;
 	ownerGraceMS       = 250;
-	collisionRadius    = 0.3;
-	mass               = 400.0;
-	elasticity         = 0.01;
+	collisionRadius    = 0.03;
+	mass               = 12.0;
+	elasticity         = 0.08;
 
 	damageClass        = 1;       // 0 impact, 1, radius
 	damageValue        = 0.30;
 	damageType         = $FlashDamageType;
 
-	explosionRadius    = 25.0;
+	explosionRadius    = 30.0;
 	kickBackStrength   = -550.0;
 	maxLevelFlightDist = 275;
 	totalTime          = 30.0;
@@ -1615,7 +1557,7 @@ GrenadeData FlameBurst
 
 GrenadeData FgcShell
 {
-	bulletShapeName    = "mortar.dts";
+	bulletShapeName    = "mortar.dts"; //"shockwave_large.dts"; //
 	explosionTag       = LargeShockwave;
 	collideWithOwner   = True;
 	ownerGraceMS       = 250;
@@ -1645,14 +1587,7 @@ function FgcShell::onAdd(%this)
 
 function FgcShell::Deploy(%this)
 {
-	if (GameBase::isAtRest(%this))
-	{
-		schedule("NuclearExplosion(" @ %this @ ");",3.0,%this);
-	}
-	else
-	{
-		schedule("FgcShell::Deploy(" @ %this @ ");",3.0,%this);
-	}
+	schedule("NuclearExplosion(" @ %this @ ");",3.0,%this);
 }
 
 //========================================================================
@@ -1660,12 +1595,28 @@ function FgcShell::Deploy(%this)
 //========================================================================
 
 //======================================================= Sniper Rifle Laser
+
+if($stronglaser)
+	%lasdam = 0.02;
+else
+	%lasdam = 0.01;
+
+if($redlaser)
+	%lascolor = "laserPulse.bmp";
+else
+	%lascolor = "lightningNew.bmp";
+
+if($attachedlaser)
+	%lasattach = False;
+else
+	%lasattach = True;
+
 LaserData sniperLaser1
 {
-   laserBitmapName   = "lightningNew.bmp";
+   laserBitmapName   = %lascolor;
    hitName           = "laserhit.dts";
 
-   damageConversion  = 0.02;
+   damageConversion  = %lasdam;
    baseDamageType    = $LaserDamageType;
 
    beamTime          = 0.4;
@@ -1673,13 +1624,13 @@ LaserData sniperLaser1
    lightRange        = 2.0;
    lightColor        = { 1.0, 0.25, 0.25 };
 
-   detachFromShooter = True;
+   detachFromShooter = %lasattach;
    hitSoundId        = SoundLaserHit;
 };
 
 LaserData TurretLaser
 {
-   laserBitmapName   = "lightningNew.bmp";
+   laserBitmapName   = %lascolor;
    hitName           = "laserhit.dts";
 
    damageConversion  = 0.01;
@@ -1728,7 +1679,7 @@ RocketData LasCannonBolt
 	trailType = 1;
 	trailLength = 3000; 
 	trailWidth = 2.0; 
-	soundId = SoundJetHeavy;
+	soundId = NoCrashJetHeavy;
 };
 
 RocketData LasCannonBolt2
@@ -1753,7 +1704,7 @@ RocketData LasCannonBolt2
 	trailType = 1;
 	trailLength = 3000; 
 	trailWidth = 1.0; 
-	soundId = SoundJetHeavy;
+	soundId = NoCrashJetHeavy;
 };
 
 RocketData LasCannonShock1
@@ -1779,11 +1730,11 @@ RocketData LasCannonShock1
 	trailType   = 2;
 	trailString = "shield.dts";
 	smokeDist   = 20.0;
-	soundId = SoundJetHeavy;
+	soundId = NoCrashJetHeavy;
 };
 
-RocketData LasCannonShock2 	{ bulletShapeName = "shield_medium.dts"; explosionTag     = ShockwaveFour; collisionRadius  = 0.0; mass             = 0.0; damageClass      = 0; damageValue      = 1.3; damageType       = $LaserDamageType; explosionRadius  = 5.0; kickBackStrength = 0; muzzleVelocity   = 250.0; terminalVelocity = 4000.0; acceleration     = 500.0; totalTime        = 34.0; liveTime         = 34.0; lightRange       = 5.0; lightColor       = { 0.0, 0.1, 1.5 }; inheritedVelocityScale = 0.0; trailType   = 2; trailString = "shield.dts"; smokeDist   = 20.0; soundId = SoundJetHeavy; };
-RocketData LasCannonShock3 	{ bulletShapeName = "shield_large.dts"; explosionTag     = ShockwaveFour; collisionRadius  = 0.0; mass             = 0.0; damageClass      = 0; damageValue      = 1.3; damageType       = $LaserDamageType; explosionRadius  = 5.0; kickBackStrength = 0; muzzleVelocity   = 250.0; terminalVelocity = 4000.0; acceleration     = 500.0; totalTime        = 34.0; liveTime         = 34.0; lightRange       = 5.0; lightColor       = { 0.0, 0.1, 1.5 }; inheritedVelocityScale = 0.0; trailType   = 2; trailString = "shield_medium.dts"; smokeDist   = 200.0; soundId = SoundJetHeavy; };
+RocketData LasCannonShock2 	{ bulletShapeName = "shield_medium.dts"; explosionTag     = ShockwaveFour; collisionRadius  = 0.0; mass             = 0.0; damageClass      = 0; damageValue      = 1.3; damageType       = $LaserDamageType; explosionRadius  = 5.0; kickBackStrength = 0; muzzleVelocity   = 250.0; terminalVelocity = 4000.0; acceleration     = 500.0; totalTime        = 34.0; liveTime         = 34.0; lightRange       = 5.0; lightColor       = { 0.0, 0.1, 1.5 }; inheritedVelocityScale = 0.0; trailType   = 2; trailString = "shield.dts"; smokeDist   = 20.0; soundId = NoCrashJetHeavy; };
+RocketData LasCannonShock3 	{ bulletShapeName = "shield_large.dts"; explosionTag     = ShockwaveFour; collisionRadius  = 0.0; mass             = 0.0; damageClass      = 0; damageValue      = 1.3; damageType       = $LaserDamageType; explosionRadius  = 5.0; kickBackStrength = 0; muzzleVelocity   = 250.0; terminalVelocity = 4000.0; acceleration     = 500.0; totalTime        = 34.0; liveTime         = 34.0; lightRange       = 5.0; lightColor       = { 0.0, 0.1, 1.5 }; inheritedVelocityScale = 0.0; trailType   = 2; trailString = "shield_medium.dts"; smokeDist   = 200.0; soundId = NoCrashJetHeavy; };
 
 //============================================================== LasCannon
 LaserData GatlingLaser
@@ -1805,28 +1756,30 @@ LaserData GatlingLaser
 
 LightningData lightningCharge1
 {
-   bitmapName       = "paintPulse.bmp";
+   bitmapName       = "lightningNew.bmp";//"paintPulse.bmp";
+
    damageType       = $ElectricityDamageType;
    boltLength       = 55.0;
-   coneAngle        = 50.0;
-   damagePerSec      = 0.17;
-   energyDrainPerSec = 70.0;
-   segmentDivisions = 4;
-   numSegments      = 5;
-   beamWidth        = 0.125;//075;
+   coneAngle        = 10.0; //50.0;
+	damagePerSec      = 0.001;
+	energyDrainPerSec = 0.001;
+   segmentDivisions = 2;
+   numSegments      = 3;
+   beamWidth        = 0.1;//075;
 
-   updateTime   = 120;
-   skipPercent  = 0.5;
-   displaceBias = 0.15;
+   updateTime   = 100;
+   skipPercent  = 0.9;
+   displaceBias = 0.25;
 
-   lightRange = 3.0;
-   lightColor = { 0.25, 0.25, 0.85 };
+   lightRange = 0.0;
+	lightColor = { 0.0, 0.0, 0.0 };
 
    soundId = SoundELFFire;
 };
 
 function lightningCharge1::damageTarget(%target, %timeSlice, %damPerSec, %enDrainPerSec, %pos, %vec, %mom, %shooterId)
 {
+	if(%target == %shooterId)  return;
 	%player = Client::getControlObject(%shooterId);
 	GameBase::applyDamage(%target, $ElectricityDamageType, 0.00544, %pos, %vec, %mom, %shooterId);
 	%energy = GameBase::getEnergy(%target);
@@ -1838,9 +1791,60 @@ function lightningCharge1::damageTarget(%target, %timeSlice, %damPerSec, %enDrai
 	GameBase::setEnergy(%target, %energy);
 }
 
-LightningData turretCharge1
+LightningData TurretCharge1
 {
-   bitmapName       = "paintPulse.bmp";
+	//bitmapName       = "lightningNew.bmp";
+
+   damageType       = $ElectricityDamageType;
+   boltLength       = 55.0;
+   coneAngle        = 10.0; //50.0;
+	damagePerSec      = 0.001;
+	energyDrainPerSec = 0.001;
+   segmentDivisions = 2;
+   numSegments      = 3;
+   beamWidth        = 0.075;//075;
+
+   updateTime   = 120;
+   skipPercent  = 0.9;
+   displaceBias = 0.25;
+
+   lightRange = 0.0;
+	lightColor = { 0.0, 0.0, 0.0 };
+
+   soundId = SoundELFFire;
+};
+
+
+LightningData turretCharge
+{
+	//bitmapName       = "lightningNew.bmp";
+
+	damageType       = $gravdamagetype; // $ElectricityDamageType; //
+   coneAngle        = 35.0;
+//   damagePerSec      = 0.06;
+//  energyDrainPerSec = 60.0;
+//	damagePerSec      = 0.0;
+//	energyDrainPerSec = 0.0;
+
+	boltLength       = 60.0;
+	segmentDivisions = 2;
+	numSegments    = 3;
+	beamWidth        = 0.05;
+	//beamWidth        = 0.125;
+	updateTime   = 140;
+   skipPercent  = 0.001;
+   displaceBias = 0.4;
+
+	lightRange = 3.0;
+	lightColor = { 0.15, 0.15, 0.95 };
+
+	soundId = SoundELFFire;
+};
+
+LightningData turretCharge0
+{
+   bitmapName       = "lightningNew.bmp";
+
    damageType       = $ElectricityDamageType;
    boltLength       = 40.0;
    coneAngle        = 35.0;
@@ -1862,18 +1866,18 @@ LightningData turretCharge1
 
 function TurretCharge1::damageTarget(%target, %timeSlice, %damPerSec, %enDrainPerSec, %pos, %vec, %mom, %shooterId)
 {
+	if(%target == %shooterId)  return;
    GameBase::applyDamage(%target, $ElectricityDamageType, 0.00192, %pos, %vec, %mom, %shooterId);
    %energy = GameBase::getEnergy(%target);
    %energy -= 1.92;
-   if(%energy < 0)
+   if(%energy <= 0)
 		%energy = 0;
    GameBase::setEnergy(%target, %energy);
 }
 
-//greyflcn
-//perhaps this had to deal w/ crashes
 function Lightning::damageTarget(%target, %timeSlice, %damPerSec, %enDrainPerSec, %pos, %vec, %mom, %shooterId)
 {}
+
 
 //============================
 LightningData gravCharge
@@ -1883,24 +1887,25 @@ LightningData gravCharge
    damageType       = $GravDamageType;
    boltLength       = 100.0;
    coneAngle        = 40.0;
-   damagePerSec      = 0.01;
-   energyDrainPerSec = 1.0;
+   damagePerSec      = 0.001;
+   energyDrainPerSec = 0.001;
    segmentDivisions = 2;
    numSegments      = 1;
    beamWidth        = 0.5;
 
-   updateTime   = 120;
-   skipPercent  = 0.1;
-   displaceBias = 0.35;
+   updateTime   = 100;
+   skipPercent  = 0.9;
+   displaceBias = 0.25;
 
-   lightRange = 3.0;
-   lightColor = { 0.15, 0.85, 0.15 };
+   lightRange = 0.0;
+	lightColor = { 0.0, 0.0, 0.0 };
 
    soundId = SoundELFFire;
 };
 
 function gravCharge::damageTarget(%target, %timeSlice, %damPerSec, %enDrainPerSec, %pos, %vec, %mom, %shooterId)
 {
+	if(%target == %shooterId)  return;
 	//Pull Beam
 	//blatently Ripped from Meltdown mod
 	//Please give Dynablade props :P
@@ -1918,6 +1923,8 @@ function gravCharge::damageTarget(%target, %timeSlice, %damPerSec, %enDrainPerSe
 		//so Z isn't in distance & doesn't make you go FLYING if you have a huge height difference
 		%force = 20; //not too hard and fast
 		%height = 10 * (getWord(%myPos, 2) - getWord(%yourPos, 2)); //diff in z-values 
+		if(%height > 700 || %height < -700)
+			return;
 		%diffVector = Vector::getFromRot(%dir, -%force, (-%height / %force)); 
 		//if(%playerID.tractorMode == 1)
 		//%diffVector = Item::getVelocity(%target);
@@ -2092,8 +2099,8 @@ function RepairBolt1::checkDone(%this, %player)
 				{
 						%objname = (GameBase::getDataName(%object)).description;
 					
-					%objectTeam = GameBase::getTeam(%object);								//=== Team Object.
-					%playerTeam = GameBase::getTeam(%player); 								//=== Team Player.
+					%objectTeam = GameBase::getTeam(%object);		//=== Team Object.
+					%playerTeam = GameBase::getTeam(%player); 	//=== Team Player.
 					%lastdamage = GameBase::getControlClient(%object.lastDamageObject);	
 
 					if (%objname == "Remote Mortar Turret")				%pntval = $Score::ObjTurretS;
@@ -2288,7 +2295,7 @@ function HackBolt::onAcquire(%this, %player, %target)
 }
 
 // Drain Bolt - Same as Repair, But drains, used with regeneration pack and Eng option for Eng Gun
-//------------------------------------------------------------------------------------------------------------------------
+// ======================================================================================
 
 RepairEffectData DrainBolt
 {
@@ -2595,7 +2602,7 @@ function DrainBolt::onRelease(%this, %player)
 }
 
 // Disasymbler - Alternate To Engineer Repair Gun.
-//------------------------------------------------------------------------------------------------------------------------
+// 
 RepairEffectData DisaBolt
 {
    bitmapName       = "lightningNew.bmp";
@@ -2694,14 +2701,14 @@ function objectColapsable(%this, %player, %name, %shape, %disatime)
 	
 	if ($Debug) echo ("Attempting To Dismantle " @ %name);
 		
-	//================================================================================================= AccelPad
+	//==== AccelPad
 	if (String::findSubStr(%name, "Accel Pad") >= 0)
 	{
 		%item = "AccelPPack";		
 		objectTearup (%this, %item, %client, %player, 0, 0, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= Launch Pad
+	//==== Launch Pad
 	if (String::findSubStr(%name, "Launchboard") >= 0)
 	{
 		%item = "LaunchPack";		
@@ -2709,7 +2716,7 @@ function objectColapsable(%this, %player, %name, %shape, %disatime)
 		return 1;
 	}
 
-	//================================================================================================= Teleport Pad
+	//==== Teleport Pad
 	if (String::findSubStr(%name, "Teleport Pad") >= 0)
 	{
 		%item = "TeleportPack";
@@ -2718,14 +2725,14 @@ function objectColapsable(%this, %player, %name, %shape, %disatime)
 		return 1;
 	}	
 	
-	//================================================================================================= Ion Turret
+	//==== Ion Turret
 	if (String::findSubStr(%name, "Ion Turret") >= 0)
 	{
 		%item = "TurretPack";		
 		objectTearup (%this, %item, %client, %player, 1, 35, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= AATurret
+	//==== AATurret
 	if (String::findSubStr(%name, "Anti-AirCraft Turret") >= 0)
 	{
 		%item = "BarragePack";		
@@ -2733,175 +2740,175 @@ function objectColapsable(%this, %player, %name, %shape, %disatime)
 		return 1;
 	}
 
-	//======================================================================================== Command Station
+	//==== Command Station
 	if (String::findSubStr(%name, "Remote Command Station") >= 0)
 	{
 		%item = "DeployableComPack";		
 		objectTearup (%this, %item, %client, %player, 0, 0, %flagdist, %description);
 		return 1;
 	}	
-	//========================================================================================== Sensor Jammer
+	//==== Sensor Jammer
 	if (String::findSubStr(%name, "Sensor Jammer") >= 0)
 	{
 		%item = "DeployableSensorJammerPack";		
 		objectTearup (%this, %item, %client, %player, 0, 0, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= Pulse Sensor
+	//==== Pulse Sensor
 	if (String::findSubStr(%name, "Remote Pulse Sensor") >= 0)
 	{
 		%item = "PulseSensorPack";		
 		objectTearup (%this, %item, %client, %player, 0, 0, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= Motion Sensor
+	//==== Motion Sensor
 	if (String::findSubStr(%name, "Motion Sensor") >= 0)
 	{
 		%item = "MotionSensorPack";		
 		objectTearup (%this, %item, %client, %player, 0, 0, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= Camera 
+	//==== Camera 
 	if (String::findSubStr(%name, "Camera") >= 0)
 	{
 		%item = "CameraPack";		
 		objectTearup (%this, %item, %client, %player, 1, 0, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= Blast Wall
+	//==== Blast Wall
 	if (String::findSubStr(%name, "Blast Wall") >= 0)
 	{
 		%item = "BlastWallPack";		
 		objectTearup (%this, %item, %client, %player, 0, 0, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= Blast Floor
+	//==== Blast Floor
 	if (String::findSubStr(%name, "Blast Floor") >= 0)
 	{
 		%item = "BlastFloorPack";		
 		objectTearup (%this, %item, %client, %player, 0, 0, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= Small Force Field
+	//==== Small Force Field
 	if (String::findSubStr(%name, "Small Force Field") >= 0)
 	{
 		%item = "ForceFieldPack";		
 		objectTearup (%this, %item, %client, %player, 0, 0, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= Large Force Field
+	//==== Large Force Field
 	if (String::findSubStr(%name, "Large Force Field") >= 0)
 	{
 		%item = "LargeForceFieldPack";		
 		objectTearup (%this, %item, %client, %player, 0, 0, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= Large Shock Force Field
+	//==== Large Shock Force Field
 	if (String::findSubStr(%name, "Shock Floor") >= 0)
 	{
 		%item = "ShockFloorPack";		
 		objectTearup (%this, %item, %client, %player, 0, 0, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= Large Shock Force Field
+	//==== Large Shock Force Field
 	if (String::findSubStr(%name, "Large Shock Force Field") >= 0)
 	{
 		%item = "LargeShockForceFieldPack";		
 		objectTearup (%this, %item, %client, %player, 0, 0, %flagdist, %description);
 		return 1;
 	}
-	//========================================================================================= Deployable Platform
+	//==== Deployable Platform
 	if (String::findSubStr(%name, "DeployablePlatform") >= 0)
 	{
 		%item = "PlatformPack";		
 		objectTearup (%this, %item, %client, %player, 0, 0, %flagdist, %description);
 		return 1;
 	}	
-	//==================================================================================== Healing Plant
+	//==== Healing Plant
 	if (String::findSubStr(%name, "Healing Plant") >= 0)
 	{
 		%item = "PlantPack";		
 		objectTearup (%this, %item, %client, %player, 0, 0, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= Rocket Turret
+	//==== Rocket Turret
 	if (String::findSubStr(%name, "RMT Rocket Turret") >= 0)
 	{
 		%item = "RocketPack";		
 		objectTearup (%this, %item, %client, %player, 1, 100, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= Plasma Turret
+	//==== Plasma Turret
 	if (String::findSubStr(%name, "RMT Plasma Turret") >= 0)
 	{
 		%item = "PlasmaTurretPack";		
 		objectTearup (%this, %item, %client, %player, 1, 35, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= Elf Turret
+	//==== Elf Turret
 	if (String::findSubStr(%name, "Deployable Elf Turret") >= 0)
 	{
 		%item = "DeployableElf";		
 		objectTearup (%this, %item, %client, %player, 1, 20, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= EMP Turret
+	//==== EMP Turret
 	if (String::findSubStr(%name, "EMP Turret") >= 0)
 	{
 		%item = "ShockPack";		
 		objectTearup (%this, %item, %client, %player, 1, 10, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= Remote Mortar
+	//==== Remote Mortar
 	if (String::findSubStr(%name, "Mortar Turret") >= 0)
 	{
 		%item = "TargetPack";		
 		objectTearup (%this, %item, %client, %player, 1, 55, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= Laser Turret
+	//==== Laser Turret
 	if (String::findSubStr(%name, "Laser Turret") >= 0)
 	{
 		%item = "LaserPack";		
 		objectTearup (%this, %item, %client, %player, 1, 55, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= Arbitor Beacon
+	//==== Arbitor Beacon
 	if (String::findSubStr(%name, "ArbitorBeacon") >= 0)
 	{
 		%item = "ArbitorBeaconPack";		
 		objectTearup (%this, %item, %client, %player, 1, 0, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= EMPBeacon
+	//==== EMPBeacon
 	if (String::findSubStr(%name, "EMPBeacon") >= 0)
 	{
 		%item = "EMPBeaconPack";		
 		objectTearup (%this, %item, %client, %player, 1, 0, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= JammerBeacon
+	//==== JammerBeacon
 	if (String::findSubStr(%name, "JammerBeacon") >= 0)
 	{
 		%item = "JammerBeaconPack";		
 		objectTearup (%this, %item, %client, %player, 1, 0, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= ShieldBeacon
+	//==== ShieldBeacon
 	if (String::findSubStr(%name, "Shield Device") >= 0)
 	{
 		%item = "ShieldBeaconPack";		
 		objectTearup (%this, %item, %client, %player, 1, 0, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= Flamer Turret
+	//==== Flamer Turret
 	if (String::findSubStr(%name, "Flamer Turret") >= 0)
 	{
 		%item = "FlamerTurretPack";		
 		objectTearup (%this, %item, %client, %player, 1, 0, %flagdist, %description);
 		return 1;
 	}
-	//================================================================================================= Port Gen
+	//==== Port Gen
 	if (String::findSubStr(%name, "PortGenerator") >= 0)
 	{
 		%item = "PowerGeneratorPack";		
@@ -2930,13 +2937,13 @@ function objectTearup (%this, %item, %client, %player, %turret, %flag, %flagdist
 
 	if (%flag > 0 && %flagdist < %flag) removeflagdefpoints(%player);
 	//Item::playPickupSound(%this);
-	if(%this)deleteObject(%this);
+	if(%this)deleteobject(%this);
 	$disassymble[%player] = false;
 }
 
-//===============================================================================================================
+//================================================================================================
 //													Heat Seeker
-//===============================================================================================================
+//================================================================================================
 
 
 LightningData LockJaw
@@ -2944,7 +2951,7 @@ LightningData LockJaw
 	//bitmapName       = "";  //paintPulse.bmp
 
 	damageType       = $GravDamageType;
-	coneAngle        = 10.0;
+	coneAngle        = 5.0;
 	damagePerSec      = 0.001;
 	energyDrainPerSec = 0.001;
 
@@ -2979,39 +2986,44 @@ function LockJaw::damageTarget(%target, %timeSlice, %damPerSec, %enDrainPerSec, 
 		}
 		else if (%type == "Flier")
 		{
-			Client::sendMessage(%client,1,"** HeatLock Aquired - Active For Next 15 Seconds!!!~wmine_act.wav");			
-			bottomprint(%client, "<jc><f1>Heat Lock Aquired - Active For Next 15 Seconds! - Fire Now To Launch!", 3);
+			Client::sendMessage(%client,1,"**Lock Aquired - Active For Next 15 Seconds!!!~wmine_act.wav");			
+			bottomprint(%client, "<jc><f1>Lock Aquired - Active For Next 15 Seconds! - Fire Now To Launch!", 3);
 			playSound(TargetingMissile,GameBase::getPosition(%player));
 			Player::trigger(%player,$WeaponSlot,false);
+			%pilot = %target.clLastMount;
+			//%client.target = %pilot; 
+			if(%pilot.driver) LockjawWarn(%client, %pilot);
 			schedule("bottomprint(" @ %client @ ", \"<jc><f1>Lost Heat Lock!\", 3);", 15);
 			schedule(%client @ ".target = -1;", 15);
+			echo(%client.target);
 		}
 		else if(%type == "Player")
 		{	
 			%pack =Player::getMountedItem(%target,$BackpackSlot);
 
-			if(%pack == DeployableSensorJammerPack || %pack == SensorJammerPack || Player::getSensorSupression(%target) > 19)
-			{
-				bottomprint(%client, "<jc><f1>Lock Failed, Target Jammed!", 3);
-				Client::sendMessage(%client,1,"Lock Failed, Target Jammed!~waccess_denied.wav");
-				%client.target = -1;
-			}
-			else
-			if (GameBase::virtual(%target, "getHeatFactor") <= 0.5)
-			{
-				bottomprint(%client, "<jc><f1>Lock Failed, No Heat Source!", 3);
-				Client::sendMessage(%client,1,"Lock Failed, No Heat Source!~waccess_denied.wav");
-				%client.target = -1;
-			}
-			else
-			{
+			//if(%pack == DeployableSensorJammerPack || %pack == SensorJammerPack || Player::getSensorSupression(%target) > 19)
+			//{
+			//	bottomprint(%client, "<jc><f1>Lock Failed, Target Jammed!", 3);
+			//	Client::sendMessage(%client,1,"Lock Failed, Target Jammed!~waccess_denied.wav");
+			//	%client.target = -1;
+			//}
+			//else
+			//if (GameBase::virtual(%target, "getHeatFactor") <= 0.5)
+			//{
+			//	bottomprint(%client, "<jc><f1>Lock Failed, No Heat Source!", 3);
+			//	Client::sendMessage(%client,1,"Lock Failed, No Heat Source!~waccess_denied.wav");
+			//	%client.target = -1;
+			//}
+			//else
+			//{
+				LockjawWarn(%client, %target);
 				Client::sendMessage(%client,1,"** HeatLock Aquired - Active For Next 15 Seconds!!!~wmine_act.wav");			
 				bottomprint(%client, "<jc><f1>Heat Lock Aquired - Active For Next 15 Seconds! - Fire Now To Launch!", 3);
 				playSound(TargetingMissile,GameBase::getPosition(%player));
 				Player::trigger(%player,$WeaponSlot,false);
 				schedule(%client @ ".target = -1;", 15);
 				schedule("bottomprint(" @ %client @ ", \"<jc><f1>Lost Heat Lock!\", 3);", 15);
-			}
+			//}
 		}
 		else
 		{
@@ -3022,23 +3034,18 @@ function LockJaw::damageTarget(%target, %timeSlice, %damPerSec, %enDrainPerSec, 
 	}	
 }
 
-function LockJawWarn(%clientId, %targetId) 
-{
-	if(%targetId) 
-	{
-		%name = Client::getName(%clientId);
-		Client::sendMessage(%targetId,0,"** WARNING ** - " @ %name @ " is tracking your jetpack heat signature!!~waccess_denied.wav");
-		schedule("Client::sendMessage(" @ %targetId @ ",0,\"~~waccess_denied.wav\");",0.5);//access_denied.wav
-	}
-} 
 
 function LockJawFire(%player, %target, %rnd)
 {
+
+	%client = Player::getClient(%player);
+
 	if (getObjectType(%target) == "Player")
 	{
 		if(GameBase::virtual(%target, "getHeatFactor") >= 0.5)
 		{
-			%client = Player::getClient(%player);
+			%targetid = Player::getClient(%target);
+			LockJawWarn(%client, %targetID);
 			Player::decItemCount(%player,$WeaponAmmo[RocketLauncher],1);
 			%trans = GameBase::getMuzzleTransform(%player);
 			%vel = Item::getVelocity(%player);	
@@ -3049,116 +3056,46 @@ function LockJawFire(%player, %target, %rnd)
 			playSound(SoundMissileTurretFire,%pos);
 		}
 	}
+	if (getObjectType(%target) == "Flier")
+	{
+		%targetid = Player::getClient(%target);
+		%pilot = %target.clLastMount;
+		if(%pilot.driver) LockjawWarn(%client, %pilot);
+		Player::decItemCount(%player,$WeaponAmmo[RocketLauncher],1);
+		%trans = GameBase::getMuzzleTransform(%player);
+		%vel = Item::getVelocity(%player);	
+		$targetingmissile = %client.target;
+		Projectile::spawnProjectile("MiniMissileTracker",%trans,%player,%vel,%target);
+		%pos = GameBase::getPosition(%player);
+		playSound(SoundMissileTurretFire,%pos);
+		playSound(SoundMissileTurretFire,%pos);
+	}
 }
 
-//===============================================================================================================
+function LockJawWarn(%clientId, %targetId) 
+{
+	if(%targetId) 
+	{
+		%name = Client::getName(%clientId);
+		Client::sendMessage(%targetId,0,"** WARNING ** - " @ %name @ " is tracking your heat signature!!~waccess_denied.wav");
+		schedule("Client::sendMessage(" @ %targetId @ ",0,\"~~waccess_denied.wav\");",0.5);//access_denied.wav
+	}
+} 
+
+//================================================================================================
 //						Special Functions
-//===============================================================================================================
+//================================================================================================
 function NuclearExplosion(%this)
 {
-	%cl = %this.deployer;
-	%client = client::getownedobject(%cl);
-	%vel = "0 0 0";
-	
-	%pos = gamebase::getposition(%this);
-	%Set = newObject("nukeset",SimSet);
-	%Mask = $SimPlayerObjectType|$StaticObjectType|$VehicleObjectType|$MineObjectType|$SimInteriorObjectType;
-	containerBoxFillSet(%Set, %Mask, %Pos, 15, 15, 25, 0);
-	%num = Group::objectCount(%Set);
-	for(%i; %i < %num; %i++)
-	{
-		%obj = Group::getObject(%Set, %i);
-		GameBase::applyDamage(%obj, $NukeDamageType, 1.5, GameBase::getPosition(%obj), "0 0 0", "0 0 0", %client);		
-	}
-	if(%set)deleteObject(%set);
-
-	%pos1 = gamebase::getposition(%this);
-	%rot = (gamebase::getrotation(%this));
-	%dir = (Vector::getfromrot(%rot));	
-	%trans1 = (%rot @ " " @ %dir @ " " @ %rot);
-
-	%padd = "0 0 2.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(NBaseLight, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");", 0.01,%client);
-
-	%padd = "0 0 2.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(NBase, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");",0.1,%client);
-	
-	%obj = newObject("","Mine","NRing1"); 
-	schedule("GameBase::throw("@%obj@","@%client@",0,false);",0.01, %client);
-	addToSet("MissionCleanup", %obj);
-	schedule("GameBase::setPosition(" @ %obj @ ",\""@%pos@"\");", 0.01, %client); 	
-	
-	%padd = "0 0 3.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(QuietNRing, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",1.1,%client);
-
-	%padd = "0 0 4.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(NRing, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",0.2,%client);
-
-	%padd = "0 0 8.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(QuietNRing, \"" @ %trans @ "\", \"" @ %client @ "\", \"0 0 10\");",0.2,%client);
-	
-	%padd = "0 0 10.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(NBlast, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");",0.3,%client);
-	
-	%obj = newObject("","Mine","NRing1"); 
-	schedule("GameBase::throw("@%obj@","@%client@",0,false);",0.01, %client);
-	addToSet("MissionCleanup", %obj);
-	schedule("GameBase::setPosition(" @ %obj @ ",\""@%pos@"\");", 0.01, %client); 	
- 	
-	%padd = "0 0 25.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(QuietNBlast, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");",0.1,%client);
-
-	%padd = "0 0 35.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(NBlast, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");",0.1,%client);
-	
-	%obj = newObject("","Mine","NRing1"); 
-	schedule("GameBase::throw("@%obj@","@%client@",0,false);",0.01, %client);
-	addToSet("MissionCleanup", %obj);
-	schedule("GameBase::setPosition(" @ %obj @ ",\""@%pos@"\");", 0.01, %client); 	
-	
-	%padd = "0 0 45.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(QuietNBlast, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");",0.1,%client);
-	
-	%padd = "15.0 0 60.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(NCloud, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");",0.1,%client);
-
-	%padd = "-15.0 0 60.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(QuietNCloud, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");",0.1,%client);
-
-	%padd = "0 15.0 60.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(QuietNCloud, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");",0.1,%client);
-
-	%padd = "0 -15.0 60.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(QuietNCloud, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");",0.1,%client);
-
-	%padd = "0 0 75.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(QuietNCloud, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");",0.1,%client);
-
-	%padd = "0 0 65";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(NRing, \"" @ %trans @ "\", \"" @ %client @ "\", \"" @ %vel @ "\");",0.2,%client);
-
-	if(%this) deleteObject(%this);	
+	det(%this.deployer, GameBase::GetPosition(%this));	
+	deleteobject(%this);	
 }
 
 
 RocketData TeleShell
 {
    bulletShapeName = "discb.dts";
+
    explosionTag    = TeleExp;
 
    collisionRadius = 0.0;
@@ -3189,6 +3126,7 @@ RocketData TeleShell
    //trailWidth  = 0.3;
 
    soundId = SoundDiscSpin;
+   rotationPeriod = 1.5;
 };
 
 RocketData StarShell

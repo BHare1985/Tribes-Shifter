@@ -374,10 +374,39 @@ function Elevator::onDestroyed(%this)
 
 function Elevator::checkDelay(%this)
 {
+	Elevator::CheckStayPos(%this);
 	if (getSimTime() >= %this.delayTime) 
 		Elevator::onMove(%this);
 	else
 		schedule("Elevator::checkDelay(" @ %this @ ");",1,%this);
+}
+
+// Y|yukichigai bugfix 
+// Fix to prevent the perma-blocked elevator in Blastside/Broadside 
+ 
+function Elevator::CheckStayPos(%this)
+{ 
+	if(Moveable::getPosition(%this) != 0) 
+	{ 
+		if(%this.ElePos != Moveable::getPosition(%this)) 
+		{ 
+			%this.ElePos = Moveable::getPosition(%this); 
+			%this.EleHold = 0; 
+			return; 
+		} 
+		else if(%this.ElePos == Moveable::getPosition(%this)) 
+		{ 
+			%this.EleHold++; 
+			if(%this.EleHold > 20) 
+			{ 
+				echo("Elevator has stopped for too long, moving to original position."); 
+				Moveable::moveToWaypoint(%this,0); 
+				%this.EleHold = 0; 
+            return; 
+			} 
+			schedule("Elevator::CheckStayPos(" @ %this @ ");",1); 
+		} 
+	}
 }
 
 function Elevator::onTrigEnter(%this,%object,%trigger)

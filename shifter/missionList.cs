@@ -97,11 +97,15 @@ function MissionList::build()
 
 function MissionList::initNextMission()
 {
-	echo ("*** Setting Next Misssion");
 	%totalmis = 0;
-
+	if($mapsToKill == "")$mapsToKill = "Desert_Of_Death desert_of_death Stonehenge OlympusMons OneSmallStep TheLongWalk Turbulence Annihilator AvalancheMkII CloakOfNight Hexbreaker NorthernLights Acrophobia Slipstream";
 	   for(%type = 1; %type < $MLIST::TypeCount; %type++)
 	   {
+			%mapType = $MLIST::Type[%type];
+			if(%mapType == "Open Call" || %mapType == "Capture the Flag" || %mapType == "Balanced")
+				%mapIsCtf = true;
+			else
+				%mapIsCtf = false;
 	      %prev = getWord($MLIST::MissionList[%type], 0);
 	      %ml = $MLIST::MissionList[%type] @ %prev;
 	      %prevName = $MLIST::EName[%prev];
@@ -109,17 +113,44 @@ function MissionList::initNextMission()
 	      for(%i = 1; (%mis = getWord(%ml, %i)) != -1; %i++)
 		  {
 	        	%misName = $MLIST::EName[%mis];
+
 				$nextMission[%prevName] = %misName;
 				%prevName = %misName;
 				
-				$TotalMissionList[%totalmis] = %prevName;
+				$TotalMissionList[%totalmis] = %misName;
 				$TotalMissions = %totalmis;
 				%totalmis = %totalmis + 1;
+
+				if(%mapIsCtf)
+				{
+					if(MapsToKill(%misName)) 
+					{
+						$TotalCTFMaps[%totalctf] = %misName;
+						$TotalCTFMaps = %totalctf;
+						%totalctf = %totalctf + 1;
+					}
+				}
 	      }
 	   }
+			echo ("*** Total CTF " @ %totalctf);
 			echo ("*** Total Missons " @ %totalmis);
-
 }
+
+function MapsToKill(%misName)
+{
+	for(%i = 0; getword($mapsToKill, %i) != -1; %i++)
+	{
+		if(%misName == getword($mapsToKill, %i))
+		{
+			echo("Map Killed: " @ getword($mapsToKill, %i));
+			return false;
+		}
+	}
+	return true;
+}
+
+MissionList::initNextMission();
+
 // Go ahead and build the list
 
 MissionList::build();

@@ -24,12 +24,6 @@ function AmmoStation::onEndSequence(%this,%thread)
 	if(%this.clTeamEnergy == "") %this.clTeamEnergy = (Player::getClient(%player)).TeamEnergy;
 	if (Station::onEndSequence(%this,%thread))
 	{
-		//%weapon = Player::getMountedItem(%player,$WeaponSlot);
-		//if(%weapon != -1)
-		//{
-		//	%player.lastWeapon = %weapon;
-		//	Player::unMountItem(%player,$WeaponSlot);
-		//}
 		AmmoStation::onResupply(%this);
 	}
 }									
@@ -165,14 +159,7 @@ function DeployableAmmoStation::onActivate(%this)
 		schedule("AmmoStation::onResupply(" @ %this @ ");",0.5,%this);
 		%this.lastPlayer = Station::getTarget(%this);
 		%player = %this.lastPlayer;
-		%player.Station = %this;
 		%this.target = Player::getClient(Station::getTarget(%this));
-		//%weapon = Player::getMountedItem(%player,$WeaponSlot);
-		//if(%weapon != -1)
-		//{
-		//	%player.lastWeapon = %weapon;
-		//	Player::unMountItem(%player,$WeaponSlot);
-		//}
 	}
 	else
 	GameBase::setActive(%this,false);

@@ -102,7 +102,7 @@ function EndGame()
    startMainMenuScreen();
    deleteServer();
 	QuickStart();
-   deleteObject(ConsoleScheduler);
+   deleteobject(ConsoleScheduler);
    newObject(ConsoleScheduler, SimConsoleScheduler);
    if($quitOnDisconnect)
       schedule("quit();", 0.01);
@@ -169,13 +169,13 @@ function onExit()
   BotHUD::Remove();  //Added by Werewolf
 
 if (isObject($BotHUD[0]))
-	deleteObject($BotHUD[0]);
+	deleteobject($BotHUD[0]);
 if (isObject($BotHUD[1]))
-	deleteObject($BotHUD[1]);
+	deleteobject($BotHUD[1]);
 if (isObject(BotHUD_Frame))
-	deleteObject(BotHUD_Frame);
+	deleteobject(BotHUD_Frame);
 if (isObject(BotHUD_Main))
-	deleteObject(BotHUD_Main);
+	deleteobject(BotHUD_Main);
 
 
   if(isObject(playGui))

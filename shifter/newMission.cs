@@ -303,7 +303,7 @@ function NewMission::doCreate(%mission)
    $ConnectedToServer = false;
    deleteServer();
    purgeResources();
-   deleteObject(ConsoleScheduler);
+   deleteobject(ConsoleScheduler);
    newObject(ConsoleScheduler, SimConsoleScheduler);
    exec(editor);  // pre-load the editor
    createServer(%mission, false);

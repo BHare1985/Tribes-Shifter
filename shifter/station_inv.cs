@@ -18,55 +18,6 @@ StaticShapeData InventoryStation
    	explosionId = flashExpLarge;
 };
 
-//greyflcn
-//New function
-function InventoryStation::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
-{
-	if($ceaseFire) return;
-	%damageLevel = GameBase::getDamageLevel(%this);
-	%dValue = %damageLevel + %value;
-   			
-   	if (%object != "0" && %object != -1)
-   	{
-   		if (gamebase::getownerclient(%object) != "-1")
-   			%this.lastDamageObject = client::getownedobject(gamebase::getownerclient(%object));
-		else   	
-   			%this.lastDamageObject = %object;
-   	}
-   	
-   	%this.lastDamageTeam = GameBase::getTeam(%this.lastDamageObject);
-	
-	if(GameBase::getTeam(%this) == GameBase::getTeam(%object))
-	{	
-		%name = GameBase::getDataName(%this);
-		if((%name.className == Generator || %name.className == Station) && %type != $CrushDamageType)
-		{
-			%TDS = $Server::TeamDamageScale;
-			%dValue = %damageLevel + %value * %TDS;
-			%disable = GameBase::getDisabledDamage(%this);
-
-			if((!$Server::TourneyMode && %dValue > %disable - 0.05) && !%this.base)
-			{
-				if(%damageLevel > %disable - 0.05)
-					return;
-				else
-					%dValue = %disable - 0.05;
-			}
-		}
-	}
-	else
-	{
-		if (%this.base)
-		{
-			%shape = (GameBase::getDataName(%this)).shapeFile;
-			%name = GameBase::getDataName(%this);
-			%TDS = $Server::TeamDamageScale;
-			%dValue = %damageLevel + %value * %TDS;
-			%disable = GameBase::getDisabledDamage(%this);
-		}
-	}
-	GameBase::setDamageLevel(%this,%dValue);
-}
 
 function InventoryStation::onEndSequence(%this,%thread)
 {
@@ -135,6 +86,7 @@ function InventoryStation::onResupply(%this,%InvShopList)
 		%player = Client::getOwnedObject(%this.target);
 		Client::clearItemShopping(%this.target);
 		Client::sendMessage(%this.target,0,"Station Access Off");
+		%player.dropcount = 0;
 		Station::onEndSequence(%this);
 		if(GameBase::getDataName(%player.Station) == DeployableInvStation)
 		{

@@ -441,6 +441,27 @@ ExplosionData turretExp
    radFactors = { 1.0, 1.0, 1.0 };
 };
 
+ExplosionData quietbulletExp0
+{
+   shapeName = "chainspk.dts";
+   soundId   = ricochet1;
+
+   faceCamera = true;
+   randomSpin = false;
+
+   timeZero = 0.100;
+   timeOne  = 0.900;
+
+   shiftPosition = True;
+
+   //hasLight   = false;
+   //lightRange = 0.0;
+	//colors[0] = { 0.0, 0.0, 0.0 };
+	//colors[1] = { 0.0, 0.0, 0.0 };
+	//colors[2] = { 0.0, 0.0, 0.0 };
+	//radFactors = { 0.0, 0.0, 0.0 };
+};
+
 ExplosionData bulletExp0
 {
    shapeName = "chainspk.dts";
@@ -809,6 +830,25 @@ ExplosionData ShockwaveFour
    timeScale = 0.5;   
    timeZero = 0.100;
    timeOne  = 0.300;
+
+   colors[0]  = { 0.0, 0.0, 1.0 };
+   colors[1]  = { 0.0, 0.0, 5.0 };
+   colors[2]  = { 0.1, 0.0, 10.0 };
+   radFactors = { 0.0, 0.0, 3.0 };
+};
+
+ExplosionData modBomb
+{
+   shapeName = "shockwave_large.dts";
+   soundId   = shockExplosion;
+
+   faceCamera = true;
+   randomSpin = true;
+   hasLight   = true;
+   lightRange = 8.0;
+   timeScale = 0.5;   
+   timeZero = 0.100;
+   timeOne  = 0.400;
 
    colors[0]  = { 0.0, 0.0, 1.0 };
    colors[1]  = { 0.0, 0.0, 5.0 };

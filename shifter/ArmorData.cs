@@ -1,4 +1,11 @@
-
+function CopyItemData(%max, %armor1, %armor2)
+{
+	for (%i = 0; %i < %max; %i++)
+	{
+		%itemname = getItemData(%i);
+		$ItemMax[%armor2, %itemname] = $ItemMax[%armor1, %itemname];
+	}
+}
 
 function BuildItemList()
 {
@@ -36,8 +43,47 @@ function BuildItemList()
 			%armor = $armorId[%k];
 			$ItemMax[%armor, %itemname] = 0;
 		}
-		
+	}
+
+	for (%k=0; $armorId[%k] != ""; %k++)
+	{
+		%armor = $armorId[%k];
+		$ItemMax[%armor, "ValkyrieModule"] = 1;
+		$ItemMax[%armor, "HellFireModule"] = 1;
+		$ItemMax[%armor, "DetPackModule"] = 1;
+		$ItemMax[%armor, "BomberModule"] = 1;
+		$ItemMax[%armor, "PickUpModule"] = 1;
+		$ItemMax[%armor, "WraithModule"] = 1;
+		$ItemMax[%armor, "StealthModule"] = 1;
+		$ItemMax[%armor, "InterceptorModule"] = 1;
+		$ItemMax[%armor, "GodHammerModule"] = 1;
+		$ItemMax[%armor, "PhoenixM"] = 1;
+		$ItemMax[%armor, "BooM"] = 1;
+		$ItemMax[%armor, "NapM"] = 1;
+		$ItemMax[%armor, "Hider"] = 1;
+		$ItemMax[%armor, "GasM"] = 1;
+		$ItemMax[%armor, "EmpM"] = 1;
+		$ItemMax[%armor, "SpyPod"] = 1;
+		$ItemMax[%armor, "TargetingLaser"] = 1;
+		$ItemMax[%armor, "RepairKit"] = 1;
 		$ItemMax[%armor, "flag"] = 1;
+
+		if(%armor != jarmor && %armor != parmor )
+		{
+			$ItemMax[%armor,	AmmoPack] = 1;
+			$ItemMax[%armor,	RepairPack] = 1;
+			$ItemMax[%armor,	MotionSensorPack] = 1;
+			$ItemMax[%armor,	SensorJammerPack] = 1;
+			$ItemMax[%armor,	EnergyRifle] = 1;
+			$ItemMax[%armor,	PulseSensorPack] = 1;
+			$ItemMax[%armor,	EnergyPack] = 1;
+			$ItemMax[%armor,	CameraPack] = 1;
+			$ItemMax[%armor,	ShieldPack] = 1;
+			$ItemMax[%armor,	StealthShieldPack] = 1;
+			$ItemMax[%armor,	Disclauncher] = 1;
+			$ItemMax[%armor,	DeployableSensorJammerPack] = 1;
+			$ItemMax[%armor,	Blaster] = 1;
+		}
 	}
 
 	$MaxWeapons[aarmor] = 4;
@@ -62,160 +108,280 @@ function BuildItemList()
 	$MaxWeapons[stimfemale] = 2;
 
 	//====================================================== Arbitor
-	$ItemMax[aarmor, 	ArbitorBeaconPack] = 1;			$ItemMax[afemale,	EMPBeaconPack] = 1;
-	$ItemMax[aarmor, 	EMPBeaconPack] = 1;			$ItemMax[afemale,	ShieldBeaconPack] = 1;
-	$ItemMax[aarmor, 	ShieldBeaconPack] = 1;			$ItemMax[afemale,	AmmoPack] = 1;
-	$ItemMax[aarmor,	AmmoPack] = 1;				$ItemMax[afemale,	ArbitorBeaconPack] = 1;
-	$ItemMax[aarmor,	Beacon] = 3;				$ItemMax[afemale,	Beacon] = 3;
-	$ItemMax[aarmor,	Blaster] = 1;				$ItemMax[afemale,	Blaster] = 1;
-	$ItemMax[aarmor,	BulletAmmo] = 150;			$ItemMax[afemale,	BulletAmmo] = 150;
-	$ItemMax[aarmor,	CameraPack] = 1;			$ItemMax[afemale,	CameraPack] = 1;
-	$ItemMax[aarmor,	CloakingDevice] = 1;			$ItemMax[afemale,	CloakingDevice] = 1;
-	$ItemMax[aarmor,	ConCun] = 1;				$ItemMax[afemale,	ConCun] = 1;
-	$ItemMax[aarmor,	DeployableAmmoPack] = 1;		$ItemMax[afemale,	DeployableAmmoPack] = 1;
-	$ItemMax[aarmor,	DeployableElf] = 1;			$ItemMax[afemale,	DeployableElf] = 1;
-	$ItemMax[aarmor,	DeployableInvPack] = 1;			$ItemMax[afemale,	DeployableInvPack] = 1;
-	$ItemMax[aarmor,	DiscAmmo] = 25;				$ItemMax[afemale,	DiscAmmo] = 25;
-	$ItemMax[aarmor,	EnergyPack] = 1;			$ItemMax[afemale,	EnergyPack] = 1;
-	$ItemMax[aarmor,	ForceFieldPack] = 1;			$ItemMax[afemale,	ForceFieldPack] = 1;
-	$ItemMax[aarmor,	GravGun] = 1;				$ItemMax[afemale,	GravGun] = 1;
-	$ItemMax[aarmor,	Grenade] = 5;				$ItemMax[afemale,	Grenade] = 5;
-	$ItemMax[aarmor,	GrenadeAmmo] = 15;			$ItemMax[afemale,	GrenadeAmmo] = 15;
-	$ItemMax[aarmor,	HoloPack] = 1;				$ItemMax[afemale,	HoloPack] = 1;
-	$ItemMax[aarmor,	HyperB] = 1;				$ItemMax[afemale,	HyperB] = 1;
-	$ItemMax[aarmor,	IonGun] = 1;				$ItemMax[afemale,	IonGun] = 1;
-	$ItemMax[aarmor,	LargeForceFieldPack] = 1;		$ItemMax[afemale,	LargeForceFieldPack] = 1;
-	$ItemMax[aarmor,	LargeShockForceFieldPack] = 1;		$ItemMax[afemale,	LargeShockForceFieldPack] = 1;
-	$ItemMax[aarmor,	LightningPack] = 1;			$ItemMax[afemale,	LightningPack] = 1;
-	$ItemMax[aarmor,	MineAmmo] = 3;				$ItemMax[afemale,	MineAmmo] = 3;
-	$ItemMax[aarmor,	MotionSensorPack] = 1;			$ItemMax[afemale,	MotionSensorPack] = 1;
-	$ItemMax[aarmor,	PlasmaAmmo] = 40;			$ItemMax[afemale,	PlasmaAmmo] = 40;
-	$ItemMax[aarmor,	PulseSensorPack] = 1;			$ItemMax[afemale,	PulseSensorPack] = 1;
-	$ItemMax[aarmor,	RailAmmo] = 10;				$ItemMax[afemale,	RailAmmo] = 10;
-	$ItemMax[aarmor,	RegenerationPack] = 1;			$ItemMax[afemale,	RegenerationPack] = 1;
-	$ItemMax[aarmor,	RepairKit] = 1;				$ItemMax[afemale,	RepairKit] = 1;
-	$ItemMax[aarmor,	RepairPack] = 1;			$ItemMax[afemale,	RepairPack] = 1;
-	$ItemMax[aarmor,	ShieldPack] = 1;			$ItemMax[afemale,	ShieldPack] = 1;
-	$ItemMax[aarmor,	StealthShieldPack] = 1;			$ItemMax[afemale,	StealthShieldPack] = 1;
-	$ItemMax[aarmor,	TargetingLaser] = 1;			$ItemMax[afemale,	TargetingLaser] = 1;
-	$ItemMax[aarmor,	TranqAmmo] = 20;			$ItemMax[afemale,	TranqAmmo] = 20;
-	$ItemMax[aarmor,	TurretPack] = 1;			$ItemMax[afemale,	TurretPack] = 1;
-	$ItemMax[aarmor,	Volter] = 1;				$ItemMax[afemale,	Volter] = 1;
-	$ItemMax[aarmor,	ShockPack] = 1;				$ItemMax[afemale,	ShockPack] = 1;
-	$ItemMax[aarmor,	ShockFloorPack] = 1;			$ItemMax[afemale,	ShockFloorPack] = 1;
-	$ItemMax[aarmor,	EnergyRifle] = 1;			$ItemMax[afemale,	EnergyRifle] = 1;
-	$ItemMax[aarmor,	SilencerAmmo] = 25;		     	$ItemMax[afemale,	SilencerAmmo] = 25;
-	$ItemMax[aarmor,	AutoRocketAmmo] = 12;			$ItemMax[afemale,	AutoRocketAmmo] = 12;
-	$ItemMax[aarmor,	ValkyrieModule] = 1;		     	$ItemMax[afemale,	ValkyrieModule] = 1;
-	$ItemMax[aarmor,	NapalmModule] = 0;		     $ItemMax[afemale,	NapalmModule] = 0;
-	$ItemMax[aarmor,	HellFireModule] = 1;		     $ItemMax[afemale,	HellFireModule] = 1;
-	$ItemMax[aarmor,	DetPackModule] = 1;		     $ItemMax[afemale,	DetPackModule] = 1;
-	$ItemMax[aarmor,	BomberModule] = 1;		     $ItemMax[afemale,	BomberModule] = 1;
-	$ItemMax[aarmor,	PickUpModule] = 1;		     $ItemMax[afemale,	PickUpModule] = 1;
-	$ItemMax[aarmor,	MineNetModule] = 0;		     $ItemMax[afemale,	MineNetModule] = 0;
-	$ItemMax[aarmor,	WraithModule] = 1;		     $ItemMax[afemale,	WraithModule] = 1;
-	$ItemMax[aarmor,	StealthModule] = 1;		     $ItemMax[afemale,	StealthModule] = 1;
-	$ItemMax[aarmor,	InterceptorModule] = 1;		     $ItemMax[afemale,	InterceptorModule] = 1;
-	$ItemMax[aarmor,	GodHammerModule] = 1;		     $ItemMax[afemale,	GodHammerModule] = 1;
+	$ItemMax[aarmor, 	ArbitorBeaconPack] = 1;
+	$ItemMax[aarmor, 	EMPBeaconPack] = 1;
+	$ItemMax[aarmor, 	ShieldBeaconPack] = 1;
+	$ItemMax[aarmor,	Beacon] = 3;
+	$ItemMax[aarmor,	BulletAmmo] = 150;
+	$ItemMax[aarmor,	CloakingDevice] = 1;
+	$ItemMax[aarmor,	ConCun] = 1;
+	$ItemMax[aarmor,	DeployableAmmoPack] = 1;
+	$ItemMax[aarmor,	DeployableElf] = 1;
+	$ItemMax[aarmor,	DeployableInvPack] = 1;
+	$ItemMax[aarmor,	DiscAmmo] = 25;
+	$ItemMax[aarmor,	ForceFieldPack] = 1;
+	$ItemMax[aarmor,	GravGun] = 1;
+	$ItemMax[aarmor,	Grenade] = 5;
+	$ItemMax[aarmor,	GrenadeAmmo] = 15;
+	$ItemMax[aarmor,	HoloPack] = 1;
+	$ItemMax[aarmor,	HyperB] = 1;
+	$ItemMax[aarmor,	IonGun] = 1;
+	$ItemMax[aarmor,	LargeForceFieldPack] = 1;
+	$ItemMax[aarmor,	LargeShockForceFieldPack] = 1;
+	$ItemMax[aarmor,	LightningPack] = 1;
+	$ItemMax[aarmor,	MineAmmo] = 3;
+	$ItemMax[aarmor,	PlasmaAmmo] = 40;
+	$ItemMax[aarmor,	RailAmmo] = 10;
+	$ItemMax[aarmor,	RegenerationPack] = 1;
+	$ItemMax[aarmor,	TranqAmmo] = 20;
+	$ItemMax[aarmor,	TurretPack] = 1;
+	$ItemMax[aarmor,	Volter] = 1;
+	$ItemMax[aarmor,	ShockPack] = 1;
+	$ItemMax[aarmor,	ShockFloorPack] = 1;
+	$ItemMax[aarmor,	SilencerAmmo] = 25;
+	$ItemMax[aarmor,	AutoRocketAmmo] = 12;	
+	CopyItemData(%max, aarmor, afemale);
 
 
-	//====================================================== Goliath
-	$ItemMax[barmor,	AirAmmoPad] = 1;			$ItemMax[bfemale,	AirAmmoPad] = 1;
-	$ItemMax[barmor,	AmmoPack] = 1;				$ItemMax[bfemale,	AmmoPack] = 1;
-	$ItemMax[barmor,	Beacon] = 6;				$ItemMax[bfemale,	Beacon] = 6;
-	$ItemMax[barmor,	CameraPack] = 1;		 	$ItemMax[bfemale,	CameraPack] = 1;
-	$ItemMax[barmor,	DeployableAmmoPack] = 1;		$ItemMax[bfemale,	DeployableAmmoPack] = 1;
-	$ItemMax[barmor,	DeployableComPack] = 1;			$ItemMax[bfemale,	DeployableComPack] = 1;
-	$ItemMax[barmor,	DeployableInvPack] = 1;			$ItemMax[bfemale,	DeployableInvPack] = 1;
-	$ItemMax[barmor,	DeployableSensorJammerPack] = 1;	$ItemMax[bfemale,	DeployableSensorJammerPack] = 1;
-	$ItemMax[barmor,	EnergyPack] = 1;		 	$ItemMax[bfemale,	EnergyPack] = 1;
-	$ItemMax[barmor,	Flamer] = 1;			 	$ItemMax[bfemale,	Flamer] = 1;
-	$ItemMax[barmor,	ForceFieldPack] = 1;		 	$ItemMax[bfemale,	ForceFieldPack] = 1;
-	$ItemMax[barmor,	Grenade] = 8;			 	$ItemMax[bfemale,	Grenade] = 8;
-	$ItemMax[barmor,	GrenadeAmmo] = 25;		 	$ItemMax[bfemale,	GrenadeAmmo] = 25;
-	$ItemMax[barmor,	GrenadeLauncher] = 1;		 	$ItemMax[bfemale,	GrenadeLauncher] = 1;
-	$ItemMax[barmor,	HoloPack] = 1;			 	$ItemMax[bfemale,	HoloPack] = 1;
-	$ItemMax[barmor,	MineAmmo] = 6;			 	$ItemMax[bfemale,	MineAmmo] = 6;
-	$ItemMax[barmor,	Mortar] = 1;			 	$ItemMax[bfemale,	Mortar] = 1;
-	$ItemMax[barmor,	MortarAmmo] = 8;		 	$ItemMax[bfemale,	MortarAmmo] = 8;
-	$ItemMax[barmor,	MotionSensorPack] = 1;		 	$ItemMax[bfemale,	MotionSensorPack] = 1;
-	$ItemMax[barmor,	PlasmaAmmo] = 50;		 	$ItemMax[bfemale,	PlasmaAmmo] = 50;
-	$ItemMax[barmor,	PlasmaGun] = 1;			 	$ItemMax[bfemale,	PlasmaGun] = 1;
-	$ItemMax[barmor,	PulseSensorPack] = 1;		 	$ItemMax[bfemale,	PulseSensorPack] = 1;
-	$ItemMax[barmor,	RailAmmo] = 10;			 	$ItemMax[bfemale,	RailAmmo] = 10;
-	$ItemMax[barmor,	RepairKit] = 1;			 	$ItemMax[bfemale,	RepairKit] = 1;
-	$ItemMax[barmor,	RepairPack] = 1;		 	$ItemMax[bfemale,	RepairPack] = 1;
-	$ItemMax[barmor,	RocketAmmo] = 10;		 	$ItemMax[bfemale,	RocketAmmo] = 10;
-	$ItemMax[barmor,	RocketLauncher] = 1;		 	$ItemMax[bfemale,	RocketLauncher] = 1;
-	$ItemMax[barmor,	RocketPack] = 1;		 	$ItemMax[bfemale,	RocketPack] = 1;
-	$ItemMax[barmor,	SensorJammerPack] = 1;		 	$ItemMax[bfemale,	SensorJammerPack] = 1;
-	$ItemMax[barmor,	ShieldPack] = 1;		 	$ItemMax[bfemale,	ShieldPack] = 1;
-	$ItemMax[barmor,	StealthShieldPack] = 1;		 	$ItemMax[bfemale,	StealthShieldPack] = 1;
-	$ItemMax[barmor,	SuicidePack] = 1;		 	$ItemMax[bfemale,	SuicidePack] = 1;
-	$ItemMax[barmor,	TargetingLaser] = 1;		 	$ItemMax[bfemale,	TargetingLaser] = 1;
-	$ItemMax[barmor,	SMRPack] = 1;				$ItemMax[bfemale,	SMRPack] = 1;
-	$ItemMax[barmor,	AutoRocketAmmo] = 12;			$ItemMax[bfemale,	AutoRocketAmmo] = 12;
-	$ItemMax[barmor,	EnergyRifle] = 1;			$ItemMax[bfemale,	EnergyRifle] = 1;
-	$ItemMax[barmor,	SilencerAmmo] = 25;		     	$ItemMax[bfemale,	SilencerAmmo] = 25;
-	$ItemMax[barmor,	DiscAmmo] = 25;			$ItemMax[bfemale,	DiscAmmo] = 25;
-	$ItemMax[barmor,	Disclauncher] = 1;		$ItemMax[bfemale,	Disclauncher] = 1;
-	$ItemMax[barmor,	TargetPack] = 1;		$ItemMax[bfemale,	TargetPack] = 1;
+//====================================================== Goliath
+	$ItemMax[barmor,	AirAmmoPad] = 1;
+	$ItemMax[barmor,	Beacon] = 6;
+	$ItemMax[barmor,	CoolLauncher]=1;
+	$ItemMax[barmor,	DeployableAmmoPack] = 1;
+	$ItemMax[barmor,	DeployableComPack] = 1;
+	$ItemMax[barmor,	DeployableInvPack] = 1;
+	$ItemMax[barmor,	Flamer] = 1;
+	$ItemMax[barmor,	ForceFieldPack] = 1;
+	$ItemMax[barmor,	Grenade] = 8;
+	$ItemMax[barmor,	GrenadeAmmo] = 25;
+	$ItemMax[barmor,	GrenadeLauncher] = 1;
+	$ItemMax[barmor,	HoloPack] = 1;
+	$ItemMax[barmor,	MineAmmo] = 6;
+	$ItemMax[barmor,	Mortar] = 1;
+	$ItemMax[barmor,	MortarAmmo] = 8;
+	$ItemMax[barmor,	PlasmaAmmo] = 50;
+	$ItemMax[barmor,	PlasmaGun] = 1;
+	$ItemMax[barmor,	RailAmmo] = 10;
+	$ItemMax[barmor,	RocketAmmo] = 10;
+	$ItemMax[barmor,	RocketLauncher] = 1;
+	$ItemMax[barmor,	RocketPack] = 1;
+	$ItemMax[barmor,	SuicidePack] = 1;
+	$ItemMax[barmor,	SMRPack] = 1;
+	$ItemMax[barmor,	AutoRocketAmmo] = 12;
+	$ItemMax[barmor,	SilencerAmmo] = 25;
+	$ItemMax[barmor,	DiscAmmo] = 25;
+	$ItemMax[barmor,	TargetPack] = 1;
+	$ItemMax[barmor,	Blaster] = 0;
+	CopyItemData(%max, barmor, bfemale);
 
-	$ItemMax[barmor,	ValkyrieModule] = 1;		     	$ItemMax[bfemale,	ValkyrieModule] = 1;
-	$ItemMax[barmor,	NapalmModule] = 0;		     $ItemMax[bfemale,	NapalmModule] = 0;
-	$ItemMax[barmor,	HellFireModule] = 1;		     $ItemMax[bfemale,	HellFireModule] = 1;
-	$ItemMax[barmor,	DetPackModule] = 1;		     $ItemMax[bfemale,	DetPackModule] = 1;
-	$ItemMax[barmor,	BomberModule] = 1;		     $ItemMax[bfemale,	BomberModule] = 1;
-	$ItemMax[barmor,	PickUpModule] = 1;		     $ItemMax[bfemale,	PickUpModule] = 1;
-	$ItemMax[barmor,	MineNetModule] = 0;		     $ItemMax[bfemale,	MineNetModule] = 0;
-	$ItemMax[barmor,	WraithModule] = 1;		     $ItemMax[bfemale,	WraithModule] = 1;
-	$ItemMax[barmor,	StealthModule] = 1;		     $ItemMax[bfemale,	StealthModule] = 1;
-	$ItemMax[barmor,	InterceptorModule] = 1;		     $ItemMax[bfemale,	InterceptorModule] = 1;
-	$ItemMax[barmor,	GodHammerModule] = 1;		     $ItemMax[bfemale,	GodHammerModule] = 1;
+	//====================================================== Engineer
+	$ItemMax[earmor, 	ArbitorBeaconPack] = 1;
+	$ItemMax[earmor, 	EMPBeaconPack] = 1;
+	$ItemMax[earmor, 	PowerGeneratorPack] = 1;
+	$ItemMax[earmor, 	ShieldBeaconPack] = 1;
+	$ItemMax[earmor,	AccelPPack] = 1;
+	$ItemMax[earmor,	AirAmmoPad] = 1;
+	$ItemMax[earmor,	AirBase] = 1;
+	$ItemMax[earmor,	AutoRocketAmmo] = 10;
+	$ItemMax[earmor,	Beacon] = 3;
+	$ItemMax[earmor,	BlastFloorPack] = 1;
+	$ItemMax[earmor,	BlastWallPack] = 1;
+	$ItemMax[earmor,	BulletAmmo] = 150;
+	$ItemMax[earmor,	Chaingun] = 1;
+	$ItemMax[earmor,	CoolLauncher] = 1;
+	$ItemMax[earmor,	DeployableAmmoPack] = 1;
+	$ItemMax[earmor,	DeployableComPack] = 1;
+	$ItemMax[earmor,	DeployableElf] = 1;
+	$ItemMax[earmor,	DeployableInvPack] = 1;
+	$ItemMax[earmor,	DiscAmmo] = 20;
+	$ItemMax[earmor,	disit] = 1;
+	$ItemMax[earmor,	EmplacementPack] = 1;
+	$ItemMax[earmor,	Equalizer] = 1;	
+	$ItemMax[earmor,	Fixit] = 1;
+	$ItemMax[earmor,	ForceFieldPack] = 1;
+	$ItemMax[earmor,	ShockFloorPack] = 1;
+	$ItemMax[earmor,	GravGun] = 1;
+	$ItemMax[earmor,	Grenade] = 6;
+	$ItemMax[earmor,	GrenadeAmmo] = 20;
+	$ItemMax[earmor,	GrenadeLauncher] = 1;
+	$ItemMax[earmor,	Hackit] = 1;
+	$ItemMax[earmor,	HoloPack] = 1;
+	$ItemMax[earmor,	Laptop] = 1;
+	$ItemMax[earmor,	LargeForceFieldPack] = 1;
+	$ItemMax[earmor,	LargeShockForceFieldPack] = 1;
+	$ItemMax[earmor,	LaserPack] = 1;
+	$ItemMax[earmor,	LaunchPack] = 1;
+	$ItemMax[earmor,	MineAmmo] = 3;
+	$ItemMax[earmor,	PlantPack] = 1;	
+	$ItemMax[earmor,	PlasmaAmmo] = 40;
+	$ItemMax[earmor,	PlasmaGun] = 1;	
+	$ItemMax[earmor,	PlasmaTurretPack] = 1;
+	$ItemMax[earmor,	PlatformPack] = 1;
+	$ItemMax[earmor,	RailAmmo] = 10;
+	$ItemMax[earmor,	Railgun] = 1;
+	$ItemMax[earmor,	RocketAmmo] = 5;
+	$ItemMax[earmor,	RocketLauncher] = 1;
+	$ItemMax[earmor,	RocketPack] = 1;
+	$ItemMax[earmor,	ShockPack] = 1;
+	$ItemMax[earmor,	TargetPack] = 1;
+	$ItemMax[earmor,	TeleportPack] = 1;
+	$ItemMax[earmor,	TranqAmmo] = 20;
+	$ItemMax[earmor,	TreePack] = 1;
+	$ItemMax[earmor,	TurretPack] = 1;
+	$ItemMax[earmor,	VulcanAmmo] = 200;
+	$ItemMax[earmor,	EngineerTurretPack] = 1;
+	$ItemMax[earmor, 	BarragePack] = 1;
+	$ItemMax[earmor, 	JammerBeaconPack] = 1;
+	$ItemMax[earmor,	SilencerAmmo] = 25;
+	CopyItemData(%max, earmor, efemale);
 
-	//====================================================== Dreadnaught
+	//====================================================== Assassin
+	$ItemMax[larmor, 	ArbitorBeaconPack] = 1;
+	$ItemMax[larmor,	Beacon] = 5;
+	$ItemMax[larmor,	BoomAmmo] = 10;
+	$ItemMax[larmor,	BoomStick] = 1;
+	$ItemMax[larmor,	DiscAmmo] = 20;
+	$ItemMax[larmor,	ForceFieldPack] = 1;
+	$ItemMax[larmor,	Grenade] = 3;
+	$ItemMax[larmor,	GrenadeAmmo] = 15;
+	$ItemMax[larmor,	GrenadeLauncher] = 1;
+	$ItemMax[larmor,	HoloPack] = 1;
+	$ItemMax[larmor,	LaserRifle] = 1;
+	$ItemMax[larmor,	MineAmmo] = 3;
+	$ItemMax[larmor,	PlasmaAmmo] = 30;
+	$ItemMax[larmor,	PlasmaGun] = 1;
+	$ItemMax[larmor,	RailAmmo] = 10;
+	$ItemMax[larmor,	Railgun] = 1;
+	$ItemMax[larmor,	SniperAmmo] = 25;
+	$ItemMax[larmor,	SniperRifle] = 1;
+	$ItemMax[larmor,	TranqAmmo] = 20;
+	$ItemMax[larmor,	TranqGun] = 1;
+	$ItemMax[larmor,	TreePack] = 1;
+	$ItemMax[larmor,	Silencer] = 1;
+	$ItemMax[larmor,	SilencerAmmo] = 20;
+	$ItemMax[larmor,	ShieldPack] = 0;
+	$ItemMax[larmor,	StealthShieldPack] = 0;
+	CopyItemData(%max, larmor, lfemale);
+
+	//====================================================== Mercinary
+	$ItemMax[marmor,	Grenade] = 6;
+	$ItemMax[marmor,	Beacon] = 3;
+	$ItemMax[marmor,	BoomAmmo] = 15;
+	$ItemMax[marmor,	BoomStick] = 1;
+	$ItemMax[marmor,	BulletAmmo] = 150;
+	$ItemMax[marmor,	Chaingun] = 1;
+	$ItemMax[marmor,	DeployableAmmoPack] = 1;
+	$ItemMax[marmor,	DeployableInvPack] = 1;
+	$ItemMax[marmor,	DiscAmmo] = 30;
+	$ItemMax[marmor,	Equalizer] = 1;	
+	$ItemMax[marmor,	ForceFieldPack] = 1;
+	$ItemMax[marmor,	GrenadeAmmo] = 30;
+	$ItemMax[marmor,	GrenadeLauncher] = 1;
+	$ItemMax[marmor,	HoloPack] = 1;
+	$ItemMax[marmor,	HyperB] = 1;
+	$ItemMax[marmor,	MineAmmo] = 3;
+	$ItemMax[marmor,	MortarAmmo] = 10;
+	$ItemMax[marmor,	PlasmaAmmo] = 40;
+	$ItemMax[marmor,	PlasmaGun] = 1;	
+	$ItemMax[marmor,	RailAmmo] = 10;	
+	$ItemMax[marmor,	RocketAmmo] = 10;
+	$ItemMax[marmor,	RocketLauncher] = 1;
+	$ItemMax[marmor,	TranqAmmo] = 20;
+	$ItemMax[marmor,	TurretPack] = 1;
+	$ItemMax[marmor,	Vulcan] = 1;
+	$ItemMax[marmor,	VulcanAmmo] = 400;
+	$ItemMax[marmor,	Silencer] = 1;
+	$ItemMax[marmor,	SilencerAmmo] = 30;
+	$ItemMax[marmor, 	BarragePack] = 1;
+	$ItemMax[marmor, 	Booster1Pack] = 1;
+	$ItemMax[marmor, 	Booster2Pack] = 1;
+	$ItemMax[marmor,	AutoRocketAmmo] = 15;
+	$ItemMax[marmor,	RocketPack] = 1;
+	CopyItemData(%max, marmor, mfemale);
+
+	//====================================================== Scout
+	$ItemMax[sarmor,	Beacon] = 3;
+	$ItemMax[sarmor,	BoomAmmo] = 10;
+	$ItemMax[sarmor,	BoomStick] = 1;
+	$ItemMax[sarmor,	BulletAmmo] = 50;
+	$ItemMax[sarmor,	Chaingun] = 1;
+	$ItemMax[sarmor,	DiscAmmo] = 15;
+	$ItemMax[sarmor,	FlightPack] = 1;
+	$ItemMax[sarmor,	ForceFieldPack] = 1;
+	$ItemMax[sarmor,	Grenade] = 5;
+	$ItemMax[sarmor,	GrenadeAmmo] = 15;
+	$ItemMax[sarmor,	GrenadeLauncher] = 1;
+	$ItemMax[sarmor,	HoloPack] = 1;
+	$ItemMax[sarmor,	HyperB] = 1;
+	$ItemMax[sarmor,	Laptop] = 1;
+	$ItemMax[sarmor,	LaserRifle] = 1;
+	$ItemMax[sarmor,	MechPack] = 1;
+	$ItemMax[sarmor,	MineAmmo] = 3;
+	$ItemMax[sarmor,	PlasmaAmmo] = 30;
+	$ItemMax[sarmor,	PlasmaGun] = 1;
+	$ItemMax[sarmor,	RailAmmo] = 10;
+	$ItemMax[sarmor,	TranqAmmo] = 15;
+	$ItemMax[sarmor,	SilencerAmmo] = 25;
+	$ItemMax[sarmor,	IonGun] = 1;
+	CopyItemData(%max, sarmor, sfemale);
+	CopyItemData(%max, sarmor, stimarmor);
+	CopyItemData(%max, sarmor, stimfemale);
+
+	//====================================================== Chemeleon
+	$ItemMax[spyarmor,	Beacon] = 3;
+	$ItemMax[spyarmor,	BoomAmmo] = 10;
+	$ItemMax[spyarmor,	BoomStick] = 1;
+	$ItemMax[spyarmor,	BulletAmmo] = 75;
+	$ItemMax[spyarmor,	Chaingun] = 1;
+	$ItemMax[spyarmor,	CloakingDevice] = 1;
+	$ItemMax[spyarmor,	DiscAmmo] = 20;
+	$ItemMax[spyarmor,	Equalizer] = 1;
+	$ItemMax[spyarmor,	FlightPack] = 1;
+	$ItemMax[spyarmor,	ForceFieldPack] = 1;
+	$ItemMax[spyarmor,	Grenade] = 3;
+	$ItemMax[spyarmor,	GrenadeAmmo] = 20;
+	$ItemMax[spyarmor,	GrenadeLauncher] = 1;
+	$ItemMax[spyarmor,	HoloPack] = 1;
+	$ItemMax[spyarmor,	Laptop] = 1;
+	$ItemMax[spyarmor,	LaserPack] = 1;
+	$ItemMax[spyarmor,	LaserRifle] = 1;
+	$ItemMax[spyarmor,	MineAmmo] = 3;
+	$ItemMax[spyarmor,	PlasmaAmmo] = 30;
+	$ItemMax[spyarmor,	PlasmaGun] = 1;
+	$ItemMax[spyarmor,	RailAmmo] = 10;
+	$ItemMax[spyarmor,	Silencer] = 1;
+	$ItemMax[spyarmor,	SilencerAmmo] = 25;
+	$ItemMax[spyarmor,	TranqAmmo] = 25;
+	$ItemMax[spyarmor,	TranqGun] = 1;
+	CopyItemData(%max, spyarmor, spyfemale);
+
+//========================================================= Dreadnaught
 	$ItemMax[darmor,	AirAmmoPad] = 1;
-	$ItemMax[darmor,	AmmoPack] = 1;
 	$ItemMax[darmor,	AutoRocketAmmo] = 20;
 	$ItemMax[darmor,	Beacon] = 3;
-	$ItemMax[darmor,	Blaster] = 1;
 	$ItemMax[darmor,	BulletAmmo] = 150;
-	$ItemMax[darmor,	CameraPack] = 1;
 	$ItemMax[darmor,	Chaingun] = 1;
 	$ItemMax[darmor,	ConCun] = 1;
 	$ItemMax[darmor,	DeployableAmmoPack] = 1;
 	$ItemMax[darmor,	DeployableComPack] = 1;
 	$ItemMax[darmor,	DeployableInvPack] = 1;
 	$ItemMax[darmor,	DiscAmmo] = 25;
-	$ItemMax[darmor,	Disclauncher] = 1;
-	$ItemMax[darmor,	EnergyPack] = 1;
-	$ItemMax[darmor,	EnergyRifle] = 0;
 	$ItemMax[darmor,	Equalizer] = 1;
-	$ItemMax[darmor,	FgcPack] = 0;
 	$ItemMax[darmor,	ForceFieldPack] = 1;
 	$ItemMax[darmor,	Grenade] = 3;
 	$ItemMax[darmor,	GrenadeAmmo] = 25;
 	$ItemMax[darmor,	GrenadeLauncher] = 1;
 	$ItemMax[darmor,	HoloPack] = 1;
-	$ItemMax[darmor,	Mfgl] = 0;
-	$ItemMax[darmor,	MfglAmmo] = 0;
 	$ItemMax[darmor,	MineAmmo] = 5;
 	$ItemMax[darmor,	Mortar] = 1;
 	$ItemMax[darmor,	MortarAmmo] = 10;
-	$ItemMax[darmor,	MotionSensorPack] = 1;
 	$ItemMax[darmor,	PlasmaAmmo] = 50;
 	$ItemMax[darmor,	PlasmaGun] = 1;
 	$ItemMax[darmor,	PlasmaTurretPack] = 1;
-	$ItemMax[darmor,	PulseSensorPack] = 1;
 	$ItemMax[darmor,	RailAmmo] = 10;
-	$ItemMax[darmor,	RepairKit] = 1;
-	$ItemMax[darmor,	RepairPack] = 1;
 	$ItemMax[darmor,	RocketAmmo] = 15;
 	$ItemMax[darmor,	RocketLauncher] = 1;
-	$ItemMax[darmor,	ShieldPack] = 1;
 	$ItemMax[darmor,	SMRPack] = 1;
-	$ItemMax[darmor,	StealthShieldPack] = 1;
-	$ItemMax[darmor,	TargetingLaser] = 1;
 	$ItemMax[darmor,	TranqAmmo] = 20;
 	$ItemMax[darmor,	TurretPack] = 1;
 	$ItemMax[darmor,	Vulcan] = 1;
@@ -223,163 +389,7 @@ function BuildItemList()
 	$ItemMax[darmor, 	BarragePack] = 1;
 	$ItemMax[darmor, 	ShockFloorPack] = 1;
 	$ItemMax[darmor,	SilencerAmmo] = 25;
-	$ItemMax[darmor,	ValkyrieModule] = 1;
-
-	$ItemMax[darmor,	NapalmModule] = 0;
-	$ItemMax[darmor,	HellFireModule] = 1;
-	$ItemMax[darmor,	DetPackModule] = 1;
-	$ItemMax[darmor,	BomberModule] = 1;
-	$ItemMax[darmor,	PickUpModule] = 1;
-	$ItemMax[darmor,	MineNetModule] = 0;
-	$ItemMax[darmor,	WraithModule] = 1;
-	$ItemMax[darmor,	StealthModule] = 1;
-	$ItemMax[darmor,	InterceptorModule] = 1;
-	$ItemMax[darmor,	GodHammerModule] = 1;
-
-	
-	//====================================================== Engineer
-	$ItemMax[earmor, 	ArbitorBeaconPack] = 1;		$ItemMax[efemale,	ArbitorBeaconPack] = 1;
-	$ItemMax[earmor, 	EMPBeaconPack] = 1;		$ItemMax[efemale,	EMPBeaconPack] = 1;
-	$ItemMax[earmor, 	PowerGeneratorPack] = 1;	$ItemMax[efemale,	PowerGeneratorPack] = 1;
-	$ItemMax[earmor, 	ShieldBeaconPack] = 1;		$ItemMax[efemale,	ShieldBeaconPack] = 1;
-	$ItemMax[earmor,	AccelPPack] = 1;		$ItemMax[efemale,	AccelPPack] = 1;
-	$ItemMax[earmor,	AirAmmoPad] = 1;		$ItemMax[efemale,	AirAmmoPad] = 1;
-	$ItemMax[earmor,	AirBase] = 1;			$ItemMax[efemale,	AirBase] = 1;
-	$ItemMax[earmor,	AmmoPack] = 1;			$ItemMax[efemale,	AmmoPack] = 1;
-	$ItemMax[earmor,	AutoRocketAmmo] = 10;		$ItemMax[efemale,	AutoRocketAmmo] = 10;
-	$ItemMax[earmor,	Beacon] = 3;			$ItemMax[efemale,	Beacon]= 3;
-	$ItemMax[earmor,	Blaster] = 1;			$ItemMax[efemale,	Blaster] = 1;
-	$ItemMax[earmor,	BlastFloorPack] = 1;		$ItemMax[efemale,	BlastFloorPack] = 1;
-	$ItemMax[earmor,	BlastWallPack] = 1;		$ItemMax[efemale,	BlastWallPack] = 1;
-	$ItemMax[earmor,	BulletAmmo] = 150;		$ItemMax[efemale,	BulletAmmo] = 150;
-	$ItemMax[earmor,	CameraPack] = 1;		$ItemMax[efemale,	CameraPack] = 1;
-	$ItemMax[earmor,	Chaingun] = 1;			$ItemMax[efemale,	Chaingun] = 1;
-	$ItemMax[earmor,	DeployableAmmoPack] = 1;	$ItemMax[efemale,	DeployableAmmoPack] = 1;
-	$ItemMax[earmor,	DeployableComPack] = 1;		$ItemMax[efemale,	DeployableComPack] = 1;
-	$ItemMax[earmor,	DeployableElf] = 1;		$ItemMax[efemale,	DeployableElf] = 1;
-	$ItemMax[earmor,	DeployableInvPack] = 1;		$ItemMax[efemale,	DeployableInvPack] = 1;
-	$ItemMax[earmor,	DeployableSensorJammerPack] = 1;$ItemMax[efemale,	DeployableSensorJammerPack] = 1;
-	$ItemMax[earmor,	DiscAmmo] = 20;			$ItemMax[efemale,	DiscAmmo] = 20;
-	$ItemMax[earmor,	Disclauncher] = 1;		$ItemMax[efemale,	Disclauncher] = 1;
-	$ItemMax[earmor,	disit] = 1;			$ItemMax[efemale,	disit]=1;
-	$ItemMax[earmor,	EmplacementPack] = 1;		$ItemMax[efemale,	EmplacementPack] = 1;
-	$ItemMax[earmor,	EnergyPack] = 1;		$ItemMax[efemale,	EnergyPack] = 1;
-	$ItemMax[earmor,	EnergyRifle] = 1;		$ItemMax[efemale,	EnergyRifle] = 1;
-	$ItemMax[earmor,	Equalizer] = 1;			$ItemMax[efemale,	Equalizer] = 1;
-	$ItemMax[earmor,	Fixit] = 1;			$ItemMax[efemale,	Fixit]=1;
-	$ItemMax[earmor,	ForceFieldPack] = 1;		$ItemMax[efemale,	ForceFieldPack] = 1;
-	$ItemMax[earmor,	ShockFloorPack] = 1;		$ItemMax[efemale,	ShockFloorPack] = 1;
-	$ItemMax[earmor,	GravGun] = 1;			$ItemMax[efemale,	GravGun] = 1;
-	$ItemMax[earmor,	Grenade] = 6;			$ItemMax[efemale,	Grenade] = 6;
-	$ItemMax[earmor,	GrenadeAmmo] = 20;		$ItemMax[efemale,	GrenadeAmmo] = 20;
-	$ItemMax[earmor,	GrenadeLauncher] = 1;		$ItemMax[efemale,	GrenadeLauncher] = 1;
-	$ItemMax[earmor,	Hackit] = 1;			$ItemMax[efemale,	Hackit]= 1;
-	$ItemMax[earmor,	HoloPack] = 1;			$ItemMax[efemale,	HoloPack] = 1;
-	$ItemMax[earmor,	Laptop] = 1;			$ItemMax[efemale,	Laptop]= 1;
-	$ItemMax[earmor,	LargeForceFieldPack] = 1;	$ItemMax[efemale,	LargeForceFieldPack] = 1;
-	$ItemMax[earmor,	LargeShockForceFieldPack] = 1;	$ItemMax[efemale,	LargeShockForceFieldPack] = 1;
-	$ItemMax[earmor,	LaserPack] = 1;			$ItemMax[efemale,	LaserPack] = 1;
-	$ItemMax[earmor,	LaunchPack] = 1;		$ItemMax[efemale,	LaunchPack] = 1;
-	$ItemMax[earmor,	MineAmmo] = 3;			$ItemMax[efemale,	MineAmmo] = 3;
-	$ItemMax[earmor,	MotionSensorPack] = 1;		$ItemMax[efemale,	MotionSensorPack] = 1;
-	$ItemMax[earmor,	PlantPack] = 1;			$ItemMax[efemale,	PlantPack] = 1;
-	$ItemMax[earmor,	PlasmaAmmo] = 40;		$ItemMax[efemale,	PlasmaAmmo] = 35;
-	$ItemMax[earmor,	PlasmaGun] = 1;			$ItemMax[efemale,	PlasmaGun] = 1;
-	$ItemMax[earmor,	PlasmaTurretPack] = 1;		$ItemMax[efemale,	PlasmaTurretPack] = 1;
-	$ItemMax[earmor,	PlatformPack] = 1;		$ItemMax[efemale,	PlatformPack] = 1;
-	$ItemMax[earmor,	PulseSensorPack] = 1;		$ItemMax[efemale,	PulseSensorPack] = 1;
-	$ItemMax[earmor,	RailAmmo] = 10;			$ItemMax[efemale,	RailAmmo] = 10;
-	$ItemMax[earmor,	Railgun] = 1;			$ItemMax[efemale,	Railgun] = 1;
-	$ItemMax[earmor,	RepairKit] = 1;			$ItemMax[efemale,	RepairKit] = 1;
-	$ItemMax[earmor,	RepairPack] = 1;		$ItemMax[efemale,	RepairPack] = 1;
-	$ItemMax[earmor,	RocketAmmo] = 5;		$ItemMax[efemale,	RocketAmmo] = 5;
-	$ItemMax[earmor,	RocketLauncher] = 1;		$ItemMax[efemale,	RocketLauncher] = 1;
-	$ItemMax[earmor,	RocketPack] = 1;		$ItemMax[efemale,	RocketPack] = 1;
-	$ItemMax[earmor,	SensorJammerPack] = 1;		$ItemMax[efemale,	SensorJammerPack] = 1;
-	$ItemMax[earmor,	ShieldPack] = 1;		$ItemMax[efemale,	ShieldPack] = 1;
-	$ItemMax[earmor,	ShockPack] = 1;			$ItemMax[efemale,	ShockPack] = 1;
-	$ItemMax[earmor,	StealthShieldPack] = 1;		$ItemMax[efemale,	StealthShieldPack] = 1;
-	$ItemMax[earmor,	TargetingLaser] = 1;		$ItemMax[efemale,	TargetingLaser] = 1;
-	$ItemMax[earmor,	TargetPack] = 1;		$ItemMax[efemale,	TargetPack] = 1;
-	$ItemMax[earmor,	TeleportPack] = 1;		$ItemMax[efemale,	TeleportPack] = 1;
-	$ItemMax[earmor,	TranqAmmo] = 20;		$ItemMax[efemale,	TranqAmmo] = 20;
-	$ItemMax[earmor,	TreePack] = 1;			$ItemMax[efemale,	TreePack] = 1;
-	$ItemMax[earmor,	TurretPack] = 1;		$ItemMax[efemale,	TurretPack] = 1;
-	$ItemMax[earmor,	VulcanAmmo] = 200;		$ItemMax[efemale,	VulcanAmmo] = 200;
-	$ItemMax[earmor,	EngineerTurretPack] = 1;	$ItemMax[efemale,	EngineerTurretPack] = 1;
-	$ItemMax[earmor, 	BarragePack] = 1;		$ItemMax[efemale, 	BarragePack] = 1;
-	$ItemMax[earmor, 	JammerBeaconPack] = 1;		$ItemMax[efemale, 	JammerBeaconPack] = 1;
-	$ItemMax[earmor,	SilencerAmmo] = 25;		     	$ItemMax[efemale,	SilencerAmmo] = 25;
-	$ItemMax[barmor,	AutoRocketAmmo] = 15;			$ItemMax[bfemale,	AutoRocketAmmo] = 15;
-
-	$ItemMax[earmor,	ValkyrieModule] = 1;		     	$ItemMax[efemale,	ValkyrieModule] = 1;
-	$ItemMax[earmor,	NapalmModule] = 0;		     $ItemMax[efemale,	NapalmModule] = 0;
-	$ItemMax[earmor,	HellFireModule] = 1;		     $ItemMax[efemale,	HellFireModule] = 1;
-	$ItemMax[earmor,	DetPackModule] = 1;		     $ItemMax[efemale,	DetPackModule] = 1;
-	$ItemMax[earmor,	BomberModule] = 1;		     $ItemMax[efemale,	BomberModule] = 1;
-	$ItemMax[earmor,	PickUpModule] = 1;		     $ItemMax[efemale,	PickUpModule] = 1;
-	$ItemMax[earmor,	MineNetModule] = 0;		     $ItemMax[efemale,	MineNetModule] = 0;
-	$ItemMax[earmor,	WraithModule] = 1;		     $ItemMax[efemale,	WraithModule] = 1;
-	$ItemMax[earmor,	StealthModule] = 1;		     $ItemMax[efemale,	StealthModule] = 1;
-	$ItemMax[earmor,	InterceptorModule] = 1;		     $ItemMax[efemale,	InterceptorModule] = 1;
-	$ItemMax[earmor,	GodHammerModule] = 1;		     $ItemMax[efemale,	GodHammerModule] = 1;
-
-	//====================================================== Standard Heavy
-	$ItemMax[harmor,	AmmoPack] = 1;
-	$ItemMax[harmor,	Beacon] = 5;
-	$ItemMax[harmor,	Blaster] = 1;
-	$ItemMax[harmor,	BulletAmmo] = 150;
-	$ItemMax[harmor,	Chaingun] = 1;
-	$ItemMax[harmor,	DeployableAmmoPack] = 1;
-	$ItemMax[harmor,	DeployableComPack] = 1;
-	$ItemMax[harmor,	DeployableInvPack] = 1;
-	$ItemMax[harmor,	DiscAmmo] = 25;
-	$ItemMax[harmor,	Disclauncher] = 1;
-	$ItemMax[harmor,	EnergyPack] = 1;
-	$ItemMax[harmor,	EnergyRifle] = 0;
-	$ItemMax[harmor,	Equalizer] = 1; 
-	$ItemMax[harmor,	ForceFieldPack] = 1;
-	$ItemMax[harmor,	ShockFloorPack] = 1;
-	$ItemMax[harmor,	Grenade] = 1;
-	$ItemMax[harmor,	GrenadeAmmo] = 25;
-	$ItemMax[harmor,	GrenadeLauncher] = 1;
-	$ItemMax[harmor,	HoloPack] = 1;
-	$ItemMax[harmor,	Mfgl] = 1;
-	$ItemMax[harmor,	MfglAmmo] = 0;
-	$ItemMax[harmor,	MineAmmo] = 3;
-	$ItemMax[harmor,	Mortar] = 1;
-	$ItemMax[harmor,	MortarAmmo] = 10;
-	$ItemMax[harmor,	MotionSensorPack] = 1;
-	$ItemMax[harmor,	Volter] = 1;
-	$ItemMax[harmor,	PlasmaAmmo] = 50;
-	$ItemMax[harmor,	PlasmaGun] = 1;
-	$ItemMax[harmor,	PulseSensorPack] = 1;
-	$ItemMax[harmor,	RailAmmo] = 10;
-	$ItemMax[harmor,	RegenerationPack] = 1;
-	$ItemMax[harmor,	RepairKit] = 1;
-	$ItemMax[harmor,	RepairPack] = 1;
-	$ItemMax[harmor,	RocketAmmo] = 15;
-	$ItemMax[harmor,	SensorJammerPack] = 1;
-	$ItemMax[harmor,	ShieldPack] = 1;
-	$ItemMax[harmor,	StealthShieldPack] = 1;
-	$ItemMax[harmor,	TargetingLaser] = 1;
-	$ItemMax[harmor,	TranqAmmo] = 20;
-	$ItemMax[harmor,	TurretPack] = 1;
-	$ItemMax[harmor,	Vulcan] = 1;
-	$ItemMax[harmor,	VulcanAmmo] = 400;
-	$ItemMax[harmor,	SilencerAmmo] = 50;
-
-	$ItemMax[darmor,	ValkyrieModule] = 0;		     	$ItemMax[jarmor,	ValkyrieModule] = 0;
-	$ItemMax[darmor,	NapalmModule] = 0;		     	$ItemMax[jarmor,	NapalmModule] = 0;
-	$ItemMax[darmor,	HellFireModule] = 0;		     	$ItemMax[jarmor,	HellFireModule] = 0;
-	$ItemMax[darmor,	DetPackModule] = 0;		     	$ItemMax[jarmor,	DetPackModule] = 0;
-	$ItemMax[darmor,	BomberModule] = 1;		     	$ItemMax[jarmor,	BomberModule] = 1;
-	$ItemMax[darmor,	PickUpModule] = 1;		     	$ItemMax[jarmor,	PickUpModule] = 1;
-	$ItemMax[darmor,	MineNetModule] = 0;		     	$ItemMax[jarmor,	MineNetModule] = 0;
-	$ItemMax[darmor,	WraithModule] = 0;		     	$ItemMax[jarmor,	WraithModule] = 0;
-	$ItemMax[darmor,	StealthModule] = 1;		     	$ItemMax[jarmor,	StealthModule] = 1;
-	$ItemMax[darmor,	InterceptorModule] = 0;		     	$ItemMax[jarmor,	InterceptorModule] = 0;
-	$ItemMax[darmor,	GodHammerModule] = 1;		     	$ItemMax[jarmor,	GodHammerModule] = 1;
+	CopyItemData(%max, darmor, harmor);
 
 	//====================================================== Juggernaught
 	$ItemMax[jarmor,	AutoRocketAmmo] = 20;
@@ -389,272 +399,16 @@ function BuildItemList()
 	$ItemMax[jarmor,	MfglAmmo] = 3;
 	$ItemMax[jarmor,	Mortar] = 1;
 	$ItemMax[jarmor,	MortarAmmo] = 25;
-	$ItemMax[jarmor,	RepairKit] = 1;
 	$ItemMax[jarmor,	RocketAmmo] = 25;
 	$ItemMax[jarmor,	RocketLauncher] = 1;
 	$ItemMax[jarmor,	SMRPack2] = 1;
 	$ItemMax[jarmor, 	PlasmaCannon] = 1;
-	$ItemMax[jarmor,	TargetingLaser] = 1;
 	$ItemMax[jarmor,	Hammer1Pack] = 1;
 	$ItemMax[jarmor,	Hammer2Pack] = 1;
 	$ItemMax[jarmor,	HammerAmmo] = 150;
-	
-	//====================================================== Assassin
-	$ItemMax[larmor,	DeployableSensorJammerPack] = 2;	$ItemMax[lfemale,	DeployableSensorJammerPack] = 2;
-	$ItemMax[larmor, 	ArbitorBeaconPack] = 1;			$ItemMax[lfemale,	ArbitorBeaconPack] = 1;
-	$ItemMax[larmor,	AmmoPack] = 1;				$ItemMax[lfemale,	AmmoPack] = 1;
-	$ItemMax[larmor,	Beacon] = 5;				$ItemMax[lfemale,	Beacon] = 5;
-	$ItemMax[larmor,	Blaster] = 1;				$ItemMax[lfemale,	Blaster] = 1;
-	$ItemMax[larmor,	BoomAmmo] = 10;				$ItemMax[lfemale,	BoomAmmo] = 10;
-	$ItemMax[larmor,	BoomStick] = 1;				$ItemMax[lfemale,	BoomStick] = 1;
-	$ItemMax[larmor,	CameraPack] = 2;			$ItemMax[lfemale,	CameraPack] = 2;
-	$ItemMax[larmor,	DiscAmmo] = 20;				$ItemMax[lfemale,	DiscAmmo] = 20;
-	$ItemMax[larmor,	Disclauncher] = 1;			$ItemMax[lfemale,	Disclauncher] = 1;
-	$ItemMax[larmor,	EnergyPack] = 1;			$ItemMax[lfemale,	EnergyPack] = 1;
-	$ItemMax[larmor,	EnergyRifle] = 1;			$ItemMax[lfemale,	EnergyRifle] = 1;
-	$ItemMax[larmor,	ForceFieldPack] = 1;			$ItemMax[lfemale,	ForceFieldPack] = 1;
-	$ItemMax[larmor,	Grenade] = 3;				$ItemMax[lfemale,	Grenade] = 3;
-	$ItemMax[larmor,	GrenadeAmmo] = 15;			$ItemMax[lfemale,	GrenadeAmmo] = 15;
-	$ItemMax[larmor,	GrenadeLauncher] = 1;		 	$ItemMax[lfemale,	GrenadeLauncher] = 1;
-	$ItemMax[larmor,	HoloPack] = 1;				$ItemMax[lfemale,	HoloPack] = 1;
-	$ItemMax[larmor,	LaserRifle] = 1;			$ItemMax[lfemale,	LaserRifle] = 1;
-	$ItemMax[larmor,	MineAmmo] = 3;				$ItemMax[lfemale,	MineAmmo] = 3;
-	$ItemMax[larmor,	MotionSensorPack] = 1;			$ItemMax[lfemale,	MotionSensorPack] = 1;
-	$ItemMax[larmor,	PlasmaAmmo] = 30;			$ItemMax[lfemale,	PlasmaAmmo] = 30;
-	$ItemMax[larmor,	PlasmaGun] = 1;				$ItemMax[lfemale,	PlasmaGun] = 1;
-	$ItemMax[larmor,	PulseSensorPack] = 1;			$ItemMax[lfemale,	PulseSensorPack] = 1;
-	$ItemMax[larmor,	RailAmmo] = 10;				$ItemMax[lfemale,	RailAmmo] = 10;
-	$ItemMax[larmor,	Railgun] = 1;				$ItemMax[lfemale,	Railgun] = 1;
-	$ItemMax[larmor,	RepairKit] = 1;				$ItemMax[lfemale,	RepairKit] = 1;
-	$ItemMax[larmor,	RepairPack] = 1;			$ItemMax[lfemale,	RepairPack] = 1;
-	$ItemMax[larmor,	SensorJammerPack] = 1;			$ItemMax[lfemale,	SensorJammerPack] = 1;
-	$ItemMax[larmor,	ShieldPack] = 0;			$ItemMax[lfemale,	ShieldPack] = 0;
-	$ItemMax[larmor,	SniperAmmo] = 25;			$ItemMax[lfemale,	SniperAmmo] = 25;
-	$ItemMax[larmor,	SniperRifle] = 1;			$ItemMax[lfemale,	SniperRifle] = 1;
-	$ItemMax[larmor,	TargetingLaser] = 1;			$ItemMax[lfemale,	TargetingLaser] = 1;
-	$ItemMax[larmor,	TranqAmmo] = 20;			$ItemMax[lfemale,	TranqAmmo] = 20;
-	$ItemMax[larmor,	TranqGun] = 1;				$ItemMax[lfemale,	TranqGun] = 1;
-	$ItemMax[larmor,	TreePack] = 1;				$ItemMax[lfemale,	TreePack] = 1;
-	$ItemMax[larmor,	StealthShieldPack] = 0;		      $ItemMax[lfemale,	StealthShieldPack] = 0;
-	$ItemMax[larmor,	Silencer] = 1;			     $ItemMax[lfemale,	Silencer] = 1;
-	$ItemMax[larmor,	SilencerAmmo] = 20;		     $ItemMax[lfemale,	SilencerAmmo] = 20;
 
-	$ItemMax[larmor,	ValkyrieModule] = 1;		     	$ItemMax[lfemale,	ValkyrieModule] = 1;
-	$ItemMax[larmor,	NapalmModule] = 0;		     $ItemMax[lfemale,	NapalmModule] = 0;
-	$ItemMax[larmor,	HellFireModule] = 1;		     $ItemMax[lfemale,	HellFireModule] = 1;
-	$ItemMax[larmor,	DetPackModule] = 1;		     $ItemMax[lfemale,	DetPackModule] = 1;
-	$ItemMax[larmor,	BomberModule] = 1;		     $ItemMax[lfemale,	BomberModule] = 1;
-	$ItemMax[larmor,	PickUpModule] = 1;		     $ItemMax[lfemale,	PickUpModule] = 1;
-	$ItemMax[larmor,	MineNetModule] = 0;		     $ItemMax[lfemale,	MineNetModule] = 0;
-	$ItemMax[larmor,	WraithModule] = 1;		     $ItemMax[lfemale,	WraithModule] = 1;
-	$ItemMax[larmor,	StealthModule] = 1;		     $ItemMax[lfemale,	StealthModule] = 1;
-	$ItemMax[larmor,	InterceptorModule] = 1;		     $ItemMax[lfemale,	InterceptorModule] = 1;
-	$ItemMax[larmor,	GodHammerModule] = 1;		     $ItemMax[lfemale,	GodHammerModule] = 1;
-	
-	//====================================================== Mercinary
-	$ItemMax[marmor,	AmmoPack] = 1;				$ItemMax[mfemale,	AmmoPack] = 1;
-	$ItemMax[marmor,	Beacon] = 3;				$ItemMax[mfemale,	Beacon] = 3;
-	$ItemMax[marmor,	Blaster] = 1;				$ItemMax[mfemale,	Blaster] = 1;
-	$ItemMax[marmor,	BoomAmmo] = 15;				$ItemMax[mfemale,	BoomAmmo] = 15;
-	$ItemMax[marmor,	BoomStick] = 1;				$ItemMax[mfemale,	BoomStick] = 1;
-	$ItemMax[marmor,	BulletAmmo] = 150;			$ItemMax[mfemale,	BulletAmmo] = 150;
-	$ItemMax[marmor,	Chaingun] = 1;				$ItemMax[mfemale,	Chaingun] = 1;
-	$ItemMax[marmor,	DeployableAmmoPack] = 1;		$ItemMax[mfemale,	DeployableAmmoPack] = 1;
-	$ItemMax[marmor,	DeployableInvPack] = 1;			$ItemMax[mfemale,	DeployableInvPack] = 1;
-	$ItemMax[marmor,	DeployableSensorJammerPack] = 1;	$ItemMax[mfemale,	DeployableSensorJammerPack] = 1;
-	$ItemMax[marmor,	DiscAmmo] = 30;				$ItemMax[mfemale,	DiscAmmo] = 30;
-	$ItemMax[marmor,	Disclauncher] = 1;			$ItemMax[mfemale,	Disclauncher] = 1;
-	$ItemMax[marmor,	EnergyPack] = 1;			$ItemMax[mfemale,	EnergyPack] = 1;
-	$ItemMax[marmor,	EnergyRifle] = 1;			$ItemMax[mfemale,	EnergyRifle] = 1;
-	$ItemMax[marmor,	Equalizer] = 1;				$ItemMax[mfemale,	Equalizer] = 1;
-	$ItemMax[marmor,	ForceFieldPack] = 1;			$ItemMax[mfemale,	ForceFieldPack] = 1;
-	$ItemMax[marmor,	Grenade] = 6;				$ItemMax[mfemale,	Grenade] = 6;
-	$ItemMax[marmor,	GrenadeAmmo] = 30;			$ItemMax[mfemale,	GrenadeAmmo] = 30;
-	$ItemMax[marmor,	GrenadeLauncher] = 1;			$ItemMax[mfemale,	GrenadeLauncher] = 1;
-	$ItemMax[marmor,	HoloPack] = 1;				$ItemMax[mfemale,	HoloPack] = 1;
-	$ItemMax[marmor,	HyperB] = 1;				$ItemMax[mfemale,	HyperB] = 1;
-	$ItemMax[marmor,	MineAmmo] = 3;				$ItemMax[mfemale,	IonGun] = 1;
-	$ItemMax[marmor,	MortarAmmo] = 10;			$ItemMax[mfemale,	MineAmmo] = 3;
-	$ItemMax[marmor,	MotionSensorPack] = 1;			$ItemMax[mfemale,	MotionSensorPack] = 1;
-	$ItemMax[marmor,	PlasmaAmmo] = 40;			$ItemMax[mfemale,	PlasmaAmmo] = 35;
-	$ItemMax[marmor,	PlasmaGun] = 1;				$ItemMax[mfemale,	PlasmaGun] = 1;
-	$ItemMax[marmor,	PulseSensorPack] = 1;			$ItemMax[mfemale,	PulseSensorPack] = 1;
-	$ItemMax[marmor,	RailAmmo] = 10;				$ItemMax[mfemale,	RailAmmo] = 10;
-	$ItemMax[marmor,	RepairKit] = 1;				$ItemMax[mfemale,	RepairKit] = 1;
-	$ItemMax[marmor,	RepairPack] = 1;			$ItemMax[mfemale,	RepairPack] = 1;
-	$ItemMax[marmor,	RocketAmmo] = 10;			$ItemMax[mfemale,	RocketAmmo] = 10;
-	$ItemMax[marmor,	RocketLauncher] = 1;			$ItemMax[mfemale,	RocketLauncher] = 1;
-	$ItemMax[marmor,	SensorJammerPack] = 1;			$ItemMax[mfemale,	SensorJammerPack] = 1;
-	$ItemMax[marmor,	ShieldPack] = 1;			$ItemMax[mfemale,	ShieldPack] = 1;
-	$ItemMax[marmor,	StealthShieldPack] = 1;			$ItemMax[mfemale,	StealthShieldPack] = 1;
-	$ItemMax[marmor,	TargetingLaser] = 1;			$ItemMax[mfemale,	TargetingLaser] = 1;
-	$ItemMax[marmor,	TranqAmmo] = 20;			$ItemMax[mfemale,	TranqAmmo] = 20;
-	$ItemMax[marmor,	TurretPack] = 1;			$ItemMax[mfemale,	TurretPack] = 1;
-	$ItemMax[marmor,	Vulcan] = 1;				$ItemMax[mfemale,	Vulcan] = 1;
-	$ItemMax[marmor,	VulcanAmmo] = 400;			$ItemMax[mfemale,	VulcanAmmo] = 400;
-	$ItemMax[marmor,	Silencer] = 1;			     	$ItemMax[mfemale,	Silencer] = 1;
-	$ItemMax[marmor,	SilencerAmmo] = 30;		     	$ItemMax[mfemale,	SilencerAmmo] = 30;
-	$ItemMax[marmor, 	BarragePack] = 1;			$ItemMax[mfemale, 	BarragePack] = 1;
-	$ItemMax[marmor, 	Booster1Pack] = 1;			$ItemMax[mfemale, 	Booster1Pack] = 1;
-	$ItemMax[marmor, 	Booster2Pack] = 1;			$ItemMax[mfemale, 	Booster2Pack] = 1;
-	$ItemMax[marmor,	AutoRocketAmmo] = 15;			$ItemMax[mfemale,	AutoRocketAmmo] = 15;
-	$ItemMax[marmor,	RocketPack] = 1;		 	$ItemMax[mfemale,	RocketPack] = 1;
-
-	$ItemMax[marmor,	ValkyrieModule] = 1;		     	$ItemMax[mfemale,	ValkyrieModule] = 1;
-	$ItemMax[marmor,	NapalmModule] = 0;		     	$ItemMax[mfemale,	NapalmModule] = 0;
-	$ItemMax[marmor,	HellFireModule] = 1;		     	$ItemMax[mfemale,	HellFireModule] = 1;
-	$ItemMax[marmor,	DetPackModule] = 1;		     	$ItemMax[mfemale,	DetPackModule] = 1;
-	$ItemMax[marmor,	BomberModule] = 1;		     	$ItemMax[mfemale,	BomberModule] = 1;
-	$ItemMax[marmor,	PickUpModule] = 1;		     	$ItemMax[mfemale,	PickUpModule] = 1;
-	$ItemMax[marmor,	MineNetModule] = 0;		     	$ItemMax[mfemale,	MineNetModule] = 0;
-	$ItemMax[marmor,	WraithModule] = 1;		     	$ItemMax[mfemale,	WraithModule] = 1;
-	$ItemMax[marmor,	StealthModule] = 1;		     	$ItemMax[mfemale,	StealthModule] = 1;
-	$ItemMax[marmor,	InterceptorModule] = 1;		     	$ItemMax[mfemale,	InterceptorModule] = 1;
-	$ItemMax[marmor,	GodHammerModule] = 1;		     	$ItemMax[mfemale,	GodHammerModule] = 1;
 	//====================================================== Cursed
 	$ItemMax[parmor,	Penis] = 1;
-
-	//====================================================== Scout
-	$ItemMax[sarmor,	AmmoPack] = 1;			     $ItemMax[sfemale,	AmmoPack] = 1;
-	$ItemMax[sarmor,	Beacon] = 3;			     $ItemMax[sfemale,	Beacon] = 3;
-	$ItemMax[sarmor,	Blaster] = 1;			     $ItemMax[sfemale,	Blaster] = 1;
-	$ItemMax[sarmor,	BoomAmmo] = 10;			     $ItemMax[sfemale,	BoomAmmo] = 10;
-	$ItemMax[sarmor,	BoomStick] = 1;			     $ItemMax[sfemale,	BoomStick] = 1;
-	$ItemMax[sarmor,	BulletAmmo] = 50;		     $ItemMax[sfemale,	BulletAmmo] = 50;
-	$ItemMax[sarmor,	CameraPack] = 1;		     $ItemMax[sfemale,	CameraPack] = 1;
-	$ItemMax[sarmor,	Chaingun] = 1;			     $ItemMax[sfemale,	Chaingun] = 1;
-	$ItemMax[sarmor,	DiscAmmo] = 15;			     $ItemMax[sfemale,	DiscAmmo] = 15;
-	$ItemMax[sarmor,	Disclauncher] = 1;		     $ItemMax[sfemale,	Disclauncher] = 1;
-	$ItemMax[sarmor,	EnergyPack] = 1;		     $ItemMax[sfemale,	EnergyPack] = 1;
-	$ItemMax[sarmor,	FlightPack] = 1;		     $ItemMax[sfemale,	FlightPack] = 1;
-	$ItemMax[sarmor,	ForceFieldPack] = 1;		     $ItemMax[sfemale,	ForceFieldPack] = 1;
-	$ItemMax[sarmor,	Grenade] = 5;			     $ItemMax[sfemale,	Grenade] = 5;
-	$ItemMax[sarmor,	GrenadeAmmo] = 15;		     $ItemMax[sfemale,	GrenadeAmmo] = 15;
-	$ItemMax[sarmor,	GrenadeLauncher] = 1;		     $ItemMax[sfemale,	GrenadeLauncher] = 1;
-	$ItemMax[sarmor,	HoloPack] = 1;			     $ItemMax[sfemale,	HoloPack] = 1;
-	$ItemMax[sarmor,	HyperB] = 1;			     $ItemMax[sfemale,	HyperB] = 1;
-	$ItemMax[sarmor,	Laptop] = 1;			     $ItemMax[sfemale,	Laptop] = 1;
-	$ItemMax[sarmor,	LaserRifle] = 1;		     $ItemMax[sfemale,	LaserRifle] = 1;
-	$ItemMax[sarmor,	MechPack] = 1;			     $ItemMax[sfemale,	MechPack] = 1;
-	$ItemMax[sarmor,	MineAmmo] = 3;			     $ItemMax[sfemale,	MineAmmo] = 3;
-	$ItemMax[sarmor,	MotionSensorPack] = 1;		     $ItemMax[sfemale,	MotionSensorPack] = 1;
-	$ItemMax[sarmor,	PlasmaAmmo] = 30;		     $ItemMax[sfemale,	PlasmaAmmo] = 30;
-	$ItemMax[sarmor,	PlasmaGun] = 1;			     $ItemMax[sfemale,	PlasmaGun] = 1;
-	$ItemMax[sarmor,	PulseSensorPack] = 1;		     $ItemMax[sfemale,	PulseSensorPack] = 1;
-	$ItemMax[sarmor,	RailAmmo] = 10;			     $ItemMax[sfemale,	RailAmmo] = 10;
-	$ItemMax[sarmor,	RepairKit] = 1;			     $ItemMax[sfemale,	RepairKit] = 1;
-	$ItemMax[sarmor,	RepairPack] = 1;		     $ItemMax[sfemale,	RepairPack] = 1;
-	$ItemMax[sarmor,	SensorJammerPack] = 1;		     $ItemMax[sfemale,	SensorJammerPack] = 1;
-	$ItemMax[sarmor,	ShieldPack] = 1;		     $ItemMax[sfemale,	ShieldPack] = 1;
-	$ItemMax[sarmor,	StealthShieldPack] = 1;		     $ItemMax[sfemale,	StealthShieldPack] = 1;
-	$ItemMax[sarmor,	TargetingLaser] = 1;		     $ItemMax[sfemale,	TargetingLaser] = 1;
-	$ItemMax[sarmor,	TranqAmmo] = 15;		     $ItemMax[sfemale,	TranqAmmo] = 15;
-	$ItemMax[sarmor,	TranqGun] = 0;			     $ItemMax[sfemale,	TranqGun] = 0;
-	$ItemMax[sarmor,	SilencerAmmo] = 25;		     	$ItemMax[sfemale,	SilencerAmmo] = 25;
-	
-	$ItemMax[sarmor,	ValkyrieModule] = 1;		     	$ItemMax[sfemale,	ValkyrieModule] = 1;
-	$ItemMax[sarmor,	NapalmModule] = 0;		     $ItemMax[sfemale,	NapalmModule] = 0;
-	$ItemMax[sarmor,	HellFireModule] = 1;		     $ItemMax[sfemale,	HellFireModule] = 1;
-	$ItemMax[sarmor,	DetPackModule] = 1;		     $ItemMax[sfemale,	DetPackModule] = 1;
-	$ItemMax[sarmor,	BomberModule] = 1;		     $ItemMax[sfemale,	BomberModule] = 1;
-	$ItemMax[sarmor,	PickUpModule] = 1;		     $ItemMax[sfemale,	PickUpModule] = 1;
-	$ItemMax[sarmor,	MineNetModule] = 0;		     $ItemMax[sfemale,	MineNetModule] = 0;
-	$ItemMax[sarmor,	WraithModule] = 1;		     $ItemMax[sfemale,	WraithModule] = 1;
-	$ItemMax[sarmor,	StealthModule] = 1;		     $ItemMax[sfemale,	StealthModule] = 1;
-	$ItemMax[sarmor,	InterceptorModule] = 1;		     $ItemMax[sfemale,	InterceptorModule] = 1;
-	$ItemMax[sarmor,	GodHammerModule] = 1;		     $ItemMax[sfemale,	GodHammerModule] = 1;
-
-	//====================================================== Stim Scout
-	$ItemMax[stimarmor,	AmmoPack] = 1;			      $ItemMax[stimfemale,	AmmoPack] = 1;
-	$ItemMax[stimarmor,	Beacon] = 3;			      $ItemMax[stimfemale,	Beacon] = 3;
-	$ItemMax[stimarmor,	Blaster] = 1;			      $ItemMax[stimfemale,	Blaster] = 1;
-	$ItemMax[stimarmor,	BoomAmmo] = 10;			      $ItemMax[stimfemale,	BoomAmmo] = 10;
-	$ItemMax[stimarmor,	BoomStick] = 1;			      $ItemMax[stimfemale,	BoomStick] = 1;
-	$ItemMax[stimarmor,	BulletAmmo] = 50;		      $ItemMax[stimfemale,	BulletAmmo] = 50;
-	$ItemMax[stimarmor,	CameraPack] = 1;		      $ItemMax[stimfemale,	CameraPack] = 1;
-	$ItemMax[stimarmor,	Chaingun] = 1;			      $ItemMax[stimfemale,	Chaingun] = 1;
-	$ItemMax[stimarmor,	DiscAmmo] = 15;			      $ItemMax[stimfemale,	DiscAmmo] = 15;
-	$ItemMax[stimarmor,	Disclauncher] = 1;		      $ItemMax[stimfemale,	Disclauncher] = 1;
-	$ItemMax[stimarmor,	EnergyPack] = 1;		      $ItemMax[stimfemale,	EnergyPack] = 1;
-	$ItemMax[stimarmor,	FlightPack] = 1;		      $ItemMax[stimfemale,	FlightPack] = 1;
-	$ItemMax[stimarmor,	ForceFieldPack] = 1;		      $ItemMax[stimfemale,	ForceFieldPack] = 1;
-	$ItemMax[stimarmor,	Grenade] = 5;			      $ItemMax[stimfemale,	Grenade] = 5;
-	$ItemMax[stimarmor,	GrenadeAmmo] = 15;		      $ItemMax[stimfemale,	GrenadeAmmo] = 15;
-	$ItemMax[stimarmor,	GrenadeLauncher] = 1;		      $ItemMax[stimfemale,	GrenadeLauncher] = 1;
-	$ItemMax[stimarmor,	HoloPack] = 1;			      $ItemMax[stimfemale,	HoloPack] = 1;
-	$ItemMax[stimarmor,	HyperB] = 1;			      $ItemMax[stimfemale,	HyperB] = 1;
-	$ItemMax[stimarmor,	Laptop] = 1;			      $ItemMax[stimfemale,	Laptop] = 1;
-	$ItemMax[stimarmor,	MechPack] = 1;			      $ItemMax[stimfemale,	MechPack] = 1;
-	$ItemMax[stimarmor,	MineAmmo] = 3;			      $ItemMax[stimfemale,	MineAmmo] = 3;
-	$ItemMax[stimarmor,	MotionSensorPack] = 1;		      $ItemMax[stimfemale,	MotionSensorPack] = 1;
-	$ItemMax[stimarmor,	PlasmaAmmo] = 30;		      $ItemMax[stimfemale,	PlasmaAmmo] = 30;
-	$ItemMax[stimarmor,	PlasmaGun] = 1;			      $ItemMax[stimfemale,	PlasmaGun] = 1;
-	$ItemMax[stimarmor,	PulseSensorPack] = 1;		      $ItemMax[stimfemale,	PulseSensorPack] = 1;
-	$ItemMax[stimarmor,	RailAmmo] = 10;			      $ItemMax[stimfemale,	RailAmmo] = 10;
-	$ItemMax[stimarmor,	RepairKit] = 1;			      $ItemMax[stimfemale,	RepairKit] = 1;
-	$ItemMax[stimarmor,	RepairPack] = 1;		      $ItemMax[stimfemale,	RepairPack] = 1;
-	$ItemMax[stimarmor,	SensorJammerPack] = 1;		      $ItemMax[stimfemale,	SensorJammerPack] = 1;
-	$ItemMax[stimarmor,	ShieldPack] = 1;		      $ItemMax[stimfemale,	ShieldPack] = 1;
-	$ItemMax[stimarmor,	StealthShieldPack] = 1;		      $ItemMax[stimfemale,	StealthShieldPack] = 1;
-	$ItemMax[stimarmor,	TargetingLaser] = 1;		      $ItemMax[stimfemale,	TargetingLaser] = 1;
-	$ItemMax[stimarmor,	TranqAmmo] = 15;		      $ItemMax[stimfemale,	TranqAmmo] = 15;
-	$ItemMax[stimarmor,	TranqGun] = 0;			     $ItemMax[stimfemale,	TranqGun] = 0;
-	$ItemMax[stimarmor,	SilencerAmmo] = 25;		     	$ItemMax[stimfemale,	SilencerAmmo] = 25;
-
-	//====================================================== Chemeleon
-	$ItemMax[spyarmor,	AmmoPack] = 1;			     $ItemMax[spyfemale,	AmmoPack] = 1;
-	$ItemMax[spyarmor,	Beacon] = 3;			     $ItemMax[spyfemale,	Beacon] = 3;
-	$ItemMax[spyarmor,	Blaster] = 1;			     $ItemMax[spyfemale,	Blaster] = 1;
-	$ItemMax[spyarmor,	BoomAmmo] = 10;			     $ItemMax[spyfemale,	BoomAmmo] = 10;
-	$ItemMax[spyarmor,	BoomStick] = 1;			     $ItemMax[spyfemale,	BoomStick] = 1;
-	$ItemMax[spyarmor,	BulletAmmo] = 75;		     $ItemMax[spyfemale,	BulletAmmo] = 75;
-	$ItemMax[spyarmor,	CameraPack] = 1;		     $ItemMax[spyfemale,	CameraPack] = 1;
-	$ItemMax[spyarmor,	Chaingun] = 1;			     $ItemMax[spyfemale,	Chaingun] = 1;
-	$ItemMax[spyarmor,	CloakingDevice] = 1;		     $ItemMax[spyfemale,	CloakingDevice] = 1;
-	$ItemMax[spyarmor,	DeployableSensorJammerPack] = 1;     $ItemMax[spyfemale,	DeployableSensorJammerPack] = 1;
-	$ItemMax[spyarmor,	DiscAmmo] = 20;			     $ItemMax[spyfemale,	DiscAmmo] = 20;
-	$ItemMax[spyarmor,	Disclauncher] = 1;		     $ItemMax[spyfemale,	Disclauncher] = 1;
-	$ItemMax[spyarmor,	EnergyPack] = 1;		     $ItemMax[spyfemale,	EnergyPack] = 1;
-	$ItemMax[spyarmor,	EnergyRifle] = 1;		     $ItemMax[spyfemale,	EnergyRifle] = 1;
-	$ItemMax[spyarmor,	Equalizer] = 1;			     $ItemMax[spyfemale,	Equalizer] = 1;
-	$ItemMax[spyarmor,	FlightPack] = 1;		     $ItemMax[spyfemale,	FlightPack] = 1;
-	$ItemMax[spyarmor,	ForceFieldPack] = 1;		     $ItemMax[spyfemale,	ForceFieldPack] = 1;
-	$ItemMax[spyarmor,	Grenade] = 3;			     $ItemMax[spyfemale,	Grenade] = 3;
-	$ItemMax[spyarmor,	GrenadeAmmo] = 20;		     $ItemMax[spyfemale,	GrenadeAmmo] = 20;
-	$ItemMax[spyarmor,	GrenadeLauncher] = 1;		     $ItemMax[spyfemale,	GrenadeLauncher] = 1;
-	$ItemMax[spyarmor,	HoloPack] = 1;			     $ItemMax[spyfemale,	HoloPack] = 1;
-	$ItemMax[spyarmor,	Laptop] = 1;			     $ItemMax[spyfemale,	Laptop] = 1;
-	$ItemMax[spyarmor,	LaserPack] = 1;			     $ItemMax[spyfemale,	LaserPack] = 1;
-	$ItemMax[spyarmor,	LaserRifle] = 1;		     $ItemMax[spyfemale,	LaserRifle] = 1;
-	$ItemMax[spyarmor,	MineAmmo] = 3;			     $ItemMax[spyfemale,	MineAmmo] = 3;
-	$ItemMax[spyarmor,	MotionSensorPack] = 1;		     $ItemMax[spyfemale,	MotionSensorPack] = 1;
-	$ItemMax[spyarmor,	PlasmaAmmo] = 30;		     $ItemMax[spyfemale,	PlasmaAmmo] = 30;
-	$ItemMax[spyarmor,	PlasmaGun] = 1;			     $ItemMax[spyfemale,	PlasmaGun] = 1;
-	$ItemMax[spyarmor,	PulseSensorPack] = 1;		     $ItemMax[spyfemale,	PulseSensorPack] = 1;
-	$ItemMax[spyarmor,	RailAmmo] = 10;			     $ItemMax[spyfemale,	RailAmmo] = 10;
-	$ItemMax[spyarmor,	RepairKit] = 1;			     $ItemMax[spyfemale,	RepairKit] = 1;
-	$ItemMax[spyarmor,	RepairPack] = 1;		     $ItemMax[spyfemale,	RepairPack] = 1;
-	$ItemMax[spyarmor,	SensorJammerPack] = 1;		     $ItemMax[spyfemale,	SensorJammerPack] = 1;
-	$ItemMax[spyarmor,	ShieldPack] = 1;		     $ItemMax[spyfemale,	ShieldPack] = 1;
-	$ItemMax[spyarmor,	Silencer] = 1;			     $ItemMax[spyfemale,	Silencer] = 1;
-	$ItemMax[spyarmor,	SilencerAmmo] = 25;		     $ItemMax[spyfemale,	SilencerAmmo] = 25;
-	$ItemMax[spyarmor,	StealthShieldPack] = 1;		     $ItemMax[spyfemale,	StealthShieldPack] = 1;
-	$ItemMax[spyarmor,	TargetingLaser] = 1;		     $ItemMax[spyfemale,	TargetingLaser] = 1;
-	$ItemMax[spyarmor,	TranqAmmo] = 25;		     $ItemMax[spyfemale,	TranqAmmo] = 25;
-	$ItemMax[spyarmor,	TranqGun] = 1;			     $ItemMax[spyfemale,	TranqGun] = 1;
-	
-	$ItemMax[spyarmor,	ValkyrieModule] = 1;		     	$ItemMax[spyfemale,	ValkyrieModule] = 1;
-	$ItemMax[spyarmor,	NapalmModule] = 0;		     $ItemMax[spyfemale,	NapalmModule] = 0;
-	$ItemMax[spyarmor,	HellFireModule] = 1;		     $ItemMax[spyfemale,	HellFireModule] = 1;
-	$ItemMax[spyarmor,	DetPackModule] = 1;		     $ItemMax[spyfemale,	DetPackModule] = 1;
-	$ItemMax[spyarmor,	BomberModule] = 1;		     $ItemMax[spyfemale,	BomberModule] = 1;
-	$ItemMax[spyarmor,	PickUpModule] = 1;		     $ItemMax[spyfemale,	PickUpModule] = 1;
-	$ItemMax[spyarmor,	MineNetModule] = 0;		     $ItemMax[spyfemale,	MineNetModule] = 0;
-	$ItemMax[spyarmor,	WraithModule] = 1;		     $ItemMax[spyfemale,	WraithModule] = 1;
-	$ItemMax[spyarmor,	StealthModule] = 1;		     $ItemMax[spyfemale,	StealthModule] = 1;
-	$ItemMax[spyarmor,	InterceptorModule] = 1;		     $ItemMax[spyfemale,	InterceptorModule] = 1;
-	$ItemMax[spyarmor,	GodHammerModule] = 1;		     $ItemMax[spyfemale,	GodHammerModule] = 1;
-
 }
 
 function InitArmorMax()
@@ -772,69 +526,6 @@ PlayerData parmor
 // Heavy Armor data: Juggernaught.
 //------------------------------------------------------------------
 
-if($shifter::oldschool)
-{
-PlayerData jarmor
-{
-	className = "Armor";
-	shapeFile = "harmor";
-	flameShapeName = "hflame";
-	shieldShapeName = "shield";
-	damageSkinData = "armorDamageSkins";
-	debrisId = playerDebris;
-	shadowDetailMask = 1;
-
-	visibleToSensor = True;
-	mapFilter = 1;
-	mapIcon = "M_player";
-
-	maxJetSideForceFactor = 0.4;
-	maxJetForwardVelocity = 7;
-	minJetEnergy = 1;
-	jetForce = 390;
-	jetEnergyDrain = 1.5;
-
-	maxDamage = 2.0;
-
-	maxForwardSpeed = 5.0;
-	maxBackwardSpeed = 4.0;
-	maxSideSpeed = 4.0;
-
-	groundForce = 35 * 22.0;
-	groundTraction = 4.5;
-
-	mass = 18.5;
-	maxEnergy = 150;
-
-	drag = 3.0;
-	density = 2.5;
-   horzVelClamp = 21;
-	canCrouch = false;
-
-	minDamageSpeed = 25;
-	damageScale = 0.006;
-
-	jumpImpulse = 125;
-	jumpSurfaceMinDot = 0.2;
-
-	animData[0]  = { "root", none, 1, true, true, true, false, 0 }; animData[1]  = { "run", none, 1, true, false, true, false, 3 }; animData[2]  = { "runback", none, 1, true, false, true, false, 3 }; animData[3]  = { "side left", none, 1, true, false, true, false, 3 }; animData[4]  = { "side left", none, -1, true, false, true, false, 3 }; animData[5] = { "jump stand", none, 1, true, false, true, false, 3 }; animData[6] = { "jump run", none, 1, true, false, true, false, 3 }; animData[7] = { "crouch root", none, 1, true, true, true, false, 3 }; animData[8] = { "crouch root", none, 1, true, true, true, false, 3 }; animData[9] = { "crouch root", none, -1, true, true, true, false, 3 }; animData[10] = { "crouch forward", none, 1, true, false, true, false, 3 }; animData[11] = { "crouch forward", none, -1, true, false, true, false, 3 }; animData[12] = { "crouch side left", none, 1, true, false, true, false, 3 }; animData[13] = { "crouch side left", none, -1, true, false, true, false, 3 }; animData[14]  = { "fall", none, 1, true, true, true, false, 3 }; animData[15]  = { "landing", SoundLandOnGround, 1, true, false, false, false, 3 }; animData[16]  = { "landing", SoundLandOnGround, 1, true, false, false, false, 3 }; animData[17]  = { "tumble loop", none, 1, true, false, false, false, 3 }; animData[18]  = { "tumble end", none, 1, true, false, false, false, 3 }; animData[19] = { "jet", none, 1, true, true, true, false, 3 }; animData[20] = { "PDA access", none, 1, true, false, false, false, 3 }; animData[21] = { "throw", none, 1, true, false, false, false, 3 }; animData[22] = { "flyer root", none, 1, false, false, false, false, 3 }; animData[23] = { "apc root", none, 1, true, true, true, false, 3 }; animData[24] = { "apc pilot", none, 1, false, false, false, false, 3 }; animData[25] = { "crouch die", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[26] = { "die chest", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[27] = { "die head", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[28] = { "die grab back", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[29] = { "die right side", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[30] = { "die left side", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[31] = { "die leg left", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[32] = { "die leg right", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[33] = { "die blown back", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[34] = { "die spin", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[35] = { "die forward", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[36] = { "die forward kneel", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[37] = { "die back", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[38] = { "sign over here",  none, 1, true, false, false, false, 2 }; animData[39] = { "sign point", none, 1, true, false, false, true, 1 }; animData[40] = { "sign retreat",none, 1, true, false, false, false, 2 }; animData[41] = { "sign stop", none, 1, true, false, false, true, 1 }; animData[42] = { "sign salut", none, 1, true, false, false, true, 1 };  animData[43] = { "celebration 1", none, 1, true, false, false, false, 2 }; animData[44] = { "celebration 2", none, 1, true, false, false, false, 2 }; animData[45] = { "celebration 3", none, 1, true, false, false, false, 2 }; animData[46] = { "taunt 1", none, 1, true, false, false, false, 2 }; animData[47] = { "taunt 2", none, 1, true, false, false, false, 2 }; animData[48] = { "pose kneel", none, 1, true, false, false, true, 1 }; animData[49] = { "pose stand", none, 1, true, false, false, true, 1 }; animData[50] = { "wave", none, 1, true, false, false, true, 1 }; jetSound = SoundJetHeavy; rFootSounds = { SoundHFootRSoft, SoundHFootRHard, SoundHFootRSoft, SoundHFootRHard, SoundHFootRSoft, SoundHFootRSoft, SoundHFootRSoft, SoundHFootRHard, SoundHFootRSnow, SoundHFootRSoft, SoundHFootRSoft, SoundHFootRSoft, SoundHFootRSoft, SoundHFootRSoft, SoundHFootRSoft };  lFootSounds = { SoundHFootLSoft, SoundHFootLHard, SoundHFootLSoft, SoundHFootLHard, SoundHFootLSoft, SoundHFootLSoft, SoundHFootLSoft, SoundHFootLHard, SoundHFootLSnow, SoundHFootLSoft, SoundHFootLSoft, SoundHFootLSoft, SoundHFootLSoft, SoundHFootLSoft, SoundHFootLSoft }; footPrints = { 4, 5 };
-
-	boxWidth = 0.8;
-	boxDepth = 0.8;
-	boxNormalHeight = 2.6;
-
-	boxNormalHeadPercentage  = 0.70;
-	boxNormalTorsoPercentage = 0.45;
-
-	boxHeadLeftPercentage  = 0.48;
-	boxHeadRightPercentage = 0.70;
-	boxHeadBackPercentage  = 0.48;
-	boxHeadFrontPercentage = 0.60;
-};
-
-}//juggy define #2
-else
-{
 PlayerData jarmor
 {
 	className = "Armor";
@@ -892,8 +583,6 @@ PlayerData jarmor
 	boxHeadBackPercentage  = 0.48;
 	boxHeadFrontPercentage = 0.60;
 };
-
-}//juggy define #2
 
 //==============================================
 // Assassin Armour
@@ -977,10 +666,10 @@ PlayerData marmor
 	minJetEnergy = 1;
 	jetForce = 325;
 	jetEnergyDrain = 1.0;
-	maxDamage = 1.3;
-	maxForwardSpeed = 9.0;
-	maxBackwardSpeed = 7.0;
-	maxSideSpeed = 7.0;
+	maxDamage = 1.3; //badfem 1.2
+	maxForwardSpeed = 10.0; //9.0;  //fem 10.0
+	maxBackwardSpeed = 8.0; //7.0; //fem 8.0
+	maxSideSpeed = 8.0; //7.0; //fem 8.0
 	groundForce = 35 * 13.0;
 	mass = 13.0;
 	groundTraction = 3.0;
@@ -1164,7 +853,7 @@ PlayerData mfemale
 	jetEnergyDrain = 1.0;
 
 	canCrouch = false;
-	maxDamage = 1.2;
+	maxDamage = 1.3;
 	maxForwardSpeed = 10.0;
 	maxBackwardSpeed = 8.0;
 	maxSideSpeed = 8.0;
@@ -1217,16 +906,16 @@ PlayerData sarmor
 	mapIcon = "M_player";
 	canCrouch = true;
 
-	maxJetSideForceFactor = 0.9;
-	maxJetForwardVelocity = 22;
+	maxJetSideForceFactor = 1.0; //0.9; //fem 1.0
+	maxJetForwardVelocity = 25; //22; //fem 25
 	minJetEnergy = 1;
 	jetForce = 245;
 	jetEnergyDrain = 0.8;
 
 	maxDamage = 0.80;
-	maxForwardSpeed = 12;
-	maxBackwardSpeed = 12;
-	maxSideSpeed = 12;
+	maxForwardSpeed = 13;// 12; //fem 13
+	maxBackwardSpeed = 13;//12; //fem 13
+	maxSideSpeed = 13; // 12; //fem 13
 	groundForce = 40 * 9.0;
 	mass = 9.0;
 	groundTraction = 3.0;
@@ -1283,14 +972,14 @@ PlayerData stimfemale
 	minJetEnergy = 1;
 	jetForce = 375;
 	jetEnergyDrain = 0.8;
-	maxDamage = 0.75;
+	maxDamage = 0.8;
 	maxForwardSpeed = 18;
 	maxBackwardSpeed = 18;
 	maxSideSpeed = 18;
 	groundForce = 40 * 9.0;
 	mass = 9.0;
 	groundTraction = 3.0;
-	maxEnergy = 110;
+	maxEnergy = 120;
 	drag = 0.7;
 	density = 2.2;
 	minDamageSpeed = 25;
@@ -1331,8 +1020,6 @@ PlayerData stimarmor
 	flameShapeName = "lflame";
 	shieldShapeName = "shield";
 	shadowDetailMask = 1;
-	
-	//validateShape = true;
 
 	visibleToSensor = True;
 	mapFilter = 1;
@@ -1340,20 +1027,20 @@ PlayerData stimarmor
 	canCrouch = true;
 
 	maxJetSideForceFactor = 1.3;
-	maxJetForwardVelocity = 26;
+	maxJetForwardVelocity = 35; //26; //fem 35
 	minJetEnergy = 1;
-	jetForce = 350;
+	jetForce = 375; //350; //fem 375
 	jetEnergyDrain = 0.8;
 
-	maxDamage = 0.80;
+	maxDamage = 0.80; //badfem 0.75
 	maxForwardSpeed = 18;
 	maxBackwardSpeed = 18;
 	maxSideSpeed = 18;
 	groundForce = 40 * 9.0;
 	mass = 9.0;
 	groundTraction = 3.0;
-	maxEnergy = 120;
-	drag = 0.8;
+	maxEnergy = 120; //badfem 110
+	drag = 0.7; //0.8; //fem 0.7
 	density = 2.2;
 
 	minDamageSpeed = 25;
@@ -1406,8 +1093,8 @@ PlayerData barmor
 	jetEnergyDrain = 1.0;
 	maxDamage = 1.0;
 	maxForwardSpeed = 9.0;
-	maxBackwardSpeed = 7.5;
-	maxSideSpeed = 7.5;
+	maxBackwardSpeed = 8.5; //7.5; //fem 8.5
+	maxSideSpeed = 8.5; //7.5; //fem 8.5
 	groundForce = 35 * 13.0;
 	mass = 13.0;
 	groundTraction = 3.0;
@@ -1416,7 +1103,7 @@ PlayerData barmor
 	density = 1.5;
 	minDamageSpeed = 25;
 	damageScale = 0.005;
-	jumpImpulse = 110;
+	jumpImpulse = 125; //110; //fem 125
 	jumpSurfaceMinDot = 0.2;
 
 
@@ -1583,7 +1270,7 @@ PlayerData sfemale
 	jetForce = 245;
 	jetEnergyDrain = 0.8;
 
-	maxDamage = 0.75;
+	maxDamage = 0.8;
 	maxForwardSpeed = 13;
 	maxBackwardSpeed = 13;
 	maxSideSpeed = 13;
@@ -1646,7 +1333,7 @@ PlayerData spyarmor
 	maxJetSideForceFactor = 0.8;
 	maxJetForwardVelocity = 22;
 	minJetEnergy = 1;
-	jetForce = 270;
+	jetForce = 270; //badfem 260
 	jetEnergyDrain = 0.8;
 	maxDamage = 0.76;
 	maxForwardSpeed = 12;
@@ -1700,7 +1387,7 @@ PlayerData spyfemale
 	maxJetSideForceFactor = 0.8;
 	maxJetForwardVelocity = 22;
 	minJetEnergy = 1;
-	jetForce = 260;
+	jetForce = 270;
 	jetEnergyDrain = 0.8;
 	maxDamage = 0.76;
 	maxForwardSpeed = 12;
@@ -1760,8 +1447,8 @@ PlayerData earmor
 	jetEnergyDrain = 1.0;
 	maxDamage = 1.0;
 	maxForwardSpeed = 9.0;
-	maxBackwardSpeed = 7.5;
-	maxSideSpeed = 7.5;
+	maxBackwardSpeed = 8.5; //7.5; //fem 8.5
+	maxSideSpeed = 8.0; //7.5; //fem 8.0
 	groundForce = 35 * 13.0;
 	mass = 13.0;
 	groundTraction = 3.0;
@@ -1770,7 +1457,7 @@ PlayerData earmor
 	density = 1.5;
 	minDamageSpeed = 25;
 	damageScale = 0.005;
-	jumpImpulse = 110;
+	jumpImpulse = 125; //110; //fem 125
 	jumpSurfaceMinDot = 0.2;
 
 	animData[0]  = { "root", none, 1, true, true, true, false, 0 }; animData[1]  = { "run", none, 1, true, false, true, false, 3 }; animData[10] = { "crouch forward", none, 1, true, false, true, false, 3 }; animData[11] = { "crouch forward", none, -1, true, false, true, false, 3 }; animData[12] = { "crouch side left", none, 1, true, false, true, false, 3 }; animData[13] = { "crouch side left", none, -1, true, false, true, false, 3 }; animData[14]  = { "fall", none, 1, true, true, true, false, 3 }; animData[15]  = { "landing", SoundLandOnGround, 1, true, false, false, false, 3 }; animData[16]  = { "landing", SoundLandOnGround, 1, true, false, false, false, 3 }; animData[17]  = { "tumble loop", none, 1, true, false, false, false, 3 }; animData[18]  = { "tumble end", none, 1, true, false, false, false, 3 }; animData[19] = { "jet", none, 1, true, true, true, false, 3 }; animData[2]  = { "runback", none, 1, true, false, true, false, 3 }; animData[20] = { "PDA access", none, 1, true, false, false, false, 3 }; animData[21] = { "throw", none, 1, true, false, false, false, 3 }; animData[22] = { "flyer root", none, 1, false, false, false, false, 3 }; animData[23] = { "apc root", none, 1, true, true, true, false, 3 }; animData[24] = { "apc pilot", none, 1, false, false, false, false, 3 }; animData[25] = { "crouch die", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[26] = { "die chest", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[27] = { "die head", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[28] = { "die grab back", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[29] = { "die right side", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[3]  = { "side left", none, 1, true, false, true, false, 3 }; animData[30] = { "die left side", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[31] = { "die leg left", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[32] = { "die leg right", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[33] = { "die blown back", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[34] = { "die spin", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[35] = { "die forward", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[36] = { "die forward kneel", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[37] = { "die back", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[38] = { "sign over here",  none, 1, true, false, false, false, 2 }; animData[39] = { "sign point", none, 1, true, false, false, true, 1 }; animData[4]  = { "side left", none, -1, true, false, true, false, 3 }; animData[40] = { "sign retreat",none, 1, true, false, false, false, 2 }; animData[41] = { "sign stop", none, 1, true, false, false, true, 1 }; animData[42] = { "sign salut", none, 1, true, false, false, true, 1 };  animData[43] = { "celebration 1", none, 1, true, false, false, false, 2 }; animData[44] = { "celebration 2", none, 1, true, false, false, false, 2 }; animData[45] = { "celebration 3", none, 1, true, false, false, false, 2 }; animData[46] = { "taunt 1", none, 1, true, false, false, false, 2 }; animData[47] = { "taunt 2", none, 1, true, false, false, false, 2 }; animData[48] = { "pose kneel", none, 1, true, false, false, true, 1 }; animData[49] = { "pose stand", none, 1, true, false, false, true, 1 }; animData[5] = { "jump stand", none, 1, true, false, true, false, 3 }; animData[50] = { "wave", none, 1, true, false, false, true, 1 }; animData[6] = { "jump run", none, 1, true, false, true, false, 3 }; animData[7] = { "crouch root", none, 1, true, true, true, false, 3 }; animData[8] = { "crouch root", none, 1, true, true, true, false, 3 }; animData[9] = { "crouch root", none, -1, true, true, true, false, 3 }; footPrints = { 2, 3 }; jetSound = SoundJetLight; lFootSounds = { SoundMFootLSoft, SoundMFootLHard, SoundMFootLSoft, SoundMFootLHard, SoundMFootLSoft, SoundMFootLSoft, SoundMFootLSoft, SoundMFootLHard, SoundMFootLSnow, SoundMFootLSoft, SoundMFootLSoft, SoundMFootLSoft, SoundMFootLSoft, SoundMFootLSoft, SoundMFootLSoft }; rFootSounds = { SoundMFootRSoft, SoundMFootRHard, SoundMFootRSoft, SoundMFootRHard, SoundMFootRSoft, SoundMFootRSoft, SoundMFootRSoft, SoundMFootRHard, SoundMFootRSnow, SoundMFootRSoft, SoundMFootRSoft, SoundMFootRSoft, SoundMFootRSoft, SoundMFootRSoft, SoundMFootRSoft }; 
@@ -1863,24 +1550,24 @@ PlayerData aarmor
 	visibleToSensor = True;
 	mapFilter = 1;
 	mapIcon = "M_player";
-	maxJetSideForceFactor = 1.0;
+	maxJetSideForceFactor = 1.2; //1.0; //fem 1.2
 	maxJetForwardVelocity = 17;
 	minJetEnergy = 1;
 	jetForce = 325;
-	jetEnergyDrain = 1.0;
-	maxDamage = 1.0;
-	maxForwardSpeed = 10.0;
+	jetEnergyDrain = 0.9; //1.0; //fem 0.9
+	maxDamage = 1.0; //badfem 0.9
+	maxForwardSpeed = 11.0; //fem 11.0
 	maxBackwardSpeed = 9.0;
 	maxSideSpeed = 9.0;
 	groundForce = 35 * 13.0;
 	mass = 13.0;
-	groundTraction = 3.4;
+	groundTraction = 3.4; //badfem 3.5
 	maxEnergy = 140;
 	drag = 1.0;
 	density = 1.5;
 	minDamageSpeed = 25;
 	damageScale = 0.005;
-	jumpImpulse = 110;
+	jumpImpulse = 125; //110; //fem 125
 	jumpSurfaceMinDot = 0.2;
 
 	animData[0]  = { "root", none, 1, true, true, true, false, 0 }; animData[1]  = { "run", none, 1, true, false, true, false, 3 }; animData[10] = { "crouch forward", none, 1, true, false, true, false, 3 }; animData[11] = { "crouch forward", none, -1, true, false, true, false, 3 }; animData[12] = { "crouch side left", none, 1, true, false, true, false, 3 }; animData[13] = { "crouch side left", none, -1, true, false, true, false, 3 }; animData[14]  = { "fall", none, 1, true, true, true, false, 3 }; animData[15]  = { "landing", SoundLandOnGround, 1, true, false, false, false, 3 }; animData[16]  = { "landing", SoundLandOnGround, 1, true, false, false, false, 3 }; animData[17]  = { "tumble loop", none, 1, true, false, false, false, 3 }; animData[18]  = { "tumble end", none, 1, true, false, false, false, 3 }; animData[19] = { "jet", none, 1, true, true, true, false, 3 }; animData[2]  = { "runback", none, 1, true, false, true, false, 3 }; animData[20] = { "PDA access", none, 1, true, false, false, false, 3 }; animData[21] = { "throw", none, 1, true, false, false, false, 3 }; animData[22] = { "flyer root", none, 1, false, false, false, false, 3 }; animData[23] = { "apc root", none, 1, true, true, true, false, 3 }; animData[24] = { "apc pilot", none, 1, false, false, false, false, 3 }; animData[25] = { "crouch die", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[26] = { "die chest", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[27] = { "die head", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[28] = { "die grab back", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[29] = { "die right side", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[3]  = { "side left", none, 1, true, false, true, false, 3 }; animData[30] = { "die left side", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[31] = { "die leg left", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[32] = { "die leg right", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[33] = { "die blown back", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[34] = { "die spin", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[35] = { "die forward", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[36] = { "die forward kneel", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[37] = { "die back", SoundPlayerDeath, 1, false, false, false, false, 4 }; animData[38] = { "sign over here",  none, 1, true, false, false, false, 2 }; animData[39] = { "sign point", none, 1, true, false, false, true, 1 }; animData[4]  = { "side left", none, -1, true, false, true, false, 3 }; animData[40] = { "sign retreat",none, 1, true, false, false, false, 2 }; animData[41] = { "sign stop", none, 1, true, false, false, true, 1 }; animData[42] = { "sign salut", none, 1, true, false, false, true, 1 };  animData[43] = { "celebration 1", none, 1, true, false, false, false, 2 }; animData[44] = { "celebration 2", none, 1, true, false, false, false, 2 }; animData[45] = { "celebration 3", none, 1, true, false, false, false, 2 }; animData[46] = { "taunt 1", none, 1, true, false, false, false, 2 }; animData[47] = { "taunt 2", none, 1, true, false, false, false, 2 }; animData[48] = { "pose kneel", none, 1, true, false, false, true, 1 }; animData[49] = { "pose stand", none, 1, true, false, false, true, 1 }; animData[5] = { "jump stand", none, 1, true, false, true, false, 3 }; animData[50] = { "wave", none, 1, true, false, false, true, 1 }; animData[6] = { "jump run", none, 1, true, false, true, false, 3 }; animData[7] = { "crouch root", none, 1, true, true, true, false, 3 }; animData[8] = { "crouch root", none, 1, true, true, true, false, 3 }; animData[9] = { "crouch root", none, -1, true, true, true, false, 3 };
@@ -1924,13 +1611,13 @@ PlayerData afemale
 	jetForce = 325;
 	jetEnergyDrain = 0.9;
 	canCrouch = false;
-	maxDamage = 0.9;
+	maxDamage = 1.0;
 	maxForwardSpeed = 11.0;
 	maxBackwardSpeed = 10.0;
 	maxSideSpeed = 9.0;
 	groundForce = 35 * 13.0;
 	mass = 13.0;
-	groundTraction = 3.5;
+	groundTraction = 3.4;
 	maxEnergy = 140;
 	mass = 13.0;
 	drag = 1.0;
@@ -1959,5 +1646,6 @@ PlayerData afemale
 	boxHeadBackPercentage  = 0;
 	boxHeadFrontPercentage = 1;
 };
+
 
 

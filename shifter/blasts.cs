@@ -123,7 +123,7 @@ function HavocBlast::onAdd(%this)
 	if ($debug) echo ("Blammo");
     		schedule("Mine::Detonate(" @ %this @ ");",0.1,%this);
 	//%pl = %this.fired;
-    	//schedule("Mine::Detonate(" @ %this @ ");",0.5,%this);
+   //schedule("Mine::Detonate(" @ %this @ ");",0.5,%this);
 	
 	//%pos1 = gamebase::getposition(%this);
 	//%vel = "0 0 0";
@@ -136,6 +136,24 @@ function HavocBlast::onAdd(%this)
 //greyflcn
 //====================================================================== MDM Blast
 MineData MDMBlast
+{
+	className = "Mine";
+	description = "HavocBlast";
+	shapeFile = "breath";
+	shadowDetailMask = 4;
+	explosionId = ShockwaveThree;
+	explosionRadius = 20.0;
+	damageValue = 2.0;
+	damageType = $MDMDamageType;
+	kickBackStrength = 0.1;
+	triggerRadius = 2.5;
+	maxDamage = 0.5;
+	shadowDetailMask = 0;
+	destroyDamage = 1.0;
+	damageLevel = {1.0, 1.0};
+};
+
+MineData oldMDMBlast
 {
 	className = "Mine";
 	description = "MDMBlast";
@@ -179,7 +197,7 @@ MineData MDMBlast2
 
 function MDMBlast2::onAdd(%this)
 {
-	schedule("Mine::Detonate(" @ %this @ ");",0.11,%this);
+	schedule("Mine::Detonate(" @ %this @ ");",0.1,%this);
 }
 
 //======================================================================== Cloaking Blast

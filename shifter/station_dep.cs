@@ -99,9 +99,19 @@ function DeployableStation::onDestroyed(%this)
 	%stationName = GameBase::getDataName(%this);
 
 	if(%stationName == DeployableInvStation) 
-    		$TeamItemCount[GameBase::getTeam(%this) @ "DeployableInvPack"]--;
+   {
+		$dlist = string::greplace($dlist, %this, "");
+		//echo("Killing Invo:" @ %this);
+		//echo($dlist);
+		$TeamItemCount[GameBase::getTeam(%this) @ "DeployableInvPack"]--;
+	}
 	else if( %stationName == DeployableAmmoStation) 
-	  	$TeamItemCount[GameBase::getTeam(%this) @ "DeployableAmmoPack"]--;
+	{
+		$dlist = string::greplace($dlist, %this, "");
+		echo("Killing Ammo:" @ %this);
+		echo($dlist);		
+		$TeamItemCount[GameBase::getTeam(%this) @ "DeployableAmmoPack"]--;
+	}
 	calcRadiusDamage(%this, $DebrisDamageType, 2.5, 0.05, 25, 13, 2, 0.30, 0.1, 200, 100);
 	
 	Station::weaponCheck(%this);
@@ -112,12 +122,12 @@ function DeployableStation::onCollision(%this, %object)
 	%obj = getObjectType(%object);
 	if (%obj == "Player") 
 	{
-		if (Player::isAIControlled(%obj))
+		if (Player::isAIControlled(%object))
 			return;
-		if (Player::isDead(%obj))
+		if (Player::isDead(%object))
 			return;
 
-		if (%obj == "Player" && isPlayerBusy(%object) == 0)
+		if (isPlayerBusy(%object) == 0)
 		{
 			%client = Player::getClient(%object);
 			%armor = Player::getArmor(%object);

@@ -108,6 +108,11 @@ $deathMsg[$NukeDamageType, 1]		= "%2 was turned to ashes by %1.";
 $deathMsg[$NukeDamageType, 2]		= "%2 was caught by %1's wall of fire.";
 $deathMsg[$NukeDamageType, 3]		= "%2 was sent to meet %4 maker by %1.";
 
+$deathMsg[$MDMDamageType, 0]		= "%2 was incinerated by %1's nuclear blast..";
+$deathMsg[$MDMDamageType, 1]		= "%2 was turned to ashes by %1.";
+$deathMsg[$MDMDamageType, 2]		= "%2 was caught by %1's wall of fire.";
+$deathMsg[$MDMDamageType, 3]		= "%2 was sent to meet %4 maker by %1.";
+
 $deathMsg[$HBlasterDamageType, 0]	= "%2 was cut down by %1's HyperBlaster..";
 $deathMsg[$HBlasterDamageType, 1]	= "%2 gets pinned by %1's HyperBlaster.";
 $deathMsg[$HBlasterDamageType, 2]	= "%2 takes some puny bolts from %1's HyperBlaster.";

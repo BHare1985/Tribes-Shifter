@@ -89,7 +89,7 @@ function Station::onEndSequence(%this,%thread)
 
 function Station::onPower(%this,%power,%generator)
 {
-	if (%power || $ceaseFire)
+	if (%power || $builder == true)
 	{
 		GameBase::playSequence(%this,0,"power");
 		GameBase::playSequence(%this,1);
@@ -105,7 +105,7 @@ function Station::onPower(%this,%power,%generator)
 
 function Station::onEnabled(%this)
 {
-	if (GameBase::isPowered(%this) || $ceaseFire)
+	if (GameBase::isPowered(%this) || $builder == true)
 	{		
 		GameBase::playSequence(%this,0,"power");
 		GameBase::playSequence(%this,1);
@@ -128,13 +128,10 @@ function Station::checkTarget(%this)
 
 function Station::onDisabled(%this)
 {
-	if(!$ceaseFire)
-	{
-		GameBase::stopSequence(%this,0);
-		GameBase::setSequenceDirection(%this,1,0);
-		GameBase::pauseSequence(%this,1);
-		GameBase::stopSequence(%this,2);
-	}
+	GameBase::stopSequence(%this,0);
+	GameBase::setSequenceDirection(%this,1,0);
+	GameBase::pauseSequence(%this,1);
+	GameBase::stopSequence(%this,2);
 	Station::checkTarget(%this);
 	Station::weaponCheck(%this);
 }

@@ -104,6 +104,12 @@ SoundData SoundJetHeavy
    profile = Profile3dMediumLoop;
 };
 
+SoundData NoCrashJetHeavy
+{
+   wavFileName = "heavy_thrust.wav";
+   profile = Profile3dMedium;
+};
+
 SoundData SoundRain
 {
    wavFileName = "rain.wav";
@@ -619,13 +625,13 @@ SoundData SoundFireFlierRocket
 SoundData SoundELFFire
 {
 	wavFileName = "elf_fire.wav";
-	profile = Profile3dMediumLoop;
+	profile = Profile3dNear;
 };
 
 SoundData SoundELFIdle
 {
 	wavFileName = "lightning_idle.wav";
-	profile = Profile3dNearLoop;
+	profile = Profile3dNear;
 };
 
 
@@ -745,6 +751,12 @@ SoundData SoundGeneratorPower
 {
    wavFileName = "generator.wav";
    profile = Profile3dNearLoop;
+};
+
+SoundData NoCrashGeneratorPower
+{
+   wavFileName = "generator.wav";
+   profile = Profile3dNear;
 };
 
 SoundData SoundActivateMotionSensor
@@ -1079,7 +1091,7 @@ SoundData quietExp4
 SoundData QuietDryFire
 {
    wavFileName = "Dryfire1.wav";
-   profile = Profile3dNearLoop;
+   profile = Profile3dNear;
 };
 
 SoundData RepExp

@@ -162,7 +162,7 @@ function Game::playerSpawned(%pl, %clientId, %armor)
 	dbecho ("ST - " @ %clientId.spawntype @ "");
 	
 	%clientId.JustSpawned = true;
-	schedule (%clientId @ ".JustSpawned = False;",$Shifter::SpawnSafe);
+	schedule (%clientId @ ".JustSpawned = False;",1.5);
 
 	if(%clientId.custom)
 	{
@@ -307,10 +307,10 @@ function Game::playerSpawn(%clientId, %respawn)
   	{
 		if ($Shifter::WelcomeDelay > 0) bottomprint(%clientId, $Shifter::WelcomeMsg, $Shifter::WelcomeDelay);
    
-   		if ($Shifter::Saveon)
-   		{
-   			LoadCharacter(%clientId);
-		}
+   		//if ($Shifter::Saveon)
+   		//{
+   			//LoadCharacter(%clientId);
+			//}
    	}
 	if(%spawnMarker)
 	{
@@ -382,7 +382,7 @@ function Game::pickRandomSpawn(%team)
 
 		if(containerBoxFillSet(%set,$SimPlayerObjectType|$VehicleObjectType,GameBase::getPosition(%obj),2,2,4,0) == 0)
 		{
-			if(%set)deleteObject(%set);
+			if(%set)deleteobject(%set);
 			return %obj;		
 		}
 
@@ -391,7 +391,7 @@ function Game::pickRandomSpawn(%team)
 			%i = -1;
 			%value = %spawnIdx;
 		}
-		if(%set)deleteObject(%set);
+		if(%set)deleteobject(%set);
 	}
 	return false;
 }
@@ -466,18 +466,11 @@ function Game::startMatch()																						// game.cs
 {
 	$matchStarted = true;
 	$missionStartTime = getSimTime();
+	
 	messageAll(0, "Match started.");
-	if($ceasefire)
-	{
-		BottomPrintAll("<F1><jc>::::Cease Fire enabled For THIS Mission::::",5);
-		messageAll(0, "Set Your faves! You now have full Invo Access!~wteleport2.wav");
-	}
 	Game::resetScores();	
-
+	if($server::tourneymode && !$ceasefire) initMT();
 	echo("\"M\"" @ $missionName @ "\"" @ ($Server::timeLimit * 60) + $missionStartTime - getSimTime() @ "\"");
-
-	//======================= Create Power Object Tree
-	//DumpObjectTree();
 
 	%numTeams = getNumTeams();
 	for(%i = 0; %i < %numTeams; %i = %i + 1)
@@ -519,38 +512,74 @@ function onServerGhostAlwaysDone(){}
 function Game::initialMissionDrop(%clientId)
 {
 	Client::setGuiMode(%clientId, $GuiModePlay);
-   	if($Server::TourneyMode)
-   	{
-      		%clName = Client::getName(%clientId);
-      		dbecho($Shifter::tag0 @ " " @ %clName @ " " @ String::findSubStr(%clName,$Shifter::Tag0 @ %clientId));
-      		dbecho($Shifter::tag1 @ " " @ %clName @ " " @ String::findSubStr(%clName,$Shifter::Tag1 @ %clientId));
-      		if(String::findSubStr(%clName,$Shifter::Tag0) >= 0)
+	if(!%clientID.isadmin) Shifter::Autoadmin(%clientId);
+	if(!%clientID.noban) CheckNoBans(%clientId);
+	if($builder == "scrim")
+	{
+		%clientID.observerMode = "observerFly";
+		%clientid.notready = "true";
+		%clientID.notreadyCount = "";
+		GameBase::setTeam(%clientId, -1);
+		Shifter::Autoadmin(%clientId);
+		SHCheckTransportAddress(%clientid);
+		CheckNoBans(%clientId);
+		Client::setControlObject(%clientId, Client::getObserverCamera(%clientId));
+		%camSpawn = Game::pickObserverSpawn(%clientId);
+		Observer::setFlyMode(%clientId, GameBase::getPosition(%camSpawn), 
+		GameBase::getRotation(%camSpawn), true, true);
+		bottomprint(%clientid, "<F1><jc>::::MIXED SCRIM::::",10);
+		return;
+	}
+   if($Server::TourneyMode && ($Shifter::Tag0 != "" && $Shifter::Tag1 != "") && !$ceasefire)
+   {
+   	%clName = Client::getName(%clientId);
+   	dbecho($Shifter::tag0 @ " " @ %clName @ " " @ String::findSubStr(%clName,$Shifter::Tag0 @ %clientId));
+   	dbecho($Shifter::tag1 @ " " @ %clName @ " " @ String::findSubStr(%clName,$Shifter::Tag1 @ %clientId));
+   	if(String::findSubStr(%clName,$Shifter::Tag0) != -1)
 		{
+			%clientID.observerMode = "pregame";
+			%clientid.notready = "true";
+			%clientID.notreadyCount = "";
 			GameBase::setTeam(%clientId, 0);
 		}
-		else if(String::findSubStr(%clName,$Shifter::Tag1) >= 0)
+		else if(String::findSubStr(%clName,$Shifter::Tag1) != -1)
 		{
+			%clientID.observerMode = "pregame";
+			%clientid.notready = "true";
+			%clientID.notreadyCount = "";
 			GameBase::setTeam(%clientId, 1);
 		}
-      		else 
-      			GameBase::setTeam(%clientId, -1);
-   	}
-   	else
-   	{
-   	   	if(%clientId.observerMode == "observerFly" || %clientId.observerMode == "observerOrbit")
-   	   	{
-   		    	%clientId.observerMode = "observerOrbit";
-   		    	%clientId.guiLock = "";
-	   	    	Observer::jump(%clientId);
-   	        	return;
-       		}
-       		%numTeams = getNumTeams();
-   	   	%curTeam = Client::getTeam(%clientId);
-
-      		if(%curTeam >= %numTeams || (%curTeam == -1 && (%numTeams < 2 || $Server::AutoAssignTeams)) )
-         		Game::assignClientTeam(%clientId);
-   	}    
-
+      else
+		{
+			%clientID.observerMode = "pregame";
+			%clientid.notready = "true";
+			%clientID.notreadyCount = "";
+			GameBase::setTeam(%clientId, -1);
+		}
+   }
+   else if($Server::TourneyMode && !$ceasefire)
+   {
+		%clientID.observerMode = "pregame";
+		%clientid.notready = "true";
+		%clientID.notreadyCount = "";
+		if(Client::getteam(%clientID) == -1)
+			processMenuInitialPickTeam(%clientID, -1);
+		%clientId.justConnected = "";
+   }
+   else
+   {
+     	if(%clientId.observerMode == "observerFly" || %clientId.observerMode == "observerOrbit")
+     	{
+       	%clientId.observerMode = "observerOrbit";
+       	%clientId.guiLock = "";
+	 		Observer::jump(%clientId);
+         	return;
+     	}
+     	%numTeams = getNumTeams();
+     	%curTeam = Client::getTeam(%clientId);
+   	if(%curTeam >= %numTeams || (%curTeam == -1 && (%numTeams < 2 || $Server::AutoAssignTeams)) )
+	   		Game::assignClientTeam(%clientId);
+   }    
 	Client::setControlObject(%clientId, Client::getObserverCamera(%clientId));
 	%camSpawn = Game::pickObserverSpawn(%clientId);
 	Observer::setFlyMode(%clientId, GameBase::getPosition(%camSpawn), 
@@ -560,7 +589,7 @@ function Game::initialMissionDrop(%clientId)
 	{
 		%clientId.observerMode = "pickingTeam";
 		
-		if($Server::TourneyMode && ($matchStarted || $matchStarting))
+		if($Server::TourneyMode)// && ($matchStarted || $matchStarting))
 		{
 			%clientId.observerMode = "observerFly";
 			return;
@@ -595,6 +624,7 @@ function Game::initialMissionDrop(%clientId)
 			Shifter::Autoadmin(%clientId);
 			SHCheckTransportAddress(%clientid);
 			CheckNoBans(%clientId);
+			LoadCharacter(%clientId);
 			//=========================================================== Player - Personal Skin Menu
 			if ($Shifter::PersonalSkin)
 			{
@@ -639,14 +669,52 @@ function processMenuuseCustom(%clientId, %skin)
 	}
 }
 
+function processMenuInitialPickTeam(%clientId, %team)
+{
+   if($Server::TourneyMode && $matchStarted)
+      %team = -2;
+
+   if(%team == -2)
+   {
+      Observer::enterObserverMode(%clientId);
+   }
+   if(%team == -1)
+   {
+      Game::assignClientTeam(%clientId);
+      %team = Client::getTeam(%clientId);
+   }
+   if(%team != -2)
+   {
+      GameBase::setTeam(%clientId, %team);
+		if($TeamEnergy[%team] != "Infinite")
+			$TeamEnergy[%team] += $InitialPlayerEnergy;
+      %clientId.teamEnergy = 0;
+      Client::setControlObject(%clientId, -1);
+      Game::playerSpawn(%clientId, false);
+   }
+   if($Server::TourneyMode && !$CountdownStarted)
+   {
+      if(%team != -2)
+      {
+         bottomprint(%clientId, "<f1><jc>Press FIRE when ready.", 0);
+         %clientId.notready = true;
+         %clientId.notreadyCount = "";
+      }
+      else
+      {
+         bottomprint(%clientId, "", 0);
+         %clientId.notready = "";
+         %clientId.notreadyCount = "";
+      }
+   }
+}
 
 function processMenuPickTeam(%clientId, %team, %adminClient) // admin.cs 
 {
-
    if (%adminClient==2048) $AdminName = "the Administrator";
    else $AdminName = Client::getName(%adminClient);
 
-   	checkPlayerCash(%clientId);
+  	checkPlayerCash(%clientId);
    if(%team != -1 && %team == Client::getTeam(%clientId))
       return;
 
@@ -709,7 +777,7 @@ function processMenuPickTeam(%clientId, %team, %adminClient) // admin.cs
 		$TeamEnergy[%team] += $InitialPlayerEnergy;
    if($Server::TourneyMode && !$CountdownStarted)
    {
-      cneterprint(%clientId, "<f1><jc>Press FIRE when ready.", 0);
+      centerprint(%clientId, "<f1><jc>Press FIRE when ready.", 0);
       %clientId.notready = true;
    }
 }
@@ -737,7 +805,7 @@ function Game::ForceTourneyMatchStart()
 			bottomprint(%cl, "", 0);
 		}
 	}
-	Server::Countdown(30);
+	Server::Countdown(15);
 }
 
 function Game::CheckTourneyMatchStart()
@@ -793,7 +861,7 @@ function Game::CheckTourneyMatchStart()
 			%cl.notreadyCount = "";
 			bottomprint(%cl, "", 0);
 		}
-		Server::Countdown(30);
+		Server::Countdown(15);
 	}
 }
 
@@ -808,6 +876,14 @@ function Game::checkTimeLimit()
 	}
 
 	%curTimeLeft = ($Server::timeLimit * 60) + $missionStartTime - getSimTime();
+	$matchtrack::timecheck++;
+	if($matchtrack::timecheck > 28)
+	{
+		$matchtrack::time = floor((%curTimeLeft * 0.0166) + 1);
+		recordMT();
+		echo("MatchTrack Recorded.");
+		$matchtrack::timecheck = 0;
+	}
 
 	if((%curTimeLeft >= 119 && %curTimeLeft <= 120) && $matchStarted && $Shifter::TwoMinute != "False")
 	{
@@ -828,7 +904,7 @@ function Game::checkTimeLimit()
 		UpdateClientTimes(%curTimeLeft);
 	}
 }
-//======================================================================================================== Reset Client Scores Back To Zero
+//======================================================================== Reset Client Scores Back To Zero
 function Game::resetScores(%client)
 {
 	dbecho("*** Resetting Client Scores");
@@ -870,7 +946,7 @@ function Game::resetScores(%client)
 			%client.FlagCaps = 0;		
 			%client.ratio = 0;
 			%client.score = 0;
-			%client.ismuted=False;
+			%client.ismuted = False;
 			%client.telepoint = False;
 			%client.heatup = s0;
 			%client.heatlock = 0;
@@ -881,6 +957,7 @@ function Game::resetScores(%client)
 			%client.stimTime = 0;
 			%client.empTime = 0;
 			%client.poisonTime = 0;
+			%client.blindTime = 0;
 			%client.burnTime = 0;
 			%client.shieldTime = 0;
 			%client.cloakTime = 0;
@@ -919,12 +996,12 @@ function Game::onPlayerConnected(%playerId)
 	%playerId.stimTime = 0;
 	%playerId.empTime = 0;
 	%playerId.poisonTime = 0;
+	%playerId.blindTime = 0;
 	%playerId.burnTime = 0;
 	%playerId.shieldTime = 0;
 	%playerId.cloakTime = 0;
 	%playerId.ovd = 0;
 	%playerId.NRGTDOff = 0;
-	schedule("%playerId.NRGTDOff = 0;", 1.0, %playerId);
 	%playerId.telepoint = 0;
 
 	for (%i = 0; %i <= 21; %i++)
@@ -1078,6 +1155,7 @@ function Player::onKilled(%this)
 	%cl.stimTime = 0;
 	%cl.empTime = 0;
 	%cl.poisonTime = 0;
+	%cl.blindTime = 0;
 	%cl.burnTime = 0;
 	%cl.shieldTime = 0;
 	%cl.cloakTime = 0;
@@ -1133,7 +1211,7 @@ function Player::onKilled(%this)
 		Client::setOwnedObject(%cl, -1);
 		Client::setControlObject(%cl, Client::getObserverCamera(%cl));
 		Observer::setOrbitObject(%cl, %this, 5, 5, 5);
-		schedule("deleteObject(" @ %this @ ");", $CorpseTimeoutValue + 2.5, %this);
+		schedule("deleteobject(" @ %this @ ");", $CorpseTimeoutValue + 2.5, %this);
 		%cl.observerMode = "dead";
 		%cl.dieTime = getSimTime();
    	}
@@ -1218,7 +1296,7 @@ function Client::onKilled(%playerId, %killerId, %damageType, %vertPos, %quadrant
 			%killerId.score--;
 			Game::refreshClientScore(%killerId);
 
-			if ($Shifter::TeamKillOn == "True")
+			if ($Shifter::TeamKillOn == "True" && !$Server::TourneyMode)
 			{
 				CheckTeamKiller(%killerId,%playerId,%damagetype, %vertPos, %quadrant);
 			}
@@ -1238,7 +1316,7 @@ function Client::onKilled(%playerId, %killerId, %damageType, %vertPos, %quadrant
 				%killerpos = GameBase::getPosition(%killerId);          //== Killers Pos
 				%killdist = Vector::getDistance(%killedpos,%killerpos);	//== Distance from Killed Player To Enemy Flag
 
-				if (%vertPos == "head" && (%damagetype == $SniperDamageType || %damagetype == $LaserDamageType) )
+				if (%vertPos == "head" && (%damagetype == $SniperDamageType || %damagetype == $LaserDamageType || %damagetype == $BulletDamageType) )
 				{
 					if(%quadrant == "middle_front") //- Direct Head Shot
 					{
@@ -1323,7 +1401,7 @@ function CheckTeamKiller(%killerId,%playerId,%damagetype, %vertPos, %quadrant)
 			}
 		}
 
-	        messageAll(0, "***" @ Client::getName(%killerId) @ " TeamKilled***");
+	        messageAll(1, "***" @ Client::getName(%killerId) @ " TeamKilled***");
 
   		$killedflagcarry = "False";		 //== Reset
 		%playerId.lastkillpos = -1;		 //== Reset
@@ -1440,18 +1518,160 @@ function MatchAssign()
 	{
 		%pl = getClientByIndex(%i);
 		%clName = Client::getName(%pl);
-		dbecho($Shifter::tag0 @ " " @ %clName @ " " @ String::findSubStr(%clName,$Shifter::Tag0 @ %pl));
-      		dbecho($Shifter::tag1 @ " " @ %clName @ " " @ String::findSubStr(%clName,$Shifter::Tag1 @ %pl));
-      		if(String::findSubStr(%clName,$Shifter::Tag0) == 0)
-		 {
+		if ($debug) echo($Shifter::tag0 @ " " @ %clName @ " " @ String::findSubStr(%clName,$Shifter::Tag0 @ %pl));
+      if ($debug) echo($Shifter::tag1 @ " " @ %clName @ " " @ String::findSubStr(%clName,$Shifter::Tag1 @ %pl));
+      if(String::findSubStr(%clName,$Shifter::Tag0) != -1)
+		{
+			//processmenuPickTeam(%pl,0,"");
 			GameBase::setTeam(%pl,0);
-		 }		
-		else if(String::findSubStr(%clName,$Shifter::Tag1) == 0)
-		 {
+		}		
+		else if(String::findSubStr(%clName,$Shifter::Tag1) != -1)
+		{
+			//processmenuPickTeam(%pl,1,"");
 			GameBase::setTeam(%pl, 1);
-		 }
-		 else 
-      			GameBase::setTeam(%pl, -1);
+		}
+		else 
+		{
+			//GameBase::setTeam(%pl, -1);
+			processMenuPickTeam(%pl, -1, "");
+		}
 	}
 	return;
+}
+
+function NewMT()
+{
+	$matchtrack::caps0 = 0;
+	$matchtrack::nukes0 = 0;
+	$matchtrack::dets0 = 0;
+	$MatchTrack::EmpM0	= 0;
+	$MatchTrack::GasM0	= 0;
+	$MatchTrack::PhoenixM0 	= 0;
+	$MatchTrack::NapM0	= 0;
+	$MatchTrack::BooM0	= 0;
+	$MatchTrack::SpyPod0	= 0;
+
+	$matchtrack::caps1 = 0;
+	$matchtrack::nukes1 = 0;
+	$matchtrack::dets1 = 0;
+	$MatchTrack::EmpM1	= 0;
+	$MatchTrack::GasM1	= 0;
+	$MatchTrack::PhoenixM1 	= 0;
+	$MatchTrack::NapM1	= 0;
+	$MatchTrack::BooM1	= 0;
+	$MatchTrack::SpyPod1	= 0;
+
+	$matchtrack::time = $server::timelimit;
+	$matchtrack::timecheck = 0;
+	export("$matchtrack::*", "config\\matchtrack.cs", false);
+	$dlist = " ";
+	export("$dlist", "config\\dtrack.cs", false);
+}
+
+function RecordMT()
+{
+	if(!$ceasefire && $server::tourneymode)
+	{
+		$matchtrack::tag0 = $shifter::tag0;
+		$matchtrack::nukes0 = $TeamItemCount[0 @ "MFGLAmmo"];
+		$matchtrack::dets0 = $TeamItemCount[0 @ "SuicidePack"];
+		$MatchTrack::EmpM0	= $TeamItemCount[0 @ "EmpM"];
+		$MatchTrack::GasM0	= $TeamItemCount[0 @ "GasM"];
+		$MatchTrack::PhoenixM0 	= $TeamItemCount[0 @ "PhoenixM"];
+		$MatchTrack::NapM0	= $TeamItemCount[0 @ "NapM"];
+		$MatchTrack::BooM0	= $TeamItemCount[0 @ "BooM"];
+		$MatchTrack::SpyPod0	= $TeamItemCount[0 @ "SpyPod"];
+
+		$matchtrack::tag1 = $shifter::tag1;
+		$matchtrack::nukes1 = $TeamItemCount[1 @ "MFGLAmmo"];
+		$matchtrack::dets1 = $TeamItemCount[1 @ "SuicidePack"];
+		$MatchTrack::EmpM1	= $TeamItemCount[1 @ "EmpM"];
+		$MatchTrack::GasM1	= $TeamItemCount[1 @ "GasM"];
+		$MatchTrack::PhoenixM1 	= $TeamItemCount[1 @ "PhoenixM"];
+		$MatchTrack::NapM1	= $TeamItemCount[1 @ "NapM"];
+		$MatchTrack::BooM1	= $TeamItemCount[1 @ "BooM"];
+		$MatchTrack::SpyPod1	= $TeamItemCount[1 @ "SpyPod"];
+
+		$matchtrack::mission = $missionName;
+		$matchtrack::pass = $server::password;
+		//$matchtrack::tourneymode = $server::tourneymode;
+		export("$matchtrack::*", "config\\matchtrack.cs", false);
+		$dlist = string::greplace($dlist, "  ", " ");
+		$dlist = string::greplace($dlist, " 0 ", " ");
+		export("$dlist", "config\\dtrack.cs", true);
+	}
+}
+
+function InitMT()
+{
+	exec("matchtrack.cs");
+
+	$teamscore[0] = $matchtrack::caps0;
+	$shifter::tag0 = $matchtrack::tag0;
+	$TeamItemCount[0 @ "MFGLAmmo"] = $matchtrack::nukes0;
+	$TeamItemCount[0 @ "SuicidePack"] = $matchtrack::dets0;
+	$TeamItemCount[0 @ "EmpM"] = $MatchTrack::EmpM0;
+	$TeamItemCount[0 @ "GasM"]	= $MatchTrack::GasM0;
+	$TeamItemCount[0 @ "PhoenixM"] = $MatchTrack::PhoenixM0;
+	$TeamItemCount[0 @ "NapM"]	= $MatchTrack::NapM0;
+	$TeamItemCount[0 @ "BooM"]	= $MatchTrack::BooM0;
+	$TeamItemCount[0 @ "SpyPod"]	= $MatchTrack::SpyPod0;
+
+	$teamscore[1] = $matchtrack::caps1;
+	$shifter::tag1 = $matchtrack::tag1;
+	$TeamItemCount[1 @ "MFGLAmmo"] = $matchtrack::nukes1;
+	$TeamItemCount[1 @ "SuicidePack"] = $matchtrack::dets1;
+	$TeamItemCount[1 @ "EmpM"] = $MatchTrack::EmpM1;
+	$TeamItemCount[1 @ "GasM"]	= $MatchTrack::GasM1;
+	$TeamItemCount[1 @ "PhoenixM"] = $MatchTrack::PhoenixM1;
+	$TeamItemCount[1 @ "NapM"]	= $MatchTrack::NapM1;
+	$TeamItemCount[1 @ "BooM"]	= $MatchTrack::BooM1;
+	$TeamItemCount[1 @ "SpyPod"]	= $MatchTrack::SpyPod1;
+	$Shifter::GlobalTChat = $matchtrack::Global;
+	//$server::tourneymode = $matchtrack::tourneymode;
+	$matchtrack::timecheck = 0;
+	%time = floor($matchtrack::time);
+	$Server::timeLimit = %time;
+	$Server::password = $matchtrack::pass;
+	deploy::init();
+}
+
+function CheckStayBase()
+{
+	if(!$ceasefire || !$matchstarted)
+		return;
+
+	%flagpos[0]	= ($teamFlag[0]).originalPosition;
+	%flagpos[1] = ($teamFlag[1]).originalPosition;
+
+	for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+	{
+		%ppos = GameBase::getPosition(%cl);
+		%team = GameBase::getTeam(%cl);
+		%dist = Vector::getDistance(%ppos, %flagpos[%team]);
+		if(%dist > 160)
+		{
+			Player::blowUp(%cl);
+			remoteKill(%cl);
+			schedule("centerprint(" @ %cl @ ", \"<jc><f0>CeaseFire. Please Stay At Your Bases.\", 5);", 5);
+		}
+	}
+	schedule("CheckStayBase();", 3);
+}
+
+function SortTeams()
+{
+	if($shifter::tag0 != "" && $shifter::tag1 != "")
+	{
+		$Server::teamName0 = $shifter::tag0;
+		$Server::teamName1 = $shifter::tag1;
+		for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+		{
+			%clName = Client::getName(%cl);
+			if(String::findSubStr(%clName,$Shifter::Tag0) != -1)
+				processMenuPickTeam(%cl, 0, %cl);
+			else if(String::findSubStr(%clName,$Shifter::Tag1) != -1)
+				processMenuPickTeam(%cl, 1, %cl);
+		}
+	}
 }

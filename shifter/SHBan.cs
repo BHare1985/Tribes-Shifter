@@ -1,6 +1,6 @@
 function SHLoadBanList()
 {
-	EvalSearchPath();
+	//EvalSearchPath();
 	exec(SHBanList @ $Server::Port);
 	echo("Ban List Loaded");
 }
@@ -68,7 +68,7 @@ function SHclearBanlist()
         $SHBanList[%i-1] = "";
     }
     $SHBanList[%i-1] = "";
-    EvalSearchPath();
+    //EvalSearchPath();
     // exec("PermaBan.cs");    // use this line if you want to have 'certain' clients banned always
     SHSaveBanList();
     if ($debug) echo("*** banlist cleared ***");

@@ -15,7 +15,8 @@ function Observer::triggerUp(%client)
 		{
 			if(Game::playerSpawn(%client, true))
 			{
-				%client.observerMode = "";
+				if($matchStarted)
+					%client.observerMode = "";
 				Observer::checkObserved(%client);
 			}
 		}
@@ -37,11 +38,19 @@ function Observer::triggerUp(%client)
 	{
 		if($CountdownStarted)
 			return;
+
 		if(%client.notready)
 		{
 			%client.notready = "";
 			MessageAll(0, Client::getName(%client) @ " is READY.");
-			if(%client.notreadyCount < 3)
+			%msg = "<jc><f0>PRESS <f1>FIRE <f0>TO START!";
+			for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+			{
+				if(%cl.notready == "true")
+					remoteEval(%cl, "BP", %msg, 2);
+			}
+
+			if(%client.notreadyCount < 1)
 				bottomprint(%client, "<f1><jc>Waiting for match start (FIRE if not ready).", 0);
 			else 
 				bottomprint(%client, "<f1><jc>Waiting for match start.", 0);
@@ -49,7 +58,7 @@ function Observer::triggerUp(%client)
 		else
 		{
 			%client.notreadyCount++;
-			if(%client.notreadyCount < 4)
+			if(%client.notreadyCount < 2)
 			{
 				%client.notready = true;
 				MessageAll(0, Client::getName(%client) @ " is NOT READY.");
@@ -197,16 +206,14 @@ function Observer::setTargetClient(%client, %target)
 }
 
 
-//greyflcn
-//uhg...again
-//function Observer::CheckFlagViewers()
-//{
-//	%flag = $FlagCarry[%flagTeam];
-//	if (!%flag)
-//	{
-//		
-//	}
-//}
+function Observer::CheckFlagViewers()
+{
+	%flag = $FlagCarry[%flagTeam];
+	if (!%flag)
+	{
+		
+	}
+}
 
 function Observer::nextObservable(%client)
 {

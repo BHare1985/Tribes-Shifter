@@ -36,7 +36,7 @@ function remoteCancelMenu(%server)
    	if(%server != 2048)
       		return;
    	if(isObject(CurServerMenu))
-      		deleteObject(CurServerMenu);
+      		deleteobject(CurServerMenu);
 }
 
 function remoteNewMenu(%server, %title)
@@ -45,7 +45,7 @@ function remoteNewMenu(%server, %title)
 		return;
 
 	if(isObject(CurServerMenu))
-		deleteObject(CurServerMenu);
+		deleteobject(CurServerMenu);
 
 	newObject(CurServerMenu, ChatMenu, %title);
 	setCMMode(PlayChatMenu, 0);
@@ -61,7 +61,7 @@ function remoteAddMenuItem(%server, %title, %code)
 
 function clientMenuSelect(%code)
 {
-   deleteObject(CurServerMenu);
+   deleteobject(CurServerMenu);
    remoteEval(2048, menuSelect, %code);
 }
 

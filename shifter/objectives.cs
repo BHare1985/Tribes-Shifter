@@ -1,4 +1,44 @@
 exec("game.cs");
+$bounds[CanyonCrusade] = "-460 -390 900 780";
+$bounds[CanyonCrusade_deluxe] = "-460 -390 900 780";
+$bounds[DarkAurora] = "-440 -510 630 1070";
+$bounds[MidnightMayhem] = "-400 -300 700 650";
+$bounds[MidnightMayhem_deluxe] = "-425 -300 750 650";
+$bounds[Obfuscation] = "-480 -500 950 950";
+$bounds[Raindance] = "-700 -100 850 900";
+$bounds[Reliquary] = "-512 -512 1024 1024";
+$bounds[Sulfurious] = "-256 -262 512 524";
+$bounds[SpinCycle] = "-750 600 800 800";
+$bounds[Simoom] = "-600 -600 1200 1200";
+$bounds[SideWinder] = "-420 -530 800 780";
+$bounds[Sulfurious] = "-256 -262 512 524";
+$bounds[JaggedClaw] = "-325 -565 800 1060";
+$bounds[ArcticWolf] = "-500 -900 1100 1200";
+$bounds[DROPZONE_2] = "-1069 -917 1200 1500";
+$bounds[Rollercoaster] = "2 -40 900 1000";
+$bounds[IceDagger] = "-115 -275 1000 1200";
+$bounds[FleetCommand] = "-750 -750 1600 1600";
+$bounds[DusktoDawn] = "-1200 -700 1400 1000";
+$bounds[DangerousCrossing] = "-100 -425 600 700";
+$bounds[Blastside] = "-827 -717 1000 1000";
+$bounds[Broadside] = "-827 -717 1000 1000";
+$bounds[Desert_Of_Death] = "-527 -701 1500 1600";
+$bounds[Stonehenge] = "75 125 600 600";
+$bounds["Spartacus'sGauntlet"] = "-512 -580 1024 1024";
+$bounds[Domino] = "-700 -700 1400 1400";
+$bounds[Death_Row] = "-350 -200 800 800";
+$bounds[Emerald_Valley] = "-275 -300 640 800";
+$bounds[IceRidge] = "-350 -200 800 800";
+$bounds[NightSlide] = "-612 -612 1224 1224";
+$bounds[OlympusMons] = "-455 -525 775 750";
+$bounds[Massive_Sides] = "-827 -717 1000 1000";
+$bounds[SuperCross_2] = "-100 -425 700 700";
+$bounds[TheLongWalk] = "-1069 -917 1200 1500";
+$bounds[Turbulence] = "-512 -512 1024 1024";
+$bounds[Acrophobia] = "-1024 -1024 2048 2048";
+$bounds[AvalancheMkII] = "-500 -500 1000 1000";
+$bounds[CloakOfNight] = "-600 -600 1200 1200";
+$bounds[NorthernLights] = "-512 -512 1024 1024";
 //============================== Default Settings incase these options are left out of the Shifter_v1.cs file by someone.
 $flagReturnTime = 45;
 //=========================================================================================================================================
@@ -147,11 +187,11 @@ function ObjectiveMission::setObjectiveHeading()
 	if($missionComplete == "True") //================================================ When The Mission Is Over
 	{
 		//================================================= Save all players stats at mission end...
-		if ($Shifter::SaveOn)
-		{
-			echo ("*** Saving Players");
-			saveall();
-		}
+		//if ($Shifter::SaveOn)
+		//{
+		//	echo ("*** Saving Players");
+		//	saveall();
+		//}
 	
 		%curLeader = 0;
 		%tieGame = false;
@@ -570,6 +610,17 @@ function Game::checkTimeLimit()
 	}
 	
 	%curTimeLeft = ($Server::timeLimit * 60) + $missionStartTime - getSimTime();
+	if($server::tourneymode == true && !$ceasefire)
+	{
+		$matchtrack::timecheck++;
+		if($matchtrack::timecheck > 28)
+		{
+			$matchtrack::time = floor((%curTimeLeft * 0.0166) + 1);
+			recordMT();
+			echo("MatchTrack Recorded.");
+			$matchtrack::timecheck = 0;
+		}
+	}
 	if((%curTimeLeft >= 118 && %curTimeLeft <= 120) && $matchStarted && $Shifter::TwoMinute != "False")
 	{
 		schedule("messageAll(1,\"2 Minute Warning!~waccess_denied.wav\");", 0.01);
@@ -674,10 +725,11 @@ function Game::refreshClientScore(%clientId)
 	ScoreTracker(%clientId);
 }
 
+
 function Mission::init()
 {
    setClientScoreHeading("Player Name\t\x6FTeam\t\xA6Score\t\xCFPing\t\xEFPL\t\xFFTotalScore");
-   setTeamScoreHeading("Team Name\t\xD6Score");
+   setTeamScoreHeading("Team Name\t\x6FPlayers\t\xD6Score");
 
    $firstTeamLine = 7;
    $server::deathmatch = false;
@@ -707,6 +759,21 @@ function Mission::init()
 	{
 		$match::ceaseFireBegin = false;
 		$ceasefire = false;
+		$builder = false;
+	}
+	else if($Server::TourneyMode)
+	{
+		messageall(0, "Reseting Server Defaults");
+		exec("serverconfig.cs");
+		$Server::TourneyMode = false;
+		if(!$matchStarted && !$countdownStarted)
+		{
+			if($Server::warmupTime)
+				Server::Countdown($Server::warmupTime);
+			else   
+				Game::startMatch();
+		}
+		echo("$Server::TourneyMode = " @ $Server::TourneyMode);
 	}
    for(%i = -1; %i < getNumTeams(); %i++)
    {
@@ -756,16 +823,36 @@ function Mission::init()
 	AI::setupAI();
 }
 
+function TAC::numTeamPlayers(%team)
+{
+    %numPlayers = getNumClients();
+    %numTeamPlayers[%team] = 0;
+    for(%i = 0; %i < %numPlayers; %i = %i + 1)
+    {
+       %pl = getClientByIndex(%i);
+       %team2 = Client::getTeam(%pl);
+       %numTeamPlayers[%team2] = %numTeamPlayers[%team2] + 1;
+    }
+    return %numTeamPlayers[%team];
+}
+
 function ObjectiveMission::refreshTeamScores()
 {
-	%nt = getNumTeams();
-	Team::setScore(-1, "%t\t  0", 0);
-	for(%i = -1; %i < %nt; %i++)
-	{
-		Team::setScore(%i, "%t\t  " @ $teamScore[%i], $teamScore[%i]);
-		for(%j = 0; %j < %nt; %j++) 
-			Team::setObjective(%i,%j+$firstTeamLine, "<f1>   - Team " @ getTeamName(%j) @ " score = " @ $teamScore[%j]);
-	}
+   %nt = getNumTeams();
+   Team::setScore(-1, "%t\t  0\t  0", 0);
+// - BW Admin Mod - bug fix
+   for(%i = 0; %i < %nt; %i++)
+   {
+     $teamplayers[%i] = TAC::numTeamPlayers(%i);
+     if($teamplayers[%i] == "")
+       $teamplayers[%i] = 0;
+//     if(%i == -1)
+//       Team::setScore(%i, "%t\t  0\t  " @ $teamScore[%i], $teamScore[%i]);
+//     else
+       Team::setScore(%i, "%t\t  " @ $teamplayers[%i] @"\t  " @ $teamScore[%i], $teamScore[%i]);
+     for(%j = 0; %j < %nt; %j++)
+       Team::setObjective(%i,%j+$firstTeamLine, "<f1>   - Team " @ getTeamName(%j) @ " score = " @ $teamScore[%j]);
+   }
 }
 
 function ObjectiveMission::objectiveChanged(%this)
@@ -789,7 +876,7 @@ function Game::pickRandomSpawn(%team)
 		%set = newObject("randomspawnset",SimSet);
 		%obj = Group::getObject(%spawnSet, %i);
 		if(containerBoxFillSet(%set,$SimPlayerObjectType|$VehicleObjectType,GameBase::getPosition(%obj),2,2,4,0) == 0) {
-			if(%set)deleteObject(%set);
+			if(%set)deleteobject(%set);
 			return %obj;		
 		}
 		if(%i == %spawnCount - 1)
@@ -797,7 +884,7 @@ function Game::pickRandomSpawn(%team)
 			%i = -1;
 			%value = %spawnIdx;
 		}
-		if(%set)deleteObject(%set);
+		if(%set)deleteobject(%set);
 	}
    	return false;
 }
@@ -896,7 +983,7 @@ function TowerSwitch::getObjectiveString(%this, %forTeam)
 //=========================================================================================================== Player Touches A Tower Switch
 function TowerSwitch::onCollision(%this, %object)
 {
-	if($ceasefire) return;
+	if($builder) return;
    if($debug) echo("switch collision ", %object);
    if(getObjectType(%object) != "Player")
       return;
@@ -967,15 +1054,20 @@ function TowerSwitch::onCollision(%this, %object)
 
    if(%this.objectiveLine)
    {
-      TeamMessages(1, %playerTeam, "Your team has taken an objective.~wCapturedTower.wav");
+       TeamMessages(1, %playerTeam, "Your team has taken an objective.~wCapturedTower.wav");
 		TeamMessages(0, %playerTeam, "The " @ getTeamName(%playerTeam) @ " has taken an objective.");
 		if(%oldTeam != -1)
 	      TeamMessages(1, %oldTeam, "The " @ getTeamName(%playerTeam) @ " team has taken your objective.~wLostTower.wav");
       ObjectiveMission::ObjectiveChanged(%this);
    }
    ObjectiveMission::checkScoreLimit();
+	//if($Server::TourneyMode == true)
+	//{
+		messageall(2, "-------------------------------------------------------------------------------------");
+		messageall(0, "SCORE: " @ getTeamName(0) @ " " @ $teamScore[0] @ " - " @ getTeamName(1) @ " " @ $teamScore[1]);
+		messageall(2, "-------------------------------------------------------------------------------------");
+	//}
 }
-
 
 function TowerSwitch::timeLimitCheckPoints(%this,%client,%numChange)											// objectives.cs
 {
@@ -1181,7 +1273,7 @@ function Flag::onDrop(%player, %type)
 		if (%flagTeam == %playerTeam && %disthome <= 10)
 		{
 			if($debug) echo ("************** RETURNED FLAG TO BASE **");
-			
+			%flag.checking = false;
 
 				//========================================================= Returns Flag From Player To Stand			
 				GameBase::startFadeOut(%flag);
@@ -1231,7 +1323,8 @@ function Flag::onDrop(%player, %type)
 		
 		echo ("Flag      =" @ %flag);
 		echo ("Flag Team =" @ getTeamName(%flagTeam));
-
+		%flag.checking = true;
+		flagcheck(%flag);
 		Gamebase::setMapName(%flag, "The " @ getTeamName(%flagTeam) @ " Flag");
 	}
 	else
@@ -1271,6 +1364,7 @@ function Flag::checkReturn(%flag, %sequenceNum)																	// objectives.cs
 					Item::setVelocity(%flag, "0 0 0");
 					%flag.flagStand = "";
 					$Spoonbot::HuntFlagrunner = 0;
+					%flag.checking = false;
    			}
    			else
    			{
@@ -1286,6 +1380,7 @@ function Flag::checkReturn(%flag, %sequenceNum)																	// objectives.cs
 					TeamMessages(0,%holdTeam, "Your team holds " @ %flag.objectiveName @ ".~wflagcapture.wav", -2, "", "The " @ getTeamName(%playerTeam) @ " team holds " @ %flag.objectiveName @ ".");
 					ObjectiveMission::checkScoreLimit();
 					$Spoonbot::HuntFlagrunner = 0;
+					%flag.checking = false;
 				}
 			}
 			else
@@ -1293,6 +1388,7 @@ function Flag::checkReturn(%flag, %sequenceNum)																	// objectives.cs
 				TeamMessages(0, %flagTeam, "Your flag was returned to base.~wflagreturn.wav", -2, "", "The " @ getTeamName(%flagTeam) @ " flag was returned to base.~wflagreturn.wav");
 				GameBase::setPosition(%flag, %flag.originalPosition);
 				Item::setVelocity(%flag, "0 0 0");
+				%flag.checking = false;
 			}
 
 			%flag.atHome = true;
@@ -1303,10 +1399,56 @@ function Flag::checkReturn(%flag, %sequenceNum)																	// objectives.cs
 	}
 }
 
+function flagcheck(%flag)
+{
+	%fPos = GameBase::GetPosition(%flag);
+	%mPos = Vector::Add(%fPos, "0 0 -0.5");
+	%xPos = getword(%fpos, 0);
+	%yPos = getword(%fpos, 1);
+	if(GetLosInfo(%fPos, %mpos, 1))
+		Item::setVelocity(%flag, "0 0 0");
+
+	if(%flag.checking && $flagchecking == true)
+	{
+		%fPos = GameBase::GetPosition(%flag);
+		//echo(%fpos);
+		if(%fpos != "0 0 0")
+		{ 
+			%mPos = Vector::Add(%fPos, "0 0 -1000");
+			%xPos = getword(%fpos, 0);
+			%yPos = getword(%fpos, 1);
+			if(!(GetLosInfo(%fPos, %mpos, 1)))
+			{
+				%flag.checking = false;
+				%team = GameBase::getTeam(%flag);
+				%name = getTeamName(%team);
+				MessageAll(1, %name @ "'s flag was returned to base!!~wflagreturn.wav");
+				GameBase::setPosition(%flag, %flag.originalPosition);
+				Item::setVelocity(%flag, "0 0 0");
+				%flag.flagStand = "";
+				$Spoonbot::HuntFlagrunner = 0;
+				return;
+			}
+			if(%xPos > $xMax || %xPos < $xMin || %yPos > $yMax || %yPos < $yMin)
+			{
+				%flag.checking = false;
+				%team = GameBase::getTeam(%flag);
+				%name = getTeamName(%team);
+				MessageAll(1, %name @ "'s flag was returned to base!!~wflagreturn.wav");
+				GameBase::setPosition(%flag, %flag.originalPosition);
+				Item::setVelocity(%flag, "0 0 0");
+				%flag.flagStand = "";
+				$Spoonbot::HuntFlagrunner = 0;
+			}
+		}
+		schedule("flagcheck(" @ %flag @");", 5.0);
+	}
+}
+
 //======================================================================================================================= Touching The Flag
 function Flag::onCollision(%this, %object)
 {
-	if($ceasefire) return;
+	if($builder) return;
 	if(getObjectType(%object) != "Player")
 		return;
 
@@ -1367,7 +1509,7 @@ function Flag::onCollision(%this, %object)
 				MessageAllExcept(%playerClient, 0, %touchClientName @ " returned the " @ getTeamName(%playerTeam) @ " flag!~wflagreturn.wav");
 				Client::sendMessage(%playerClient, 0, "You returned the " @ getTeamName(%playerTeam) @ " flag!~wflagreturn.wav");
 				teamMessages(1, %playerTeam, "Your flag was returned to base.", -2, "", "The " @ getTeamName(%playerTeam) @ " flag was returned to base.");
-
+				%flag.checking = false;
 				//================================= Player Returns Flag To Base
 				
 				if ($Score::FlagReturn > 0) %playerClient.score = (%playerClient.score + $Score::FlagReturn);
@@ -1436,8 +1578,16 @@ function Flag::onCollision(%this, %object)
 					if ($ScoreOn) bottomprint(%playerClient, "Score + " @ $Score::FlagCapture @ " = " @ %playerClient.score @ " Total Score" ,3);
 						%playerClient.FlagCaps = (%playerClient.FlagCaps + 1);
 
-					messageAll(0, Client::getName(%playerClient) @ " receives " @ $Score::FlagCapture @ " point capture bonus.");
+					if($Server::TourneyMode != true) messageAll(0, Client::getName(%playerClient) @ " receives " @ $Score::FlagCapture @ " point capture bonus.");
 					Game::refreshClientScore(%playerClient);
+					//if($Server::TourneyMode == true)
+					//{
+						messageall(2, "-------------------------------------------------------------------------------------");
+						messageall(0, "SCORE: " @ getTeamName(0) @ " " @ $teamScore[0] @ " - " @ getTeamName(1) @ " " @ $teamScore[1]);
+						messageall(2, "-------------------------------------------------------------------------------------");					
+						$matchtrack::caps[%playerTeam] += %flag.scoreValue;
+						RecordMT();
+					//}
 				}
 			}
 		}
@@ -1673,7 +1823,8 @@ function Flag::clientKilled(%this, %playerId, %killerId)
 {
 	%player = Client::getOwnedObject(%playerId);
 	%killer = Client::getOwnedObject(%killerId);
-
+	%this.checking = true;
+	flagcheck(%this);
 	if(%player == -1 || %killer == -1)
 		return;
 
@@ -1750,7 +1901,7 @@ function Flag::playerLeaveMissionArea(%this, %playerId)
 		%playerClient = Player::getClient(%playerId);
 		%clientName = Client::getName(%playerClient);
 	   	%flagTeam = GameBase::getTeam(%this);
-	
+		%flag.checking = false;
 		if(%flagTeam == -1 && (%this.flagStand == "" || (%this.flagStand).flag != "") ) 
 	   	{
 			MessageAllExcept(%playerClient, 0, %clientName @ " left the mission area while carrying " @ %this.objectiveName @ "!  It was returned to its initial position.");
@@ -1892,17 +2043,18 @@ function StaticShape::objectiveDestroyed(%this)
 			%playerClient = GameBase::getOwnerClient(%this.lastDamageObject);
 
 		%player = Client::getControlObject(%playerClient);
-		
+		if(%playerclient == 0 || %player == -1 || getObjectType(%player) != "Player")
+			return;
+
 		$lastdamageobj[%this] = GameBase::getControlClient(%this.lastDamageObject);
 		
-		if(getObjectType(%player) != "Player")
-			return;
+
 		
 		if(%playerClient != -1 || !%playerClient)
 			%clientName = Client::getName(%playerClient);
 		else
 			return;
-		%objtype = getObjectType(%this);
+		//%objtype = getObjectType(%this);
 		%objname = (GameBase::getDataName(%this)).description;
 
 		%pntval = Scoring::Object(%this);

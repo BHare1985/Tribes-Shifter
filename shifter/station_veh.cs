@@ -79,9 +79,11 @@ function VehicleStation::onBuyingVechicle(%this)
 		GameBase::setActive(%this,false);
 	}
 	if (%this.target)
-	{	   
+	{
+		%player = Client::getOwnedObject(%this.target);   
 		Client::clearItemShopping(%this.target);
 		Client::sendMessage(%this.target,0,"Station Access Off");
+		%player.dropcount = 0;
 		Station::onEndSequence(%this);
 	}
 }
@@ -116,25 +118,25 @@ function VehicleStation::checkBuying(%client,%item)
 							teamEnergyBuySell(%player,$VehicleToItem[%sName].price);
 							$TeamItemCount[Client::getTeam(%client) @ ($VehicleToItem[%sName])]--;
 							GameBase::startFadeOut(%object);
-							schedule("deleteObject(" @ %object @ ");",2.5,%object);
-							schedule(%object @ ".fading = \"\";",2.5,%object);
-							schedule(%station @ ".fadeOut = \"\";",2.5,%station);
+							schedule("deleteobject(" @ %object @ ");",0.5,%object);
+							schedule(%object @ ".fading = \"\";",0.4,%object);
+							schedule(%station @ ".fadeOut = \"\";",0.5,%station);
 							%objInWay--;
 						}
 						else
-						{ if(%set)deleteObject(%set); }
+						{ if(%set)deleteobject(%set); }
 							return 2;
 					}
 					else
 					{
 						Client::SendMessage(%client,0,"ERROR - Vehicle creation pad busy"); 
-						if(%set)deleteObject(%set);
+						if(%set)deleteobject(%set);
 						return 0;
 					}
 				}
 				else { 
 					Client::SendMessage(%client,0,"ERROR - Vehicle in creation area is mounted");
-					if(%set)deleteObject(%set);
+					if(%set)deleteobject(%set);
 					return 0;
 				}
 			} 
@@ -166,14 +168,14 @@ function VehicleStation::checkBuying(%client,%item)
 					GameBase::setRotation(%vehicle,GameBase::getRotation(%obj));
 				 	%obj.busy = getSimTime() + 3;
 				}
-				if(%set)deleteObject(%set);
+				if(%set)deleteobject(%set);
 				$TeamItemCount[Client::getTeam(%client) @ %item]++;
 				return 1;
 			}
 		}
 		else
 			Client::SendMessage(%client,0,"ERROR - Object in vehicle creation area");
-			if(%set)deleteObject(%set);
+			if(%set)deleteobject(%set);
 	}	
 	else
 		Client::SendMessage(%client,0,"ERROR - Vehicle Pad Disabled");

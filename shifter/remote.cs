@@ -25,9 +25,10 @@ function remoteCommandMode(%clientId)
 function remoteInventoryMode(%clientId)
 {
 	%player = Client::getOwnedObject(%clientId);
-	if($ceaseFire && !%clientId.guiLock && !Observer::isObserver(%clientId) && %player != -1)
+	if($builder && !%clientId.guiLock && !Observer::isObserver(%clientId) && %player != -1)
 	{
 		remoteSCOM(%clientId, -1);
+		Client::sendMessage(%clientID,0,"Station Access On");
 		%clientID.ListType = "InvList";
 		%player.Station = %player;
 		setupShoppingList(%clientID,%clientID,"InvList");
@@ -68,7 +69,7 @@ function remoteToggleCommandMode(%clientId)
 {
 	if($Server::TourneyMode && (!$matchStarted || $matchStarting))
 	{
-		schedule("bottomprint(" @ %client @ ", \"<jc><f0>That command is only available when playing the match\", 15);", 5);
+		bottomprint(%clientId, "<jc><f0>That command is only available when playing the match", 15);
 		return;
 	}
 	else
@@ -117,7 +118,7 @@ function remoteKill(%client)
 
 function remoteKilldone(%client)
 {
-	if($Server::TourneyMode && (!$matchStarted || $matchStarting))
+	if($Server::TourneyMode && $matchStarting)
 		return;
 
 	%player = Client::getOwnedObject(%client);
@@ -125,7 +126,7 @@ function remoteKilldone(%client)
 	
 	if (%client.holo)
 	{	%holopl = Client::GetOwnedObject(%client);
-		if(Player::isAiControlled(%holopl)) remotekill(%client.holo);
+		if(Player::isAiControlled(%client.holo)) remotekill(%client.holo);
 		else %client.holo = -1;
 	}
 
@@ -143,11 +144,23 @@ function remoteKilldone(%client)
 		{
 			Player::unmountItem(%player,$BackpackSlot);	
 			%client = Player::getClient(%player);
-			%obj = newObject("","Mine","Suicidebomb"); %obj.deployer = %client;
-			addToSet("MissionCleanup", %obj);
-			GameBase::throw(%obj,%client,22 * %client.throwStrength,false);
-			$TeamItemCount[GameBase::getTeam(%player) @ "SuicidePack"]++;
 			Player::decItemCount(%player,"suicidepack");
+			if($TeamItemCount[GameBase::getTeam(%player) @ "SuicidePack"] < $TeamItemMax["SuicidePack"])
+			{
+				%obj = newObject("","Mine","Suicidebomb"); %obj.deployer = %client;
+				addToSet("MissionCleanup", %obj);
+				GameBase::throw(%obj,%client,22 * %client.throwStrength,false);
+				%team = GameBase::getTeam(%player);
+				if(!$builder)
+				{
+					$TeamItemCount[%team @ "SuicidePack"]++;
+					if($Server::TourneyMode == true)
+						messageteam(1, getTeamName(%team) @ " used DetPack #" @ $TeamItemCount[%team @ "SuicidePack"], -1);
+					messageteam(1, Client::getName(%client) @ " used DetPack #" @ $TeamItemCount[%team @ "SuicidePack"], %team);
+				}
+			}
+			else
+				Client::sendMessage(Player::getClient(%player),1,"Item limit reached for Detpacks");
 		}
 		else
 		{

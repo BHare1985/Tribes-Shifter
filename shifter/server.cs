@@ -2,6 +2,7 @@
 // if an argument is passed for that parameter it gets
 // assigned to the global scope, not the scope of the function
 
+
 //==== TribeStat Scoring.cs
 
 function TribeStat_GetTeams()
@@ -228,7 +229,7 @@ function Server::onClientDisconnect(%clientId)																	// server.cs
 	$funk::var["[\"" @ %name @ "\", 0, 22]"] = "";
 	$funk::var["[\"" @ %name @ "\", 0, 23]"] = "";
 
-	for(%i = 1; %i > 25; %i++)
+	for(%i = 1; %i < 26; %i++)
 	$funk::var["[\"" @ %name @ "\", 2, " @ %i @ "]"] = "";
 	$funk::var["[\"" @ %name @ "\", 1, " @ %i @ "]"] = "";
 	purgeresources();
@@ -266,9 +267,48 @@ function KickDaJackal(%clientId)
    	KickPlayer(%clientId, "The FBI has been notified.  You better buy a legit copy before they get to your house.");
 }
 
+function String::len(%string) 
+{
+    for(%length=0; String::getSubStr(%string, %length, 1) != ""; %length++)
+    {} // it's all done above!
+    return %length;
+}
+
+function String::greplace(%string, %search, %replace)    
+{
+    if(%search == %replace || String::findSubStr(%replace, %search) != -1) // prevent infinite loops
+        return %string;
+        
+    while((%idx = String::findSubStr(%string, %search)) != -1)             
+    {   
+        %len = String::len(%string);
+        %front = String::getSubStr(%string, 0, %idx);
+        %idx += String::len(%search);
+        %back = String::getSubStr(%string, %idx, %len - %idx);
+        %string = %front @ %replace @ %back;
+    }
+    return %string; 
+}
+
+function String::replace(%string, %search, %replace)    
+{
+    if(%search == %replace || String::findSubStr(%replace, %search) != -1) // prevent infinite loops
+        return %string;
+        
+    while((%idx = String::findSubStr(%string, %search)) != -1)             
+    {   
+        %len = String::len(%string);
+        %front = String::getSubStr(%string, 0, %idx);
+        %idx += String::len(%search);
+        %back = String::getSubStr(%string, %idx, %len - %idx);
+        %string = %front @ %replace @ %back;
+    }
+    return %string; 
+}
+
 function Server::onClientConnect(%clientId)																		// server.cs
 {
-	if(!String::NCompare(Client::getTransportAddress(%clientId), "LOOPBACK", 8))
+	if(!String::NCompare(Client::getTransportAddress(%clientId), "LOOPBACK", 8)  &&  !$dedicated)
 	{
 		%clientId.isAdmin = true;
 		%clientId.isSuperAdmin = true;
@@ -319,7 +359,24 @@ function Server::onClientConnect(%clientId)																		// server.cs
 	%clientId.messageFilter = -1;
 
 	remoteEval(%clientId, SVInfo, version(), $Server::Hostname, $modList, $Server::Info, $ItemFavoritesKey);
-	remoteEval(%clientId, MODInfo, $MODInfo);
+
+	//Idea used from GTC, props to Gonzo
+	%ip = Client::getTransportAddress(%clientId);
+	%ip = string::getsubstr(%ip, 3, (String::len(%ip) - 8) );
+	%name = client::getname(%clientid);
+	$IPTrak = %ip @ " - " @ %name;
+	echo("IPTRACE   **** " @ $IPTrak @ " ****");
+	export("$IPTrak", "config\\IPTrak_v1G.cs", true);
+
+	if($shifter::joincustom != "")
+	{
+		%phrase = string::greplace($shifter::joincustom, "%name", %name);
+		%phrase = string::greplace(%phrase, "%mission", $missionname);
+		%phrase = string::greplace(%phrase, "%ip", %ip);
+		remoteEval(%clientId, MODInfo, %phrase);
+	}
+	else
+		remoteEval(%clientId, MODInfo, $MODInfo);
 	remoteEval(%clientId, FileURL, $Server::FileURL);
 
 	for(%i = 0; %i < 10; %i++)
@@ -462,6 +519,14 @@ function Server::newMission(%mission)
 		if ($debug) echo("Error: no mission provided.");
 		return "False";
 	}
+//greygrey
+	//if($noCrash == false)
+	//{
+	//	if(isFile("config\\matchtrack.cs"))	
+	//		exec("matchtrack.cs");
+	//	if($matchtrack::mission != "")
+	//		%mission = $matchtrack::mission;
+	//}
 
 	$pref::lastMission = %mission;
 	
@@ -478,83 +543,64 @@ function Server::newMission(%mission)
 
 function Server::nextMission(%replay)
 {
-	if ($Shifter::RandomMissions)
+	if($Shifter::RandomMissions)
 	{
 		%rnd = floor(getRandom() * ($TotalMissions));
 		
-		if ($MissionName == $TotalMissionList[%rnd])
+		if ($MissionName == $TotalCTFMaps[%rnd])
 		{
-			%nextMission = $TotalMissionList[1];
-			$pref::LastMission = $TotalMissionList[1];
+			%nextMission = $TotalCTFMaps[1];
+			$pref::LastMission = $TotalCTFMaps[1];
 		}
 		else
 		{
-			%nextMission = $TotalMissionList[%rnd];
-			$pref::LastMission = $TotalMissionList[%rnd];
+			%nextMission = $TotalCTFMaps[%rnd];
+			$pref::LastMission = $TotalCTFMaps[%rnd];
 		}
 		
-		$Server::LastMissionNum = (floor($TotalMissions *getrandom() ));
+		$Server::LastMissionNum = (floor($TotalCTFMaps *getrandom() ));
 
 		for (%i=0; %i < 10; %i++)
 		{
-			if (%nextmission == $pastmission[%i] && $TotalMissions > 10)
+			if (%nextmission == $pastmission[%i] && $TotalCTFMaps > 10)
 			{
 				Server::nextMission();
 				return;
 			}
 		}
-		if ($TotalMissions > 10)
+		if ($TotalCTFMaps > 10)
 		{
 			for (%i=10; %i >= 0; %i--)
 			{
 				if (%i == 0)
-				{
 					$pastmission[0] = %nextmission;
-				}
 				else
-				{
 					$pastmission[%i] = $pastmission[%i - 1];
-				}
 			}
 		}
-
-		if ($debug) echo ("*** Past Missions");
-		if ($debug) echo (" 0 " @ $pastmission[0]);
-		if ($debug) echo (" 1 " @ $pastmission[1]);
-		if ($debug) echo (" 2 " @ $pastmission[2]);
-		if ($debug) echo (" 3 " @ $pastmission[3]);
-		if ($debug) echo (" 4 " @ $pastmission[4]);
-		if ($debug) echo (" 5 " @ $pastmission[5]);
-		if ($debug) echo (" 6 " @ $pastmission[6]);
-		if ($debug) echo (" 7 " @ $pastmission[7]);
-		if ($debug) echo (" 8 " @ $pastmission[8]);
-		if ($debug) echo (" 9 " @ $pastmission[9]);
-		if ($debug) echo ("10 " @ $pastmission[10]);
-		if ($debug) echo ("*** Past Missions");
 	}
 	else
 	{
 		%nextMission = $nextMission[$missionName];
 	}
-	
-	
-	
-	if(%nextMission == "")
+
+	if (%nextMission == "")
 	{
-		%mission = $pref::lastMission;
-		$Server::LastMissionNum = (floor($TotalMissions *getrandom() ));
+		Server::nextMission();
+		return;
 	}
-	
+	//****if($ceasefire == false && $server::tourneymode == true)
+	//****NewMT();
+	//greygrey
+	//$dlist = " ";
+	//if($server::tourneymode)
+	//	export($dlist, "config\\dtrack.cs", true);
 	export("pref::*", "config\\ClientPrefs.cs", False);
-	//export("Server::*", "config\\ServerPrefs.cs", False);
-	//export("$Shifter::*", "config\\ServerPrefs.cs", true);
-
-	echo("ADMINMSG: **** Changing to mission ", %nextMission, ".");
-
-
+	//****export("Server::*", "config\\ServerPrefs.cs", False);
+	//****export("$Shifter::*", "config\\ServerPrefs.cs", true);
+	//echo("ADMINMSG: **** Changing to mission ", %nextMission, ".");
 	Server::loadMission(%nextMission);
 }
-
 function remoteCycleMission(%clientId)
 {
 	if(%clientId.isAdmin || !%clientId)
@@ -629,9 +675,9 @@ function Server::loadMission(%missionName, %immed)
 	$missionFile = %missionFile;
 	$prevNumTeams = getNumTeams();
 
-	deleteObject("MissionGroup");
-	deleteObject("MissionCleanup");
-	deleteObject("ConsoleScheduler");
+	deleteobject("MissionGroup");
+	deleteobject("MissionCleanup");
+	deleteobject("ConsoleScheduler");
 
 	resetPlayerManager();
 	resetGhostManagers();
@@ -660,127 +706,47 @@ function Server::finishMissionLoad()
    	newObject(MissionCleanup, SimGroup);
 
    	exec($missionFile);
+	$flagchecking = false;
+	if($bounds[$missionName] != "")
+	{
+		%xpos = getword($bounds[$missionName], 0);
+		%ypos = getword($bounds[$missionName], 1);		
+		%width = getword($bounds[$missionName], 2);
+		%height = getword($bounds[$missionName], 3);
+		$xMin = %xpos;
+		$yMin = %ypos;
+		$xMax = %xpos + %width;
+		$yMax = %ypos + %height;
+		$flagchecking = true;
+	}
 	$noEleCol = false;
 	if	(String::findSubStr($missionName, "Broadside") != -1 || String::findSubStr($missionName, "Blastside") != -1)
 	{
-		$noEleCol = true;
+		//$noEleCol = true;
+		function GroupTrigger::onEnter(%this, %object)
+		{
+		}
 	}
 	else if($missionName == "DusktoDawn")
 	{
+		//greyflcn
 		function GroupTrigger::onEnter(%this, %object)
 		{
-			%type=getObjectType(%object);
-			if (%type=="Player")
-			{	
-				%clientId = player::getClient (%object);
-				%object.deployer = %clientId;
-				Client::sendMessage(%clientID, 0, "You tripped a mine!~wButton2.wav");
-	%vel = "0 0 0";
-	%player = 2048; //hackedy hack
-	%pos = gamebase::getposition(%object);
-	%Set = newObject("nukeset",SimSet);
-	%Mask = $SimPlayerObjectType|$StaticObjectType|$VehicleObjectType|$MineObjectType|$SimInteriorObjectType;
-	containerBoxFillSet(%Set, %Mask, %Pos, 15, 15, 25, 0);
-	%num = Group::objectCount(%Set);
-	for(%i; %i < %num; %i++)
-	{
-		%obj = Group::getObject(%Set, %i);
-		GameBase::applyDamage(%obj, $NukeDamageType, 1.5, %pos, "0 0 0", "0 0 0", %player);		
-	}
-	if(%set)deleteObject(%set);
-
-	%pos1 = %pos;
-	%rot = (gamebase::getrotation(%object));
-	%dir = (Vector::getfromrot(%rot));	
-	%trans1 = (%rot @ " " @ %dir @ " " @ %rot);
-
-	%padd = "0 0 2.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(NBaseLight, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");", 0.01);
-
-	%padd = "0 0 2.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(NBase, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.1);
-	
-	%obj = newObject("","Mine","NRing1"); 
-	schedule("GameBase::throw("@%obj@","@%player@",0,false);",0.01, %player);
-	addToSet("MissionCleanup", %obj);
-	schedule("GameBase::setPosition(" @ %obj @ ",\""@%pos@"\");", 0.01, %player); 	
-	
-	%padd = "0 0 3.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(QuietNRing, \"" @ %trans @ "\", \"" @ %player @ "\", \"0 0 10\");",1.1);
-
-	%padd = "0 0 4.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(NRing, \"" @ %trans @ "\", \"" @ %player @ "\", \"0 0 10\");",0.2);
-
-	%padd = "0 0 8.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(QuietNRing, \"" @ %trans @ "\", \"" @ %player @ "\", \"0 0 10\");",0.2);
-	
-	%padd = "0 0 10.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(NBlast, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.3);
-	
-	%obj = newObject("","Mine","NRing1"); 
-	schedule("GameBase::throw("@%obj@","@%player@",0,false);",0.01, %player);
-	addToSet("MissionCleanup", %obj);
-	schedule("GameBase::setPosition(" @ %obj @ ",\""@%pos@"\");", 0.01, %player); 	
- 	
-	%padd = "0 0 25.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(QuietNBlast, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.1);
-
-	%padd = "0 0 35.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(NBlast, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.1);
-	
-	%obj = newObject("","Mine","NRing1"); 
-	schedule("GameBase::throw("@%obj@","@%player@",0,false);",0.01, %player);
-	addToSet("MissionCleanup", %obj);
-	schedule("GameBase::setPosition(" @ %obj @ ",\""@%pos@"\");", 0.01, %player); 	
-	
-	%padd = "0 0 45.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(QuietNBlast, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.1);
-	
-	%padd = "15.0 0 60.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(NCloud, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.1);
-
-	%padd = "-15.0 0 60.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(QuietNCloud, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.1);
-
-	%padd = "0 15.0 60.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(QuietNCloud, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.1);
-
-	%padd = "0 -15.0 60.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(QuietNCloud, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.1);
-
-	%padd = "0 0 75.0";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(QuietNCloud, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.1);
-
-	%padd = "0 0 65";%pos = Vector::add(%pos1, %padd);
-	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
-	schedule ("Projectile::spawnProjectile(NRing, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.2);
-			}
+			NuclearExplosion(%object);
+			%object.deployer = %clientId;
+			Client::sendMessage(%clientID, 0, "You tripped a mine!~wButton2.wav");
 		}
 	}
 	
 	Mission::init(); 		//-- Init for next mission
 	Mission::reinitData();		//-- Init Items
 
-   	if($prevNumTeams != getNumTeams())
+   if($prevNumTeams != getNumTeams())
   	{
-  	    	// loop thru clients and setTeam to -1;
-  	    	messageAll(0, "New teamcount - resetting teams.");
-  	    	for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
-		GameBase::setTeam(%cl, -1);
+		// loop thru clients and setTeam to -1;
+		messageAll(0, "New teamcount - resetting teams.");
+		for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+			GameBase::setTeam(%cl, -1);
   	}
 
 	$ghosting = true;
@@ -797,6 +763,13 @@ function Server::finishMissionLoad()
 
 	if($SinglePlayer)
 		Game::startMatch();
+	//else if($noCrash == false)
+	//{
+	//	Server::Countdown(120);
+	//	deploy::init();
+	//	InitMT();
+	//	$noCrash = true;
+	//}
 	else if($Server::warmupTime && !$Server::TourneyMode)
 		Server::Countdown($Server::warmupTime);
 	else if(!$Server::TourneyMode)
@@ -824,18 +797,7 @@ function Server::finishMissionLoad()
 	$teamplay = (getNumTeams() != 1);
 	purgeResources(true);
 
-	//schedule("Server::CheckMatchStarted();", 3600);
-	//schedule("Server::nextMission();", 18000);
-	
 	return "True";
-}
-
-function Server::CheckMatchStarted()
-{
-   // if the match hasn't started yet, just reset the map
-   // timing issue.
-   if(!$matchStarted)
-      Server::nextMission(true);
 }
 
 function Server::Countdown(%time)
@@ -1101,4 +1063,3 @@ function clonenamecheck(%clientID)
 	}
 }
 
-echo("Anti-Clone Flood Attack code activated - LabRat");

@@ -63,6 +63,7 @@ $SellAmmo[VulcanAmmo] = 100;
 // Max Amount of ammo the Ammo Pack can carry
 
 $AmmoPackMax[Beacon] = 3;
+$AmmoPackMax[RepairKit] = 1;
 $AmmoPackMax[BoomAmmo] = 15;
 $AmmoPackMax[BulletAmmo] = 150;
 $AmmoPackMax[DiscAmmo] = 15;
@@ -123,8 +124,6 @@ $AutoUse[LaserRifle] = False;
 $AutoUse[EnergyRifle] = False;
 $AutoUse[TargetingLaser] = False;
 $AutoUse[Fixit] = False;
-$AutoUse[ChargeGun] = False;
-$AutoUse[CloakGun] = False;
 $AutoUse[RocketLauncher] = False;
 $AutoUse[BoomStick] = False;
 $AutoUse[SniperRifle] = False;
@@ -139,16 +138,6 @@ $AutoUse[HyperB] = False;
 $AutoUse[Volter] = False;
 
 //==================================================================== Limit on number of special Items you can buy
-//==================================================== Dynamic Limits
-if ($Shifter::DetPackLimit == "")
-{
-	$Shifter::DetPackLimit = "15";
-}
-if ($Shifter::NukeLimit == "")
-{
-	$Shifter::NukeLimit = "15";
-}
-
 
 $TeamItemMax[SuicidePack] = $Shifter::DetPackLimit;
 $TeamItemMax[MFGLAmmo] = $Shifter::NukeLimit;
@@ -157,7 +146,7 @@ $TeamItemMax[MFGLAmmo] = $Shifter::NukeLimit;
 $TeamItemMax[AccelPPack] = 5;
 $TeamItemMax[AirAmmoPad] = 4;
 $TeamItemMax[airbase] = 3;
-$TeamItemMax[ArbitorBeaconPack] = 1;
+$TeamItemMax[ArbitorBeaconPack] = 3;
 $TeamItemMax[Beacon] = 100;
 $TeamItemMax[BlastFloorPack] = 6;
 $TeamItemMax[BlastWallPack] = 6;
@@ -166,7 +155,7 @@ $TeamItemMax[DeployableAmmoPack] = 7;
 $TeamItemMax[DeployableComPack] = 5;
 $TeamItemMax[DeployableElf] = 5;
 $TeamItemMax[DeployableInvPack] = 5;
-$TeamItemMax[DeployableSensorJammerPack] = 15;
+$TeamItemMax[DeployableSensorJammerPack] = 10;
 $TeamItemMax[DeployableTeleport] = 4;
 $TeamItemMax[EMPBeaconPack] = 2;
 $TeamItemMax[ShieldBeaconPack] = 4;
@@ -204,7 +193,7 @@ $TeamItemMax[TurretPack] = 5;
 $TeamItemMax[WraithVehicle] = 2;
 $TeamItemMax[PowerGeneratorPack] = 1;
 $TeamItemMax[BarragePack] = 3;
-$TeamItemMax[JammerBeaconPack] = 2;
+$TeamItemMax[JammerBeaconPack] = 1;
 $TeamItemMax[ShockFloorPack] = 4;
 $TeamItemMax[FlamerTurretPack] = 3;
 //=========================================================================== Missile Limits
@@ -283,7 +272,7 @@ function remoteBuyFavorites(%client,%favItem0,%favItem1,%favItem2,%favItem3,%fav
 
    	%client.lastBuyFavTime = %time;
 
-	if( !%client.observerMode == "" || $loadingMission == "true" || $matchStarted == "false" || %client.dead) { return; }
+	if( !%client.observerMode == "pregame" || %client.dead) { return; }
 
 	//echo ("Buy Faves");
 
@@ -298,16 +287,16 @@ function remoteBuyFavorites(%client,%favItem0,%favItem1,%favItem2,%favItem3,%fav
 		%client.favsettings = "True";
 		%client.spawntype = "favs";
 
-		if (%favItem0)  {%client.fav0 = %favItem0;	  $spawnBuyList[0, %client] = getItemData(%favItem0); }
-		if (%favItem1)  {%client.fav1 = %favItem1;	  $spawnBuyList[1, %client] = getItemData(%favItem1); }
-	   	if (%favItem2)  {%client.fav2 = %favItem2;	  $spawnBuyList[2, %client] = getItemData(%favItem2); }
-	   	if (%favItem3)  {%client.fav3 = %favItem3;	  $spawnBuyList[3, %client] = getItemData(%favItem3); }
-	   	if (%favItem4)  {%client.fav4 = %favItem4;	  $spawnBuyList[4, %client] = getItemData(%favItem4); }
-	   	if (%favItem5)  {%client.fav5 = %favItem5;	  $spawnBuyList[5, %client] = getItemData(%favItem5); }
-	   	if (%favItem6)  {%client.fav6 = %favItem6;	  $spawnBuyList[6, %client] = getItemData(%favItem6); }
-	   	if (%favItem7)  {%client.fav7 = %favItem7;	  $spawnBuyList[7, %client] = getItemData(%favItem7); }
-	   	if (%favItem8)  {%client.fav8 = %favItem8;	  $spawnBuyList[8, %client] = getItemData(%favItem8); }
-	   	if (%favItem9)  {%client.fav9 = %favItem9;	  $spawnBuyList[9, %client] = getItemData(%favItem9); }
+		if (%favItem0)  {%client.fav0 = %favItem0;	  $spawnBuyList[0,  %client] = getItemData(%favItem0); }
+		if (%favItem1)  {%client.fav1 = %favItem1;	  $spawnBuyList[1,  %client] = getItemData(%favItem1); }
+	   	if (%favItem2)  {%client.fav2 = %favItem2;	  $spawnBuyList[2,  %client] = getItemData(%favItem2); }
+	   	if (%favItem3)  {%client.fav3 = %favItem3;	  $spawnBuyList[3,  %client] = getItemData(%favItem3); }
+	   	if (%favItem4)  {%client.fav4 = %favItem4;	  $spawnBuyList[4,  %client] = getItemData(%favItem4); }
+	   	if (%favItem5)  {%client.fav5 = %favItem5;	  $spawnBuyList[5,  %client] = getItemData(%favItem5); }
+	   	if (%favItem6)  {%client.fav6 = %favItem6;	  $spawnBuyList[6,  %client] = getItemData(%favItem6); }
+	   	if (%favItem7)  {%client.fav7 = %favItem7;	  $spawnBuyList[7,  %client] = getItemData(%favItem7); }
+	   	if (%favItem8)  {%client.fav8 = %favItem8;	  $spawnBuyList[8,  %client] = getItemData(%favItem8); }
+	   	if (%favItem9)  {%client.fav9 = %favItem9;	  $spawnBuyList[9,  %client] = getItemData(%favItem9); }
 	   	if (%favItem10) {%client.fav10 = %favItem10;	  $spawnBuyList[10, %client] = getItemData(%favItem10);}
 	   	if (%favItem11) {%client.fav11 = %favItem11;	  $spawnBuyList[11, %client] = getItemData(%favItem11);}
 	   	if (%favItem12) {%client.fav12 = %favItem12;	  $spawnBuyList[12, %client] = getItemData(%favItem12);}
@@ -826,13 +815,13 @@ function remoteBuyItem(%client,%type)
 
 	%item = getItemData(%type);
 	if(buyItem(%client,%item))
-	{	if(armor != "earmor" && armor != "efemale")
- 		Client::sendMessage(%client,0,"~wbuysellsound.wav");
+	{
+		if(armor != "earmor" && armor != "efemale")
+ 			Client::sendMessage(%client,0,"~wbuysellsound.wav");
 		updateBuyingList(%client);
 	}
 	else 
   		Client::sendMessage(%client,0,"You couldn't buy "@ %item.description @"~wC_BuySell.wav");
-	//echo ("Done Buying");
 }
 
 function remoteSellItem(%client,%type)
@@ -869,15 +858,6 @@ function remoteSellItem(%client,%type)
 				if(%item.className == Vehicle) 
 					$TeamItemCount[(Client::getTeam(%client)) @ %item]--;
 			}
-			else if(%item == FgcPack)
-			{ 
-				if(Player::getItemCount(%client,"Mfgl") > 0)
-				{
-					Client::sendMessage(%client,1,"Sold Containment - Auto Selling Tactical Nuke");
-					Player::setItemCount(%client, MFGLAmmo,0);
-					Player::setItemCount(%client, MFGL,0);
-				}
-			}
 
 			if (%armor == "jarmor")
 			{
@@ -905,56 +885,116 @@ function remoteSellItem(%client,%type)
 
 function remoteUseItem(%player,%type)
 {
+	if (Player::isDead(%player)) 
+		return;
+
 	%item = getItemData(%type);
+
 	%player.throwStrength = 1;
-	if($debug) echo("Use item :" @ %type @ " " @ %item);	
- 	%client = player::getclient(%player);
- 	%armor = Player::getArmor(%client);
  
- 	if (%armor == "parmor")
+ 	if (Player::getArmor(%player) == "parmor")
 		return;
 
 	%item1 = Player::getMountedItem(%player,4);
 	%item2 = Player::getMountedItem(%player,5);	
-	//echo("Type: " @ %type @ " - Item: " @ %item @ " - Item1: " @ %item1 @ " - Item2 " @ %item2);
 	if (%item == "Hammer1Pack" || %item == "Hammer2Pack")
 	{
 		%item = "Backpack";
 		%item1 = "Hammer1Pack";
 		%item2 = "Hammer2Pack";
 	}	
-	//echo("____________Type: " @ %type @ " - Item: " @ %item @ " - Item1: " @ %item1 @ " - Item2 " @ %item2);
 	if (%item1 == "Hammer1Pack" && %item2 == "Hammer2Pack" && %item == "Backpack")
 	{
-		%Ammo = Player::getItemCount(%player, $WeaponAmmo[Hammer1Pack]);
-		if (%ammo)
-		{
-			%client = player::getclient(%player);
-			Player::trigger(%player,4,true);	Player::trigger(%player,5,true);
-			Player::trigger(%player,4,false);	Player::trigger(%player,5,false); 
-			playSound(SoundPlasmaTurretFire, GameBase::getPosition(%player));
-			schedule("playSound(SoundFlyerDismount, GameBase::getPosition("@%player@"));", 0.25, %player);
-			godhammer::heatup(player::getclient(%player));
-		}
-		else
-		{
-			Client::sendMessage(player::getclient(%player),1,"No God Hammer Ammo!~waccess_denied.wav");
-		}
+		fireGH(%player);
 		return;
 	}
-	if (%item == Backpack) 
-	{
+	else if (%item == Backpack) 
 		%item = Player::getMountedItem(%player,$BackpackSlot);
-	}
 	else if (%item == Weapon)
-	{
 		%item = Player::getMountedItem(%player,$WeaponSlot);
-		//Player::useItem(%player,%item);
-		//return;
-	}
-	Player::useItem(%player,%item);
-
+	Player::useItem(%player,%item);		
 }
+
+function fireGH(%player)
+{
+	%Ammo = Player::getItemCount(%player, $WeaponAmmo[Hammer1Pack]);
+	if(%player.refire != 1)
+	{
+		if (%ammo)
+		{
+			%client = GameBase::getOwnerClient(%player);
+			%trans = GameBase::getMuzzleTransform(%player);
+			%vel = Item::getVelocity(%player);
+			%ppos = GameBase::getPosition(%player);
+		
+			if(GameBase::getLOSInfo(%player,500)) 
+			{
+				%object = getObjectType($los::object);
+				%targetId = GameBase::getOwnerClient($los::object);
+				if(%object == "Player")
+				{
+					Player::decItemCount(%player,$WeaponAmmo[Hammer1Pack],2);
+					%name = Client::getName(%targetId);
+					Tracker(%client,%targetId);
+					Client::sendMessage(%client,0,"** Lock Aquired - " @ %name @ "~wmine_act.wav");
+					Projectile::spawnProjectile("JuggStingerMissileTracker",%trans,%player,%vel,$los::object);
+					playSound(SoundMissileTurretFire,%ppos);
+					Tracker(%client,%targetId);
+					Client::sendMessage(%client,0,"** Lock Aquired - " @ %name @ "~wmine_act.wav");
+					Projectile::spawnProjectile("JuggStingerMissileTracker",%trans,%player,%vel,$los::object);
+					playSound(SoundPlasmaTurretFire,%ppos);
+					playSound(SoundMissileTurretFire,%ppos);
+					godhammer::heatup(%client);	
+					%player.refire = 1;
+					schedule ("" @ %player @ ".refire = 0;", 0.5);
+				}
+				else if(%object == "Flier")
+				{			 
+					Player::decItemCount(%player,$WeaponAmmo[Hammer1Pack],2);
+					%pilot = ($los::object).clLastMount;
+					%name = GameBase::getDataName($los::object);
+					%target = $los::object;
+					if(%pilot.driver) Tracker(%client,%pilot);
+					Client::sendMessage(%client,0,"** Lock Aquired - " @ %name @ "~wmine_act.wav");
+					Projectile::spawnProjectile("JuggStingerMissileTracker",%trans,%player,%vel,%target);
+					playSound(SoundPlasmaTurretFire,%ppos);
+					if(%pilot.driver) Tracker(%client,%pilot);
+					Client::sendMessage(%client,0,"** Lock Aquired - " @ %name @ "~wmine_act.wav");
+					Projectile::spawnProjectile("JuggStingerMissileTracker",%trans,%player,%vel,%target);
+					playSound(SoundPlasmaTurretFire,%ppos);
+					playSound(SoundMissileTurretFire,%ppos);
+					godhammer::heatup(%client);
+					%player.refire = 1;
+					schedule ("" @ %player @ ".refire = 0;", 0.5);
+				}
+				else
+				{
+					Player::trigger(%player,4,true);	Player::trigger(%player,5,true);
+					Player::trigger(%player,4,false);	Player::trigger(%player,5,false);
+					playSound(SoundPlasmaTurretFire,%ppos);
+					playSound(SoundMissileTurretFire,%ppos);
+					%player.refire = 1;
+					schedule ("" @ %player @ ".refire = 0;", 0.5);
+					godhammer::heatup(%client);
+				}
+			}
+			else
+			{
+				Player::decItemCount(%player,$WeaponAmmo[Hammer1Pack],2);
+				Projectile::spawnProjectile("JuggStingerMissile",%trans,%player,%vel,%player);
+				Projectile::spawnProjectile("JuggStingerMissile",%trans,%player,%vel,%player);
+				playSound(SoundPlasmaTurretFire,%ppos);
+				playSound(SoundMissileTurretFire,%ppos);
+				%player.refire = 1;
+				schedule ("" @ %player @ ".refire = 0;", 0.5);
+				godhammer::heatup(%client);
+			}		
+		}
+		else
+			Client::sendMessage(player::getclient(%player),1,"No God Hammer Ammo!~waccess_denied.wav");
+	}
+}
+
 
 function remoteThrowItem(%client,%type,%strength)
 {
@@ -983,27 +1023,35 @@ function remoteThrowItem(%client,%type,%strength)
 	}
 }
 
-function showitemnumbers()
-{
-	for (%k=0; getItemData(%k) != ""; %k++)
-	{
-		echo ("Item Nunber " @ %k @ " = " @ getItemData(%k) @ " = " @ getItemData(%k).description);
-	}
-}
-
 function remoteDropItem(%client,%type)
 {
 	%player = Client::getOwnedObject(%client);
+	if(%player == -1)
+		return;
 	%client.throwStrength = 1;
 	%item = getItemData(%type);
 	%armor = Player::getArmor(%client);
+	//echo(%player.dropcount);
+	if(!$builder)
+	{
+		if(( $shifter::dropccheck == false || $shifter::dropccheck == "") && %player.dropcount > 50)
+		{
+			Client::sendMessage(%client,1,"Station Drop limit exceeded");
+			return;
+		}
+		else if($shifter::dropccheck != "" && %player.dropcount > $shifter::dropccheck)
+		{
+			Client::sendMessage(%client,1,"Station Drop limit exceeded");
+			return;
+		}
+	}
  	if (%armor == "earmor" || %armor == "efemale")
 	{
 		if (%item == Backpack) 
 		{
 			%item = Player::getMountedItem(%client,$BackpackSlot);
-			//schedule("Player::dropItem(" @ %client @ "," @ %item @ ");", 0.01);
 			Player::dropItem(%client,%item);
+			if(%player.station == true)%player.dropcount++;
 		}
 		else if (%item == Weapon) 
 		{
@@ -1020,8 +1068,10 @@ function remoteDropItem(%client,%type)
 			}
 		}
 		else 
-		Player::dropItem(%client,%item);
-			//schedule("Player::dropItem(" @ %client @ "," @ %item @ ");", 0.01);
+		{
+			Player::dropItem(%client,%item);
+			if(%player.station == true)%player.dropcount++;
+		}
 	}
 	else if (%armor == "parmor") {}
 	else if((Client::getOwnedObject(%client)).driver != 1) 
@@ -1048,6 +1098,7 @@ function remoteDropItem(%client,%type)
 		{
 			%item = Player::getMountedItem(%client,$BackpackSlot);
 			Player::dropItem(%client,%item);
+			if(%player.station == true)%player.dropcount++;
 		}
 	   else if (%item == Weapon) 
 	   {
@@ -1069,7 +1120,10 @@ function remoteDropItem(%client,%type)
 			}
 		}
 		else 
+		{
 			Player::dropItem(%client,%item);
+			if(%player.station == true)%player.dropcount++;
+		}
 	}
 }
 
@@ -1082,38 +1136,6 @@ function remoteDeployItem(%client,%type)
 
 function Item::BuildWeaponArray()
 {
-	$WeaponAmmt = 29;
-	$WeaponList[0] = "Blaster";
-	$WeaponList[1] = "Chaingun";
-	$WeaponList[2] = "PlasmaGun";
-	$WeaponList[3] = "GrenadeLauncher";
-	$WeaponList[4] = "Mortar";
-	$WeaponList[5] = "Mortar0";
-	$WeaponList[6] = "Mortar1";
-	$WeaponList[7] = "Mortar2";
-	$WeaponList[8] = "Disclauncher";
-	$WeaponList[9] = "LaserRifle";
-	$WeaponList[10] = "EnergyRifle";
-	$WeaponList[11] = "HyperB";
-	$WeaponList[12] = "RocketLauncher";
-	$WeaponList[13] = "SniperRifle";
-	$WeaponList[14] = "BoomStick";
-	$WeaponList[15] = "TranqGun";
-	$WeaponList[16] = "Silencer";
-	$WeaponList[17]= "ConCun";
-	$WeaponList[18] = "RailGun";
-	$WeaponList[19] = "Vulcan";
-	$WeaponList[20] = "Mfgl";
-	$WeaponList[21] = "Flamer";
-	$WeaponList[22] = "IonGun";
-	$WeaponList[23] = "Volter";
-	$WeaponList[24] = "FixIt";
-	$WeaponList[25] = "GravGun";
-	$WeaponList[26] = "HackIt";
-	$WeaponList[27] = "DisIt";
-	$WeaponList[28] = "LasCannon";
-	$WeaponList[29] = "PlasmaCannon";
-
 	$WeaponAmmt = 26;
 	$WeaponList[0] = "Blaster";
 	$WeaponList[1] = "Chaingun";
@@ -1176,27 +1198,69 @@ function Item::BuildWeaponArray()
 
 Item::BuildWeaponArray();
 
-function ShowWeaponArray()
+function Item::BuildWeaponArrayB()
 {
-	//echo ("*** Next Weaopn List");
-	for (%i=0; %i <= $WeaponAmmt; %i++)
+	$WeaponAmmt = 26;
+	$WeaponListB[0] = "Blaster";
+	$WeaponListB[1] = "PlasmaGun";
+	$WeaponListB[2] = "Chaingun";
+	$WeaponListB[3] = "Disclauncher";
+	$WeaponListB[4] = "GrenadeLauncher";
+	$WeaponListB[5] = "Mortar";
+	$WeaponListB[6] = "LaserRifle";
+	$WeaponListB[7] = "RocketLauncher";
+	$WeaponListB[8] = "SniperRifle";
+	$WeaponListB[9] = "ConCun";
+	$WeaponListB[10] = "EnergyRifle";
+	$WeaponListB[11] = "RailGun";
+	$WeaponListB[12] = "Mfgl";
+	$WeaponListB[13] = "Silencer";
+	$WeaponListB[14] = "Vulcan";
+	$WeaponListB[15] = "IonGun";
+	$WeaponListB[16] = "Flamer";
+	$WeaponListB[17] = "TranqGun";
+	$WeaponListB[18] = "HyperB";
+	$WeaponListB[19] = "Volter";
+	$WeaponListB[20] = "FixIt";
+	$WeaponListB[21] = "HackIt";
+	$WeaponListB[22] = "DisIt";
+	$WeaponListB[23] = "GravGun";
+	$WeaponListB[24] = "LasCannon";
+	$WeaponListB[25] = "BoomStick";
+	$WeaponListB[26] = "PlasmaCannon";
+
+	for (%i=0; %i <= $WeaponAmmt; %i++) //=== Build Next Array
 	{
-		%weapon = $WeaponList[%i];
-		%next = $NextWeapon[%weapon];
+		%next = $WeaponListB[%i+1];
+		%curr = $WeaponListB[%i];
 		
-		echo ("Next Weapon For " @ %weapon @ " = " @ %next);
+		if (%i < $WeaponAmmt)
+		{
+			$NextWeaponB[%curr] = %next;
+		}
+		else if (%i == $WeaponAmmt)
+		{
+			$NextWeaponB[%curr] = $WeaponListB[0];
+		}
 	}
 	
-	echo ("*** Previous Weaopn List");
-	for (%i=0; %i <= $WeaponAmmt; %i++)
+	for (%i = $WeaponAmmt; %i >= 0; %i--)
 	{
-		%weapon = $WeaponList[%i];
-		%next = $PrevWeapon[%weapon];
+		%curr = $WeaponListB[%i];
+		%prev = $WeaponListB[%i-1];
 		
-		echo ("Prev Weapon For " @ %weapon @ " = " @ %next);
+		if (%i == 0)
+		{
+			$PrevWeaponB[%curr] = $WeaponListB[$WeaponAmmt];
+		}
+		else if (%i > 0)
+		{
+			$PrevWeaponB[%curr] = %prev;
+		}
 	}
-	
 }
+
+Item::BuildWeaponArrayB();
 
 function remoteNextWeapon(%client)
 {
@@ -1212,34 +1276,71 @@ function remoteNextWeapon(%client)
 	}
 
 	%item = Player::getMountedItem(%client,$WeaponSlot);
-	if(%item == mortar0 || %item == mortar1 || %item == mortar2)
+	if(!%client.weaponorder || %client.weaponorder == "0")
 	{
-		for (%weapon = $NextWeapon[mortar]; %weapon != %item; %weapon = $NextWeapon[%weapon])
+		if(%item == mortar0 || %item == mortar1 || %item == mortar2)
 		{
-			if (isSelectableWeapon(%client,%weapon))
+			for (%weapon = $NextWeaponB[mortar]; %weapon != %item; %weapon = $NextWeaponB[%weapon])
 			{
-				Player::useItem(%client,%weapon);
-				%cur = Player::getMountedItem(%client,$WeaponSlot);
-				if (%cur == %weapon || Player::getNextMountedItem(%client,$WeaponSlot) == %weapon)
-					break;
+				if (isSelectableWeapon(%client,%weapon))
+				{
+					Player::useItem(%client,%weapon);
+					%cur = Player::getMountedItem(%client,$WeaponSlot);
+					if (%cur == %weapon || Player::getNextMountedItem(%client,$WeaponSlot) == %weapon)
+						break;
+				}
+			}
+		}
+		else if (%item == -1 || $NextWeaponB[%item] == "")
+		{
+			selectValidWeaponB(%client);
+		}
+		else
+		{
+			for (%weapon = $NextWeaponB[%item]; %weapon != %item; %weapon = $NextWeaponB[%weapon])
+			{
+				if (isSelectableWeapon(%client,%weapon))
+				{
+					Player::useItem(%client,%weapon);
+					if (Player::getMountedItem(%client,$WeaponSlot) == %weapon || Player::getNextMountedItem(%client,$WeaponSlot) == %weapon)
+						break;
+					if (%weapon == mortar)
+						break;
+				}
 			}
 		}
 	}
-	else if (%item == -1 || $NextWeapon[%item] == "")
-	{
-		selectValidWeapon(%client);
-	}
 	else
 	{
-		for (%weapon = $NextWeapon[%item]; %weapon != %item; %weapon = $NextWeapon[%weapon])
+		if(%item == mortar0 || %item == mortar1 || %item == mortar2)
 		{
-			if (isSelectableWeapon(%client,%weapon))
+			for (%weapon = $NextWeapon[mortar]; %weapon != %item; %weapon = $NextWeapon[%weapon])
 			{
-				Player::useItem(%client,%weapon);
-				if (Player::getMountedItem(%client,$WeaponSlot) == %weapon || Player::getNextMountedItem(%client,$WeaponSlot) == %weapon)
-					break;
-				if (%weapon == mortar)
-					break;
+				if (isSelectableWeapon(%client,%weapon))
+				{
+					Player::useItem(%client,%weapon);
+					%cur = Player::getMountedItem(%client,$WeaponSlot);
+					if (%cur == %weapon || Player::getNextMountedItem(%client,$WeaponSlot) == %weapon)
+						break;
+				}
+			}
+		}
+		else if (%item == -1 || $NextWeapon[%item] == "")
+		{
+			selectValidWeapon(%client);
+		}
+		else
+		{
+			for (%weapon = $NextWeapon[%item]; %weapon != %item; %weapon = $NextWeapon[%weapon])
+			{
+				if (isSelectableWeapon(%client,%weapon))
+				{
+					Player::useItem(%client,%weapon);
+					if (Player::getMountedItem(%client,$WeaponSlot) == %weapon || Player::getNextMountedItem(%client,$WeaponSlot) == %weapon)
+						break;
+					if (%weapon == mortar)
+						break;
+				}
 			}
 		}
 	}
@@ -1259,33 +1360,69 @@ function remotePrevWeapon(%client)
 	}
 
 	%item = Player::getMountedItem(%client,$WeaponSlot);
-	if(%item == mortar0 || %item == mortar1 || %item == mortar2)
+	if(!%client.weaponorder || %client.weaponorder == "0")
 	{
-		for (%weapon = $PrevWeapon[mortar]; %weapon != %item; %weapon = $PrevWeapon[%weapon])
+		if(%item == mortar0 || %item == mortar1 || %item == mortar2)
 		{
-			if (isSelectableWeapon(%client,%weapon))
+			for (%weapon = $PrevWeaponB[mortar]; %weapon != %item; %weapon = $PrevWeaponB[%weapon])
 			{
-				Player::useItem(%client,%weapon);
-				%cur = Player::getMountedItem(%client,$WeaponSlot);
-				if (%cur == %weapon || Player::getNextMountedItem(%client,$WeaponSlot) == %weapon)
-					break;
+				if (isSelectableWeapon(%client,%weapon))
+				{
+					Player::useItem(%client,%weapon);
+					%cur = Player::getMountedItem(%client,$WeaponSlot);
+					if (%cur == %weapon || Player::getNextMountedItem(%client,$WeaponSlot) == %weapon)
+						break;
+				}
+			}
+		}
+		else if (%item == -1 || $PrevWeapon[%item] == "")
+			selectValidWeaponB(%client);
+		else
+		{
+			for (%weapon = $PrevWeaponB[%item]; %weapon != %item; %weapon = $PrevWeaponB[%weapon])
+			{
+				if (isSelectableWeapon(%client,%weapon))
+				{
+					Player::useItem(%client,%weapon);
+					%cur = Player::getMountedItem(%client,$WeaponSlot);
+					if (%cur == %weapon || Player::getNextMountedItem(%client,$WeaponSlot) == %weapon)
+						break;
+					if(%weapon == mortar)
+						break;
+				}
 			}
 		}
 	}
-	else if (%item == -1 || $PrevWeapon[%item] == "")
-		selectValidWeapon(%client);
 	else
 	{
-		for (%weapon = $PrevWeapon[%item]; %weapon != %item; %weapon = $PrevWeapon[%weapon])
+		if(%item == mortar0 || %item == mortar1 || %item == mortar2)
 		{
-			if (isSelectableWeapon(%client,%weapon))
+			for (%weapon = $PrevWeapon[mortar]; %weapon != %item; %weapon = $PrevWeapon[%weapon])
 			{
-				Player::useItem(%client,%weapon);
-				%cur = Player::getMountedItem(%client,$WeaponSlot);
-				if (%cur == %weapon || Player::getNextMountedItem(%client,$WeaponSlot) == %weapon)
-					break;
-				if(%weapon == mortar)
-					break;
+				if (isSelectableWeapon(%client,%weapon))
+				{
+					Player::useItem(%client,%weapon);
+					%cur = Player::getMountedItem(%client,$WeaponSlot);
+					if (%cur == %weapon || Player::getNextMountedItem(%client,$WeaponSlot) == %weapon)
+						break;
+				}
+			}
+		}
+		else if (%item == -1 || $PrevWeapon[%item] == "")
+			selectValidWeapon(%client);
+		else
+		{
+			for (%weapon = $PrevWeapon[%item]; %weapon != %item; %weapon = $PrevWeapon[%weapon])
+			{
+				if (isSelectableWeapon(%client,%weapon))
+				{
+					Player::useItem(%client,%weapon);
+					%cur = Player::getMountedItem(%client,$WeaponSlot);
+					if (%cur == %weapon || Player::getNextMountedItem(%client,$WeaponSlot) == %weapon)
+						break;
+					if(%weapon == mortar)
+						break;
+				}
 			}
 		}
 	}
@@ -1299,6 +1436,23 @@ function selectValidWeapon(%client)
 	}
 	%item = EnergyRifle;
 	for (%weapon = $NextWeapon[%item]; %weapon != %item;%weapon = $NextWeapon[%weapon])
+	{
+		if (isSelectableWeapon(%client,%weapon))
+		{
+			Player::useItem(%client,%weapon);
+			break;
+		}
+	}
+}
+
+function selectValidWeaponB(%client)
+{
+	if( !%client.observerMode == "" || $loadingMission == "true" || $matchStarted == "false" || %client.dead) 
+	{
+		return;
+	}
+	%item = EnergyRifle;
+	for (%weapon = $NextWeaponB[%item]; %weapon != %item;%weapon = $NextWeaponB[%weapon])
 	{
 		if (isSelectableWeapon(%client,%weapon))
 		{
@@ -1424,7 +1578,7 @@ function Item::respawn(%this)
 	}
 	else
 	{ 
-		if(%this)deleteObject(%this);
+		if(%this)deleteobject(%this);
 	}
 }
 
@@ -1464,7 +1618,7 @@ function Item::onUse(%player,%item)
 function Item::pop(%item)
 {
 	GameBase::startFadeOut(%item);
-	schedule("deleteObject(" @ %item @ ");",2.5, %item);
+	schedule("deleteobject(" @ %item @ ");",2.5, %item);
 }
 
 function Item::onDrop(%player,%item)
@@ -1527,7 +1681,7 @@ ItemData Flag
 	mapIcon = "M_camera";
 	
 	validateShape = true;
-
+	//validateMaterials = true;
 	lightType = 2;   // Pulsing
 	lightRadius = 4;
 	lightTime = 1.5;
@@ -1718,7 +1872,6 @@ function Tool::onUse(%player,%item)
 }
 
 
-
 //----------------------------------------------------------------------------
 
 ItemData Ammo
@@ -1754,4187 +1907,10 @@ function Ammo::onDrop(%player,%item)
 	}
 }	
 
-//======================================================================== Base Blaster
+exec(gundata);
+exec(packdata);
+exec(deploydata);
 
-ItemImageData BlasterImage
-{
-   shapeFile  = "energygun";
-	mountPoint = 0;
-
-	weaponType = 0; // Single Shot
-	reloadTime = 0;
-	fireTime = 0.250;
-	minEnergy = 5;
-	maxEnergy = 6;
-
-	projectileType = BlasterBolt1;
-	accuFire = true;
-
-	sfxFire = SoundFireBlaster;
-	sfxActivate = SoundPickUpWeapon;
-};
-
-ItemData Blaster
-{
-   	heading = "bWeapons";
-	description = "Blaster";
-	className = "Weapon";
-   	shapeFile  = "energygun";
-	hudIcon = "blaster";
-	shadowDetailMask = 4;
-	imageType = BlasterImage;
-	price = 85;
-	showWeaponBar = true;
-};
-
-//======================================================================== Chain Gun
-
-ItemData BulletAmmo
-{
-	description = "Bullet";
-	className = "Ammo";
-	shapeFile = "ammo1";
-   	heading = "xAmmunition";
-	shadowDetailMask = 4;
-	price = 1;
-};
-
-ItemImageData ChaingunImage
-{
-	shapeFile = "chaingun";
-	mountPoint = 0;
-
-	weaponType = 1; // Spinning
-	reloadTime = 0.001;
-	spinUpTime = 0.2;
-	spinDownTime = 3;
-	fireTime = 0.2;
-
-	ammoType = BulletAmmo;
-	projectileType = ChaingunBullet1;
-	accuFire = false;
-
-	lightType = 3;  // Weapon Fire
-	lightRadius = 3;
-	lightTime = 1;
-	lightColor = { 0.6, 1, 1 };
-
-	sfxFire = SoundFireChaingun;
-	sfxActivate = SoundPickUpWeapon;
-	sfxSpinUp = SoundSpinUp;
-	sfxSpinDown = SoundSpinDown;
-};
-
-ItemData Chaingun
-{
-	description = "Equalizer";
-	className = "Weapon";
-	shapeFile = "chaingun";
-	hudIcon = "chain";
-  	heading = "bWeapons";
-	shadowDetailMask = 4;
-	imageType = ChaingunImage;
-	price = 125;
-	showWeaponBar = true;
-	
-	//validateShape = true;
-};
-
-//======================================================================== Plasma Gun
-
-ItemData PlasmaAmmo
-{
-	description = "Plasma Bolt";
-   	heading = "xAmmunition";
-	className = "Ammo";
-	shapeFile = "plasammo";
-	shadowDetailMask = 4;
-	price = 2;
-};
-
-ItemImageData PlasmaGunImage
-{
-	shapeFile = "plasma";
-	mountPoint = 0;
-
-	weaponType = 0; // Single Shot
-	ammoType = "PlasmaAmmo";
-	//projectileType = "Undefined";
-	accuFire = true;
-	reloadTime = 0.1;
-	fireTime = 0.5;
-
-	lightType = 3;  // Weapon Fire
-	lightRadius = 3;
-	lightTime = 1;
-	lightColor = { 1, 1, 0.2 };
-
-	sfxFire = SoundFirePlasma;
-	sfxActivate = SoundPickUpWeapon;
-	sfxReload = SoundDryFire;
-};
-
-
-function PlasmaGunImage::onFire(%player, %slot) 
-{
-	 %Ammo = Player::getItemCount(%player, $WeaponAmmo[PlasmaGun]);
-
-	 %playerId = Player::getClient(%player);
-	 if(%Ammo) 
-	 {
-		 %client = GameBase::getOwnerClient(%player);
-		 %trans = GameBase::getMuzzleTransform(%player);
-	     	 %vel = Item::getVelocity(%player);
-
-		if (!%playerId.Plasma || %playerId.Plasma == 0)
-		{
-			Player::decItemCount(%player,$WeaponAmmo[PlasmaGun],1);
-			Projectile::spawnProjectile("PlasmaBolt2",%trans,%player,%vel);
-		}
-		else if (%playerId.Plasma == 1)
-		{
-			Player::decItemCount(%player,$WeaponAmmo[PlasmaGun],1);
-			Projectile::spawnProjectile("PlasmaBoltRapid",%trans,%player,%vel);
-			Projectile::spawnProjectile("PlasmaBoltRapid2",%trans,%player,%vel);
-		}
-		else if (%playerId.Plasma == 2)
-		{
-			%pRot = GameBase::getRotation(%player);
-			Player::decItemCount(%player,$WeaponAmmo[PlasmaGun],1);
-			%vel = EmplacementPack::rotVector( "15 0 -15", %pRot);
-			Projectile::spawnProjectile("PlasmaBoltMulti",%trans,%player,%vel);
-			
-			%vel = EmplacementPack::rotVector( "-15 0 -15", %pRot);
-			Projectile::spawnProjectile("PlasmaBoltMulti",%trans,%player,%vel);
-			
-			%vel = EmplacementPack::rotVector( "0 2 15", %pRot);
-			Projectile::spawnProjectile("PlasmaBoltMulti",%trans,%player,%vel);
-
-			%vel = EmplacementPack::rotVector( "0 1 0", %pRot);
-			Projectile::spawnProjectile("PlasmaBoltMulti",%trans,%player,%vel);
-		}
-		else if (%playerId.Plasma == 3)
-		{
-			Player::decItemCount(%player,$WeaponAmmo[PlasmaGun],1);
-			%fired = (Projectile::spawnProjectile("PlasmaBolt2",%trans,%player,%vel));
-			schedule ("DeployFrags(" @ %fired @ ", 3," @  %playerId @ ");",0.5,%fired);
-			schedule ("DeployFrags(" @ %fired @ ", 5," @  %playerId @ ");",1.0,%fired);
-			schedule ("DeployFrags(" @ %fired @ ", 8," @  %playerId @ ");",1.5,%fired);
-		}
-	}	//=== End standard plasma fire.
-}
-ItemData PlasmaGun
-{
-	description = "Plasma Gun";
-	className = "Weapon";
-	shapeFile = "plasma";
-	hudIcon = "plasma";
-    	heading = "bWeapons";
-	shadowDetailMask = 4;
-	imageType = PlasmaGunImage;
-	price = 175;
-	showWeaponBar = true;
-	
-	//validateShape = true;
-};	
-
-//======================================================================== Grenade Launcher
-ItemData GrenadeAmmo
-{
-	description = "Grenade Ammo";
-	className = "Ammo";
-	shapeFile = "grenammo";
-   	heading = "xAmmunition";
-	shadowDetailMask = 4;
-	price = 2;
-};
-
-ItemImageData GrenadeLauncherImage
-{
-	shapeFile = "grenadeL";
-	mountPoint = 0;
-
-	weaponType = 0;
-	ammoType = GrenadeAmmo;
-	projectileType = GrenadeShell;
-	accuFire = false;
-	reloadTime = 0.5;
-	fireTime = 0.5;
-
-	lightType = 3;
-	lightRadius = 3;
-	lightTime = 1;
-	lightColor = { 0.6, 1, 1.0 };
-
-	sfxFire = SoundFireGrenade;
-	sfxActivate = SoundPickUpWeapon;
-	sfxReload = SoundDryFire;
-};
-
-ItemData GrenadeLauncher
-{
-	description = "Grenade Launcher";
-	className = "Weapon";
-	shapeFile = "grenadeL";
-	hudIcon = "grenade";
-  	heading = "bWeapons";
-	shadowDetailMask = 4;
-	imageType = GrenadeLauncherImage;
-	price = 150;
-	showWeaponBar = true;
-	//validateShape = true;
-};
-
-
-//======================================================================== Mortar
-ItemData MortarAmmo
-{
-	description = "Mortar Ammo";
-	className = "Ammo";
-  	heading = "xAmmunition";
-	shapeFile = "mortarammo";
-	shadowDetailMask = 4;
-	price = 5;
-};
-
-ItemImageData MortarImage
-{
-	shapeFile = "mortargun";
-	mountPoint = 0;
-
-	weaponType = 0; // Single Shot
-	ammoType = MortarAmmo;
-	//projectileType = "Undefined";
-	accuFire = false;
-	reloadTime = 0.5;
-	fireTime = 1.0;
-
-	lightType = 3;  // Weapon Fire
-	lightRadius = 3;
-	lightTime = 1;
-	lightColor = { 0.6, 1, 1.0 };
-
-	sfxFire = SoundFireMortar;
-	sfxActivate = SoundPickUpWeapon;
-	sfxReload = SoundMortarReload;
-	sfxReady = SoundMortarIdle;
-};
-
-function MortarImage::onFire(%player, %slot) 
-{
-   %client = GameBase::getOwnerClient(%player);
-	%Ammo = Player::getItemCount(%player, $WeaponAmmo[Mortar]);
-	%playerId = Player::getClient(%player);
-
-	if (%client.lastmdm && %Ammo == 1)
-	{
-		MDMDetonate2(%player);
-		return;
-	}
-	else if(%client.lastmdm && %ammo > 1)
-	{
-		%client.firemortar = %client.lastmdm;
-		%client.lastmdm = "False";
-	}
-	else if(%Ammo || %client.firemortar) 
-	{
-		%fired.deployer = %player;
-		%vel = Item::getVelocity(%player);
-		%trans = GameBase::getMuzzleTransform(%player);
-		if (!%playerId.Mortar || %playerId.Mortar == 0)
-		{
-			%fired = Projectile::spawnProjectile("MortarShell1",%trans,%player,%vel);
-       	Player::decItemCount(%player,$WeaponAmmo[Mortar],1);
-		}
-		else if (%playerId.Mortar == 1)
-		{
-			%fired = Projectile::spawnProjectile("EMPMortar",%trans,%player,%vel);
-       	Player::decItemCount(%player,$WeaponAmmo[Mortar],1);
-		}
-		else if (%playerId.Mortar == 2)
-		{
-			%fired = Projectile::spawnProjectile("BomberShell",%trans,%player,%vel);
-			%fired.deployer = %client;
-       	Player::decItemCount(%player,$WeaponAmmo[Mortar],1);
-		}
-		else if (%playerId.Mortar == 3)
-		{
-			if (%client.firemortar)
-				MDMDetonate(%player);
-			else if(%Ammo > 1)
-			{
-				%client.firemortar = (Projectile::spawnProjectile("DelayMortarShell",%trans,%player,%vel));
-				schedule("MDMDetonate(" @ %player @");",10,%client.firemortar);
-				Player::decItemCount(%player,$WeaponAmmo[Mortar],1);
-			}
-			else if(%Ammo == 1)
-			{
-				%client.lastmdm = (Projectile::spawnProjectile("DelayMortarShell",%trans,%player,%vel));
-				schedule("MDMDetonate2(" @ %player @");",10,%client.lastmdm);
-			}
-		}		
-	}
-}
-
-function MDMDetonate(%player)
-{
- %client = GameBase::getOwnerClient(%player);
- %obj = newObject("","Mine","MDMBlast");
- %obj2 = newObject("","Mine","MDMBlast2");
- GameBase::throw(%obj,%client,0,false);		
- GameBase::throw(%obj2,%client,0,false);
- addToSet("MissionCleanup", %obj);
- addToSet("MissionCleanup", %obj2);
- %padd = "0 0 0.5";
- %pos = Vector::add(GameBase::getPosition(%client.firemortar), %padd);
- GameBase::setPosition(%obj, %pos);
- GameBase::setPosition(%obj2, %pos);
- if(%client.firemortar)deleteObject(%client.firemortar);
- %client.firemortar = "False";
-}
-
-function MDMDetonate2(%player)
-{
- %client = GameBase::getOwnerClient(%player);
- %obj = newObject("","Mine","MDMBlast");
- %obj2 = newObject("","Mine","MDMBlast2");
- GameBase::throw(%obj,%client,0,false);		
- GameBase::throw(%obj2,%client,0,false);
- addToSet("MissionCleanup", %obj);
- addToSet("MissionCleanup", %obj2);
- %padd = "0 0 0.5";
- %pos = Vector::add(GameBase::getPosition(%client.lastmdm), %padd);
- GameBase::setPosition(%obj, %pos);
- GameBase::setPosition(%obj2, %pos);
- if(%client.lastmdm)deleteObject(%client.lastmdm);
- %client.lastmdm = "False";
- Player::decItemCount(%player,$WeaponAmmo[Mortar],1);
-}
-
-ItemData Mortar
-{
-	description = "Mortar";
-	className = "Weapon";
-	shapeFile = "mortargun";
-	hudIcon = "mortar";
-   heading = "bWeapons";
-	shadowDetailMask = 4;
-	imageType = MortarImage;
-	price = 375;
-	showWeaponBar = true;
-	
-	//validateShape = true;
-};
-
-//======================================================================== Disc Launcher
-ItemData DiscAmmo
-{
-	description = "Disc";
-	className = "Ammo";
-	shapeFile = "discammo";
-   	heading = "xAmmunition";
-	shadowDetailMask = 4;
-	price = 2;
-};
-
-ItemImageData DiscLauncherImage
-{
-	shapeFile = "disc";
-	mountPoint = 0;
-	weaponType = 3; // DiscLauncher
-	ammoType = DiscAmmo;
-	//projectileType = DiscShell1;
-	accuFire = true;
-	reloadTime = 0.25;
-	fireTime = 1.25;
-	spinUpTime = 0.25;
-
-	//sfxFire = SoundFireDisc;
-	sfxActivate = SoundPickUpWeapon;
-	sfxReload = SoundDiscReload;
-	sfxReady = SoundDiscSpin;
-};
-
-ItemData DiscLauncher
-{
-	description = "Disc Launcher";
-	className = "Weapon";
-	shapeFile = "disc";
-	hudIcon = "disk";
-   	heading = "bWeapons";
-	shadowDetailMask = 4;
-	imageType = DiscLauncherImage;
-	price = 150;
-	showWeaponBar = true;
-};
-
-function DiscLauncherImage::onFire(%player, %slot) 
-{
-	%client = GameBase::getOwnerClient(%player);
-	if(Player::getItemCount(%player, $WeaponAmmo[DiscLauncher])) 
-	{
-		%trans = GameBase::getMuzzleTransform(%player);
-		%vel = Item::getVelocity(%player);
-		if (!%client.disc || %client.disc == 0)
-		{
-			Player::decItemCount(%player,$WeaponAmmo[DiscLauncher],1);
-			playSound(SoundFireDisc,GameBase::getPosition(%player));
-			Projectile::spawnProjectile("DiscShell1",%trans,%player,%vel);
-		}
-		else if (%client.disc == 1)
-		{
-			Player::decItemCount(%player,$WeaponAmmo[DiscLauncher],1);
-			playSound(SoundFireDisc,GameBase::getPosition(%player));
-			Projectile::spawnProjectile("DiscShell2",%trans,%player,%vel);
-		}			
-	}
-}
-
-//======================================================================== Laser Rifle
-ItemImageData LaserRifleImage
-{
-	shapeFile = "sniper";
-	mountPoint = 0;
-	weaponType = 0; // Single Shot
-	projectileType = SniperLaser1;
-	accuFire = true;
-	reloadTime = 0.1;
-	fireTime = 0.5;
-	minEnergy = 10;
-	maxEnergy = 60;
-
-	lightType = 3;  // Weapon Fire
-	lightRadius = 2;
-	lightTime = 1;
-	lightColor = { 1, 0, 0 };
-
-	sfxFire = SoundFireLaser;
-	sfxActivate = SoundPickUpWeapon;
-};
-
-ItemData LaserRifle
-{
-	description = "Laser Rifle";
-	className = "Weapon";
-	shapeFile = "sniper";
-	hudIcon = "sniper";
-   	heading = "bWeapons";
-	shadowDetailMask = 4;
-	imageType = LaserRifleImage;
-	price = 200;
-	showWeaponBar = true;
-	
-	validateShape = true;
-	validateMaterials = true;
-};
-
-//======================================================================== ELF GUN
-ItemImageData EnergyRifleImage
-{
-	shapeFile = "shotgun";
-	mountPoint = 0;
-	weaponType = 2;  // Sustained
-	projectileType = lightningCharge1;
-	minEnergy = 3;
-	maxEnergy = 11;  // Energy used/sec for sustained weapons
-	reloadTime = 0.2;
-
-	lightType = 3;  // Weapon Fire
-	lightRadius = 2;
-	lightTime = 1;
-	lightColor = { 0.25, 0.25, 0.85 };
-
-	sfxActivate = SoundPickUpWeapon;
-	sfxFire     = SoundELFIdle;
-};
-
-ItemData EnergyRifle
-{
-	description = "ELF Gun";
-	shapeFile = "shotgun";
-	hudIcon = "energyRifle";
-	className = "Weapon";
-	heading = "bWeapons";
-	shadowDetailMask = 4;
-	imageType = EnergyRifleImage;
-	showWeaponBar = true;
-	price = 500;
-};
-
-//======================================================================== Repair Gun
-ItemImageData RepairGunImage
-{
-	shapeFile = "repairgun";
-	mountPoint = 0;
-
-	weaponType = 2;
-	projectileType = RepairBolt1;
-	minEnergy  = 3;
-	maxEnergy = 10;
-
-	lightType   = 3;
-	lightRadius = 1;
-	lightTime   = 1;
-	lightColor  = { 0.25, 1, 0.25 };
-
-	sfxActivate = SoundPickUpWeapon;
-	sfxFire = SoundRepairItem;
-};
-
-ItemData RepairGun
-{
-	description = "Repair Gun";
-	shapeFile = "repairgun";
-	className = "Weapon";
-	shadowDetailMask = 4;
-	imageType = RepairGunImage;
-	price = 125;
-	showInventory = true;
-};
-
-function RepairGun::onMount(%player,%imageSlot)
-{
-	%armor = Player::getArmor(%player);
-	if (%armor != "earmor" && %armor != "efemale")
-		Player::trigger(%player,$BackpackSlot,true);
-
-}
-
-function RepairGun::onUnmount(%player,%imageSlot)
-{
-	%armor = Player::getArmor(%player);
-
-	if (%armor != "earmor" && %armor != "efemale")	
-		Player::trigger(%player,$BackpackSlot,false);
-
-}
-
-
-//======================================================================== HyperBlaster
-
-
-ItemImageData HyperBImage
-{
-   	shapeFile  = "plasma";
-	mountPoint = 0;
-	weaponType = 0; // Single Shot
-	reloadTime = 0;
-	fireTime = 0.1;
-	minEnergy = 5;
-	maxEnergy = 6;
-	projectileType = HyperBolt;
-	accuFire = true;
-	sfxFire = SoundFireLaser;
-	sfxActivate = SoundPickUpWeapon;
-};
-
-ItemData HyperB
-{
-	heading = "bWeapons";
-	description = "Hyper Blaster";
-	className = "Weapon";
-	shapeFile  = "plasma";
-	hudIcon = "blaster";
-	shadowDetailMask = 4;
-	imageType = HyperBImage;
-	price = 285;
-	showWeaponBar = true;
-};
-
-//======================================================================== Rocket Launcher
-ItemData RocketAmmo 
-{
-	description = "RocketAmmo";
-	className = "Ammo";
-	heading = "xAmmunition";
-	shapeFile = "mortarammo";
-	shadowDetailMask = 4;
-	price = 50;
-};
-
-ItemImageData RocketImage 
-{
-	shapeFile = "mortargun";
-	mountPoint = 0;
-	mountOffset = { 0.0, 0.0, -0.2 };
-	mountRotation = { 0, 0, 0 };	
-	weaponType = 0;
-	ammoType = RocketAmmo;
-	//projectileType = "Undefined";
-	accuFire = true;
-	reloadTime = 0.8;
-	fireTime = 1.0;
-	lightType = 3;
-	lightRadius = 3;
-	lightTime = 1;
-	lightColor = { 0.6, 1, 1.0 };
-	//sfxFire = SoundMissileTurretFire;
-	sfxReload = SoundMortarReload;
-	sfxActivate = SoundPickUpWeapon;
-	sfxReady = SoundMortarIdle;
-};
-	
-function RocketImage::onFire(%player, %slot) 
-{
-	%Ammo = Player::getItemCount(%player, $WeaponAmmo[RocketLauncher]);
-	%armor = Player::getArmor(%player);
-	%client = GameBase::getOwnerClient(%player);
-	
-	if(%Ammo) 
-	{	%trans = GameBase::getMuzzleTransform(%player);
-		%vel = Item::getVelocity(%player);
-	
-		if (!%client.rocket || %client.rocket == 0)	//== Standard Stinger Rocket
-		{	if(%armor != "jarmor")
-			{	Player::decItemCount(%player,$WeaponAmmo[RocketLauncher],1);
-				schedule ("playSound(SoundMissileTurretFire,GameBase::getPosition(" @ %player @ "));", 0.01);
-				Projectile::spawnProjectile("StingerMissile",%trans,%player,%vel);
-			}
-			else
-			{	Player::decItemCount(%player,$WeaponAmmo[RocketLauncher],1);
-				schedule ("playSound(SoundMissileTurretFire,GameBase::getPosition(" @ %player @ "));", 0.01);
-				Projectile::spawnProjectile("JuggStingerMissile",%trans,%player,%vel);
-			}			
-		}
-		else if (%client.rocket == 1 && %armor != "jarmor")			//== Stinger w/ locking.
-		{	
-			%client = GameBase::getOwnerClient(%player);
-			Player::decItemCount(%player,$WeaponAmmo[RocketLauncher],1);
-			%trans = GameBase::getMuzzleTransform(%player);
-			%vel = Item::getVelocity(%player);
-
-			if(GameBase::getLOSInfo(%player,500)) 
-			{
-				%object = getObjectType($los::object);
-				%targetId = GameBase::getOwnerClient($los::object);
-				if(%object == "Player") // || %object == "Flier"
-				{			 
-						%name = Client::getName(%targetId);
-						Tracker(%client,%targetId);
-						Client::sendMessage(%client,0,"** Lock Aquired - " @ %name @ "~wmine_act.wav");
-						Projectile::spawnProjectile("StingerMissileTracker",%trans,%player,%vel,$los::object);
-						schedule ("playSound(SoundMissileTurretFire,GameBase::getPosition(" @ %player @ "));", 0.01);
-				}
-				else
-				{
-					Projectile::spawnProjectile("StingerMissile",%trans,%player,%vel,%player);
-					schedule ("playSound(SoundMissileTurretFire,GameBase::getPosition(" @ %player @ "));", 0.01);
-				}
-			}
-			else
-			{
-				Projectile::spawnProjectile("StingerMissile",%trans,%player,%vel,%player);
-				schedule ("playSound(SoundMissileTurretFire,GameBase::getPosition(" @ %player @ "));", 0.01);
-			}		
-		}
-		else if (%client.rocket == 1)			//== Stinger w/ locking.
-		{	
-			%client = GameBase::getOwnerClient(%player);
-			Player::decItemCount(%player,$WeaponAmmo[RocketLauncher],1);
-			%trans = GameBase::getMuzzleTransform(%player);
-			%vel = Item::getVelocity(%player);
-
-			if(GameBase::getLOSInfo(%player,500)) 
-			{
-				%object = getObjectType($los::object);
-				%targetId = GameBase::getOwnerClient($los::object);
-				if(%object == "Player") // || %object == "Flier"
-				{			 
-						%name = Client::getName(%targetId);
-						Tracker(%client,%targetId);
-						Client::sendMessage(%client,0,"** Lock Aquired - " @ %name @ "~wmine_act.wav");
-						Projectile::spawnProjectile("JuggStingerMissileTracker",%trans,%player,%vel,$los::object);
-						schedule ("playSound(SoundMissileTurretFire,GameBase::getPosition(" @ %player @ "));",0.01);
-				}
-				else
-				{
-					Projectile::spawnProjectile("JuggStingerMissile",%trans,%player,%vel,%player);
-					schedule ("playSound(SoundMissileTurretFire,GameBase::getPosition(" @ %player @ "));",0.01);
-				}
-			}
-			else
-			{
-				Projectile::spawnProjectile("JuggStingerMissile",%trans,%player,%vel,%player);
-				schedule ("playSound(SoundMissileTurretFire,GameBase::getPosition(" @ %player @ "));", 0.01);
-			}		
-		}
-		else if (%client.rocket == 2)			//== Heat-Seeker Rocket
-		{	
-			if (!%client.target || %client.target == "-1" || %client.target == %player)
-			{	
-				%fired = (Projectile::spawnProjectile("LockJaw",%trans,%player,%vel));
-				%client.lj = %fired;
-				schedule ("deleteobject(" @ %fired @ "); %client.lj = false;",0.05,%client.lj);
-				Player::trigger(%player,$WeaponSlot,false);
-			}
-			else if (%client.target != "-1")
-			{	$targeting = %player;
-				%targetId = GameBase::getOwnerClient(%client.target);
-				%name = Client::getName(%targetId);
-				LockjawWarn(%targetId);
-				LockJawFire(%player, %client.target);
-			}
-		}
-		else if (%client.rocket == 3)
-		{
-			Player::decItemCount(%player,$WeaponAmmo[RocketLauncher],1);
-			schedule ("playSound(SoundMissileTurretFire,GameBase::getPosition(" @ %player @ "));", 0.01);
-			%obj1 = (Projectile::spawnProjectile("GodHammerMortar",%trans,%player,%vel));
-			%obj1.deployer = %client;
-		}
-	}
-	else
-	{ Client::sendMessage(Player::getClient(%player), 0,"You have no Ammo for the Rocket Launcher");
-	}
-}
-
-ItemData RocketLauncher
-{
-	description = "Rocket Launcher";
-	className = "Weapon";
-	shapeFile = "mortargun";
-	hudIcon = "mortar";
-	heading = "bWeapons";
-	shadowDetailMask = 4;
-	imageType = RocketImage;
-	price = 375;
-	showWeaponBar = true;
-};
-
-function Tracker(%clientId, %targetId, %delay) 
-{
-	if(%targetId) 
-	{
-		 %name = Client::getName(%clientId);
-		 Client::sendMessage(%targetId,0,"** WARNING ** - " @ %name @ " has a Missile Lock!~waccess_denied.wav");
-		 schedule("Client::sendMessage(" @ %targetId @ ",0,\"~waccess_denied.wav\");",0.5);
-		 schedule("Client::sendMessage(" @ %targetId @ ",0,\"~waccess_denied.wav\");",1.0);
-		 schedule("Client::sendMessage(" @ %targetId @ ",0,\"~waccess_denied.wav\");",1.5);
-	}
-} 
-
-//======================================================================== Projectile - Sniper Rifle
-ItemData SniperAmmo
-{
-	description = "Sniper Bullet";
-	className = "Ammo";
-	heading = "xAmmunition";
-	shapeFile = "ammo1";
-	shadowDetailMask = 4;
-	price = 5;
-};
-
-ItemImageData SniperRifleImage
-{
-	shapeFile = "sniper";
-	mountPoint = 0;
-	weaponType = 0;
-	ammoType = SniperAmmo;
-	projectileType = SniperRound1;
-	accuFire = true;
-	reloadTime = 1.5;
-	fireTime = 0.08; //blagh not 0.001
-
-	lightType = 3;
-	lightRadius = 6;
-	lightTime = 2;
-	lightColor = { 1.0, 0, 0 };
-	sfxFire = SoundFireLaser;
-	sfxActivate = SoundPickUpWeapon;
-	
-};
-
-ItemData SniperRifle
-{
-	description = "Sniper Rifle";
-	className = "Weapon";
-	shapeFile = "sniper";
-	hudIcon = "targetlaser";
-	heading = "bWeapons";
-	shadowDetailMask = 4;
-	imageType = SniperRifleImage;
-	price = 375;
-	showWeaponBar = true;
-	
-	validateShape = true;
-	validateMaterials = true;
-};
-
-
-//======================================================================== Boom Stick
-ItemData BoomAmmo
-{
-	description = "Boom Shell";
-	className = "Ammo";
-	heading = "xAmmunition";
-	shapeFile = "ammo1";
-	shadowDetailMask = 4;
-	price = 5;
-};
-
-ItemImageData BoomStickImage
-{
-	shapeFile = "shotgun";
-	mountPoint = 0;
-	ammoType = BoomAmmo;
-	//projectileType = "Undefined";
-	weaponType = 0;
-	reloadTime = 0.5;
-	fireTime = 1.1;
-	minEnergy = 5;
-	maxEnergy = 6;
-	accuFire = false;
-	lightType = 3;
-	lightRadius = 3;
-	lightTime = 1;
-	lightColor = { 1.0, 0.7, 0.5 };
-	sfxActivate = SoundPickUpWeapon;
-	sfxFire     = SoundFireMortar;
-	sfxReload   = SoundMortarReload;
-};
-
-ItemData BoomStick
-{
-	description = "Boom Stick";
-	shapeFile = "shotgun";
-	hudIcon = "blaster";
-	className = "Weapon";
-	heading = "bWeapons";
-	shadowDetailMask = 4;
-	imageType = BoomStickImage;
-	showWeaponBar = true;
-	price = 500;
-};
-
-
-function BoomStickImage::onFire(%player, %slot) 
-{
- 	%AmmoCount = Player::getItemCount(%player, $WeaponAmmo[BoomStick]);
-	 if(%AmmoCount) 
-	 {
-		%client = GameBase::getOwnerClient(%player);
-		Player::decItemCount(%player,$WeaponAmmo[BoomStick],1);
-		%trans = GameBase::getMuzzleTransform(%player);
-		%vel = Item::getVelocity(%player);
-
-		for (%i=0; %i < 19; %i++)
-		{
-			Projectile::spawnProjectile("BoomStickBlast",%trans,%player,%vel);
-		}
-	}
-	else
-		Client::sendMessage(Player::getClient(%player), 0,"Out Of Shells");
-
-}
-
-//======================================================================== Poison Dart Gun
-ItemData TranqAmmo
-{
-	description = "Poison Dart";
-	className = "Ammo";
-   	heading = "xAmmunition";
-	shapeFile = "ammo1";
-	shadowDetailMask = 4;
-	price = 5;
-};
-ItemImageData TranqGunImage
-{
-	shapeFile = "sniper";
-	mountPoint = 0;
-	weaponType = 0; // Single Shot
-	ammoType = TranqAmmo;
-	projectileType = TranqDart;
-	accuFire = true;
-	reloadTime = 1.5;
-	fireTime = 0;
-	lightType = 3;  // Weapon Fire
-	lightRadius = 6;
-	lightTime = 2;
-	lightColor = { 1.0, 0, 0 };
-	sfxFire = SoundFireLaser;
-	sfxActivate = SoundPickUpWeapon;
-};
-ItemData TranqGun
-{
-	description = "Dart Rifle";
-	className = "Weapon";
-	shapeFile = "sniper";
-	hudIcon = "blaster";
-	heading = "bWeapons";
-	shadowDetailMask = 4;
-	imageType = TranqGunImage;
-	price = 475;
-	showWeaponBar = true;
-	
-	validateShape = true;
-	validateMaterials = true;
-};
-//======================================================================== Magnum
-ItemData SilencerAmmo
-{
-	description = "Magnum Bullets";
-	className = "Ammo";
-   	heading = "xAmmunition";
-	shapeFile = "ammo1";
-	shadowDetailMask = 4;
-	price = 5;
-};
-
-ItemImageData SilencerImage
-{
-	shapeFile = "energygun";
-	mountPoint = 0;
-	weaponType = 0;
-	ammoType = SilencerAmmo;
-	projectileType = SilencerBullet;
-	accuFire = true;
-	reloadTime = 0.39;
-	fireTime = 0.5;
-	lightType = 3;
-	lightRadius = 6;
-	lightTime = 2;
-	lightColor = { 0, 0, 0 };
-	sfxFire = SoundFireMortar;
-	sfxActivate = SoundPickUpWeapon;
-};
-
-ItemData Silencer
-{
-	description = "Magnum";
-	className = "Weapon";
-	shapeFile = "energygun";
-	hudIcon = "targetlaser";
-    	heading = "bWeapons";
-	shadowDetailMask = 4;
-	imageType = SilencerImage;
-	price = 375;
-	showWeaponBar = true;
-};
-
-//======================================================================== ConCusion Gun - Shockwave Cannon
-ItemImageData ConCunImage
-{
-	shapeFile = "shotgun";
-	mountPoint = 0;
-	weaponType = 0; 
-    	minEnergy = 45;
-	maxEnergy = 55;
-	projectileType = Shock;
-	accuFire = true;
-	fireTime = 0.9;
-	sfxFire = SoundPlasmaTurretFire;
-	sfxActivate = SoundPickUpWeapon;
-	
-};
-ItemData ConCun
-{
-	description = "Shockwave Cannon";
-	className = "Weapon";
-	shapeFile = "shotgun";
-	hudIcon = "disk";
-	heading = "bWeapons";
-	shadowDetailMask = 4;
-	imageType = ConCunImage;
-	price = 250;
-	showWeaponBar = true;
-};
-
-
-//======================================================================== Rail Gun
-
-ItemData RailAmmo
-{
-	description = "Railgun Bolt";
-	className = "Ammo";
-   	heading = "xAmmunition";
-	shapeFile = "ammo1";
-	shadowDetailMask = 4;
-	price = 5;
-};
-
-ItemImageData RailgunImage
-{
-	shapeFile = "sniper";
-	mountPoint = 0;
-
-	weaponType = 0; // Single Shot
-	ammoType = RailAmmo;
-	projectileType = RailRound;
-	accuFire = true;
-	reloadTime = 0.2;
-	fireTime = 2.0;
-	lightType = 3;  // Weapon Fire
-	lightRadius = 6;
-	lightTime = 2;
-	lightColor = { 1.0, 0, 0 };
-	sfxFire = SoundMissileTurretFire;
-	sfxActivate = SoundPickUpWeapon;
-	sfxSpinUp = SoundSpinUp;
-	sfxSpinDown = SoundSpinDown;
-};
-
-ItemData Railgun
-{
-	description = "Railgun";
-	className = "Weapon";
-	shapeFile = "sniper";
-	hudIcon = "targetlaser";
-    	heading = "bWeapons";
-	shadowDetailMask = 4;
-	imageType = RailgunImage;
-	price = 375;
-	showWeaponBar = true;
-	
-	validateShape = true;
-	validateMaterials = true;
-};
-
-//======================================================================== Vulcan - AutoCanaon
-
-ItemData VulcanAmmo
-{
-	description = "Vulcan Bullet";
-	className = "Ammo";
-	shapeFile = "ammo1";
-   	heading = "xAmmunition";
-	shadowDetailMask = 4;
-	price = 1;
-};
-
-ItemImageData VulcanImage
-{
-	shapeFile = "chaingun";
-	mountPoint = 0;
-	weaponType = 1;
-	reloadTime = 0.1;
-	spinUpTime = 0.5;
-	spinDownTime = 3;
-	fireTime = 0.001;
-	ammoType = VulcanAmmo;
-	projectileType = VulcanBullet;
-	accuFire = true;
-	lightType = 3;
-	lightRadius = 3;
-	lightTime = 1;
-	lightColor = { 0.6, 1, 1 };
-	sfxFire = SoundFireChaingun;
-	sfxActivate = SoundPickUpWeapon;
-	sfxSpinUp = SoundSpinUp;
-	sfxSpinDown = SoundSpinDown;
-};
-
-ItemData Vulcan
-{
-	description = "Vulcan";
-	className = "Weapon";
-	shapeFile = "chaingun";
-	hudIcon = "chain";
-    	heading = "bWeapons";
-	shadowDetailMask = 4;
-	imageType = VulcanImage;
-	price = 125;
-	showWeaponBar = true;
-	
-	//validateShape = true;
-};
-
-//======================================================================== Nuke Launcher and Pack
-
-ItemData MfglAmmo
-{
-	description = "Nuclear Warhead";
-	className = "Ammo";
-   	heading = "xAmmunition";
-	shapeFile = "rocket";
-	shadowDetailMask = 4;
-	price = 500;
-	mass = 0.25;
-};
-
-ItemImageData MfglImage
-{
-	shapeFile = "mortargun";
-	mountPoint = 0;
-	weaponType = 0; // Single Shot
-	ammoType = MfglAmmo;
-	//projectileType = Undefined;
-	accuFire = true;
-	reloadTime = 0.5;
-	fireTime = 4.0;
-	lightType = 3;  // Weapon Fire
-	lightRadius = 3;
-	lightTime = 1;
-	lightColor = { 0.6, 1, 1.0 };
-	sfxFire = SoundFireMortar;
-	sfxActivate = SoundPickUpWeapon;
-	sfxReload = SoundMortarReload;
-	sfxReady = SoundMortarIdle;
-};
-
-ItemData Mfgl
-{
-	description = "Tactical Nuke";
-	className = "Weapon";
-	shapeFile = "mortargun";
-	hudIcon = "ammopack";
-    	heading = "bWeapons";
-	shadowDetailMask = 4;
-	imageType = MfglImage;
-	price = 3500;
-	showWeaponBar = true;
-};
-
-function MfglImage::onFire(%player, %slot) 
-{
- 	%AmmoCount = Player::getItemCount(%player, $WeaponAmmo[Mfgl]);
-	%armor = Player::getArmor(%player);
-	if((Player::getMountedItem(%player,$BackpackSlot) == FgcPack) || (%armor == "jarmor"))
-	{
-		if(%AmmoCount)
-		{
-			ixApplyKickback(%player, 500, 70);
-			$TeamItemCount[GameBase::getTeam(%player) @ "MFGLAmmo"]++;	 
-			Player::decItemCount(%player,$WeaponAmmo[Mfgl],1);
-
-			%client = GameBase::getOwnerClient(%player);
-			%trans = GameBase::getMuzzleTransform(%player);
-			%vel = Item::getVelocity(%player);
-
-			%fired = (Projectile::spawnProjectile("FgcShell",%trans,%player,%vel));%fired.deployer = %player;
-			%fired.deployer = %client;
-		}
-		else
-		{
-			Client::sendMessage(Player::getClient(%player), 0,"Out Of Shells");
-		}
-	}
-	else
-	{
-		$TeamItemCount[GameBase::getTeam(%player) @ "MFGLAmmo"]++;
-		Client::sendMessage(Player::getClient(%player), 1,"Firing A Tactical Nuke With Out A Containment Pack Can Be Dangerous.");
-		GameBase::applyRadiusDamage($NukeDamageType, getBoxCenter(%player), 3, 15, 500, %player);
-		return;
-	}
-}
-function Mfgl::onUse(%player,%item)
-{
-	%armor = Player::getArmor(%player);
-	
-	if((Player::getMountedItem(%player,$BackpackSlot) == FgcPack) || (%armor == "jarmor"))
-	{
-		Weapon::onUse(%player,%item);
-	        bottomprint(Player::getClient(%player), "<jc><f2>Using Tactical Nuke!", 2);
-	}
-	else
-		Client::sendMessage(Player::getClient(%player),0,"Must have the Containment Pack to use the Tactical Nuke."); 
-}
-
-//======================================================================== Flamer
-ItemImageData FlamerImage
-{
-  	shapeFile  = "GrenadeL";
-	mountPoint = 0;
-	weaponType = 0;
-	reloadTime = 0.1;
-	fireTime = 0;
-	spinUpTime = 0.5;
-	spinDownTime = 3;
-	minEnergy = 6;
-	maxEnergy = 6;
-	projectileType = FlamerBolt;
-	accuFire = true;
-	sfxFire = SoundJetHeavy;
-	sfxActivate = SoundPickUpWeapon;
-};
-
-ItemData Flamer
-{
-    	heading = "bWeapons";
-	description = "Flame Thrower";
-	className = "Weapon";
-    	shapeFile  = "GrenadeL";
-	hudIcon = "plasma";
-	shadowDetailMask = 4;
-	imageType = FlamerImage;
-	price = 385;
-	showWeaponBar = true;
-};
-
-//======================================================================== Ion Canon
-
-ItemImageData IonGunImage
-{
-   	shapeFile  = "GrenadeL";
-	mountPoint = 0;
-	weaponType = 0;
-	reloadTime = 0.2;
-	fireTime = 0.2;
-	minEnergy = 10;
-	maxEnergy = 20;
-	projectileType = IonGunBolt;
-	accuFire = true;
-	sfxFire = SoundFireLaser;
-	sfxActivate = SoundPickUpWeapon;
-};
-
-
-ItemData IonGun
-{
-    	heading = "bWeapons";
-	description = "Ion Rifle";
-	className = "Weapon";
-    	shapeFile  = "GrenadeL";
-	hudIcon = "targetlaser";
-	shadowDetailMask = 4;
-	imageType = IonGunImage;
-	price = 250;
-	showWeaponBar = true;
-};
-
-//======================================================================== Volter
-
-ItemImageData VolterImage
-{
-	shapeFile  = "shotgun";
-	mountPoint = 0;
-	weaponType = 0; // Single Shot
-	reloadTime = 0.2;
-	fireTime = 0;
-	minEnergy = 5;
-	maxEnergy = 6;
-	projectileType = Flameburst;
-	accuFire = false;
-	lightType = 3;
-	lightRadius = 3;
-	lightTime = 1;
-	lightColor = { 1.0, 0.7, 0.5 };
-	sfxFire = SoundFlyerActive;
-	sfxActivate = SoundPickUpWeapon;
-};
-
-ItemData Volter
-{
-	heading = "bWeapons";
-	description = "Volter";
-	className = "Weapon";
-	shapeFile  = "shotgun";
-	hudIcon = "plasma";
-	shadowDetailMask = 4;
-	imageType = VolterImage;
-	price = 385;
-	showWeaponBar = true;
-};
-
-//======================================================================== Targetting Laser
-
-ItemImageData TargetingLaserImage
-{
-	shapeFile = "paintgun";
-	mountPoint = 0;
-	weaponType = 2;
-	projectileType = targetLaser;
-	accuFire = true;
-	minEnergy = 5;
-	maxEnergy = 15;
-	reloadTime = 1.0;
-	lightType   = 3;
-	lightRadius = 1;
-	lightTime   = 1;
-	lightColor  = { 0.25, 1, 0.25 };
-	sfxFire     = SoundFireTargetingLaser;
-	sfxActivate = SoundPickUpWeapon;
-};
-
-ItemData TargetingLaser
-{
-	description   = "Targeting Laser";
-	className     = "Tool";
-	shapeFile     = "paintgun";
-	hudIcon       = "targetlaser";
-   	heading = "bWeapons";
-	shadowDetailMask = 4;
-	imageType     = TargetingLaserImage;
-	price         = 50;
-	showWeaponBar = false;
-};
-
-//======================================================================== Engineer Repair Gun
-
-
-ItemImageData FixitImage
-{
-	shapeFile = "repairgun";
-	mountPoint = 0;
-	weaponType = 2;
-	projectileType = "RepairBolt1";
-	minEnergy = 5;
-	maxEnergy = 12;
-	lightType   = 3;
-	lightRadius = 1;
-	lightTime   = 1;
-	lightColor  = { 0.25, 1, 0.25 };
-	sfxFire     = SoundRepairItem;
-	sfxActivate = SoundPickUpWeapon;
-};
-
-ItemData Fixit
-{
-	description   = "Engineer Repair-Gun";
-	className     = "Tool";
-	shapeFile     = "repairgun";
-	hudIcon       = "targetlaser";
-    	heading = "tEngineer Items";
-	shadowDetailMask = 4;
-	imageType     = FixitImage;
-	price         = 350;
-	showWeaponBar = true;
-};
-
-
-//======================================================================== Grav Gun
-ItemImageData GravGunImage
-{
-	shapeFile = "shotgun";
-	mountPoint = 0;
-	weaponType = 2;
-	projectileType = gravCharge;
-	minEnergy = 3;
-	maxEnergy = 20;
-	reloadTime = 0.2;
-	lightType = 3;
-	lightRadius = 2;
-	lightTime = 1;
-	lightColor = { 0.15, 0.85, 0.15 };
-	sfxActivate = SoundPickUpWeapon;
-	sfxFire     = SoundELFIdle;
-};
-
-ItemData GravGun
-{
-	description = "Grav Gun";
-	shapeFile = "shotgun";
-	hudIcon = "energyRifle";
-	className = "Weapon";
-	heading = "bWeapons";
-	shadowDetailMask = 4;
-	imageType = GravGunImage;
-	showWeaponBar = true;
-	price = 900;
-};
-
-//========================================================================================================= 
-//                                                 Back Packs
-//========================================================================================================= 
-
-ItemData Backpack
-{				
-	description = "Backpack";
-	showInventory = false;
-};
-
-function Backpack::onUse(%player,%item)
-{
-	dbecho ("Use Pack  = " @ %item );
-
-	dbecho (Player::getMountedItem(%player,$BackpackSlot));
-	
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item) 
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else
-	{
-		Player::trigger(%player,$BackpackSlot);
-	}
-	//echo ("Done Pack " @ %item);
-}
-
-//======================================================================== More Like A Front Pack
-
-ItemImageData PenisImage
-{
-	shapeFile  = "cactus1";
-
-	mountPoint = 2;
-	mountOffset = { 0, 0.1, -0.2 };
-	mountRotation = { -1.572, 0, 0 };
-
-	weaponType = 0; // Single Shot
-	reloadTime = 0.2;
-	fireTime = 0;
-	minEnergy = 5;
-	maxEnergy = 6;
-
-	//projectileType = Undefined;
-	accuFire = false;
-
-	lightType = 3;
-	lightRadius = 3;
-	lightTime = 1;
-	lightColor = { 1.0, 0.7, 0.5 };
-	sfxFire = SoundFlyerActive;
-	sfxActivate = SoundPickUpWeapon;
-};
-
-ItemData Penis
-{
-	heading = "bWeapons";
-	description = "Penis";
-	className = "Weapon";
-	shapeFile  = "cactus1";
-	hudIcon = "plasma";
-	shadowDetailMask = 4;
-	imageType = PenisImage;
-	price = 0;
-	showWeaponBar = true;
-};
-function Penis::onFire(%player, %slot) 
-{
-	%client = GameBase::getOwnerClient(%player);
-	%trans = GameBase::getMuzzleTransform(%player);
-	%vel = Item::getVelocity(%player);
-	Projectile::spawnProjectile("Pee",%trans,%player,%vel);
-}
-function Penis::onDrop(%player,%item)
-{
-	Client::sendMessage(%client,0,"The curse of the penis can not be removed so easily.");
-	return;
-}
- 
-//======================================================================== Deployable Invo
-
-ItemImageData DeployableInvPackImage
-{
-	shapeFile = "invent_remote";
-	mountPoint = 2;
-	mountOffset = { 0, -0.12, -0.3 };
-	mountRotation = { 0, 0, 0 };
-	mass = 2.5;
-	firstPerson = false;
-};
-
-ItemData DeployableInvPack
-{
-	description = "Inventory Station";
-	shapeFile = "invent_remote";
-	className = "Backpack";
-   	heading = "fStations";
-	shadowDetailMask = 4	;
-	imageType = DeployableInvPackImage;
-	mass = 2.0;
-	elasticity = 0.2;
-	price = $RemoteInvEnergy + 200;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-
-function DeployableInvPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else
-	{
-		Player::deployItem(%player,%item);
-	}
-}
-
-function DeployableInvPack::onDeploy(%player,%item,%pos)
-{
-	if (DeployableInvPack::deployShape(%player,%item))
-	{
-		Player::decItemCount(%player,%item);
-	}
-}	
-
-function DeployableInvPack::deployShape(%player,%item)
-{
-	deployable(%player,%item,"StaticShape","Invo Station",True,False,True,False,True,True,4,True,0,False, "DeployableInvStation", "DeployableInvPack");
-}
-
-
-//======================================================================== Deployable Ammo Station
-ItemImageData DeployableAmmoPackImage
-{
-	shapeFile = "ammounit_remote";
-	mountPoint = 2;
-	mountOffset = { 0, -0.1, -0.3 };
-	mountRotation = { 0, 0, 0 };
-	mass = 1.0;
-	firstPerson = false;
-};
-
-ItemData DeployableAmmoPack
-{
-	description = "Ammo Station";
-	shapeFile = "ammounit_remote";
-	className = "Backpack";
-   	heading = "fStations";
-	shadowDetailMask = 4;
-	imageType = DeployableAmmoPackImage;
-	mass = 2.0;
-	elasticity = 0.2;
-	price = $RemoteAmmoEnergy;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function DeployableAmmoPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else
-	{
-		Player::deployItem(%player,%item);
-	}
-}
-
-function DeployableAmmoPack::onDeploy(%player,%item,%pos)
-{
-	if (DeployableAmmoPack::deployShape(%player,%item))
-	{
-		Player::decItemCount(%player,%item);
-	}
-}	
-
-function DeployableAmmoPack::deployShape(%player,%item)
-{
-	deployable(%player,%item,"StaticShape","Ammo Station",True,False,True,False,True,True,4,True,0,False, "DeployableAmmoStation", "DeployableAmmoPack");
-}
-
-//======================================================================== Deployable Command Center
-ItemImageData DeployableComPackImage
-{
-	shapeFile = "ammounit_remote";
-	mountPoint = 2;
-	mountOffset = { 0, -0.12, -0.3 };
-	mountRotation = { 0, 0, 0 };
-	mass = 4.5;
-	firstPerson = false;
-};
-
-ItemData DeployableComPack
-{
-	description = "Command Station";
-	shapeFile = "ammounit_remote";
-	className = "Backpack";
-   	heading = "fStations";
-	shadowDetailMask = 4	;
-	imageType = DeployableComPackImage;
-	mass = 4.0;
-	elasticity = 0.2;
-	price = $RemoteComEnergy + 200;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-
-function DeployableComPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item) 
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else 
-	{
-		Player::deployItem(%player,%item);
-	}
-}
-
-function DeployableComPack::onDeploy(%player,%item,%pos)
-{
-	if (DeployableComPack::deployShape(%player,%item)) {
-		Player::decItemCount(%player,%item);
-	}
-}	
-
-function DeployableComPack::deployShape(%player,%item)
-{
-	deployable(%player,%item,"StaticShape","Remote Command Station",True,False,True,False,True,True,4,True,0,False, "DeployableComStation", "DeployableComPack");
-}
-
-//======================================================================== Energy Pack
-ItemImageData EnergyPackImage
-{
-	shapeFile = "jetPack";
-	weaponType = 2;  // Sustained
-
-	mountPoint = 2;
-	mountOffset = { 0, -0.1, 0 };
-
-	minEnergy = -1;
- 	maxEnergy = -3;
-	firstPerson = false;
-};
-
-ItemData EnergyPack
-{
-	description = "Energy Pack";
-	shapeFile = "jetPack";
-	className = "Backpack";
-   	heading = "cBackpacks";
-	shadowDetailMask = 4;
-	imageType = EnergyPackImage;
-	price = 150;
-	hudIcon = "energypack";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-	
-	validateShape = true;
-	validateMaterials = true;
-};
-
-function EnergyPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item) 
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-}
-
-function EnergyPack::onMount(%player,%item)
-{
-	Player::trigger(%player,$BackpackSlot,true);
-}
-
-//======================================================================== Repair Pack
-
-ItemImageData RepairPackImage
-{
-	shapeFile = "armorPack";
-	mountPoint = 2;
-	weaponType = 2;  // Sustained
-    	minEnergy = 0;
-	maxEnergy = 0;   // Energy used/sec for sustained weapons
-  	mountOffset = { 0, -0.05, 0 };
-  	mountRotation = { 0, 0, 0 };
-	firstPerson = false;
-};
-
-ItemData RepairPack
-{
-	description = "Repair Pack";
-	shapeFile = "armorPack";
-	className = "Backpack";
-    	heading = "cBackpacks";
-	shadowDetailMask = 4;
-	imageType = RepairPackImage;
-	price = 125;
-	hudIcon = "repairpack";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-	
-	validateShape = true;
-	validateMaterials = true;
-};
-
-function RepairPack::onUnmount(%player,%item)
-{
-	if (Player::getMountedItem(%player,$WeaponSlot) == RepairGun)
-	{
-		Player::unmountItem(%player,$WeaponSlot);
-	}
-}
-
-function RepairPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else
-	{
-		Player::mountItem(%player,RepairGun,$WeaponSlot);
-	}
-}
-
-function RepairPack::onDrop(%player,%item)
-{
-	if($matchStarted)
-	{
-		%mounted = Player::getMountedItem(%player,$WeaponSlot);
-		if (%mounted == RepairGun)
-		{
-			Player::unmountItem(%player,$WeaponSlot);
-		}
-		else
-		{
-			Player::mountItem(%player,%mounted,$WeaponSlot);
-		}
-		Item::onDrop(%player,%item);
-	}
-}	
-
-//======================================================================== Shield Pack
-
-ItemImageData ShieldPackImage
-{
-	shapeFile = "shieldPack";
-	mountPoint = 2;
-	weaponType = 2;
-	minEnergy = 4;
-	maxEnergy = 9;
-	sfxFire = SoundShieldOn;
-	firstPerson = false;
-};
-
-ItemData ShieldPack
-{
-	description = "Shield Pack";
-	shapeFile = "shieldPack";
-	className = "Backpack";
-   	heading = "cBackpacks";
-	shadowDetailMask = 4;
-	imageType = ShieldPackImage;
-	price = 175;
-	hudIcon = "shieldpack";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-	
-	validateShape = true;
-	validateMaterials = true;
-};
-
-function ShieldPackImage::onActivate(%player,%imageSlot)
-{
-	%clientId = Player::getClient(%player);
-	%armor = Player::getArmor(%clientId);
-	
-	if (%armor == "stimarmor" || %armor == "stimfemale")
-	{
-		Client::sendMessage(Player::getClient(%player),0,"Shield On");
-		%player.shieldStrength = 0.0153;
-		%player.shieldon = true;
-		return;
-	}
-
-	Client::sendMessage(Player::getClient(%player),0,"Shield On");
-	%player.shieldStrength = 0.018;
-	%player.shieldon = true;
-}
-
-function ShieldPackImage::onDeactivate(%player,%imageSlot)
-{
-	Client::sendMessage(Player::getClient(%player),0,"Shield Off");
-	Player::trigger(%player,$BackpackSlot,false);
-	%player.shieldStrength = 0;
-	%player.shieldon = false;
-}
-
-//======================================================================== Sensor Jammer
-ItemImageData SensorJammerPackImage
-{
-	shapeFile = "sensorjampack";
-	mountPoint = 2;
-	weaponType = 2;  // Sustained
-	maxEnergy = 10;  // Energy used/sec for sustained weapons
-	sfxFire = SoundJammerOn;
-  	mountOffset = { 0, -0.05, 0 };
-  	mountRotation = { 0, 0, 0 };
-	firstPerson = false;
-};
-
-ItemData SensorJammerPack
-{
-	description = "Sensor Jammer Pack";
-	shapeFile = "sensorjampack";
-	className = "Backpack";
-   	heading = "cBackpacks";
-	shadowDetailMask = 4;
-	imageType = SensorJammerPackImage;
-	price = 200;
-	hudIcon = "sensorjamerpack";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-	
-	validateShape = true;
-	validateMaterials = true;
-};
-
-function SensorJammerPackImage::onActivate(%player,%imageSlot)
-{
-	Client::sendMessage(Player::getClient(%player),0,"Sensor Jammer On");
-	%rate = Player::getSensorSupression(%player) + 20;
-	Player::setSensorSupression(%player,%rate);
-}
-
-function SensorJammerPackImage::onDeactivate(%player,%imageSlot)
-{
-	Client::sendMessage(Player::getClient(%player),0,"Sensor Jammer Off");
-	%rate = Player::getSensorSupression(%player) - 20;
-	Player::setSensorSupression(%player,%rate);
-	Player::trigger(%player,$BackpackSlot,false);
-}
-
-//======================================================================== Cloacking Device
-
-ItemImageData CloakingDeviceImage
-{
-	shapeFile = "sensorjampack";
-	mountPoint = 2;
-	weaponType = 2;  // Sustained
-	maxEnergy = 10;  // Energy used/sec for sustained weapons
-	sfxFire = SoundJammerOn;
-  	mountOffset = { 0, -0.05, 0 };
-  	mountRotation = { 0, 0, 0 };
-	firstPerson = false;
-};
-
-ItemData CloakingDevice
-{
-	description = "Cloaking Device";
-	shapeFile = "sensorjampack";
-	className = "Backpack";
-	heading = "cBackpacks";
-	shadowDetailMask = 4;
-	imageType = CloakingDeviceimage;
-	price = 600;
-	hudIcon = "sensorjamerpack";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-	
-	validateShape = true;
-	validateMaterials = true;
-};
-
-function CloakingDeviceImage::onActivate(%player,%imageSlot)
-{
-	%armor = Player::getArmor(%player);
-	if ((%armor != "aarmor") && (%armor != "afemale"))
-	{
-		GameBase::startFadeout(%player);
-		Client::sendMessage(Player::getClient(%player),0,"Cloaking Device On");
-		%rate = Player::getSensorSupression(%player) + 5;
-		Player::setSensorSupression(%player,%rate);
-	}
-	else
-	{
-		%obj = newObject("","Mine","CloakBlast");
-		addToSet("MissionCleanup", %obj);
-		%padd = "0 0 3.5";
-		%pos = Vector::add(GameBase::getPosition(%player), %padd);
-		GameBase::setPosition(%obj, %pos);	
-		Player::trigger(%player,$BackpackSlot,false);
-	}
-}
-
-function CloakingDeviceImage::onDeactivate(%player,%imageSlot)
-{
-
-	%armor = Player::getArmor(%player);
-
-	 if ((%armor != "aarmor") && (%armor != "afemale"))
-	 {
-		GameBase::startFadein(%player);
-		Client::sendMessage(Player::getClient(%player),0,"Cloaking Device Off");
-		%rate = Player::getSensorSupression(%player) - 5;
-		Player::setSensorSupression(%player,%rate);
-		Player::trigger(%player,$BackpackSlot,false);
-	 }
-	 else
-		Player::trigger(%player,%imageslot,false);
-
-}
-
-//======================================================================== Stealth Shield
-
-ItemImageData StealthShieldPackImage
-{
-	shapeFile = "shieldPack";
-	mountPoint = 2;
-	weaponType = 2;  // Sustained
-	minEnergy = 6;
-	maxEnergy = 9;   // Energy/sec for sustained weapons
-	sfxFire = SoundShieldOn;
-	firstPerson = false;
-};
-
-ItemData StealthShieldPack
-{
-	description = "StealthShield Pack";
-	shapeFile = "shieldPack";
-	className = "Backpack";
-   	heading = "cBackpacks";
-	shadowDetailMask = 4;
-	imageType = StealthShieldPackImage;
-	price = 275;
-	hudIcon = "shieldpack";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-	
-	validateShape = true;
-	validateMaterials = true;
-};
-
-function StealthShieldPackImage::onActivate(%player,%imageSlot)
-{
-	if (%player == "-1" || !%player)return;
-	%clientId = Player::getClient(%player);
-	%armor = Player::getArmor(%clientId);
-	
-	if (%armor == "stimarmor" || %armor == "stimfemale")
-	{
-		Client::sendMessage(Player::getClient(%player),0,"StealthShield On");
-		%player.shieldStrength = 0.0102;
-		%player.stealthshieldon = true;
-		%rate = Player::getSensorSupression(%player) + 20;
-		Player::setSensorSupression(%player,%rate);
-		return;
-	}
-
-	Client::sendMessage(Player::getClient(%player),0,"StealthShield On");
-	%player.shieldStrength = 0.012;
-	%rate = Player::getSensorSupression(%player) + 20;
-	Player::setSensorSupression(%player,%rate);
-
-}
-
-function StealthShieldPackImage::onDeactivate(%player,%imageSlot)
-{
-	if (%player == "-1" || !%player)return;
-	Client::sendMessage(Player::getClient(%player),0,"StealthShield Off");
-	Player::trigger(%player,$BackpackSlot,false);
-	%player.shieldStrength = 0;
-	%player.stealthshieldon = false;
-	%rate = Player::getSensorSupression(%player) - 20;
-	Player::setSensorSupression(%player,%rate);
-}
-
-//======================================================================== Regeneration Pack
-
-ItemImageData RegenerationPackImage
-{
-	shapeFile = "shieldPack";
-	mountPoint = 2;
-	weaponType = 2;
-	minEnergy = 8;
-	maxEnergy = 14;
-	sfxFire = SoundRepairItem;
-	projectileType = DrainBolt;
-};
-
-ItemData RegenerationPack
-{
-	description = "Regeneration Pack";
-	shapeFile = "shieldPack";
-	className = "Backpack";
-   	heading = "cBackpacks";
-	shadowDetailMask = 4;
-	imageType = RegenerationPackImage;
-	price = 275;
-	hudIcon = "shieldpack";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-	
-	validateShape = true;
-	validateMaterials = true;
-};
-
-function RegenerationPack::onUnmount(%player,%item)
-{
-	if (Player::getMountedItem(%player,$WeaponSlot) == Regen)
-	{
-		Player::unmountItem(%player,$WeaponSlot);
-	}
-}
-
-function RegenerationPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else
-	{
-		Player::mountItem(%player,Regen,$WeaponSlot);
-	}
-}
-
-function RegenerationPack::onDrop(%player,%item)
-{
-	if($matchStarted)
-	{
-		%mounted = Player::getMountedItem(%player,$WeaponSlot);
-		if (%mounted == Regen)
-		{
-			Player::unmountItem(%player,$WeaponSlot);
-		}
-		else
-		{
-			Player::mountItem(%player,%mounted,$WeaponSlot);
-		}
-		Item::onDrop(%player,%item);
-	}
-}	
-
-//================================================== Teleport Pack
-ItemImageData LightningPackImage
-{
-	shapeFile = "sensorjampack";
-	mountPoint = 2;
-	weaponType = 2;
-	sfxFire = SoundJammerOn;
-  	mountOffset = { 0, -0.05, 0 };
-  	mountRotation = { 0, 0, 0 };
-	firstPerson = false;
-};
-
-ItemData LightningPack
-{
-	description = "Teleport Pack";
-	shapeFile = "shieldPack";
-	className = "Backpack";
-    	heading = "cBackpacks";
-	shadowDetailMask = 4;
-	imageType = LightningPackImage;
-	price = 275;
-	hudIcon = "shieldpack";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-	
-	validateShape = true;
-	validateMaterials = true;
-};
-
-function LightningPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else
-	{
-		%client = GameBase::getOwnerClient(%player);
-		%disk = %client.teledisk;
-		%beacon = %client.telebeacon;
-		%ppos = gamebase::getposition(%player);
-		%distance = Vector::getDistance(%ppos, %client.telepoint);
-		if (%client.telepoint && %distance > 351 && !%disk.check)
-			bottomprint(%client, "<jc><f2>Too far from TeleBeacon. Can not Teleport. 350m Range.", 3);	
-		else if(%client.telepoint && GameBase::isAtRest(%beacon) && !%disk.check)
-		{
-			%spawnMarker = %client.telepoint;
-			%xPos = getWord(%spawnMarker, 0);
-			%yPos = getword(%spawnMarker, 1);
-			%zPos = getWord(%spawnMarker, 2);
-			%o = %xPos @ "  " @ %yPos @ "  " @ %zPos;
-			%Set = newObject("LightningSet",SimSet); 
-			containerBoxFillSet(%Set,$SimPlayerObjectType,%spawnMarker, 2,2,1,1);
-			%num = Group::objectCount(%Set);	
-			for(%i = 0; %i < %num; %i++)
-			{
-				%obj = Group::getObject(%Set, %i);
-				if(GameBase::getTeam(%obj) != GameBase::getTeam(%player) && getObjectType(%obj) == "Player")
-				{
-					playSound(soundShieldHit,%spawnMarker);
-					%cl = GameBase::getOwnerClient(%obj);
-					%name = Client::getName(%cl);
-					Player::setAnimation(%obj,34);
-					Player::kill(%obj);
-					MessageAll(0, %name @ " was caught in a Teleport malfunction.");
-				}
-			}
-			if(%set)deleteobject(%set);
-
-		   topprint(%client, "<jc><f2>Telepoint Location Susccessful. " @ %client.telepoint @ ".", 2);
-			if (Player::getMountedItem(%client,$FlagSlot)== "flag")
-			{
-				%rnd = floor(getRandom() * 100);
-				if (%rnd > 50)
-				{
-					%flag = (Player::getMountedItem(%client, $FlagSlot));
-					Player::dropItem(%client, %flag);
-					bottomprint(%client, "<jc><f2>Teleport malfunction, the flag was dropped...", 2);	
-				}
-			}
-			GameBase::SetPosition(%player, %o);
-			%client.telepoint = "False";
-			deleteobject(%client.telebeacon);
-			%client.telebeacon = "False";
-			%client.teledisk = "False";
-		}
-		else if (!%client.telepoint && !%client.telebeacon && !%disk.check)
-		{
-			%trans = GameBase::getMuzzleTransform(%player);
-			%pos = gamebase::getposition(%player);
-			%vel = Item::getVelocity(%player);
-			playSound(SoundBeaconUse,%pos);
-			%obj = (Projectile::spawnProjectile("TeleShell",%trans,%player,%vel));
-			%client.teledisk = %obj;
-			%obj.check = 1;
-			checkForTele(%obj, %client, %pos);
-		}
-		else
-			bottomprint(%client, "<jc><f2>TeleDisk is active.  Must wait for TeleDisk to regenerate.", 3);	
-	}
-}	
-
-function checkForTele(%this, %client, %pos)
-{	
-	if(%this.check)
-	{	
-		%pos = gamebase::getposition(%this);
-		schedule("checkForTele(\"" @ %this @ "\", \"" @ %client @ "\", \"" @ %pos @ "\");", 0.4, %client);
-	}
-	else
-	{	
-		%player = Client::getOwnedObject(%client);
-		if(%player)
-		{
-			%armor = Player::getArmor(%client);
-			%pPos = GameBase::getPosition(%client);
-			%dist = Vector::getDistance(%ppos, %pos);
-			if (%armor == "aarmor" || %armor == "afemale")
-			{
-				%obj = newObject("","Mine","Telebeacon");
-			 	addToSet("MissionCleanup", %obj);	
-			 	%obj.deployer = %client;
-			 	%client.telebeacon = %obj;
-				GameBase::throw(%obj,%client,0,false);//5 * %client.throwStrength
-				if(%dist > 7) GameBase::setPosition(%obj,%pos);
-				%client.throwTime = getSimTime() + 0.5;
-				GameBase::setTeam(%obj,GameBase::getTeam(%client));
-			}
-		}
-	}
-}
-
-//============================================================ Flight Pack
-
-ItemImageData FlightPackImage
-{
-	shapeFile = "mortarpack";
-	weaponType = 2;  // Sustained
-	mountPoint = 2;
-	mountOffset = { 0, -0.1, 0 };
-	minEnergy = -2;
- 	maxEnergy = -6;
-	firstPerson = false;
-};
-
-ItemData FlightPack
-{
-	description = "Flight Pack";
-	shapeFile = "mortarpack";
-	className = "Backpack";
-    	heading = "cBackpacks";
-	shadowDetailMask = 4;
-	imageType = FlightPackImage;
-	price = 350;
-	hudIcon = "FlightPack";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function FlightPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item) 
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-}
-
-function FlightPack::onMount(%player,%item)
-{
-	Player::trigger(%player,$BackpackSlot,true);
-}
-
-//function FlightPack::onUnmount(%player,%item)
-//{
-//	if (Player::getMountedItem(%player,$WeaponSlot) == LaserRifle) 
-//		Player::unmountItem(%player,$WeaponSlot);
-//}
-
-
-//======================================================================== Auto Rocket Launcher
-
-ItemData AutoRocketAmmo
-{
-	description = "Auto Rockets";
-	className = "Ammo";
-   	heading = "xAmmunition";
-	shapeFile = "rocket";
-	shadowDetailMask = 4;
-	price = 30;
-};
-
-ItemImageData SMRPackImage
-{
-	shapeFile = "mortargun";
-	mountPoint = 0;
-	mountOffset = { 0.0, 0.0, -0.3 };
-	mountRotation = { 0, 180, 0 };
-	weaponType = 2;
-	ammoType = AutoRocketAmmo;
-	//projectileType = Undefined;
-	accuFire = true;
-	reloadTime = 0.9;
-	fireTime = 1.0;
-	lightType = 3;
-	lightRadius = 3;
-	lightTime = 1;
-	lightColor = { 0.6, 1, 1.0 };
-	sfxFire = SoundMissileTurretFire;
-	sfxReload = SoundMortarReload;
-};
-
-ItemData SMRPack
-{
-	description = "Rocket Launcher Pack";
-	shapeFile = "mortargun";
-	className = "Backpack";
-    	heading = "cBackpacks";
-	shadowDetailMask = 4;
-	imageType = SMRPackImage;
-	price = 350;
-	hudIcon = "mortar";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function SMRPackImage::onActivate(%player,%slot)
-{
-	Player::trigger(%player,%slot,false);
-	 %AmmoCount = Player::getItemCount(%player, $WeaponAmmo[SMRPack]);
-	 if(%AmmoCount) 
-	 {
-		%client = GameBase::getOwnerClient(%player);
-		Player::decItemCount(%player,$WeaponAmmo[SMRPack],1);
-		%trans = GameBase::getMuzzleTransform(%player);
-		%vel = Item::getVelocity(%player);
-	
-		 if(GameBase::getLOSInfo(%player,950)) 
-		 {
-			 %object = getObjectType($los::object);
-			 %targetId = GameBase::getOwnerClient($los::object);
-
-			 if(%object == "Player") // || %object == "Flier"
-			 {			 
-				%name = Client::getName(%targetId);
-				Tracker(%client,%targetId);
-				Client::sendMessage(%client,0,"** Lock Aquired - " @ %name @ "~wmine_act.wav");
-				Projectile::spawnProjectile("StingerMissileTracker",%trans,%player,%vel,$los::object);
-			 }
-			 else
-			 {
-				 Projectile::spawnProjectile("StingerMissile",%trans,%player,%vel,%player);
-			 }
-	 	}
-		else
-		{
-			Projectile::spawnProjectile("StingerMissile",%trans,%player,%vel,%player);
-		}
-	}
-	else
-		Client::sendMessage(Player::getClient(%player), 0,"You have no Ammo for the Auto Rocket Launcher");
-	Player::trigger(%player,%slot,false);
-}
-
-function SMRPackImage::onDeactivate(%player,%slot)
-{
-	Player::trigger(%player,%slot,false);
-
-}
-
-//==================================== Auto Rocket Launcher For Juggernaught
-
-ItemImageData SMRPack2Image
-{
-	shapeFile = "mortargun";
-	mountPoint = 0;
-	mountOffset = { -0.2, -0.8, 0.4 };
-	mountRotation = { 0, 0, 0 };	
-	weaponType = 2;
-	ammoType = AutoRocketAmmo;
-	//projectileType = "Undefined";
-	accuFire = true;
-	reloadTime = 0.8;
-	fireTime = 1.0;
-	lightType = 3;
-	lightRadius = 3;
-	lightTime = 1;
-	lightColor = { 0.6, 1, 1.0 };
-	sfxFire = SoundMissileTurretFire;
-	sfxReload = SoundMortarReload;
-};
-
-ItemData SMRPack2
-{
-	description = "Rocket Launcher Pack";
-	shapeFile = "mortargun";
-	className = "Backpack";
-    	heading = "cBackpacks";
-	shadowDetailMask = 4;
-	imageType = SMRPack2Image;
-	price = 350;
-	hudIcon = "mortar";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function SMRPack2Image::onDeactivate(%player,%slot)
-{
-	Player::trigger(%player,%slot,false);
-}
-
-function SMRPack2Image::onActivate(%player, %slot) 
-{
-	Player::trigger(%player,%slot,true);
-	 %AmmoCount = Player::getItemCount(%player, $WeaponAmmo[SMRPack]);
-	 if(%AmmoCount) 
-	 {
-		 %client = GameBase::getOwnerClient(%player);
-		 Player::decItemCount(%player,$WeaponAmmo[SMRPack],1);
-		 %trans = GameBase::getMuzzleTransform(%player);
-	     	 %vel = Item::getVelocity(%player);
-	
-		 if(GameBase::getLOSInfo(%player,950)) 
-		 {
-			 %object = getObjectType($los::object);
-			 %targetId = GameBase::getOwnerClient($los::object);
-
-			 if(%object == "Player") // || %object == "Flier"
-			 {			 
-					%name = Client::getName(%targetId);
-					Tracker(%client,%targetId);
-					Client::sendMessage(%client,0,"** Lock Aquired - " @ %name @ "~wmine_act.wav");
-					Projectile::spawnProjectile("JuggStingerMissileTracker",%trans,%player,%vel,$los::object);
-			 }
-			 else
-			 {
-				 Projectile::spawnProjectile("JuggStingerMissile",%trans,%player,%vel,%player);
-			 }
-	 	}
-		else
-		{
-			Projectile::spawnProjectile("JuggStingerMissile",%trans,%player,%vel,%player);
-		}
-	}
-	else
-	Client::sendMessage(Player::getClient(%player), 0,"You have no Ammo for the Auto Rocket Launcher");
-		Player::trigger(%player,%slot,false);
-}
-
-//=============================================AA Turret Pack 
-
-ItemImageData BarragePackImage
-{
-	shapeFile = "remoteturret";
-	mountPoint = 2;
-	mountOffset = { 0, -0.1, -0.06 };
-	mountRotation = { 0, 0, 0 };
-	firstPerson = false;
-};
-
-ItemData BarragePack
-{
-	description = "Anti-Aircraft Turret";
-	shapeFile = "remoteturret";
-	className = "Backpack";
-    	heading = "dDeployables";
-	imageType = BarragePackImage;
-	shadowDetailMask = 4;
-	mass = 2.0;
-	elasticity = 0.2;
-	price = 1250;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function BarragePack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item) 
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else 
-	{
-		Player::deployItem(%player,%item);
-	}
-}
-
-function BarragePack::onDeploy(%player,%item,%pos)
-{
-	if (BarragePack::deployShape(%player,%item))
-	{
-		Player::decItemCount(%player,%item);
-	}
-}
-
-function BarragePack::deployShape(%player,%item)
-{
-	deployable(%player,%item,"Turret","Anti-AirCraft Turret",True,True,True,15,True,True,4,True,1000, True, "BarrageTurret", "BarragePack");
-}
-
-
-//========================================================= Blast Floor Pack
-
-ItemImageData BlastFloorPackImage
-{
-	shapeFile = "AmmoPack";
-	mountPoint = 2;
-    	mountOffset = { 0, -0.1, 0 };
-	mass = 2.5;
-	firstPerson = false;
-};
-
-ItemData BlastFloorPack
-{
-	description = "Blast Floor";
-	shapeFile = "AmmoPack";
-	className = "Backpack";
-    	heading = "eDefensive";
-	imageType = BlastFloorPackImage;
-	shadowDetailMask = 4;
-	mass = 1.5;
-	elasticity = 0.2;
-	price = 600;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function BlastFloorPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else
-	{
-		Player::deployItem(%player,%item);
-	}
-}
-
-function BlastFloorPack::onDeploy(%player,%item,%pos)
-{
-	if (BlastFloorPack::deployShape(%player,%item))
-	{
-		Player::decItemCount(%player,%item);
-	}
-}
-
-function BlastFloorPack::deployShape(%player,%item)
-{
-	deployable(%player,%item,"StaticShape","Blast Floor","Player",False,False,False,False,False,7,True,0, False, "BlastFloor", "BlastFloorPack");
-}
-
-//=========================================================== Command LapTop
-ItemImageData LaptopImage
-{
-	shapeFile = "AmmoPack";
-	weaponType = 2;
-	mountPoint = 2;
-	mountOffset = { 0, -0.1, 0 };
-	sfxFire = SoundJammerOn;
-	minEnergy = 1;
- 	maxEnergy = 10;
-	firstPerson = false;
-};
-
-ItemData Laptop
-{
-	description = "Command Laptop";
-	shapeFile = "ammounit_remote";
-	className = "Backpack";
-   	heading = "cBackpacks";
-	shadowDetailMask = 4;
-	imageType = LaptopImage;
-	price = 650;
-	hudIcon = "energypack";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function LaptopImage::onActivate(%player, %imageSlot) 
-{
-	Client::sendMessage(Player::getClient(%player),0,"LapTop On");
-
-	%client = Player::getClient(%player);
-	%client.Laptop = "True";
-
-	LapTopImage::check(%player);
-}
-function LaptopImage::onDeactivate(%player,%imageSlot)
-{
-	Client::sendMessage(Player::getClient(%player),0,"LapTop Off");
-	Player::trigger(%player,$BackpackSlot,false);
-	%client = Player::getClient(%player);
-	
-	%client.hacking = "false";
-	%client.Laptop = "False";
-}
-
-function LapTopImage::check(%player)
-{
-	%client = Player::getClient(%player);
-	if (%client.Laptop == "True")
-	{
-		%Set = newObject("laptopset",SimSet); 
-		%Pos = GameBase::getPosition(%player); 
-		%Mask = $SimPlayerObjectType|$StaticObjectType;
-		dbecho("Splat - Laptop");
-		containerBoxFillSet(%Set, %Mask, %Pos, 200, 200, 200,0);
-		%num = Group::objectCount(%Set);
-		for(%i; %i < %num; %i++)
-		{
-			%obj = Group::getObject(%Set, %i);
-			%data = GameBase::getDataName(%obj);
-			%ppos = gamebase::getposition(%player);
-			%opos = gamebase::getposition(%obj);
-			%distance = Vector::getDistance(%ppos, %opos);
-			
-			if ( %data == "DeployableSensorJammer" && gamebase::getteam(%obj) != gamebase::getteam(%player) )
-			{
-				bottomprint(%client, "<jc><f2>Enemy Sensor Jammer Detected " @ %distance @ " meters.", 3);
-			}
-		}
-		deleteObject(%set);		
-		schedule ("LapTopImage::check(" @ %player @ ");",3);
-	}
-	else
-		return;
-}
-
-
-//============================================================= Suicide Pack
-ItemImageData SuicidePackImage
-{
-	shapeFile = "magcargo";
-	mountPoint = 2;
-	mountOffset = { 0, -0.5, -0.3 };
-	mountRotation = { 0, 0, 0 };
-	mass = 5.0;
-	firstPerson = false;
-
-};
-
-ItemData SuicidePack
-{
-	description = "Suicide DetPack";
-	shapeFile = "magcargo";
-	className = "Backpack";
-   	heading = "cBackpacks";
-	imageType = SuicidePackImage;
-	shadowDetailMask = 4;
-	mass = 3.5;
-	elasticity = 0.2;
-	price = 450;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function SuicidePack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else
-	{
-		Player::deployItem(%player,%item);
-	}
-}
-
-//function SuicidePack::onUnmount(%player,%item)
-//{
-//	deleteObject(%item);
-//}
-
-function SuicidePack::onDeploy(%player,%item,%pos)
-{
-	SuicidePack::deployShape(%player,%item);
-}
-
-function SuicidePack::deployShape(%player,%item)
-{
-	Player::unmountItem(%player,$BackpackSlot);
-	Player::decItemCount(%player,%item);
-	%obj = newObject("","Mine","Suicidebomb2");
-	addToSet("MissionCleanup", %obj);
-	%client = Player::getClient(%player);
-	%obj.deployer = %client;
-	GameBase::throw(%obj,%client,5 * %client.throwStrength,false);
-	Client::sendMessage(%client,1,"Det Pack will destruct in 20 seconds");
-	$TeamItemCount[GameBase::getTeam(%player) @ "SuicidePack"]++;
-}
-
-//============================================================== Containment
-ItemImageData FgcPackImage
-{
-	shapeFile = "generator_p";
-	weaponType = 2;
-	mountPoint = 2;
-	mountOffset = { 0, -0.1, 0 };
-	mass = 3.0;
-	minEnergy = -1;
- 	maxEnergy = -3;
-	firstPerson = false;
-};
-
-ItemData FgcPack
-{
-	description = "Containment Pack";
-	shapeFile = "generator_p";
-	className = "Backpack";
-    	heading = "cBackpacks";
-	shadowDetailMask = 4;
-	imageType = FgcPackImage;
-	price = 1150;
-	hudIcon = "energypack";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function FgcPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item) 
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-}
-
-function FgcPack::onMount(%player,%item)
-{
-	Player::trigger(%player,$BackpackSlot,true);
-}
-
-function FgcPack::onUnmount(%player,%item)
-{
-	if (Player::getMountedItem(%player,$WeaponSlot) == Mfgl)
-	{
-		Player::unmountItem(%player,$WeaponSlot);
-	}
-}
-
-//============================================================ Motion Sensor
-
-ItemImageData MotionSensorPackImage
-{
-	shapeFile = "sensor_small";
-	mountPoint = 2;
-	mountOffset = { 0, 0, 0.1 };
-	mountRotation = { 1.57, 0, 0 };
-	firstPerson = false;
-};
-
-ItemData MotionSensorPack
-{
-	description = "Motion Sensor";
-	shapeFile = "sensor_small";
-	className = "Backpack";
-   	heading = "dDeployables";
-	imageType = MotionSensorPackImage;
-	shadowDetailMask = 4;
-	mass = 2.0;
-	elasticity = 0.2;
-	price = 125;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function MotionSensorPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item) 
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else 
-	{
-		Player::deployItem(%player,%item);
-	}
-}
-
-function MotionSensorPack::onDeploy(%player,%item,%pos)
-{
-	if (MotionSensorPack::deployShape(%player,%item)) 
-	{
-		Player::decItemCount(%player,%item);
-		$TeamItemCount[GameBase::getTeam(%player) @ "MotionSensorPack"]++;
-	}
-}
-
-function MotionSensorPack::deployShape(%player,%item)
-{
-	deployable(%player,%item,"Sensor","Motion Sensor",False,False,False,False,False,True,5,True,0, False, "DeployableMotionSensor", %item);
-}
-
-//================================================================ Ammo Pack
-
-ItemImageData AmmoPackImage
-{
-	shapeFile = "AmmoPack";
-	mountPoint = 2;
-   	mountOffset = { 0, -0.03, 0 };
-	firstPerson = false;
-};
-
-ItemData AmmoPack
-{
-	description = "Ammo Pack";
-	shapeFile = "AmmoPack";
-	className = "Backpack";
-  	heading = "cBackpacks";
-	imageType = AmmoPackImage;
-	shadowDetailMask = 4;
-	mass = 2.0;
-	elasticity = 0.2;
-	price = 325;
-	hudIcon = "ammopack";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function AmmoPack::onDrop(%player, %item)
-{
-	if($matchStarted) 
-	{
-		%item = Item::onDrop(%player,%item);
-		for(%i = 0; %i < 15 ; %i = %i +1) 
-		{
-			%numPack = 0;
-			%ammoItem = $AmmoPackItems[%i];
-			%maxnum = $ItemMax[Player::getArmor(%player), %ammoItem];
-			%pCount = Player::getItemCount(%player, %ammoItem);
-
-
-			if(%pCount > %maxnum)
-			{
-				%numPack = %pCount - %maxnum;
-				Player::decItemCount(%player,%ammoItem,%numPack);
-			}
-			
-			if(%i == 0) 		{%item.BulletAmmo = %numPack;}
-			else if(%i == 1) 	{%item.PlasmaAmmo = %numPack;}
-			else if(%i == 2) 	{%item.DiscAmmo = %numPack;}
-			else if(%i == 3) 	{%item.GrenadeAmmo = %numPack;}
-			else if(%i == 4) 	{%item.Grenade = %numPack;}
-			else if(%i == 5) 	{%item.MortarAmmo = %numPack;}
-			else if(%i == 6) 	{%item.RocketAmmo = %numPack;}
-			else if(%i == 7) 	{%item.SniperAmmo = %numPack;}
-			else if(%i == 8) 	{%item.RailAmmo = %numPack;}
-			else if(%i == 9) 	{%item.SilencerAmmo = %numPack;}
-			else if(%i == 10)	{%item.VulcanAmmo = %numPack;}
-			else if(%i == 11)	{%item.Beacon = %numPack;}
-			else if(%i == 12)	{%item.TranqAmmo = %numPack;}
-			else if(%i == 13)	{%item.Plastique = %numPack;}
-			else if(%i == 14)	{%item.SilencerAmmo = %numPack;}
-			//else if(%i == 14)	{%item.SniperAmmo = %numPack;}
-			else 			{%item.MineAmmo = %numPack;}
-		}
-	}
-}
-
-function AmmoPack::onCollision(%this,%object)
-{
-	if (getObjectType(%object) == "Player")
-	{
-		%item = Item::getItemData(%this);
-		%count = Player::getItemCount(%object,%item);
-		if (Item::giveItem(%object,%item,Item::getCount(%this)))
-		{
-			Item::playPickupSound(%this);
-			checkPacksAmmo(%object, %this);
-			Item::respawn(%this);
-		}
-	}
-}
-
-function checkPacksAmmo(%player, %item)
-{
-	for(%i = 0; %i < 15 ; %i = %i +1) 
-	{
-		%ammoItem = $AmmoPackItems[%i];
-		if(%i == 0) 	  {%numAdd = %item.BulletAmmo;}
-		else if(%i == 1)  {%numAdd = %item.PlasmaAmmo;}
-		else if(%i == 2)  {%numAdd = %item.DiscAmmo;}
-		else if(%i == 3)  {%numAdd = %item.GrenadeAmmo;}
-		else if(%i == 4)  {%numAdd = %item.Grenade;}
-		else if(%i == 5)  {%numAdd = %item.MortarAmmo;}
-		else if(%i == 6)  {%numAdd = %item.RocketAmmo;}
-		else if(%i == 7)  {%numAdd = %item.SniperAmmo;}
-		else if(%i == 8)  {%numAdd = %item.RailAmmo;}
-		else if(%i == 9)  {%numAdd = %item.SilencerAmmo;}
-		else if(%i == 10) {%numAdd = %item.VulcanAmmo;}
-		else if(%i == 11) {%numAdd = %item.Beacon;}
-		else if(%i == 12) {%numAdd = %item.TranqAmmo;}
-		else if(%i == 13) {%numAdd = %item.Plastique;}
-		else if(%i == 14) {%numAdd = %item.SniperAmmo;}
-		else {%numAdd = %item.MineAmmo;}
-		Player::incItemCount(%player,%ammoItem,%numAdd);
-	}						 
-}
-
-function fillAmmoPack(%client)
-{
-	%player = Client::getOwnedObject(%client);
-	%armor = Player::getArmor(%player);	
-
-	for(%i = 0; %i < 14 ; %i = %i +1)
-	{
-		%item = $AmmoPackItems[%i];	
-		if ($ItemMax[%armor, %item] > 0)
-		{
-			%maxnum = $AmmoPackMax[%item];
-			%maxnum = checkResources(%player,%item,%maxnum); 
-		}		
-		else 
-			%maxnum = 0;
-
-		if(%maxnum)
-		{
-			Player::incItemCount(%client,%item,%maxnum);
-			teamEnergyBuySell(%player,%item.price * %maxnum * -1);
-		}	
-	}
-}
-
-//======================================================================== Pulse Sensor
-
-ItemImageData PulseSensorPackImage
-{
-	shapeFile = "radar_small";
-	mountPoint = 2;
-	mountOffset = { 0, 0, 0.1 };
-	mountRotation = { 1.57, 0, 0 };
-	firstPerson = false;
-};
-
-ItemData PulseSensorPack
-{
-	description = "Pulse Sensor";
-	shapeFile = "radar_small";
-	className = "Backpack";
-   	heading = "dDeployables";
-	imageType = PulseSensorPackImage;
-	shadowDetailMask = 4;
-	mass = 2.0;
-	elasticity = 0.2;
-	price = 125;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function PulseSensorPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else
-	{
-		Player::deployItem(%player,%item);
-	}
-}
-
-function PulseSensorPack::onDeploy(%player,%item,%pos)
-{
-	if (PulseSensorPack::deployShape(%player,%item))
-	{
-		Player::decItemCount(%player,%item);
-	}
-}
-function PulseSensorPack::deployShape(%player,%item)
-{
-	deployable(%player,%item,"Sensor","Pulse Sensor",False,False,False,False,False,True,5,True,0,False,"DeployablePulseSensor", %item);
-}
-
-//======================================================================== Sensor Jammer
-
-ItemImageData DeployableSensorJamPackImage
-{
-	shapeFile = "sensor_jammer";
- 	mountPoint = 2;
-  	mountOffset = { 0, 0.03, 0.1 };
-  	mountRotation = { 1.57, 0, 0 };
-	firstPerson = false;
-};
-
-ItemData DeployableSensorJammerPack
-{
-	description = "Sensor Jammer";
-  	shapeFile = "sensor_jammer";
-  	className = "Backpack";
-   	heading = "dDeployables";
-	imageType = DeployableSensorJamPackImage;
-  	shadowDetailMask = 4;
-	mass = 2.0;
-	elasticity = 0.2;
-  	price = 225;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function DeployableSensorJammerPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else
-	{
-		Player::deployItem(%player,%item);
-	}
-}
-
-function DeployableSensorJammerPack::onDeploy(%player,%item,%pos)
-{
-	if (DeployableSensorJammerPack::deployShape(%player,%item))
-	{
-		Player::decItemCount(%player,%item);
-	}
-}
-function DeployableSensorJammerPack::deployShape(%player,%item)
-{
-	deployable(%player,%item,"Sensor","Sensor Jammer",False,False,False,False,False,False,5,True,0, False, "DeployableSensorJammer", %item);
-}
-
-
-//======================================================================== Camera Pack
-
-ItemImageData CameraPackImage
-{
-	shapeFile = "camera";
-	mountPoint = 2;
-	mountOffset = { 0, -0.1, -0.06 };
-	mountRotation = { 0, 0, 0 };
-	firstPerson = false;
-};
-
-ItemData CameraPack
-{
-	description = "Camera";
-	shapeFile = "camera";
-	className = "Backpack";
-   	heading = "dDeployables";
-	imageType = CameraPackImage;
-	shadowDetailMask = 4;
-	mass = 2.0;
-	elasticity = 0.2;
-	price = 100;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-	
-	validateShape = true;
-	validateMaterials = true;
-};
-
-function CameraPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item) {
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else {
-		Player::deployItem(%player,%item);
-	}
-}
-
-function CameraPack::onDeploy(%player,%item,%pos)
-{
-	if (CameraPack::deployShape(%player,%item)) {
-		Player::decItemCount(%player,%item);
-	}
-}
-
-function CameraPack::deployShape(%player,%item)
-{
-	deployable(%player,%item,"Turret","Camera",False,False,False,False,False,False,5,True,0, False, "CameraTurret", %item);
-}
-
-//==========================================================================
-// Remote Turets
-//==========================================================================
-																			
-ItemImageData TurretPackImage
-{
-	shapeFile = "remoteturret";
-	mountPoint = 2;
-	mountOffset = { 0, -0.12, -0.1 };
-	mountRotation = { 0, 0, 0 };
-	mass = 2.5;
-	firstPerson = false;
-};
-
-ItemData TurretPack
-{
-	description = "Ion Turret";
-	shapeFile = "remoteturret";
-	className = "Backpack";
-   	heading = "dDeployables";
-	imageType = TurretPackImage;
-	shadowDetailMask = 4;
-	mass = 2.0;
-	elasticity = 0.2;
-	price = 350;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function TurretPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else
-	{
-		Player::deployItem(%player,%item);
-	}
-}
-
-function TurretPack::onDeploy(%player,%item,%pos)
-{
-	if (TurretPack::deployShape(%player,%item))
-	{
-		Player::decItemCount(%player,%item);
-	}
-}
-
-function TurretPack::deployShape(%player,%item)
-{
-	deployable(%player,%item,"Turret","Ion Turret",True,False,True,False,True,True,4,True,35, True, "DeployableTurret", "TurretPack");
-}
-
-//============================================================= Laser Turret
-
-ItemImageData LaserPackImage
-{
-	shapeFile = "camera";
-	mountPoint = 2;
-	mountOffset = { 0, -0.1, -0.06 };
-	mountRotation = { 0, 0, 0 };
-	firstPerson = false;
-};
-
-ItemData LaserPack
-{
-	description = "Laser Turret";
-	shapeFile = "camera";
-	className = "Backpack";
-   heading = "dDeployables";
-	imageType = CameraPackImage;
-	shadowDetailMask = 4;
-	mass = 2.0;
-	elasticity = 0.2;
-	price = 300;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-	
-	validateShape = true;
-	validateMaterials = true;
-};
-
-function LaserPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else
-	{
-		Player::deployItem(%player,%item);
-	}
-}
-
-function LaserPack::onDeploy(%player,%item,%pos)
-{
-	if (LaserPack::deployShape(%player,%item))
-	{
-		Player::decItemCount(%player,%item);
-	}
-}
-
-function LaserPack::deployShape(%player,%item)
-{
-	deployable(%player,%item,"Turret","Laser Turret",False,False,False,False,True,True,5,True,55, True, "DeployableLaser", "LaserPack");
-}
-
-//==================================================== Deployable ELF Turret
-
-ItemImageData DeployableElfImage
-{
-	shapeFile = "indoorgun";
-	mountPoint = 2;
-	mountOffset = { 0, -0.1, -0.06 };
-	mountRotation = { 0, 0, 0 };
-	firstPerson = false;
-};
-
-ItemData DeployableElf
-{
-	description = "Deployable Elf Turret";
-	shapeFile = "indoorgun";
-	className = "Backpack";
-    	heading = "dDeployables";
-	imageType = CameraPackImage;
-	shadowDetailMask = 4;
-	mass = 2.0;
-	elasticity = 0.2;
-	price = 700;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function DeployableElf::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else {
-		Player::deployItem(%player,%item);
-	}
-}
-
-function DeployableElf::onDeploy(%player,%item,%pos)
-{
-	if (DeployableElf::deployShape(%player,%item))
-	{
-		Player::decItemCount(%player,%item);
-	}
-}
-
-function DeployableElf::deployShape(%player,%item)
-{
-	deployable(%player,%item,"Turret","Deployable Elf Turret",False,False,False,False,True,True,5,True,20, True, "DeployableElfTurret", "DeployableElf");
-}
-
-//=============================================================== Emp Turret
-
-ItemImageData ShockPackImage
-{
-	shapeFile = "indoorgun";
-	mountPoint = 2;
-	mountOffset = { 0, -0.1, -0.06 };
-	mountRotation = { 0, 0, 0 };
-	firstPerson = false;
-};
-
-ItemData ShockPack
-{
-	description = "EMP Turret";
-	shapeFile = "indoorgun";
-	className = "Backpack";
-   	heading = "dDeployables";
-	imageType = ShockPackImage;
-	shadowDetailMask = 4;
-	mass = 2.0;
-	elasticity = 0.2;
-	price = 600;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function ShockPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item) {
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else {
-		Player::deployItem(%player,%item);
-	}
-}
-
-function ShockPack::onDeploy(%player,%item,%pos)
-{
-	if (ShockPack::deployShape(%player,%item))
-	{
-		Player::decItemCount(%player,%item);
-	}
-}
-
-function ShockPack::deployShape(%player,%item)
-{
-	deployable(%player,%item,"Turret","EMP Turret",False,False,False,False,False,True,5,True,15, True, "DeployableShock", "ShockPack");
-}
-
-//===========================================================  Mortar Turret
-
-ItemImageData TargetPackImage
-{
-	shapeFile = "ammounit_remote";
-	mountPoint = 2;
-	mountOffset = { 0, -0.1, -0.06 };
-	mountRotation = { 0, 0, 0 };
-	firstPerson = false;
-};
-
-ItemData TargetPack
-{
-	description = "Mortar Turret";
-	shapeFile = "mortar_turret";
-	className = "Backpack";
-   	heading = "dDeployables";
-	imageType = TargetPackImage;
-	shadowDetailMask = 4;
-	mass = 3.0;
-	elasticity = 0.2;
-	price = 800;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function TargetPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else 
-	{
-		Player::deployItem(%player,%item);
-	}
-}
-
-function TargetPack::onDeploy(%player,%item,%pos)
-{
-	if (TargetPack::deployShape(%player,%item)) {
-		Player::decItemCount(%player,%item);
-	}
-}
-
-function TargetPack::deployShape(%player,%item)
-{
-	deployable(%player,%item,"Turret","Mortar Turret",True,False,15,10,True,True,4,True,25, True, "DeployableMortar", "TargetPack");
-}
-
-//================================================= Deployable Plasma Turret
-
-ItemImageData PlasmaTurretPackImage
-{
-	shapeFile = "remoteturret";
-	mountPoint = 2;
-	mountOffset = { 0, -0.12, -0.1 };
-	mountRotation = { 0, 0, 0 };
-	mass = 2.5;
-	firstPerson = false;
-};
-
-ItemData PlasmaTurretPack
-{
-	description = "Plasma Turret";
-	shapeFile = "remoteturret";
-	className = "Backpack";
-    	heading = "dDeployables";
-	imageType = PlasmaTurretPackImage;
-	shadowDetailMask = 4;
-	mass = 2.0;
-	elasticity = 0.2;
-	price = 650;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function PlasmaTurretPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item) 
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else 
-	{
-		Player::deployItem(%player,%item);
-	}
-}
-
-
-function PlasmaTurretPack::onDeploy(%player,%item,%pos)
-{
-	if (PlasmaTurretPack::deployShape(%player,%item)) 
-	{
-		Player::decItemCount(%player,%item);
-	}
-}
-
-function PlasmaTurretPack::deployShape(%player,%item)
-{
-	deployable(%player,%item,"Turret","RMT Plasma Turret",True,False,True,False,True,True,4,True,25, True, "DeployablePlasma", "PlasmaTurretPack");
-}
-
-//=============================================================Rocket Turret
-						
-ItemImageData RocketPackImage
-{
-	shapeFile = "remoteturret";
-	mountPoint = 2;
-	mountOffset = { 0, -0.12, -0.1 };
-	mountRotation = { 0, 0, 0 };
-	mass = 3.0;
-	firstPerson = false;
-};
-
-ItemData RocketPack
-{
-	description = "Rocket Turret";
-	shapeFile = "remoteturret";
-	className = "Backpack";
-    	heading = "dDeployables";
-	imageType = RocketPackImage;
-	shadowDetailMask = 4;
-	mass = 3.0;
-	elasticity = 0.2;
-	price = 650;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function RocketPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else
-	{
-		Player::deployItem(%player,%item);
-	}
-}
-
-function RocketPack::onDeploy(%player,%item,%pos)
-{
-	if (RocketPack::deployShape(%player,%item))
-	{
-		Player::decItemCount(%player,%item);
-	}
-}
-
-function RocketPack::deployShape(%player,%item)
-{
-	deployable(%player,%item,"Turret","RMT Rocket Turret",True,False,True,10,True,True,4,True,100, True, "DeployableRocket", "RocketPack");
-}
-
-//==========================================================================
-// 						Other Deployables
-//==========================================================================
-//====================================================Deployable Force Field
-ItemImageData ForceFieldPackImage
-{
-	shapeFile = "AmmoPack";
-	mountPoint = 2;
-   	mountOffset = { 0, -0.03, 0 };
-	mass = 2.5;
-	firstPerson = false;
-};
-
-ItemData ForceFieldPack
-{
-	description = "Small Force Field";
-	shapeFile = "AmmoPack";
-	className = "Backpack";
-    	heading = "eDefensive";
-	imageType = ForceFieldPackImage;
-	shadowDetailMask = 4;
-	mass = 1.5;
-	elasticity = 0.2;
-	price = 600;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function ForceFieldPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item) 
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else 
-	{
-		Player::deployItem(%player,%item);
-	}
-}
-
-function ForceFieldPack::onDeploy(%player,%item,%pos)
-{
-	if (ForceFieldPack::deployShape(%player,%item)) 
-	{
-		Player::decItemCount(%player,%item);
-	}
-}
-
-function ForceFieldPack::deployShape(%player,%item)
-{
-	deployable(%player,%item,"StaticShape","Small Force Field",True,False,False,False,False,False,4,True,0, False, "DeployableForceField", "ForceFieldPack");
-}
-
-
-//=================================================================================================== Large Force Field
-
-ItemImageData LargeForceFieldPackImage
-{
-	shapeFile = "AmmoPack";
-	mountPoint = 2;
-   	mountOffset = { 0, -0.03, 0 };
-	mass = 2.5;
-	firstPerson = false;
-};
-
-ItemData LargeForceFieldPack
-{
-	description = "Large Force Field";
-	shapeFile = "AmmoPack";
-	className = "Backpack";
-    	heading = "eDefensive";
-	imageType = LargeForceFieldPackImage;
-	shadowDetailMask = 4;
-	mass = 1.5;
-	elasticity = 0.2;
-	price = 1200;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function LargeForceFieldPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item) {
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else {
-		Player::deployItem(%player,%item);
-	}
-}
-
-function LargeForceFieldPack::onDeploy(%player,%item,%pos)
-{
-	if (LargeForceFieldPack::deployShape(%player,%item)) {
-		Player::decItemCount(%player,%item);
-	}
-}
-
-
-
-function LargeForceFieldPack::deployShape(%player,%item)
-{
-	deployable(%player,%item,"StaticShape","Large Force Field",True,False,False,False,False,False,4,True,0, False, "LargeForceField", "LargeForceFieldPack");
-}
-
-//=================================================================================================== Blastwall
-
-ItemImageData BlastWallPackImage
-{
-	shapeFile = "AmmoPack";
-	mountPoint = 2;
-    	mountOffset = { 0, -0.1, 0 };
-	mass = 2.5;
-	firstPerson = false;
-};
-
-ItemData BlastWallPack
-{
-	description = "Blast Wall";
-	shapeFile = "AmmoPack";
-	className = "Backpack";
-    	heading = "eDefensive";
-	imageType = BlastWallPackImage;
-	shadowDetailMask = 4;
-	mass = 1.5;
-	elasticity = 0.2;
-	price = 600;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function BlastWallPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else
-	{
-		Player::deployItem(%player,%item);
-	}
-}
-
-function BlastWallPack::onDeploy(%player,%item,%pos)
-{
-	if (BlastWallPack::deployShape(%player,%item))
-	{
-		Player::decItemCount(%player,%item);
-	}
-}
-
-function BlastWallPack::deployShape(%player,%item)
-{
-	deployable(%player,%item,"StaticShape","Blast Wall",True,False,False,False,False,False,4,True,0, False, "BlastWall", "BlastWallPack");
-}
-
-//=================================================================================================== HoloGram
-
-ItemImageData HoloPackImage
-{
-	shapeFile = "larmor";
-	mountPoint = 2;
-    	mountOffset = { 5, -5, 0 };
-	mass = 1.0;
-	firstPerson = true;
-};
-
-ItemData HoloPack
-{
-	description = "Hologram";
-	shapeFile = "larmor";
-	className = "Backpack";
-	heading = "eDefensive";
-	imageType = HoloPackImage;
-	shadowDetailMask = 4;
-	mass = 1.5;
-	elasticity = 0.2;
-	price = 900;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function HoloPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item) 
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else 
-	{
-		Player::deployItem(%player,%item);
-	}
-}
-function HoloPack::onDeploy(%player,%item,%pos) 
-
-{
-	%client = Player::getClient(%player);
-	if($TeamItemCount[GameBase::getTeam(%player) @ "hologram"] < $TeamItemMax["hologram"])
-	{
-		hologram(%client);
-		Player::decItemCount(%player,%item);
-		$TeamItemCount[GameBase::getTeam(%player) @ "hologram"]++;
-	}
-	else
-	{
-		Client::sendMessage(%client,0,"Hologram generator overloaded.  Try again later");
-	}
-}
-
-function HoloPack::deployShape(%player,%item)
-{
-	%client = Player::getClient(%player);
-	if($TeamItemCount[GameBase::getTeam(%player) @ "hologram"] < $TeamItemMax["hologram"]) 
-	{
-		if (GameBase::getLOSInfo(%player,3)) 
-		{
-			%obj = getObjectType($los::object);
-		    	%set = newObject("holoset",SimSet);
-			%num = containerBoxFillSet(%set,$StaticObjectType,$los::position,$ForceFieldBoxMinLength,$ForceFieldBoxMinWidth,$ForceFieldBoxMinHeight,0);
-			%num = CountObjects(%set,"Hologram",%num);
-			deleteObject(%set);
-			if (Vector::dot($los::normal,"0 0 1") > 0.7)
-			{
-				if(checkDeployArea(%client,$los::position))
-				{
-					%rot = GameBase::getRotation(%player);
-					%rnd = floor(getRandom() * 10);
-					if(%rnd > 6)
-					   %fField = newObject("","StaticShape",Hologram1,true);
-					else
-					if((%rnd > 2) && (%rnd < 7))				
-					   %fField = newObject("","StaticShape",Hologram2,true);
-					else
-					   %fField = newObject("","StaticShape",Hologram3,true);
-
-					addToSet("MissionCleanup", %fField);
-					GameBase::setTeam(%fField,GameBase::getTeam(%player));
-					GameBase::setPosition(%fField,$los::position);
-					GameBase::setRotation(%fField,%rot);
-					Client::sendMessage(%client,0,"Hologram Deployed");
-					GameBase::startFadeIn(%fField);
-					playSound(SoundPickupBackpack,$los::position);
-					playSound(ForceFieldOpen,$los::position);					
-					$TeamItemCount[GameBase::getTeam(%player) @ "hologram"]++;
-					return true;
-				}
-			}
-			else 
-				Client::sendMessage(%client,0,"Can only deploy on flat surfaces");
-		}
-		else 
-			Client::sendMessage(%client,0,"Deploy position out of range");
-	}
-	else																						  
-	 	Client::sendMessage(%client,0,"Deployable Item limit reached for " @ %item.description @ "s");
-
-	return false;
-}
-
-//=================================================================================================== Mechanical Tree
-
-ItemImageData TreePackImage
-{
-	shapeFile = "tree1";
-	mountPoint = 2;
-   	mountOffset = { 0, 0.15, -1 };
-	mass = 2.5;
-	firstPerson = false;
-};
-
-ItemData TreePack
-{
-	description = "Mechanical Tree";
-	shapeFile = "AmmoPack";
-	className = "Backpack";
-   	heading = "eDefensive";
-	imageType = TreePackImage;
-	shadowDetailMask = 4;
-	mass = 1.5;
-	elasticity = 0.2;
-	price = 600;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function TreePack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item) {
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else {
-		Player::deployItem(%player,%item);
-	}
-}
-
-function TreePack::onDeploy(%player,%item,%pos)
-{
-	if (TreePack::deployShape(%player,%item)) {
-		Player::decItemCount(%player,%item);
-	}
-}
-
-function TreePack::deployShape(%player,%item)
-{
-	%client = Player::getClient(%player);
-	if($TeamItemCount[GameBase::getTeam(%player) @ %item] < $TeamItemMax[%item]) {
-		if (GameBase::getLOSInfo(%player,3)) {
-			%obj = getObjectType($los::object);
-			if (%obj == "SimTerrain")
-			{
-		    		%set = newObject("treeset",SimSet);
-				%num = containerBoxFillSet(%set,$StaticObjectType,$los::position,$ForceFieldBoxMinLength,$ForceFieldBoxMinWidth,$ForceFieldBoxMinHeight,0);
-				%num = CountObjects(%set,"DeployableTree",%num);
-				deleteObject(%set);
-				//if(0 == %num) {
-					if (Vector::dot($los::normal,"0 0 1") > 0.7) {
-						if(checkDeployArea(%client,$los::position)) {
-							%rot = GameBase::getRotation(%player);
-							%rnd = floor(getRandom() * 10);
-							if(%rnd > 5)
-								// do tree one
-							   %fField = newObject("","StaticShape",DeployableTree,true);
-							else
-								//tree 2
-       						   %fField = newObject("","StaticShape",DeployableTree2,true);
-							addToSet("MissionCleanup", %fField);
-							GameBase::setTeam(%fField,GameBase::getTeam(%player));
-							GameBase::setPosition(%fField,$los::position);
-							GameBase::setRotation(%fField,%rot);
-							Gamebase::setMapName(%fField,"Mechanical Tree");
-							Client::sendMessage(%client,0,"Mechanical Tree Deployed");
-							GameBase::startFadeIn(%fField);
-							playSound(SoundPickupBackpack,$los::position);
-							playSound(ForceFieldOpen,$los::position);
-							$TeamItemCount[GameBase::getTeam(%player) @ "TreePack"]++;
-							return true;
-						}
-					}
-					else 
-						Client::sendMessage(%client,0,"Can only deploy on flat surfaces");
-			}
-			else 
-				Client::sendMessage(%client,0,"Can only deploy on terrain");
-		}
-		else 
-			Client::sendMessage(%client,0,"Deploy position out of range");
-	}
-	else																						  
-	 	Client::sendMessage(%client,0,"Deployable Item limit reached for " @ %item.description @ "s");
-
-	return false;
-}
-
-//=================================================================================================== Healing Plant
-
-ItemImageData PlantPackImage
-{
-	//shapeFile = "AmmoPack";
-	shapeFile = "cactus2";
-	mountPoint = 2;
-   mountOffset = { 0, -0.5, -0.3 };
-
-//	mountRotation = { 0, 0, 0 };
-	mass = 2.5;
-	firstPerson = false;
-};
-
-ItemData PlantPack
-{
-	description = "Healing Plant";
-	shapeFile = "AmmoPack";
-	className = "Backpack";
-   	heading = "eDefensive";
-	imageType = PlantPackImage;
-	shadowDetailMask = 4;
-	mass = 1.0;
-	elasticity = 0.2;
-	price = 500;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function PlantPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item) {
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else {
-		Player::deployItem(%player,%item);
-	}
-}
-
-function PlantPack::onDeploy(%player,%item,%pos)
-{
-	if (PlantPack::deployShape(%player,%item)) {
-		Player::decItemCount(%player,%item);
-	}
-}
-
-function PlantPack::deployShape(%player,%item)
-{
-	%client = Player::getClient(%player);
-	if($TeamItemCount[GameBase::getTeam(%player) @ %item] < $TeamItemMax[%item]) {
-		if (GameBase::getLOSInfo(%player,3)) {
-			%obj = getObjectType($los::object);
-			if (%obj == "SimTerrain" || %obj == "InteriorShape")
-			{
-		    		%set = newObject("plantset",SimSet);
-				%num = containerBoxFillSet(%set,$StaticObjectType,$los::position,$ForceFieldBoxMinLength,$ForceFieldBoxMinWidth,$ForceFieldBoxMinHeight,0);
-				%num = CountObjects(%set,"DeployableCactus",%num);
-				deleteObject(%set);
-					if (Vector::dot($los::normal,"0 0 1") > 0.7)
-					{
-						if(checkDeployArea(%client,$los::position))
-						{
-							%rot = GameBase::getRotation(%player);
-							%rnd = floor(getRandom() * 10);
-							if(%rnd > 5)
-								%fField = newObject("","StaticShape",DeployableCactus1,true);
-							else  
-								%fField = newObject("","StaticShape",DeployableCactus2,true);
-
-							addToSet("MissionCleanup", %fField);
-							GameBase::setTeam(%fField,GameBase::getTeam(%player));
-							GameBase::setPosition(%fField,$los::position);
-							GameBase::setRotation(%fField,%rot);
-							Gamebase::setMapName(%fField,"Healing Plant");
-							Client::sendMessage(%client,0,"Healing Plant Deployed");
-							GameBase::startFadeIn(%fField);
-							playSound(SoundPickupBackpack,$los::position);
-							playSound(ForceFieldOpen,$los::position);
-							$TeamItemCount[GameBase::getTeam(%player) @ "PlantPack"]++;
-							return true;
-						}
-					}
-					else 
-						Client::sendMessage(%client,0,"Can only deploy on flat surfaces");
-			}
-			else 
-				Client::sendMessage(%client,0,"Can only deploy on terrain or buildings");
-		}
-		else 
-			Client::sendMessage(%client,0,"Deploy position out of range");
-	}
-	else																						  
-	 	Client::sendMessage(%client,0,"Deployable Item limit reached for " @ %item.description @ "s");
-
-	return false;
-}
-
-//=================================================================================================== Platform
-
-ItemImageData PlatformPackImage
-{
-	shapeFile = "AmmoPack";
-	mountPoint = 2;
-    	mountOffset = { 0, -0.03, 0 };
-	mass = 2.5;
-	firstPerson = false;
-};
-
-ItemData PlatformPack
-{
-	description = "Deployable Platform";
-	shapeFile = "AmmoPack";
-	className = "Backpack";
-   	heading = "eDefensive";
-	imageType = PlatformPackImage;
-	shadowDetailMask = 4;
-	mass = 1.5;
-	elasticity = 0.2;
-	price = 600;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function PlatformPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item) {
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else {
-		Player::deployItem(%player,%item);
-	}
-}
-
-function PlatformPack::onDeploy(%player,%item,%pos)
-{
-	if (PlatformPack::deployShape(%player,%item)) 
-	{
-		Player::decItemCount(%player,%item);
-	}
-}
-
-function PlatformPack::deployShape(%player,%item)
-{
-	deployable(%player,%item,"StaticShape","DeployablePlatform","Player",False,False,False,False,False,7,True,0, False, "DeployablePlatform", "PlatformPack");
-}
-
-//==================================================================================================== Teleport Pad
-
-ItemImageData TeleportPackImage
-{
-	shapeFile = "flagstand";
-	mountPoint = 2;
-	mountOffset = { 0, 0, 0.1 };
-	mountRotation = { 1.57, 0, 0 };
-	firstPerson = false;
-};
-
-ItemData TeleportPack
-{
-	description = "Teleport Pad";
-	shapeFile = "flagstand";
-	className = "Backpack";
-    	heading = "sPersonnel Movers";
-	imageType = TeleportPackImage;
-	shadowDetailMask = 4;
-	mass = 5.0;
-	elasticity = 0.2;
-	price = 3200;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function TeleportPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-	{
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else
-	{
-		Player::deployItem(%player,%item);
-	}
-}
-
-function TeleportPack::onDeploy(%player,%item,%pos)
-{
-	if (teleportPack::deployShape(%player,"Teleport Pad",DeployableTeleport,%item))
-	{
-		Player::decItemCount(%player,%item);
-		$TeamItemCount[GameBase::getTeam(%player) @ "DeployableTeleport"]++;
-	}
-}
-
-function CreateteleportSimSet()
-{
-    	%teleset = nameToID("MissionCleanup/Teleports");
-	if(%teleset == -1)
-	{
-		newObject("Teleports",SimSet);
-		addToSet("MissionCleanup","Teleports");
-	}
-}
-
-function TeleportPack::deployShape(%player,%name,%shape,%item)
-{
-	%client = Player::getClient(%player);
-	
-	if($TeamItemCount[GameBase::getTeam(%player) @ "DeployableTeleport"] < $TeamItemMax[DeployableTeleport]) {
-	
-	if (GameBase::getLOSInfo(%player,5))
-	{
-		%obj = getObjectType($los::object);
-			if (Vector::dot($los::normal,"0 0 1") > 0.7)
-			{
-				if(checkDeployArea(%client,$los::position))
-				{
-					%pos = $los::position;
-					%padd = "0 0 0.3";
-                			%poss = Vector::add(%pos, %padd);
-					
-					if(GameBase::testPosition(%player, %poss)) { } else { Client::sendMessage(%client,0,"Can not deploy inside other objects."); return; }
-
-					%sensor = newObject("Teleport Pad","StaticShape",%shape,true);
-
-					CreateteleportSimSet();
-					addToSet("MissionCleanup/Teleports", %sensor);
-					addToSet("MissionCleanup", %sensor);
-
-					GameBase::setTeam(%sensor,GameBase::getTeam(%player));
-					%pos = Vector::add($los::position,"0 0 1");
-					GameBase::setPosition(%sensor,%pos);
-					Gamebase::setMapName(%sensor,%name);
-					Client::sendMessage(%client,0,%item.description @ " deployed");
-					%sensor.disabled = false;
-					playSound(SoundPickupBackpack,$los::position);
-
-					%beam = newObject("","StaticShape",ElectricalBeam,true);
-					addToSet("MissionCleanup", %beam);
-					GameBase::setTeam(%beam,GameBase::getTeam(%player));
-					GameBase::setPosition(%beam,%pos);
-
-					%sensor.beam1 = %beam;
-					return true;
-				}
-			}
-			else 
-				Client::sendMessage(%client,0,"Can only deploy on flat surfaces");
-		}
-		else 
-			Client::sendMessage(%client,0,"Deploy position out of range");
-	}
-	else
-	 	Client::sendMessage(%client,0,"Deployable Item limit reached for " @ %name @ "s");
-	return false;
-}
-
-//==================================================================================================== Interceptor Pack
-
-ItemImageData MechPackImage
-{
-	shapeFile = "ammounit_remote";
-	mountPoint = 2;
-    	mountOffset = { 0, -0.03, 0 };
-	mass = 2.5;
-	firstPerson = false;
-};
-
-ItemData MechPack
-{
-	description = "Interceptor Pack";
-	shapeFile = "ammounit_remote";
-	className = "Backpack";
-   	heading = "sPersonnel Movers";
-	imageType = MechPackImage;
-	shadowDetailMask = 4;
-	mass = 1.5;
-	elasticity = 0.2;
-	price = 600;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function MechPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item) {
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else {
-		Player::deployItem(%player,%item);
-	}
-}
-
-function MechPack::onDeploy(%player,%item,%pos)
-{
-	if (MechPack::deployShape(%player,%item)) {
-		Player::decItemCount(%player,%item);
-	}
-}
-
-function MechPack::deployShape(%player,%item)
-{
-	%client = Player::getClient(%player);
-	
-	if($TeamItemCount[GameBase::getTeam(%player) @ "ScoutVehicle"] < $TeamItemMax[ScoutVehicle] || $TeamItemCount[GameBase::getTeam(%player) @ "Mechpack"] < $TeamItemMax[Mechpack])
-	{			
-		if (GameBase::getLOSInfo(%player,10))
-		{
-			%obj = getObjectType($los::object);
-			%set = newObject("mechset",SimSet);
-
-			deleteObject(%set);
-			%pos = $los::position;
-				%padd = "0 0 10";
-				%poss = Vector::add(%pos, %padd);
-				for (%b=1; %b < 5; %b++)
-				{
-					%padd = "0 0 " @ %b;
-					%poss = Vector::add(%pos, %padd);
-					if(!GameBase::testPosition(%player, %poss))
-						%nope = 1;
-				}
-				if (%nope == 1)
-				{
-					Client::sendMessage(%client,0,"You can not deploy Interceptor Pack, space too enclosed.");
-					return; 
-				}
-				else	if (Vector::dot($los::normal,"0 0 1") > 0.7)
-				{
-					if(checkDeployArea(%client,$los::position))
-					{
-						%rot = GameBase::getRotation(%player);
-						%fField = newObject("",flier,Scout,true);
-						//%fField.module = 9;
-						//%fField.ammo = 150;
-						Player::setItemCount(%client, InterceptorModule, 1);
-						addToSet("MissionCleanup", %fField);
-						GameBase::setTeam(%fField,GameBase::getTeam(%player));
-						GameBase::setPosition(%fField,$los::position);
-						GameBase::setRotation(%fField,%rot);
-						Client::sendMessage(%client,0,"Scout Deployed");
-						GameBase::startFadeIn(%fField);
-						playSound(SoundPickupBackpack,$los::position);
-						$TeamItemCount[GameBase::getTeam(%player) @ "ScoutVehicle"]++;
-						//$TeamItemCount[GameBase::getTeam(%player) @ "Mechpack"]++;
-						return true;
-					}
-				}
-				else 
-					Client::sendMessage(%client,0,"Can only deploy on flat surfaces");
-		}
-		else 
-			Client::sendMessage(%client,0,"Deploy position out of range");
-	}
-	else																						  
-	 	Client::sendMessage(%client,0,"Deployable Item limit reached for " @ %item.description @ "s");
-
-	return false;
-}
-
-function MechPack::onDestroyed(%this)
-{
-  	$TeamItemCount[GameBase::getTeam(%this) @ "ScoutVehicle"]--;
-}
-
-//==================================================================================================== Stealth HPC Pack
-
-ItemImageData DetPackImage
-{
-	shapeFile = "ammounit_remote";
-	mountPoint = 2;
-    	mountOffset = { 0, -0.03, 0 };
-	mass = 2.5;
-	firstPerson = false;
-};
-
-ItemData DetPack
-{
-	description = "Stealth HPC Pack";
-	shapeFile = "ammounit_remote";
-	className = "Backpack";
-    	heading = "sPersonnel Movers";
-	imageType = DetPackImage;
-	shadowDetailMask = 4;
-	mass = 1.5;
-	elasticity = 0.2;
-	price = 1600;
-	hudIcon = "deployable";
-	showWeaponBar = true;
-	hiliteOnActive = true;
-};
-
-function DetPack::onUse(%player,%item)
-{
-	if (Player::getMountedItem(%player,$BackpackSlot) != %item) {
-		Player::mountItem(%player,%item,$BackpackSlot);
-	}
-	else {
-		Player::deployItem(%player,%item);
-	}
-}
-
-function DetPack::onDeploy(%player,%item,%pos)
-{
-	if (DetPack::deployShape(%player,%item)) {
-		Player::decItemCount(%player,%item);
-	}
-}
-
-function DetPack::deployShape(%player,%item)
-{
-	%client = Player::getClient(%player);
-	if($TeamItemCount[GameBase::getTeam(%player) @ "HAPCVehicle"] < $TeamItemMax[HAPCVehicle])
-	{
-		if (GameBase::getLOSInfo(%player,3)) {
-			%obj = getObjectType($los::object);
-			if (%obj == "SimTerrain" || %obj == "InteriorShape") 
-			{
-				if (Vector::dot($los::normal,"0 0 1") > 0.7) 
-				{
-					if(checkDeployArea(%client,$los::position))
-					{
-						%rot = GameBase::getRotation(%player);
-						%fField = newObject("",flier,HAPC,true);
-						addToSet("MissionCleanup", %fField);
-						GameBase::setTeam(%fField,GameBase::getTeam(%player));
-						GameBase::setPosition(%fField,$los::position);
-						GameBase::setRotation(%fField,%rot);
-						Gamebase::setMapName(%fField,"HPC Pack");
-						Client::sendMessage(%client,0,"Deployed StealthHPC");
-						GameBase::startFadeIn(%fField);
-						playSound(SoundPickupBackpack,$los::position);
-						//playSound(ForceFieldOpen,$los::position);
-						$TeamItemCount[GameBase::getTeam(%player) @ "HAPCVehicle"]++;
-						return true;
-					}
-				}
-				else 
-					Client::sendMessage(%client,0,"Can only deploy on flat surfaces");
-
-			}
-			else 
-				Client::sendMessage(%client,0,"Can only deploy on terrain or buildings");
-		}
-		else 
-			Client::sendMessage(%client,0,"Deploy position out of range");
-	}
-	else																						  
-	 	Client::sendMessage(%client,0,"Deployable Item limit reached for " @ %item.description @ "s");
-
-	return false;
-}
 
 //======================================================================== Repair Kit
 
@@ -5948,8 +1924,8 @@ ItemData RepairKit
 	shadowDetailMask = 4;
 	price = 35;
 	
-	validateShape = true;
-	validateMaterials = true;
+	//validateShape = true;
+//	validateMaterials = true;
 };
 
 function RepairKit::onUse(%player,%item)
@@ -5966,7 +1942,7 @@ function RepairKit::onUse(%player,%item)
 	if (%clientId.poisonTime)
 	{
 		%clientId.poisonTime = 0;
-	        bottomprint(%clientId, "<jc><f2>Poison cured.", 5);	
+		bottomprint(%clientId, "<jc><f2>Poison cured.", 5);	
 	}
 
 	if (%armor == "sarmor" || %armor == "sfemale"  || %armor == "stimarmor" || %armor == "stimfemale")
@@ -5974,7 +1950,6 @@ function RepairKit::onUse(%player,%item)
 		if (%clientId.ovd > 15)
 		{	
 			%overd = %clientId.ovd;
-			
 			dbecho ("OD- " @ %clientId.ovd @ "");
 			dbecho ("O1- " @ %overd @ "");
 			%repair = (25 + floor(getRandom() * 25));
@@ -5982,59 +1957,39 @@ function RepairKit::onUse(%player,%item)
 			if (%clientId.ovd < 0)
 			{
 				%clientId.ovd = 0;
-			        bottomprint(%clientId, "<jc><f2>Over Dose Down to " @ %clientId.ovd @ "%.", 5);	
+				bottomprint(%clientId, "<jc><f2>Over Dose Down to " @ %clientId.ovd @ "%.", 5);	
 			}
 
 			dbecho ("AD- " @ %clientId.ovd @ "");
-		        bottomprint(%clientId, "<jc><f2>Chances Of OverDose Decreased from " @ %overd @ " to " @ %clientId.ovd @ "%.", 5);	
-	        }
+			bottomprint(%clientId, "<jc><f2>Chances Of OverDose Decreased from " @ %overd @ " to " @ %clientId.ovd @ "%.", 5);	
+		}
 		GameBase::repairDamage(%player,0.1);
 	}
 	
 	else if(%armor == "larmor" || %armor == "lfemale")
-	{
 		GameBase::repairDamage(%player,0.3);
-	}
 	else if(%armor == "earmor" || %armor == "efemale")
-	{
 		GameBase::repairDamage(%player,0.3);
-	}
 	else if(%armor == "spyarmor" || %armor == "spyfemale")
-	{
 		GameBase::repairDamage(%player,0.3);
-	}
 	else if(%armor == "marmor" || %armor == "mfemale")
-	{
 		GameBase::repairDamage(%player,0.2);
-	}
 	else if(%armor == "aarmor" || %armor == "afemale")
-	{
 		GameBase::repairDamage(%player,0.2);
-	}
 	else if(%armor == "harmor")
-	{
 		GameBase::repairDamage(%player,0.2);
-	}
 	else if(%armor == "barmor" || %armor == "bfemale")
-	{
 		GameBase::repairDamage(%player,0.2);
-	}
 	else if(%armor == "darmor")
-	{
 		GameBase::repairDamage(%player,0.3);
-	}
 	else if(%armor == "jarmor")
 	{
 		GameBase::repairDamage(%player,0.5);
 		if (%clientId.heatup > 50)
-		{
 			%clientId.heatup = %clientId.heatup - 20;
-		}
 	}
 	else
-	{
 		GameBase::repairDamage(%player,0.1);
-	}
 }
 
 
@@ -6077,11 +2032,7 @@ function MineAmmo::onUse(%player,%item)
 			else if (%client.EngMine == "1")
 				%obj = newObject("","Mine", "SubspaceMine");
 			else if (%client.EngMine == "2")
-			{	if(Player::getMountedItem(%client,$BackpackSlot) != "ammopack")
-					LaserMine(%client, %player, %item, 15);
-				else
-					LaserMine(%client, %player, %item, 20);
-			}
+				LaserMine(%client, %player, %item, 15);
 			else if (%client.EngMine == "3")
 				%obj = newObject("","Mine", "antipersonelMine");
 			else if (%client.EngMine == "4")
@@ -6090,12 +2041,7 @@ function MineAmmo::onUse(%player,%item)
 		else if (%armor == "darmor" || %armor == "harmor")
 		{
 			if (%client.dmines == 0 || !%client.dmines)
-			{
-				if(Player::getMountedItem(%player, $BackpackSlot) != "ammopack")
-					LaserMine(%client, %player, %item, 15);
-				else
-					LaserMine(%client, %player, %item, 20);	
-			}
+				LaserMine(%client, %player, %item, 15);
 			else if (%client.dmines == 1)
 				%obj = newObject("","Mine", "antipersonelMine"); 
 		}
@@ -6117,58 +2063,53 @@ function MineAmmo::onUse(%player,%item)
 //==================================================================================================== Laser Mine
 
 function LaserMine(%client, %player, %bec, %nrg)
-{	%item = "LaserMine";
-	//%client = Player::getClient(%player);
-		%energy = GameBase::getEnergy(%player);
-		%energy = (%energy - %nrg);
-		if(%nrg == 25 && %energy < 25)
-		{
-		bottomprint(%client, "<jc>You're out of energy, can not Deploy LaserMine.",3);
-		GameBase::setEnergy(%player,%energy);	
-		return;
-		}
-		else if (%energy < 15)
-		{
+{
+	%item = "LaserMine";
+	%energy = GameBase::getEnergy(%player);
+	%energy = (%energy - %nrg);
+	if (%energy < 15)
+	{
 		bottomprint(%client, "<jc>You're out of energy, can not Deploy LaserMine.",3);
 		return;
-		}
-		else
-		if (GameBase::getLOSInfo(%player,6)) 
-		{
-			%obj = getObjectType($los::object);
-			%prot = GameBase::getRotation(%player);
-			%zRot = getWord(%prot,2);
-				
-			if (Vector::dot($los::normal,"0 0 1") > 0.2)
-			{
-				%rot = "0 0 " @ %zRot;
-			}
-			else 
-			{
-				if (Vector::dot($los::normal,"0 0 -1") > 0.2)
-					%rot = "3.14159 0 " @ %zRot;
-				else 
-					%rot = Vector::getRotation($los::normal);
-			}
-			if(checkDeployArea(%client,$los::position))
-			{
-				%turret = newObject("Camera","Turret",DeployableLaserM,true);
-				addToSet("MissionCleanup", %turret);
-				GameBase::setTeam(%turret,GameBase::getTeam(%player));
-				GameBase::setRotation(%turret,%rot);
-				GameBase::setPosition(%turret,$los::position);
-				playSound(SoundPickupBackpack,$los::position);
-				$TeamItemCount[GameBase::getTeam(%turret) @ "LaserMine"]++;
-				if($debug) echo("MSG: ",%client," deployed a Laser Mine.");
-				Player::decItemCount(%player,%bec);
-				GameBase::setEnergy(%player,%energy);				
-				return true;
-			}
-		}
-		else
-			bottomprint(%client, "<jc>Deploy position out of range", 3);		
-		return false;
 	}
+	else if (GameBase::getLOSInfo(%player,6)) 
+	{
+		%obj = getObjectType($los::object);
+		%prot = GameBase::getRotation(%player);
+		%zRot = getWord(%prot,2);
+			
+		if (Vector::dot($los::normal,"0 0 1") > 0.2)
+			%rot = "0 0 " @ %zRot;
+		else 
+		{
+			if (Vector::dot($los::normal,"0 0 -1") > 0.2)
+				%rot = "3.14159 0 " @ %zRot;
+			else 
+				%rot = Vector::getRotation($los::normal);
+		}
+		if(checkDeployArea(%client,$los::position))
+		{
+			
+			if(Player::getArmor(%player) != "darmor")
+				%turret = newObject("Camera","Turret",DeployableLaserM,true);
+			else
+				%turret = newObject("Camera","Turret",DeployableLaserM2,true);
+			addToSet("MissionCleanup", %turret);
+			GameBase::setTeam(%turret,GameBase::getTeam(%player));
+			GameBase::setRotation(%turret,%rot);
+			GameBase::setPosition(%turret,$los::position);
+			playSound(SoundPickupBackpack,$los::position);
+			$TeamItemCount[GameBase::getTeam(%turret) @ "LaserMine"]++;
+			if($debug) echo("MSG: ",%client," deployed a Laser Mine.");
+			Player::decItemCount(%player,%bec);
+			GameBase::setEnergy(%player,%energy);				
+			return true;
+		}
+	}
+	else
+		bottomprint(%client, "<jc>Deploy position out of range", 3);		
+	return false;
+}
 
 //==================================================================================================== Grenades
 
@@ -6199,7 +2140,7 @@ function Grenade::onUse(%player,%item)
 			%obj = newObject("","Mine","Nukebomb");
 			%timer = %client.plastic;	
 			Client::sendMessage(%client,1, "Plastique Explosive will explode in " @ %timer @ " seconds"); 
-			schedule("Grenade::Plastic_Detonate(" @ %obj @ ");", %timer);
+			schedule("GameBase::setDamageLevel(" @ %obj @ ", 3.0);", %timer, %obj);
 		}
 		else if(%armor == "earmor" || %armor == "efemale")
 			%obj = newObject("","Mine","EMPgrenade");
@@ -6224,12 +2165,6 @@ function Grenade::onUse(%player,%item)
 	}
 }
 
-
-function Grenade::Plastic_Detonate(%this)
-{
-	%data = GameBase::getDataName(%this);
-	GameBase::setDamageLevel(%this, %data.maxDamage);
-}
 //==================================================================================================== Beacons
 
 ItemData Beacon
@@ -6241,28 +2176,9 @@ ItemData Beacon
 	price = 5;
 	className = "HandAmmo";
 	
-	validateShape = true;
-	validateMaterials = true;
+	//validateShape = true;
+//	validateMaterials = true;
 };
-
-function checkForStar(%this, %rot, %pos)
-{	
-	if(%this.check)
-	{	
-		%pos = gamebase::getposition(%this);
-		%rot = GameBase::getRotation(%this);
-		schedule("checkForStar(\"" @ %this @ "\", \"" @ %rot @ "\", \"" @ %pos @ "\");", 0.1);
-	}
-	else if($matchstarted)
-	{	
-		//%obj = newObject("","Mine","StarMine");
-		%obj = newObject("","turret","StarTurret");
-	 	addToSet("MissionCleanup", %obj);	
-	 	%obj.deployer = 2048;
-		GameBase::setPosition(%obj,%pos);
-		GameBase::setRotation(%obj,%rot);
-	}
-}
 
 function Beacon::onUse(%player,%item)
 {
@@ -6284,10 +2200,6 @@ function Beacon::onUse(%player,%item)
 					%vel = Item::getVelocity(%player);
 					playSound(SoundThrowItem,GameBase::getPosition(%player));
 					%obj = Projectile::spawnProjectile("StarShell",%trans,%player,%vel);
-					//%obj.check = 1;
-					//%pos = gamebase::getposition(%player);
-					//%rot = getWord(%trans, 0) @ "  " @ getword(%trans, 1) @ "  " @ getword(%trans, 2);
-					//checkForStar(%obj, %rot, %pos);
 					Player::decItemCount(%player,%item);
 				}
 				else
@@ -6332,7 +2244,16 @@ function Beacon::onUse(%player,%item)
 				}
 				else return false;
 			}
-	
+			if (%clientId.EngBeacon == 2)
+			{
+				if (EngMissileLock(%clientId, %player, %item))		//=== Anti Missile
+				{
+					$TeamItemCount[GameBase::getTeam(%player) @ "EngBeacons"]++;
+					//Client::sendMessage(%clientId,0,"Engineer Beacon Set");
+					Player::decItemCount(%player,%item);
+				}
+				else return false;
+			}		
 			if (%clientId.EngBeacon == 3)
 			{
 				if($matchStarted)
@@ -6380,7 +2301,8 @@ function Beacon::onUse(%player,%item)
 		{
 			if (%clientId.lasfired == 1 && %clientId.lascharge != 15)
 			{
-				Client::sendMessage(Player::getClient(%player),1,"Laser Refractor Cooling.~wfailpack.wav"); 
+				schedule("Beacon::onUse("@ %player @","@ %item @");", 1.1);
+				//Client::sendMessage(Player::getClient(%player),1,"Laser Refractor Cooling.~wfailpack.wav"); 
 				return;
 			}
 			if (%clientId.charging == 1)
@@ -6398,7 +2320,8 @@ function Beacon::onUse(%player,%item)
 		{
 			if (%clientId.plasfired == 1 && %clientId.plasmacharge != 15)
 			{
-				Client::sendMessage(Player::getClient(%player),1,"Plasma Core Cooling.~wfailpack.wav"); 
+				schedule("Beacon::onUse("@ %player @","@ %item @");", 1.1);
+				//Client::sendMessage(Player::getClient(%player),1,"Plasma Core Cooling.~wfailpack.wav"); 
 				return;
 			}
 			if (%clientId.charging == 1)
@@ -6505,6 +2428,8 @@ function Beacon::onUse(%player,%item)
 		{
 			if(!%clientId.GolBeacon || %clientId.GolBeacon == 0)
 			{
+				if(%client.throwStrength = "") %client.throwStrength = 1.0;
+				
 				if(%player.throwTime < getSimTime() )
 				{
 					%obj = newObject("","Mine","Concussion2");
@@ -6574,41 +2499,34 @@ ItemData AirAmmoPad
 
 function AirAmmoPad::onUse(%player,%item)
 {
-        if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-        {
-                Player::mountItem(%player,%item,$BackpackSlot);
-        }
-        else
-        {
-                Player::deployItem(%player,%item);
-        }
+	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
+		Player::mountItem(%player,%item,$BackpackSlot);
+	else
+		Player::deployItem(%player,%item);
 }
 
 function AirAmmoPad::onDeploy(%player,%item,%pos)
 {
-        if (AirAmmoPad::deployShape(%player,%item))
-        {
-                Player::decItemCount(%player,%item);
-        }
+	if (AirAmmoPad::deployShape(%player,%item))
+		Player::decItemCount(%player,%item);
 }
 
 function AirAmmoPad::deployshape(%player,%item)
 {
-        GameBase::getLOSInfo(%player,3);
-        %client = Player::getClient(%player);
-        if($TeamItemCount[GameBase::getTeam(%player) @ %item] < $TeamItemMax[%item])
-        {
+	GameBase::getLOSInfo(%player,3);
+	%client = Player::getClient(%player);
+	if($TeamItemCount[GameBase::getTeam(%player) @ %item] < $TeamItemMax[%item])
+	{
 		if (!CheckForObjects(GameBase::getPosition(%player),15,15,10))
 		{
 			Client::sendMessage(%client,1,"Objects In The Way, Can not deploy.");
 			return;
 		}
-		
-                %playerPos = GameBase::getPosition(%player);
-                %flag = $teamFlag[GameBase::getTeam(%player)];
-                %flagpos = gamebase::getPosition(%flag);
-                if(Vector::getDistance(%flagpos, %playerpos) > 10)
-                {
+		%playerPos = GameBase::getPosition(%player);
+		%flag = $teamFlag[GameBase::getTeam(%player)];
+		%flagpos = gamebase::getPosition(%flag);
+		if(Vector::getDistance(%flagpos, %playerpos) > 10)
+		{
 			%camera = newObject("Spy Station","Staticshape",AirAmmoBasePad,true);
 			addToSet("MissionCleanup", %camera);
 			%rot = GameBase::getRotation(%player);
@@ -6626,12 +2544,11 @@ function AirAmmoPad::deployshape(%player,%item)
 			playSound(SoundPickupBackpack,$los::position);
 			dbecho("MSG: ",%client," deployed an Air Ammo Pad ");
 			return true;
-                }
-                else
-                        Client::sendMessage(%client,0,"You are too close to your flag.");
-                        return false;
-        }
-
+		}
+		else
+			Client::sendMessage(%client,0,"You are too close to your flag.");
+		return false;
+	}
 }
 
 ItemImageData airbasePackImage
@@ -6661,221 +2578,227 @@ ItemData airbase
 
 function airbase::onUse(%player,%item)
 {
-        if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-        {
-                Player::mountItem(%player,%item,$BackpackSlot);
-        }
-        else
-        {
-                Player::deployItem(%player,%item);
-        }
+	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
+		Player::mountItem(%player,%item,$BackpackSlot);
+	else
+		Player::deployItem(%player,%item);
 }
 
 function airbase::onDeploy(%player,%item,%pos)
 {
-        if (airbase::deployShape(%player,%item))
-        {
-                Player::decItemCount(%player,%item);
-        }
-}
-
-function CreateAirBaseSet(%client)
-{
-    	%teleset = nameToID("MissionCleanup/AirBase" @ %client);
-	if(%teleset == -1)
-	{
-		newObject("AirBase" @ %client,SimSet);
-		addToSet("MissionCleanup","AirBase" @ %client);
-		gamebase::setteam(%teleset, gamebase::getteam(%client));
-	}
+	if (airbase::deployShape(%player,%item))
+		Player::decItemCount(%player,%item);
 }
 
 function airbase::deployshape(%player,%item)
 {
-        GameBase::getLOSInfo(%player,3);
-        
-        %client = Player::getClient(%player);
+	GameBase::getLOSInfo(%player,3);
+	%client = Player::getClient(%player);
 	%playerPos = GameBase::getPosition(%player);
-	%deploypos = Vector::add(GameBase::getPosition(%player), "-0 -0 50.50");
-
-	%number = $TeamItemCount[GameBase::getTeam(%player) @ "airbase"];
-
+	%playerRot = GameBase::getRotation(%player);
+	%deploypos = Vector::add(%playerPos, "-0 -0 50.50");
+	%team = GameBase::getTeam(%player);
 	if (!CheckForObjects(%deploypos,45,45,25))
 	{
 		Client::sendMessage(%client,1,"Objects In The Way, Can not deploy.");
 		return false;
 	}
-	
-	CreateAirBaseSet(%client);
+
+	airbase::specialdeploy(%team, %playerPos, %playerRot, %player);
+
+	playSound(SoundPickupBackpack,%playerPos);
+	Client::sendMessage(%client,1,"Air Base Deployed.");
+	return true;
+}
+
+function airbase::specialdeploy(%team,%playerPos,%playerRot,%player)
+{
+	if(%player)
+		%pname = Client::getName(Player::getClient(%player));
+	else
+		%pname = "";
+
+	%num = $TeamItemCount[%team @ "airbase"];
+
+	if($server::tourneymode && !$ceasefire)
+	{
+		$deployab[%num] = "airbase "@ %team @" "@ %playerPos @" "@ %PlayerRot;
+		export("$deployab*", "config\\dtrack.cs", true);
+		deleteVariables("$deployab*");
+		if(string::findsubstr($dlist, "ab" @ %num) == -1)
+			$dlist = $dlist @ " ab" @ %num;
+	}
+
+	%set = newObject("AirBase"@ %num,SimSet);
+	addToSet("MissionCleanup","AirBase"@ %num);
 
 	//================== Airbase platforms
-	%name1 = "Sensor" @ Client::getName(%client) @ "" @ %number;
-	%name2 = "StationGenerator" @ Client::getName(%client) @ "" @ %number;
-	%name3 = "CommandStation" @ Client::getName(%client) @ "" @ %number;
-	%name4 = "InventoryStation" @ Client::getName(%client) @ "" @ %number;
-	%name5 = "VehiclePad" @ Client::getName(%client) @ "" @ %number;
-	%name6 = "VehicleStation" @ Client::getName(%client) @ "" @ %number;
+	%name1 = "Sensor" @ %num;
+	%name2 = "StationGenerator" @ %num;
+	%name3 = "CommandStation" @ %num;
+	%name4 = "InventoryStation" @ %num;
+	%name5 = "VehiclePad" @ %num;
+	%name6 = "VehicleStation" @ %num;
 	
 	%plat1 = "Platform1";
 	%plat2 = "Platform2";
 	%plat3 = "Platform3";
 	%plat4 = "Platform4";
 
+		//=== Bottom Platforms
+		instant StaticShape %plat2
+		{
+			dataBlock = "LargeAirBasePlatform";
+			name = %plat2@%pname;
+			position = Vector::add(%playerpos, "6.75 -0 50.00");
+			rotation = Vector::add(%playerrot, "0 0 0");
+			destroyable = "True";
+			deleteOnDestroy = "True";
+			VehiclePad = %name5;
+			team = %team;
+		};
 
-	//=== Bottom Platforms
-	instant StaticShape %plat2
-	{
-		dataBlock = "LargeAirBasePlatform";
-		name = %plat2;
-		position = Vector::add(GameBase::getPosition(%player), "6.75 -0 50.00");
-		rotation = Vector::add(GameBase::getRotation(%player), "0 0 0");
-		destroyable = "True";
-		deleteOnDestroy = "True";
-		VehiclePad = %name5;
-		team = GameBase::getTeam(%player);
-	};
+		instant StaticShape %plat3
+		{
+			dataBlock = "LargeAirBasePlatform";
+			name = %plat3@%pname;
+			position = Vector::add(%playerpos, "-6.75 -5.0 50.00");
+			rotation = Vector::add(%playerrot, "0 0 0");
+			destroyable = "True";
+			deleteOnDestroy = "True";
+			VehiclePad = %name5;
+			team = %team;
+		};
+		
+		//=== Top platforms
+		instant StaticShape %plat1
+		{
+			dataBlock = "LargeAirBasePlatform";
+			name = %plat1@%pname;
+			position = Vector::add(%playerpos, "-6.75 -9.5 58.00");
+			rotation = Vector::add(%playerrot, "0 0 0");
+			destroyable = "True";
+			deleteOnDestroy = "True";
+			VehiclePad = %name5;
+			team = %team;
+		};
 
-	instant StaticShape %plat3
-	{
-		dataBlock = "LargeAirBasePlatform";
-		name = %plat3;
-		position = Vector::add(GameBase::getPosition(%player), "-6.75 -5.0 50.00");
-		rotation = Vector::add(GameBase::getRotation(%player), "0 0 0");
-		destroyable = "True";
-		deleteOnDestroy = "True";
-		VehiclePad = %name5;
-		team = GameBase::getTeam(%player);
-	};
-	
-	//=== Top platforms
-	instant StaticShape %plat1
-	{
-		dataBlock = "LargeAirBasePlatform";
-		name = %plat1;
-		position = Vector::add(GameBase::getPosition(%player), "-6.75 -9.5 58.00");
-		rotation = Vector::add(GameBase::getRotation(%player), "0 0 0");
-		destroyable = "True";
-		deleteOnDestroy = "True";
-		VehiclePad = %name5;
-		team = GameBase::getTeam(%player);
-	};
+		instant StaticShape %plat4
+		{
+			dataBlock = "LargeAirBasePlatform";
+			name = %plat4@%pname;
+			position = Vector::add(%playerpos, "6.75 -4.5 58.00");
+			rotation = Vector::add(%playerrot, "0 0 0");
+			destroyable = "True";
+			deleteOnDestroy = "True";
+			VehiclePad = %name5;
+			team = %team;
+		};
 
-	instant StaticShape %plat4
-	{
-		dataBlock = "LargeAirBasePlatform";
-		name = %plat4;
-		position = Vector::add(GameBase::getPosition(%player), "6.75 -4.5 58.00");
-		rotation = Vector::add(GameBase::getRotation(%player), "0 0 0");
-		destroyable = "True";
-		deleteOnDestroy = "True";
-		VehiclePad = %name5;
-		team = GameBase::getTeam(%player);
-	};
+		//=================== Airbase Radar
+		instant Sensor %name1
+		{
+			dataBlock = "PulseSensor";
+			name = %name1@%pname;
+			position = Vector::add(%playerpos, "-0 -6.0 58.50");
+			rotation = Vector::add(%playerrot, "0 0 0");
+			destroyable = "True";
+			deleteOnDestroy = "False";
+			team = %team;
+		};
+		instant StaticShape %name5
+		{
+			dataBlock = "VehiclePad";
+			name = %name5@%pname;
+			position = Vector::add(%playerpos, "8 -4 59.2");
+			rotation = Vector::add(%playerrot, "0 0 4.71339");
+			destroyable = "True";
+			deleteOnDestroy = "False";
+			team = %team;
+		};
 
-	//=================== Airbase Radar
-	instant Sensor %name1
-	{
-		dataBlock = "PulseSensor";
-		name = %name1;
-		position = Vector::add(GameBase::getPosition(%player), "-0 -6.0 58.50");
-		rotation = Vector::add(GameBase::getRotation(%player), "0 0 0");
-		destroyable = "True";
-		deleteOnDestroy = "False";
-		team = GameBase::getTeam(%player);
-	};
-	instant StaticShape %name5
-	{
-		dataBlock = "VehiclePad";
-		name = %name5;
-		position = Vector::add(GameBase::getPosition(%player), "8 -4 59.2");
-		rotation = Vector::add(GameBase::getRotation(%player), "0 0 4.71339");
-		destroyable = "True";
-		deleteOnDestroy = "False";
-		team = GameBase::getTeam(%player);
-	};
+		instant StaticShape %name6
+		{
+			dataBlock = "VehicleStation";
+			name = %name6@%pname;
+			position = Vector::add(%playerpos, "-8 -9 58.50");
+			rotation = Vector::add(%playerrot, "0 0 4.71339");
+			destroyable = "True";
+			deleteOnDestroy = "False";
+			VehiclePad = %name5;
+			team = %team;
+		};
+		//=================== Air base Gen
+		instant StaticShape %name2
+		{
+			dataBlock = "PortGenerator";
+			name = %name2@%pname;
+			position = Vector::add(%playerpos, "-0 -3.0 50.40");
+			rotation = Vector::add(%playerrot, "0 0 4.71339");
+			destroyable = "True";
+			deleteOnDestroy = "False";
+			team = %team;
+		};
 
-	instant StaticShape %name6
-	{
-		dataBlock = "VehicleStation";
-		name = %name6;
-		position = Vector::add(GameBase::getPosition(%player), "-8 -9 58.50");
-		rotation = Vector::add(GameBase::getRotation(%player), "0 0 4.71339");
-		destroyable = "True";
-		deleteOnDestroy = "False";
-		VehiclePad = %name5;
-		team = GameBase::getTeam(%player);
-	};
-	//=================== Air base Gen
-	instant StaticShape %name2
-	{
-		dataBlock = "PortGenerator";
-		name = %name2;
-		position = Vector::add(GameBase::getPosition(%player), "-0 -3.0 50.40");
-		rotation = Vector::add(GameBase::getRotation(%player), "0 0 4.71339");
-		destroyable = "True";
-		deleteOnDestroy = "False";
-		team = GameBase::getTeam(%player);
-	};
+		//=================== Command Station
+		instant StaticShape %name3
+		{
+			dataBlock = "CommandStation";
+			name = %name3@%pname;
+			position = Vector::add(%playerpos, "-7 -5 50.40");
+			rotation = Vector::add(%playerrot, "0 0 4.71339");
+			destroyable = "True";
+			deleteOnDestroy = "False";
+			team = %team;
+		};
 
-	//=================== Command Station
-	instant StaticShape %name3
-	{
-		dataBlock = "CommandStation";
-		name = %name3;
-		position = Vector::add(GameBase::getPosition(%player), "-7 -5 50.40");
-		rotation = Vector::add(GameBase::getRotation(%player), "0 0 4.71339");
-		destroyable = "True";
-		deleteOnDestroy = "False";
-		team = GameBase::getTeam(%player);
-	};
-
-	//=================== Invo Station
-	instant StaticShape %name4
-	{
-		dataBlock = "InventoryStation";
-		name = %name4;
-		position = Vector::add(GameBase::getPosition(%player), "5 0 50.40");
-		rotation = Vector::add(GameBase::getRotation(%player), "0 0 4.71339");
-		destroyable = "True";
-		deleteOnDestroy = "False";
-		team = GameBase::getTeam(%player);
-	};
+		//=================== Invo Station
+		instant StaticShape %name4
+		{	
+			dataBlock = "InventoryStation";
+			name = %name4@%pname;
+			position = Vector::add(%playerpos, "5 0 50.40");
+			rotation = Vector::add(%playerrot, "0 0 4.71339");
+			destroyable = "True";
+			deleteOnDestroy = "False";
+			team = %team;
+		};
 
 
-	addToSet("MissionCleanup/AirBase" @ %client,%name1);
-	addToSet("MissionCleanup/AirBase" @ %client,%name2);
-	addToSet("MissionCleanup/AirBase" @ %client,%name3);
-	addToSet("MissionCleanup/AirBase" @ %client,%name4);
-	addToSet("MissionCleanup/AirBase" @ %client,%name5);
-	addToSet("MissionCleanup/AirBase" @ %client,%name6);
-	addToSet("MissionCleanup/AirBase" @ %client,%plat1);
-	addToSet("MissionCleanup/AirBase" @ %client,%plat2);
-	addToSet("MissionCleanup/AirBase" @ %client,%plat3);
-	addToSet("MissionCleanup/AirBase" @ %client,%plat4);
+	addToSet(%set, %name1);
+	addToSet(%set, %name2);
+	addToSet(%set, %name3);
+	addToSet(%set, %name4);
+	addToSet(%set, %name5);
+	addToSet(%set, %name6);
+	addToSet(%set, %plat1);
+	addToSet(%set, %plat2);
+	addToSet(%set, %plat3);
+	addToSet(%set, %plat4);
 
-	addToSet("MissionCleanup",%name1);
-	addToSet("MissionCleanup",%name2);
-	addToSet("MissionCleanup",%name3);
-	addToSet("MissionCleanup",%name4);
-	addToSet("MissionCleanup",%name5);
-	addToSet("MissionCleanup",%name6);
-	addToSet("MissionCleanup",%plat1);
-	addToSet("MissionCleanup",%plat2);
-	addToSet("MissionCleanup",%plat3);
-	addToSet("MissionCleanup",%plat4);
+	%set = "MissionCleanup";
+	addToSet(%set, %name1);
+	addToSet(%set, %name2);
+	addToSet(%set, %name3);
+	addToSet(%set, %name4);
+	addToSet(%set, %name5);
+	addToSet(%set, %name6);
+	addToSet(%set, %plat1);
+	addToSet(%set, %plat2);
+	addToSet(%set, %plat3);
+	addToSet(%set, %plat4);
 
-	%n1 = (nametoId("MissionCleanup/AirBase" @ %client @ "/" @ %name1));
-	%n2 = (nametoId("MissionCleanup/AirBase" @ %client @ "/" @ %name2));
-	%n3 = (nametoId("MissionCleanup/AirBase" @ %client @ "/" @ %name3));
-	%n4 = (nametoId("MissionCleanup/AirBase" @ %client @ "/" @ %name4));
-	%n5 = (nametoId("MissionCleanup/AirBase" @ %client @ "/" @ %name5));
-	%n6 = (nametoId("MissionCleanup/AirBase" @ %client @ "/" @ %name6));
+	%n1 = nametoId("MissionCleanup/AirBase" @ %num @ "/" @ %name1);
+	%n2 = nametoId("MissionCleanup/AirBase" @ %num @ "/" @ %name2);
+	%n3 = nametoId("MissionCleanup/AirBase" @ %num @ "/" @ %name3);
+	%n4 = nametoId("MissionCleanup/AirBase" @ %num @ "/" @ %name4);
+	%n5 = nametoId("MissionCleanup/AirBase" @ %num @ "/" @ %name5);
+	%n6 = nametoId("MissionCleanup/AirBase" @ %num @ "/" @ %name6);
 	%n6.vehiclePad = %n5;
-	%n7 = (nametoId("MissionCleanup/AirBase" @ %client @ "/" @ %plat1));
-	%n8 = (nametoId("MissionCleanup/AirBase" @ %client @ "/" @ %plat2));
-	%n9 = (nametoId("MissionCleanup/AirBase" @ %client @ "/" @ %plat3));
-	%n10 = (nametoId("MissionCleanup/AirBase" @ %client @ "/" @ %plat4));
-	//%n11 = (nametoId("MissionCleanup/RepairPack1"));
+	%n7 = nametoId("MissionCleanup/AirBase" @ %num @ "/" @ %plat1);
+	%n8 = nametoId("MissionCleanup/AirBase" @ %num @ "/" @ %plat2);
+	%n9 = nametoId("MissionCleanup/AirBase" @ %num @ "/" @ %plat3);
+	%n10 = nametoId("MissionCleanup/AirBase" @ %num @ "/" @ %plat4);
 
 	%n1.base = "true";
 	%n2.base = "true";
@@ -6888,19 +2811,15 @@ function airbase::deployshape(%player,%item)
 	%n9.base = "true";
 	%n10.base = "true";
 
-	gamebase::setteam(%n1, gamebase::getteam(%client));
-	gamebase::setteam(%n2, gamebase::getteam(%client));
-	gamebase::setteam(%n3, gamebase::getteam(%client));
-	gamebase::setteam(%n4, gamebase::getteam(%client));
-	gamebase::setteam(%n5, gamebase::getteam(%client));
-	gamebase::setteam(%n6, gamebase::getteam(%client));
+	gamebase::setteam(%n1, %team);
+	gamebase::setteam(%n2, %team);
+	gamebase::setteam(%n3, %team);
+	gamebase::setteam(%n4, %team);
+	gamebase::setteam(%n5, %team);
+	gamebase::setteam(%n6, %team);
 
-	playSound(SoundPickupBackpack,$los::position);
-	$TeamItemCount[GameBase::getTeam(%player) @ "airbase"]++;
-	Client::sendMessage(%client,1,"Air Base Deployed.");
-	return true;
+	$TeamItemCount[%team @ "airbase"]++;
 }
-
 
 //=================================================================================================== Launch Pad
 
@@ -6979,6 +2898,10 @@ function LaunchPack::deployShape(%player,%item)
 						GameBase::startFadeIn(%phase);
 						playSound(SoundPickupBackpack,$los::position);
 						playSound(ForceFieldOpen,$los::position);
+						%team = GameBase::getTeam(%player);
+						%pos = $los::position;
+						%rot = GameBase::getRotation(%player);
+						deploy::record(%phase, "DeployableLaunch", %team, %pos, %rot);
 						$TeamItemCount[GameBase::getTeam(%player) @ "LaunchPack"]++;
 						return true;						
 					 }
@@ -6992,6 +2915,8 @@ function LaunchPack::deployShape(%player,%item)
 	 else Client::sendMessage(%client,0,"Deployable Item limit reached for " @ %item.description @ "s");
 	 return false;
  }
+
+
 //=================================================================================================== Accel Pad
 
 
@@ -7021,13 +2946,9 @@ ItemData AccelPPack
 function AccelPPack::onUse(%player,%item)
 {
 	if (Player::getMountedItem(%player,$BackpackSlot) != %item)
-	{
 		Player::mountItem(%player,%item,$BackpackSlot);
-	}
 	else
-	{
 		Player::deployItem(%player,%item);
-	}
 }
 
 function AccelPPack::onDeploy(%player,%item,%pos)
@@ -7074,6 +2995,10 @@ function AccelPPack::deployShape(%player,%name,%shape,%item)
 				%this.activated = 0;
 				GameBase::startFadeIn(%this);
 				playSound(SoundPickupBackpack,$los::position);
+				%team = GameBase::getTeam(%player);
+				%pos = $los::position;
+				%rot = GameBase::getRotation(%player);
+				deploy::record(%this, "AccelPadPack", %team, %pos, %rot);
 				return true;
 			}
 			else
@@ -7260,7 +3185,7 @@ function CoolLauncher::deployShape(%player,%item)
 			%datab = GameBase::getDataName(%o);			
 			
 			if (%obj == "SimTerrain" || %obj == "InteriorShape"){}
-			else if (%datab == "LargeEmplacementPlatform")
+			else if (%datab == "LargeEmplacementPlatform" || %datab == "BlastFloor")
 			{}else
 			{
 				Client::sendMessage(%client,1,"Can only deploy on terrain or buildings...");
@@ -7347,7 +3272,7 @@ ItemData EmpM
 	imageType = PhoenixMImage;
 	mass = 2.0;
 	elasticity = 0.2;
-	price = 5000;
+	price = 400;
 	hudIcon = "deployable";
 	showWeaponBar = true;
 	hiliteOnActive = true;
@@ -7373,7 +3298,7 @@ ItemData GasM
 	imageType = PhoenixMImage;
 	mass = 2.0;
 	elasticity = 0.2;
-	price = 5000;
+	price = 400;
 	hudIcon = "deployable";
 	showWeaponBar = true;
 	hiliteOnActive = true;
@@ -7398,7 +3323,7 @@ ItemData PhoenixM
 	imageType = PhoenixMImage;
 	mass = 2.0;
 	elasticity = 0.2;
-	price = 5000;
+	price = 650;
 	hudIcon = "deployable";
 	showWeaponBar = true;
 	hiliteOnActive = true;
@@ -7423,7 +3348,7 @@ ItemData NapM
 	imageType = PhoenixMImage;
 	mass = 2.0;
 	elasticity = 0.2;
-	price = 5000;
+	price = 750;
 	hudIcon = "deployable";
 	showWeaponBar = true;
 	hiliteOnActive = true;
@@ -7448,7 +3373,7 @@ ItemData BooM
 	imageType = PhoenixMImage;
 	mass = 2.0;
 	elasticity = 0.2;
-	price = 5000;
+	price = 2000;
 	hudIcon = "deployable";
 	showWeaponBar = true;
 	hiliteOnActive = true;
@@ -7457,7 +3382,6 @@ ItemData BooM
 function BooM::onUse(%player,%item) 
 {
 	if (Player::getMountedItem(%player,$BackpackSlot) != %item) 
-
 	{
 		Player::mountItem(%player,%item,$BackpackSlot);
 	}
@@ -7473,7 +3397,7 @@ ItemData SpyPod
 	imageType = PhoenixMImage;
 	mass = 2.0;
 	elasticity = 0.2;
-	price = 5000;
+	price = 2000;
 	hudIcon = "deployable";
 	showWeaponBar = true;
 	hiliteOnActive = true;
@@ -7542,8 +3466,8 @@ ItemData RepairPatch
 	shadowDetailMask = 4;
   	price = 2;
 	
-	validateShape = true;
-	validateMaterials = true;
+	//validateShape = true;
+//	validateMaterials = true;
 };
 
 function RepairPatch::onCollision(%this,%object)
@@ -7645,12 +3569,12 @@ $CanAlwaysTeamDestroy[EmplacementPack] = 1;
 
 ItemImageData EmplacementPackImage
 {
-        shapeFile = "magcargo";
-        mountPoint = 2;
-        mountOffset = { 0, 0, -0.5 };
-        mountRotation = { 0, 0, 0 };
-        mass = 1.0;
-        firstPerson = false;
+	shapeFile = "magcargo";
+	mountPoint = 2;
+	mountOffset = { 0, 0, -0.5 };
+	mountRotation = { 0, 0, 0 };
+	mass = 1.0;
+	firstPerson = false;
 };
 
 ItemData EmplacementPack
@@ -7713,189 +3637,227 @@ function EmplacementPack::onDeploy(%player,%item,%pos)
 
 function EmplacementPack::deployShape(%player,%item)
 {
-        %client = Player::getClient(%player);
-        //if($TeamItemCount[GameBase::getTeam(%player) @ %item] < $TeamItemMax[%item])
-        //{
-                if (GameBase::getLOSInfo(%player,6))
-                {
-                        %obj = getObjectType($los::object);
+	%client = Player::getClient(%player);
+	if($TeamItemCount[GameBase::getTeam(%player) @ %item] < $TeamItemMax[%item])
+	{
+		if (GameBase::getLOSInfo(%player,6))
+		{
+			%obj = getObjectType($los::object);
+			%pos = $los::position;
+         if (!CheckForObjects(%pos))
+         {
+				Client::sendMessage(%client,1,"Objects In The Way, Can not deploy.");
+				return;
+			}
+			if (%obj == "SimTerrain")
+			{
+				if (Vector::dot($los::normal,"0 0 1") > 0.8)
+				{
+					%playerPos = GameBase::getPosition(%player);
+					%playerRot = GameBase::getRotation(%player);
+					%team = GameBase::getTeam(%player);
+					EmplacementPack::specialdeploy(%team, $los::position, %playerRot, %player);
+					%newplayerpos = Vector::add(%playerPos, "0 0 0.85");
+					GameBase::setPosition(%player,%newplayerpos);
+					return true;
+				}
+				else
+					Client::sendMessage(%client,0,"Can only deploy on flat surfaces");
+			}
+			else
+				Client::sendMessage(%client,0,"Can only deploy on terrain.");
+		}
+		else
+			Client::sendMessage(%client,0,"Deploy position out of range");
+	}
+	else
+		Client::sendMessage(%client,0,"Deployable Item limit reached for " @ %item.description @ "s");
+	return false;
+}
 
-                        if (!CheckForObjects($los::position))
-                        {
-                                Client::sendMessage(%client,1,"Objects In The Way, Can not deploy.");
-                        	return;
-                        }
-                        
-                        if (%obj == "SimTerrain")
-                        {
-                                if (Vector::dot($los::normal,"0 0 1") > 0.8)
-                                {
-					%number = $TeamItemCount[GameBase::getTeam(%player) @ "EmplacementPack"];
 
-					%cname = "Emplacement" @ Client::getName(%client) @ "" @ %number;
-					%name1 = "Emplacement1" @ Client::getName(%client) @ "" @ %number;
-					%name3 = "Emplacement2" @ Client::getName(%client) @ "" @ %number;
-					%name2 = "StationGenerator" @ Client::getName(%client) @ "" @ %number;
-					%name4 = "InventoryStation" @ Client::getName(%client) @ "" @ %number;
+function EmplacementPack::specialdeploy(%team,%playerpos,%playerRot,%player)
+{
+	if(%player)
+		%pname = Client::getName(Player::getClient(%player));
+	else
+		%pname = "";
 
-					%ff1 = "ForceField1" @ Client::getName(%client) @ "" @ %number;
-					%ff2 = "ForceField2" @ Client::getName(%client) @ "" @ %number;
-					%ff3 = "ForceField3" @ Client::getName(%client) @ "" @ %number;
-					%ff4 = "ForceField4" @ Client::getName(%client) @ "" @ %number;
-					%ff5 = "ForceField5" @ Client::getName(%client) @ "" @ %number;
+	%num = $TeamItemCount[%team @ "EmplacementPack"];
 
-					instant SimGroup %cname
-					{
+	if($server::tourneymode && !$ceasefire)
+	{
+		$deployem[%num] = "EmplacementPack "@ %team @" "@ %playerPos @" "@ %PlayerRot;
+		export("$deployem*", "config\\dtrack.cs", true);
+		deleteVariables("$deployem*");
+		if(string::findsubstr($dlist, "em" @ %num) == -1)
+			$dlist = $dlist @ " em" @ %num;
+	}
+
+	%name1 = "Emplacement1" @ %num;
+	%name2 = "StationGenerator" @ %num;
+	%name3 = "Emplacement2" @ %num;
+	%name4 = "InventoryStation" @ %num;
+	%ff1 = "ForceField1" @ %num;
+	%ff2 = "ForceField2" @ %num;
+	%ff3 = "ForceField3" @ %num;
+	%ff4 = "ForceField4" @ %num;
+	%ff5 = "ForceField5" @ %num;
+
+	%set = newObject("Emplacement"@ %num,SimSet);
+	addToSet("MissionCleanup","Emplacement"@ %num);
+
 						instant StaticShape %name1
 						{
 							dataBlock = "LargeEmplacementPlatform";
-							name = %plat1;
-							position = Vector::add(Gamebase::getPosition(%player), EmplacementPack::rotVector( "0 2 0.4", GameBase::getRotation(%player) ) );
-							rotation = Vector::add( GameBase::getRotation(%player), "0 0 0");
+							name = %name1@%pname;
+							position = Vector::add(%playerPos, EmplacementPack::rotVector( "0 2 0.4", %playerRot ) );
+							rotation = Vector::add( %playerRot, "0 0 0");
 							destroyable = "True";
 							deleteOnDestroy = "True";
 							VehiclePad = %name5;
-							team = GameBase::getTeam(%player);
+							team = %team;
 						};
 
 						instant StaticShape %name3
 						{
 							dataBlock = "LargeEmplacementPlatform";
-							name = %plat2;
-							position = Vector::add(Gamebase::getPosition(%player), EmplacementPack::rotVector( "0 2 5.2", GameBase::getRotation(%player) ) );
-							rotation = Vector::add( GameBase::getRotation(%player), "0 0 0");
+							name = %name3@%pname;
+							position = Vector::add(%playerPos, EmplacementPack::rotVector( "0 2 5.2", %playerRot ) );
+							rotation = Vector::add( %playerRot, "0 0 0");
 							destroyable = "True";
 							deleteOnDestroy = "True";
 							VehiclePad = %name5;
-							team = GameBase::getTeam(%player);
+							team = %team;
 						};
 
 						instant StaticShape %name4
 						{
 							dataBlock = "InventoryStation";
-							name = %name4;
-							position = Vector::add(Gamebase::getPosition(%player), EmplacementPack::rotVector( "0 3.75 0.9", GameBase::getRotation(%player) ) );
-							rotation = Vector::add( GameBase::getRotation(%player), "0 0 0");
-							destroyable = "True";
+							name = %name4@%pname;
+							position = Vector::add(%playerPos, EmplacementPack::rotVector( "0 3.75 0.9", %playerRot ) );
+							rotation = Vector::add( %playerRot, "0 0 0");
+							destroyable = "True"@%pname;
 							deleteOnDestroy = "False";
-							team = GameBase::getTeam(%player);
+							team = %team;
 						};
 
 						instant StaticShape %name2
 						{
 							dataBlock = "PortGenerator";
-							name = %name2;
-							position = Vector::add(GameBase::getPosition(%player), "0 0 -15");
-							rotation = Vector::add(GameBase::getRotation(%player), "0 0 0");
+							name = %name2@%pname;
+							position = Vector::add(%playerPos, "0 0 -15");
+							rotation = Vector::add(%playerRot, "0 0 0");
 							destroyable = "True";
 							deleteOnDestroy = "False";
-							team = GameBase::getTeam(%player);
+							team = %team;
 						};
 						
 						instant StaticShape %ff1
 						{
 							dataBlock = "ForceField3";
-							name = %name2;
-							position = Vector::add(Gamebase::getPosition(%player), EmplacementPack::rotVector( "0 7.15 0.9", GameBase::getRotation(%player) ) );
-							rotation = Vector::add( GameBase::getRotation(%player), "0 0 0");
+							name = %ff1@%pname;
+							position = Vector::add(%playerPos, EmplacementPack::rotVector( "0 7.15 0.9", %playerRot ) );
+							rotation = Vector::add( %playerRot, "0 0 0");
 							destroyable = "True";
 							deleteOnDestroy = "True";
-							team = GameBase::getTeam(%player);
+							team = %team;
 						};
 
 						instant StaticShape %ff2
 						{
 							dataBlock = "ForceField3";
-							name = %name2;
-							position = Vector::add(Gamebase::getPosition(%player), EmplacementPack::rotVector( "-5.25 3.5 0.9", GameBase::getRotation(%player) ) );
-							rotation = Vector::add( GameBase::getRotation(%player), "0 0 1.15");
+							name = %ff2@%pname;
+							position = Vector::add(%playerPos, EmplacementPack::rotVector( "-5.25 3.5 0.9", %playerRot ) );
+							rotation = Vector::add( %playerRot, "0 0 1.15");
 							destroyable = "True";
 							deleteOnDestroy = "True";
-							team = GameBase::getTeam(%player);
+							team = %team;
 						};						
 
 						instant StaticShape %ff3
 						{
 							dataBlock = "ForceField3";
-							name = %name2;
-							position = Vector::add(Gamebase::getPosition(%player), EmplacementPack::rotVector( "5.25 3.5 0.9", GameBase::getRotation(%player) ) );
-							rotation = Vector::add( GameBase::getRotation(%player), "0 0 -1.15");
+							name = %ff3@%pname;
+							position = Vector::add(%playerPos, EmplacementPack::rotVector( "5.25 3.5 0.9", %playerRot ) );
+							rotation = Vector::add( %playerRot, "0 0 -1.15");
 							destroyable = "True";
 							deleteOnDestroy = "True";
-							team = GameBase::getTeam(%player);
+							team = %team;
 						};	
 						instant StaticShape %ff4
 						{
 							dataBlock = "ForceField1";
-							name = %name2;
-							position = Vector::add(Gamebase::getPosition(%player), EmplacementPack::rotVector( "-5.75 -1.40 1", GameBase::getRotation(%player) ) );
-							rotation = Vector::add( GameBase::getRotation(%player), "0 0 -1.15");
+							name = %ff4@%pname;
+							position = Vector::add(%playerPos, EmplacementPack::rotVector( "-5.75 -1.40 1", %playerRot ) );
+							rotation = Vector::add( %playerRot, "0 0 -1.15");
 							destroyable = "True";
 							deleteOnDestroy = "True";
-							team = GameBase::getTeam(%player);
+							team = %team;
 						};	
 						instant StaticShape %ff5
 						{
 							dataBlock = "ForceField1";
-							name = %name2;
-							position = Vector::add(Gamebase::getPosition(%player), EmplacementPack::rotVector( "5.75 -1.40 1", GameBase::getRotation(%player) ) );
-							rotation = Vector::add( GameBase::getRotation(%player), "0 0 1.15");
+							name = %ff5@%pname;
+							position = Vector::add(%playerPos, EmplacementPack::rotVector( "5.75 -1.40 1", %playerRot ) );
+							rotation = Vector::add( %playerRot, "0 0 1.15");
 							destroyable = "True";
 							deleteOnDestroy = "True";
-							team = GameBase::getTeam(%player);
+							team = %team;
 						};	
 
-					};
+	addToSet(%set, %name1);
+	addToSet(%set, %name2);
+	addToSet(%set, %name3);
+	addToSet(%set, %name4);
+	addToSet(%set, %ff1);
+	addToSet(%set, %ff2);
+	addToSet(%set, %ff3);
+	addToSet(%set, %ff4);
+	addToSet(%set, %ff5);
 
+	%set = "MissionCleanup";
+	addToSet(%set, %name1);
+	addToSet(%set, %name2);
+	addToSet(%set, %name3);
+	addToSet(%set, %name4);
+	addToSet(%set, %ff1);
+	addToSet(%set, %ff2);
+	addToSet(%set, %ff3);
+	addToSet(%set, %ff4);
+	addToSet(%set, %ff5);
 
-				addToSet("MissionCleanup",%cname@"/"@%name1);
-				addToSet("MissionCleanup",%cname@"/"@%name2);
-				addToSet("MissionCleanup",%cname@"/"@%name3);
-				addToSet("MissionCleanup",%cname@"/"@%name4);
+	%n1 = nametoId("MissionCleanup/Emplacement" @ %num @ "/" @ %name1);
+	%n2 = nametoId("MissionCleanup/Emplacement" @ %num @ "/" @ %name2);
+	%n3 = nametoId("MissionCleanup/Emplacement" @ %num @ "/" @ %name4);
+	%n4 = nametoId("MissionCleanup/Emplacement" @ %num @ "/" @ %name3);
+	%f1 = nametoId("MissionCleanup/Emplacement" @ %num @ "/" @ %ff1);
+	%f2 = nametoId("MissionCleanup/Emplacement" @ %num @ "/" @ %ff2);
+	%f3 = nametoId("MissionCleanup/Emplacement" @ %num @ "/" @ %ff3);
+	%f4 = nametoId("MissionCleanup/Emplacement" @ %num @ "/" @ %ff4);
+	%f5 = nametoId("MissionCleanup/Emplacement" @ %num @ "/" @ %ff5);
 
-				%n1 = (nametoId("MissionCleanup/" @ %name1));
-				%n2 = (nametoId("MissionCleanup/" @ %name2));
-				%n3 = (nametoId("MissionCleanup/" @ %name4));
-				%n4 = (nametoId("MissionCleanup/" @ %name3));
-				gamebase::setteam(%n1, gamebase::getteam(%client));
-				gamebase::setteam(%n2, gamebase::getteam(%client));
-				gamebase::setteam(%n3, gamebase::getteam(%client));
-				gamebase::setteam(%n4, gamebase::getteam(%client));
-				addToSet("MissionCleanup",%cname@"/"@%ff1);%f1 = (nametoId("MissionCleanup/" @ %ff1));gamebase::setteam(%f1, gamebase::getteam(%client));
-				addToSet("MissionCleanup",%cname@"/"@%ff2);%f2 = (nametoId("MissionCleanup/" @ %ff2));gamebase::setteam(%f2, gamebase::getteam(%client));
-				addToSet("MissionCleanup",%cname@"/"@%ff3);%f3 = (nametoId("MissionCleanup/" @ %ff3));gamebase::setteam(%f3, gamebase::getteam(%client));
-				addToSet("MissionCleanup",%cname@"/"@%ff4);%f4 = (nametoId("MissionCleanup/" @ %ff4));gamebase::setteam(%f4, gamebase::getteam(%client));
-				addToSet("MissionCleanup",%cname@"/"@%ff5);%f5 = (nametoId("MissionCleanup/" @ %ff5));gamebase::setteam(%f5, gamebase::getteam(%client));
+	gamebase::setteam(%n1, %team);
+	gamebase::setteam(%n2, %team);
+	gamebase::setteam(%n3, %team);
+	gamebase::setteam(%n4, %team);
+	gamebase::setteam(%f1, %team);
+	gamebase::setteam(%f2, %team);
+	gamebase::setteam(%f3, %team);
+	gamebase::setteam(%f4, %team);
+	gamebase::setteam(%f5, %team);
 
-				%n1.base = true;
-				%n2.base = true;
-				%n3.base = true;
-				%n4.base = true;
-				%f1.base = true;
-				%f2.base = true;
-				%f3.base = true;
-				%f4.base = true;
-				%f5.base = true;
+	%n1.base = true;
+	%n2.base = true;
+	%n3.base = true;
+	%n4.base = true;
+	%f1.base = true;
+	%f2.base = true;
+	%f3.base = true;
+	%f4.base = true;
+	%f5.base = true;
 
-                                $TeamItemCount[GameBase::getTeam(%player) @ "EmplacementPack"]++;
-                                %playerpos = GameBase::getPosition(%player);
-				%newplayerpos = Vector::add(%playerpos, "0 0 0.2");
-				GameBase::setPosition(%player,%newplayerpos);
-
-                                return true;
-                                }
-                                else
-                                        Client::sendMessage(%client,0,"Can only deploy on flat surfaces");
-                        }
-                        else
-                                Client::sendMessage(%client,0,"Can only deploy on terrain.");
-                }
-                else
-                        Client::sendMessage(%client,0,"Deploy position out of range");
-       // }
-       // else
-       //          Client::sendMessage(%client,0,"Deployable Item limit reached for " @ %item.description @ "s");
-                 return false;
+	$TeamItemCount[%team @ "EmplacementPack"]++;
 }
 
 //============================================================================================== Large Shock Force Field
@@ -8494,7 +4456,7 @@ RocketData PlasmaCannonBolt
 	collisionRadius = 0.0;
 	mass = 0.0; 
 	damageClass = 1;
-    	damageValue = 0.8; 
+   damageValue = 0.8; 
 	damageType = $PlasmaDamageType;
 	explosionRadius = 15; 
 	kickBackStrength = 0.0; 
@@ -8506,7 +4468,7 @@ RocketData PlasmaCannonBolt
 	lightRange = 5.0; 
 	lightColor = { 1.0, 0.0, 0.05 }; 
 	inheritedVelocityScale = 0.0; 
-	soundId = SoundJetHeavy;
+	soundId = NoCrashJetHeavy;
 };
 
 RocketData PlasmaCannonBolt2
@@ -8531,7 +4493,7 @@ RocketData PlasmaCannonBolt2
 	trailType   = 2;
 	trailString = "plasmatrail.dts";
 	smokeDist   = 180.0;
-	soundId = SoundJetHeavy;
+	soundId = NoCrashJetHeavy;
 };
 
 RocketData PlasmaCannonShock
@@ -8557,7 +4519,7 @@ RocketData PlasmaCannonShock
 	trailType   = 2;
 	trailString = "plasmabolt.dts";
 	smokeDist   = 140.0;
-	//soundId = SoundJetHeavy;
+	soundId = NoCrashJetHeavy;
 };
 
 RocketData PlasmaCannonShock2
@@ -8583,30 +4545,27 @@ RocketData PlasmaCannonShock2
 	trailType   = 2;
 	trailString = "plasmatrail.dts";
 	smokeDist   = 160.0;
-	//soundId = SoundJetHeavy;
+	soundId = NoCrashJetHeavy;
 };
 
 function FireHeavyPlasma(%trans, %player)
 {
+	%client = Player::getClient(%player);
 	%this = (Projectile::spawnProjectile(PlasmaCannonShock2, %trans,%player,"0 0 -1"));
 	%pos = gamebase::getposition(%this);
 	%this.check = 1;
 	checkForHP(%this, %player, %pos);
-	//echo("FIRE! This: " @ %this);
 }
 
 function checkForHP(%this, %player, %pos)
 {	
 	if(%this.check)
-	{	//echo("check");
-		%pos = gamebase::getposition(%this);
+	{	%pos = gamebase::getposition(%this);
 		schedule("checkForHP(\"" @ %this @ "\", \"" @ %player @ "\", \"" @ %pos @ "\");", 0.2);
 	}
 	else
-	{	//echo("FRAGS AWAY!! - Player: " @ %player @ " - This: " @ %this); 
-		%client = Player::getClient(%player);
-		%plDead = Player::isDead(%player);
-		if(%player && !%plDead)
+	{	
+		if(%player)
 		{
 			for(%i = 0; %i < 10; %i++)
 			{
@@ -8617,18 +4576,18 @@ function checkForHP(%this, %player, %pos)
 				if ((floor(getRandom()*4)+1) > 2)
 				{
 					if ((floor(getRandom()*4)+1) > 3)
-						GameBase::throw(%obj,%client,120,false);
+						GameBase::throw(%obj,%player,120,false);
 					else
-						GameBase::throw(%obj,%client,120,true);
+						GameBase::throw(%obj,%player,120,true);
 				}
 				else
 				{
 					if ((floor(getRandom()*4)+1) > 3)
-						GameBase::throw(%obj,%client,-80,false);
+						GameBase::throw(%obj,%player,-80,false);
 					else
-						GameBase::throw(%obj,%client,-80,true);
+						GameBase::throw(%obj,%player,-80,true);
 				}
-				if(!%plDead) GameBase::setPosition(%obj,%pos);
+				GameBase::setPosition(%obj,%pos);
 			}
 		}
 	}
@@ -8649,10 +4608,10 @@ ItemImageData Hammer1PackImage
 { 
 	shapeFile = "mortargun";
 	mountPoint = 3; 
-	mountOffset = { 0.46, 0.1, 2.175 }; 
+	mountOffset = { 0.485, -0.1, 2.175 }; //	mountOffset = { 0.46, -0.1, 2.175 }; 
 	mountRotation = { 0, 0, 0 }; 
 	weaponType = 0; 
-	projectileType = GodHammer; 
+	projectileType = JuggStingerMissile;//GodHammer; 
 	ammoType = HammerAmmo;	
 	accuFire = true; 
 	reloadTime = 0.2; 
@@ -8687,10 +4646,10 @@ ItemImageData Hammer2PackImage
 { 
 	shapeFile = "mortargun"; 
 	mountPoint = 3; 
-	mountOffset = { -0.27, 0.1, 2.175 };
+	mountOffset = { -0.32, -0.1, 2.175 };
 	mountRotation = { 0, 0, 0 };
 	weaponType = 0;
-	projectileType = GodHammerQuiet; 
+	projectileType = JuggStingerMissile;//GodHammerQuiet; 
 	ammoType = HammerAmmo;	
 	accuFire = true; 
 	reloadTime = 0.2; 
@@ -9303,7 +5262,7 @@ ItemData Mortar0
 	price = 375;
 	showWeaponBar = true;
 	
-	//validateShape = true;
+	validateShape = false;
 };
 
 ItemImageData MortarImage1
@@ -9341,7 +5300,7 @@ ItemData Mortar1
 	//price = 375;
 	//showWeaponBar = true;
 	
-	//validateShape = true;
+	validateShape = false;
 };
 
 ItemImageData MortarImage2
@@ -9378,7 +5337,7 @@ ItemData Mortar2
 	imageType = MortarImage2;
 	price = 375;
 	showWeaponBar = true;
-	//validateShape = true;
+	validateShape = false;
 };
 
 function MortarImage2::onFire(%player, %slot) 
@@ -9389,7 +5348,7 @@ function MortarImage2::onFire(%player, %slot)
 
 	if (%client.lastmdm && %Ammo == 1)
 	{
-		MDMDetonate2(%player);
+		MDMDetonate2(%client);
 		return;
 	}
 	else if(%client.lastmdm && %ammo > 1)
@@ -9423,17 +5382,17 @@ function MortarImage2::onFire(%player, %slot)
 		else if (%playerId.Mortar == 3)
 		{
 			if (%client.firemortar)
-				MDMDetonate(%player);
+				MDMDetonate(%client);
 			else if(%Ammo > 1)
 			{
 				%client.firemortar = (Projectile::spawnProjectile("DelayMortarShell",%trans,%player,%vel));
-				schedule("MDMDetonate(" @ %player @");",10,%client.firemortar);
+				schedule("MDMDetonate(" @ %client @");",10,%client.firemortar);
 				Player::decItemCount(%player,$WeaponAmmo[Mortar],1);
 			}
 			else if(%Ammo == 1)
 			{
 				%client.lastmdm = (Projectile::spawnProjectile("DelayMortarShell",%trans,%player,%vel));
-				schedule("MDMDetonate2(" @ %player @");",10,%client.lastmdm);
+				schedule("MDMDetonate2(" @ %client @");",10,%client.lastmdm);
 			}
 		}		
 	}
@@ -9447,7 +5406,7 @@ function Mortar0::onCollision(%this,%object)
 		if (Item::giveItem(%object,mortar,1))
 		{
 			Item::playPickupSound(%this);
-			if(%this)deleteObject(%this);
+			if(%this)deleteobject(%this);
 		}
 	}
 }
@@ -9461,7 +5420,7 @@ function Mortar1::onCollision(%this,%object)
 		if (Item::giveItem(%object,mortar,1))
 		{
 			Item::playPickupSound(%this);
-			if(%this)deleteObject(%this);
+			if(%this)deleteobject(%this);
 		}
 	}
 }
@@ -9475,9 +5434,43 @@ function Mortar2::onCollision(%this,%object)
 		if (Item::giveItem(%object,mortar,1))
 		{
 			Item::playPickupSound(%this);
-			if(%this)deleteObject(%this);
+			if(%this)deleteobject(%this);
 		}
 	}
 }
 
+function mortar::onDrop(%player,%item)
+{
+	if($matchStarted)
+	{
+		%mounted = Player::getMountedItem(%player,$WeaponSlot);
+		if (%mounted == mortar || %mounted == mortar0 || %mounted == mortar1 || %mounted == mortar2)
+		{
+			Player::unmountItem(%player,$WeaponSlot);
+		}
+		else
+		{
+			Player::mountItem(%player,%mounted,$WeaponSlot);
+		}
+		Item::onDrop(%player,%item);
+	}
+}	
+
 //==End New mortar Stuffs
+
+ItemImageData ShroomImage
+{
+	shapeFile = "sat_big";
+	mountPoint = 0;
+	mountOffset = { -0.7, 0, -2 };
+};
+
+ItemData shroom
+{
+	description = "Shroom";
+	shapeFile = "sat_big";
+	hudIcon = "mortar";
+	shadowDetailMask = 4;
+	imageType = ShroomImage;
+	price = 1;
+};

@@ -39,8 +39,12 @@ StaticShapeData BeaconTwo
 	debrisId = flashDebrisSmall;
 };
 
-function BeaconTwo::onEnabled(%this) { GameBase::setIsTarget(%this,true); }
-function BeaconTwo::onDisabled(%this) { GameBase::setIsTarget(%this,false); }
+function BeaconTwo::onEnabled(%this) {
+	//GameBase::setIsTarget(%this,true);
+}
+function BeaconTwo::onDisabled(%this) {
+	//GameBase::setIsTarget(%this,false);
+}
 function BeaconTwo::onDestroyed(%this)
 {
    GameBase::setIsTarget(%this,false);

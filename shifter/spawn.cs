@@ -5,29 +5,6 @@
 //===============================================================================================================
 //== Player spawns with NO saved profile and NO Favs set.
 
-if (!$Shifter::SaveOn)
-{
-	$spawnBuyList[0] = MediumArmor;
-	$spawnBuyList[1] = HyperB;
-	$spawnBuyList[2] = Chaingun;
-	$spawnBuyList[3] = Disclauncher;
-	$spawnBuyList[4] = RepairKit; 
-	$spawnBuyList[5] = GrenadeLauncher; 
-	$spawnBuyList[6] = Grenade; 
-	$spawnBuyList[7] = Grenade; 
-	$spawnBuyList[8] = Grenade;
-	$spawnBuyList[9] = Beacon;
-	$spawnBuyList[10] = Beacon;
-	$spawnBuyList[11] = Beacon;
-	$spawnBuyList[12] = Beacon;
-	$spawnBuyList[13] = TargetingLaser;
-	$spawnBuyList[14] = RepairPack;
-	$spawnBuyList[15] = "";
-	$fa_armor = "Mercenary";
-	$fa_pack = "RepairPack";
-}
-
-
 //===============================================================================================================
 //== Standard Spawn Options
 
@@ -143,26 +120,7 @@ function randomSpawnList(%client)
 		if ($debug) echo("Setting Up Gear For Random Spawn" @ %rnd @ " - ");
 		if (%rnd <= 20) //=========================== Most of the time 
 		{
-			if ($debug) echo("Spawn - Standard");
-			$spawnBuyList[0, %client] = MediumArmor;
-			$spawnBuyList[1, %client] = HyperB;
-			$spawnBuyList[2, %client] = Chaingun;
-			$spawnBuyList[3, %client] = Disclauncher;
-			$spawnBuyList[4, %client] = RepairKit; 
-			$spawnBuyList[5, %client] = GrenadeLauncher; 
-			$spawnBuyList[6, %client] = Grenade; 
-			$spawnBuyList[7, %client] = Grenade; 
-			$spawnBuyList[8, %client] = Grenade;
-			$spawnBuyList[9, %client] = Beacon;
-			$spawnBuyList[10, %client] = Beacon;
-			$spawnBuyList[11, %client] = Beacon;
-			$spawnBuyList[12, %client] = Beacon;
-			$spawnBuyList[13, %client] = TargetingLaser;
-			$spawnBuyList[14, %client] = RepairPack;
-			$spawnBuyList[15, %client] = "";
-			$fa_armor = "Mercenary";
-			$fa_pack = "RepairPack";
-
+			standardSpawnlist(%client);
 		}
 	
 		if ((%rnd >= 21) && (%rnd <= 35))
@@ -281,24 +239,6 @@ function randomSpawnList(%client)
 	
 	if(!$Shifter::SpawnRandom && !%client.favsettings)
 	{
-		if ($debug) echo("Spawn - Standard - No Random");
-		$spawnBuyList[0, %client] = MediumArmor;
-		$spawnBuyList[1, %client] = HyperB;
-		$spawnBuyList[2, %client] = Chaingun;
-		$spawnBuyList[3, %client] = Disclauncher;
-		$spawnBuyList[4, %client] = RepairKit; 
-		$spawnBuyList[5, %client] = GrenadeLauncher; 
-		$spawnBuyList[6, %client] = Grenade; 
-		$spawnBuyList[7, %client] = Grenade; 
-		$spawnBuyList[8, %client] = Grenade;
-		$spawnBuyList[9, %client] = Beacon;
-		$spawnBuyList[10, %client] = Beacon;
-		$spawnBuyList[11, %client] = Beacon;
-		$spawnBuyList[12, %client] = Beacon;
-		$spawnBuyList[13, %client] = TargetingLaser;
-		$spawnBuyList[14, %client] = RepairPack;
-		$spawnBuyList[15, %client] = "";
-		$fa_pack = "RepairPack";
-		$fa_armor = "Mercenary";
+		standardSpawnlist(%client);
 	}
 }

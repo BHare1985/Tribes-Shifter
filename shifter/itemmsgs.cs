@@ -261,7 +261,7 @@ function Volter::onUse(%player,%item)
 
 function GravGun::onUse(%player,%item)
 {
-   Weapon::onUse(%player,%item);
+	Weapon::onUse(%player,%item);
 	%client = GameBase::getOwnerClient(%player);
 	if (!%client.gravbolt || %client.gravbolt == 0)
 		bottomprint(%client, "<jc><f2>Using Grav Gun - Tractor Setting", 2);
