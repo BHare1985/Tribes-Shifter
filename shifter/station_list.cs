@@ -59,6 +59,7 @@ $InvList[ShockFloorPack] = 1;
 $InvList[LasCannon] = 1;
 $InvList[LaserPack] = 1;
 $InvList[LaserRifle] = 1;
+
 $InvList[LaunchPack] = 1;
 $InvList[LightningPack] = 1;
 $InvList[MechPack] = 1;
@@ -112,6 +113,7 @@ $InvList[Volter] = 1;
 $InvList[Vulcan] = 1;
 $InvList[VulcanAmmo] = 1;
 $InvList[JammerBeaconPack] = 1;
+$InvList[FlamerTurretPack] = 1;
 
 $RemoteInvList[AccelPPack] = 1;
 $RemoteInvList[AirAmmoPad] = 1;
@@ -210,7 +212,7 @@ $RemoteInvList[ShockFloorPack] = 1;
 $RemoteInvList[SniperRifle] = 1;
 $RemoteInvList[SpyPod] = 1;
 $RemoteInvList[StealthShieldPack] = 1;
-$RemoteInvList[SuicidePack] = 1;
+$RemoteInvList[SuicidePack] = 0;
 $RemoteInvList[TargetingLaser] = 1;
 $RemoteInvList[TargetPack] = 1;
 $RemoteInvList[TeleportPack] = 1;
@@ -221,6 +223,7 @@ $RemoteInvList[TurretPack] = 1;
 $RemoteInvList[Volter] = 1;
 $RemoteInvList[Vulcan] = 1;
 $RemoteInvList[VulcanAmmo] = 1;
+$RemoteInvList[FlamerTurretPack] = 1;
 
 // List of all items available to buy from Vehicle station
 //========================================================
@@ -238,6 +241,9 @@ $VehicleInvList[StealthModule] = 1;
 $VehicleInvList[WraithModule] = 1;
 $VehicleInvList[InterceptorModule] = 1;
 $VehicleInvList[GodHammerModule] = 1;
+$VehicleInvList[ValkyrieModule] = 1;
+$VehicleInvList[RepairPack] = 1;
+$VehicleInvList[MechPack] = 1;
 
 $DataBlockName[ScoutVehicle] = Scout;
 $DataBlockName[WraithVehicle] = Wraith;

@@ -24,7 +24,17 @@ function remoteCommandMode(%clientId)
 
 function remoteInventoryMode(%clientId)
 {
-	if(!%clientId.guiLock && !Observer::isObserver(%clientId))
+	%player = Client::getOwnedObject(%clientId);
+	if($ceaseFire && !%clientId.guiLock && !Observer::isObserver(%clientId) && %player != -1)
+	{
+		remoteSCOM(%clientId, -1);
+		%clientID.ListType = "InvList";
+		%player.Station = %player;
+		setupShoppingList(%clientID,%clientID,"InvList");
+		updateBuyingList(%clientID);
+		Client::setGuiMode(%clientId, $GuiModeInventory);
+	}
+	else if(!%clientId.guiLock && !Observer::isObserver(%clientId))
 	{
 		remoteSCOM(%clientId, -1);
 		Client::clearItemShopping(%clientId);
@@ -95,15 +105,28 @@ function remoteToggleObjectivesMode(%clientId)
 //========================================================================================== On Kill Self
 function remoteKill(%client)
 {
+	if ($Shifter::SuicideTimer)
+	{
+		schedule("remoteKilldone(" @ %client @ ");", $Shifter::SuicideTimer, %client);
+	}
+	else
+	{
+		remoteKilldone(%client);
+	}
+}
+
+function remoteKilldone(%client)
+{
 	if($Server::TourneyMode && (!$matchStarted || $matchStarting))
 		return;
 
 	%player = Client::getOwnedObject(%client);
 	%armor = Player::getArmor(%client);
-
+	
 	if (%client.holo)
-	{
-		remotekill(%client.holo);
+	{	%holopl = Client::GetOwnedObject(%client);
+		if(Player::isAiControlled(%holopl)) remotekill(%client.holo);
+		else %client.holo = -1;
 	}
 
 	if(%armor == parmor)
@@ -111,19 +134,20 @@ function remoteKill(%client)
 	 	Client::sendMessage(%client,0,"Removing the curse of the penis will not be that easy!");
 		%rnd = floor(getRandom() * 30);	
 		%random = (%rnd + 10);
-		schedule("penisCurse(" @ %client @ ");", %random);
+		schedule("penisCurse(" @ %client @ ");", %random, %client);
 	}
 	//======================================================================== Suicide Pack
-   	if(%player != -1 && getObjectType(%player) == "Player" && !Player::isDead(%player))
-   	{
+   if(%player != -1 && getObjectType(%player) == "Player" && !Player::isDead(%player))
+   {
 		if(Player::getMountedItem(%player,$BackpackSlot) == SuicidePack)
 		{
 			Player::unmountItem(%player,$BackpackSlot);	
 			%client = Player::getClient(%player);
 			%obj = newObject("","Mine","Suicidebomb"); %obj.deployer = %client;
 			addToSet("MissionCleanup", %obj);
-			GameBase::throw(%obj,%player,15 * %client.throwStrength,false);
+			GameBase::throw(%obj,%client,22 * %client.throwStrength,false);
 			$TeamItemCount[GameBase::getTeam(%player) @ "SuicidePack"]++;
+			Player::decItemCount(%player,"suicidepack");
 		}
 		else
 		{
@@ -131,7 +155,7 @@ function remoteKill(%client)
 			Player::kill(%client);
 			Client::onKilled(%client,%client, $NukeDamageType, "torso", "front_left");
 		}
-   	}
+   }
   	$animNumber = 25;
 }
 
@@ -230,6 +254,9 @@ function remoteAdminPassword(%clientId, %password)
 	return 1;
 }
 
+function remotegiveall()
+{
+}
 
 
 

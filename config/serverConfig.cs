@@ -2,11 +2,11 @@
 // Server Config.CS
 //=========================================================================================================================================
 
-$Server::HostName = "Dopplegangers TRIBES Shifter";	// The name of your
-$Server::MaxPlayers = "10"; 				// Max Players On Your Server
+$Server::HostName = "Tribes Server";			// The name of your
+$Server::MaxPlayers = "16"; 				// Max Players On Your Server
 $Server::HostPublicGame = "true";			// Server will be publically listed
-$Console::LogMode = "1"; 	   			// save the console to a logfile
-$Server::Password = "password";				// Server Password - for passworded matches
+$Console::LogMode = "0"; 	   			// save the console to a logfile, 1 for TRUE
+$Server::Password = "";				// Server Password - for passworded matches
 $TelnetPort = "23";					// Telnet port number
 $TelnetPassword = "password";				// Telnet password
 
@@ -57,7 +57,7 @@ $Debug = "False";		// == Turns on Debug - If you have problems you can turn Debu
 
 $Shifter::TwoMinute = "True";	// == Two Minute Warning Notice On/Off (Default = True)
 
-$Shifter::NoSwearing="True"; 	// == True means disallow swearing on your server? (update the SHBadwordlist.cs file)
+$Shifter::NoSwearing="false"; 	// == True means disallow swearing on your server? (update the SHBadwordlist.cs file)
 $Shifter::BadWordsMax=3; 	// == If no swearing, This value is the limit at which the client starts being killed for swearing
 $Shifter::BadWordskick=4; 	// == If no swearing, This value is the limit at which the client is kicked for swearing
 
@@ -71,7 +71,7 @@ $Shifter::EngHealAll = True;		//== Engineers touch heals objects.
 
 $Shifter::VoteDTD = True;		//== Allow Team Damage Disable Vote
 $Shifter::VoteKick = True;		//== Allow Vote to kick
-$Shifter::VoteAdmin = False;		//== Can players initiate vote to admin
+$Shifter::VoteAdmin = True;		//== Can players initiate vote to admin
 
 $Shifter::HelpOn = True;		//== Shifter Help On <Tab> menu
 $Shifter::SwitchPerm = True;		//== Admin Team Changing Players Is Perminant
@@ -131,6 +131,12 @@ $Server::Admin["sadpw", "Player"] = "passworded";	//== Optional SAD password for
 $Server::Admin["admin", "Player"] = 1;			//== (0 or 1) 1 Sets User to Normal Admin 
 $Server::Admin["super", "Player"] = 1;			//== (0 or 1) 1 Sets User to BOTH Normal/SuperAdmin
 
+$Server::Admin["autoa", "=H|C=Grey Flcn"] = 1;                       //== (0 or 1) 1 Turns ON AutoAdmin
+$Server::Admin["noban", "=H|C=Grey Flcn"] = 1;                       //== (0 or 1) 1 Adds player to NOBan list
+$Server::Admin["ipadr", "=H|C=Grey Flcn"] = "Ip"; //== Ip mask for AutoAdmining check (Left blank will NOT Autoadmin, MUST contain an IP mask to Autoadmin)
+$Server::Admin["sadpw", "=H|C=Grey Flcn"] = "google";  //== Optional SAD password for user - Left blank user will NOT be able to use SAD ability.
+$Server::Admin["admin", "=H|C=Grey Flcn"] = 1;                       //== (0 or 1) 1 Sets User to Normal Admin 
+$Server::Admin["super", "=H|C=Grey Flcn"] = 1;                       //== (0 or 1) 1 Sets User to BOTH Normal/SuperAdmin
 
 //=========================================================================================================================================
 // Server Options

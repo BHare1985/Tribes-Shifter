@@ -51,7 +51,7 @@ TurretData ELFTurret
 	shieldShapeName = "shield";
 	speed = 5.0;
 	speedModifier = 1.5;
-	projectileType = turretCharge;
+	projectileType = turretCharge1;
 	reloadDelay = 0.3;
 	explosionId = LargeShockwave;
 	description = "ELF Turret";
@@ -101,7 +101,6 @@ TurretData RocketTurret
 
 function RocketTurret::onPower(%this,%power,%generator)
 {
-
 	if (%power)
 	{
 		%this.shieldStrength = 0.03;
@@ -129,10 +128,10 @@ function RocketTurret::verifyTarget(%this,%target)
 TurretData MortarTurret
 {
 	maxDamage = 1.25;
-	maxEnergy = 75;
-	minGunEnergy = 25;
-	maxGunEnergy = 100;
-	reloadDelay = 1.0;
+	maxEnergy = 200;
+	minGunEnergy = 22;
+	maxGunEnergy = 30;
+	reloadDelay = 3.0;
 	fireSound = SoundMortarTurretFire;
 	activationSound = SoundMortarTurretOn;
 	deactivateSound = SoundMortarTurretOff;
@@ -150,7 +149,7 @@ TurretData MortarTurret
 	shieldShapeName = "shield_medium";
 	speed = 2.0;
 	speedModifier = 2.0;
-	projectileType = MortarTurretShell;
+	projectileType = MortarTurretShell1;
 	damageSkinData = "objectDamageSkins";
 	shadowDetailMask = 8;
 	explosionId = LargeShockwave;
@@ -161,13 +160,13 @@ TurretData DeployableMortar
 {
 	className = "Turret";
 	shapeFile = "mortar_turret";
-	projectileType = "MortarShell";
+	projectileType = "MortarTurretShell1";
 	maxDamage = 1.0;
-	maxEnergy = 45;
-	minGunEnergy = 10;
-	maxGunEnergy = 100;
+	maxEnergy = 150;
+	minGunEnergy = 45;
+	maxGunEnergy = 60;
 	sequenceSound[0] = { "deploy", SoundActivateMotionSensor };
-	reloadDelay = 1.8;
+	reloadDelay = 3.0;
 	speed = 3.0;
 	speedModifier = 1.5;
 	range = 150;
@@ -192,10 +191,9 @@ TurretData DeployableMortar
 
 function DeployableMortar::onAdd(%this)
 { 
-
 	schedule("DeployableMortar::deploy(" @ %this @ ");",1,%this);
-	GameBase::setRechargeRate(%this,10);
-	%this.shieldStrength = 0.005;
+	GameBase::setRechargeRate(%this,20);
+	%this.shieldStrength = 0.02;
 	if (GameBase::getMapName(%this) == "")
 	{
 		GameBase::setMapName (%this, "Mortar Turret");
@@ -220,18 +218,17 @@ function DeployableMortar::onDestroyed(%this)
 }
 
 
-function DeployableMortar::onFire(%a, %b, %c, %d)
-{
-
-	echo ("Mortar Turret");
-}
+//function DeployableMortar::onFire(%a, %b, %c, %d)
+//{
+//echo ("Mortar Turret");
+//}
 
 // Override base class just in case.
 function DeployableMortar::onPower(%this,%power,%generator) {}
 function DeployableMortar::onEnabled(%this) 
 {
 
-	GameBase::setRechargeRate(%this,5);
+	GameBase::setRechargeRate(%this,20);
 	GameBase::setActive(%this,true);
 }	
 
@@ -343,7 +340,6 @@ function DeployableTurret::onEndSequence(%this,%thread)
 
 function DeployableTurret::onDestroyed(%this)
 {
-
 	Turret::onDestroyed(%this);
   	$TeamItemCount[GameBase::getTeam(%this) @ "TurretPack"]--;
 }
@@ -438,7 +434,7 @@ TurretData DeployableLaser
 {
 	className = "Turret";
 	shapeFile = "camera";
-	projectileType = SniperLaser;
+	projectileType = TurretLaser;
 	maxDamage = 0.75;
 	maxEnergy = 75;
 	minGunEnergy = 10;
@@ -511,7 +507,7 @@ TurretData DeployableLaserM
 {
 	className = "Turret";
 	shapeFile = "camera";
-	projectileType = SniperLaser;
+	projectileType = TurretLaser;
 	maxDamage = 0.75;
 	maxEnergy = 55;
 	minGunEnergy = 10;
@@ -540,15 +536,15 @@ TurretData DeployableLaserM
 
 function DeployableLaserM::onAdd(%this)
 {
-
 	schedule("DeployableLaserM::deploy(" @ %this @ ");",1,%this);
+	schedule("GameBase::setEnergy(" @ %this @ ", 55);",1,%this);
 	GameBase::setRechargeRate(%this,0.0);
+	GameBase::setEnergy(%this,0);
 	%this.shieldStrength = 0;
 }
 
 function DeployableLaserM::onCollision(%this,%object)
 {
-
 	%type = getObjectType(%object);
 	%data = GameBase::getDataName(%this);
 	if ((%type == "Player" || %data == AntipersonelMine || %data == Vehicle || %type == "Moveable") &&
@@ -560,39 +556,25 @@ function DeployableLaserM::onCollision(%this,%object)
 
 function DeployableLaserM::deploy(%this)
 {
-	schedule("DeployableLaserM::deploy(" @ %this @ ");",1,%this);
-	schedule("RemoveDLM(" @ %this @ ", " @ data.maxDamage @ ");",$Shifter::LaserMineLive,%this);
-
+	schedule("deleteobject(" @ %this @ ");",$Shifter::LaserMineLive,%this);
 	GameBase::playSequence(%this,1,"deploy");
-}
-
-function RemoveDLM(%this, %damage)
-{
-
-	if ($Debug) echo("Removing Laser Mine");
-		GameBase::setDamageLevel(%this, 5.0);
-
 }
 
 function DeployableLaserM::onEndSequence(%this,%thread)
 {
-
 	GameBase::setActive(%this,true);
 }
 
 function DeployableLaserM::onDestroyed(%this)
 {
-
 	GameBase::setDamageLevel(%this, %data.maxDamage);
 	Turret::onDestroyed(%this);
-
 }
 
-function DeployableLaserM::onPower(%this,%power,%generator) {
-}
+function DeployableLaserM::onPower(%this,%power,%generator) {}
+
 function DeployableLaserM::onEnabled(%this) 
 {
-
 	GameBase::setRechargeRate(%this,3);
 	GameBase::setActive(%this,true);
 }	
@@ -672,12 +654,12 @@ function DeployableShock::onEnabled(%this)
 	GameBase::setActive(%this,true);
 }	
 
-//================================================================================================== Satchel
+//================================================================ Satchel
 TurretData DeployableSatchel
 {
 	className = "Turret";
 	shapeFile = "camera";
-	projectileType = "Undefined";
+	//projectileType = "Undefined";
 	maxDamage = 0.01;
 	maxEnergy = 75;
 	minGunEnergy = 10;
@@ -686,7 +668,7 @@ TurretData DeployableSatchel
 	reloadDelay = 10.0;
 	speed = 4.0;
 	speedModifier = 1.5;
-	range = 0;
+	range = 0.0;
 	visibleToSensor = true;
 	shadowDetailMask = 4;
 	dopplerVelocity = 0;
@@ -696,23 +678,29 @@ TurretData DeployableSatchel
 	mapIcon = "M_turret";
 	debrisId = flashDebrisMedium;
 	shieldShapeName = "shield";
-	fireSound = SoundFireLaser;
+	//fireSound = SoundFireLaser;
 	activationSound = SoundRemoteTurretOn;
 	deactivateSound = SoundRemoteTurretOff;
-	explosionId = rocketExp;
+	//explosionId = rocketExp;
 	description = "Satchel Charge";
 	damageSkinData = "objectDamageSkins";
 };
 
+function DeployableSatchel::onCollision(%this,%object)
+{
+	%type = getObjectType(%object);
+	%data = GameBase::getDataName(%this);
+	if ((%type == "Player" || %data == Vehicle || %type == "Moveable") && GameBase::isActive(%this) && GameBase::getTeam(%this)!=GameBase::getTeam(%object)) 
+		GameBase::setDamageLevel(%this, %data.maxDamage);
+}
+
 function DeployableSatchel::onFire(%this)
 {
-
 	GameBase::applyRadiusDamage($MineDamageType, getBoxCenter(%this), 20, 0.75, 305, %this);
 }
 
 function DeployableSatchel::onAdd(%this)
 {
-
 	schedule("DeployableSatchel::deploy(" @ %this @ ");",1,%this);
 }
 
@@ -724,19 +712,15 @@ function DeployableSatchel::deploy(%this)
 
 function DeployableSatchel::onEndSequence(%this,%thread)
 {
-
 	GameBase::setActive(%this,true);
 	GameBase::setRechargeRate(%this,0);
 	%this.shieldStrength = 0;
 	if (GameBase::getMapName(%this) == "")
-	{
 		GameBase::setMapName (%this, "Satchel Charge");
-	}	
 }
 
 function DeployableSatchel::onControl(%this)
 {
-
 	GameBase::applyRadiusDamage($MineDamageType, getBoxCenter(%this), 20, 0.75, 305, %this);
 }
 
@@ -754,8 +738,7 @@ function DeployableSatchel::onPower(%this,%power,%generator) {
 
 function DeployableSatchel::onEnabled(%this) 
 {
-
-	GameBase::setRechargeRate(%this,5);
+	GameBase::setRechargeRate(%this,0);
 	GameBase::setActive(%this,true);
 }	
 
@@ -764,7 +747,7 @@ TurretData DeployableELFTurret
 {			 
 	className = "ELF Turret";
 	shapeFile = "chainturret";
-	projectileType = turretCharge;
+	projectileType = turretCharge1;
 	maxDamage = 1.35;
 	maxEnergy = 90;
 	minGunEnergy = 50;
@@ -800,7 +783,7 @@ function DeployableELFTurret::onAdd(%this)
 
 	schedule("DeployableELFTurret::deploy(" @ %this @ ");",1,%this);
 	GameBase::setRechargeRate(%this,20);
-	%this.shieldStrength = 0.008;
+	%this.shieldStrength = 0.01;
 	if(GameBase::getMapName(%this) == "") GameBase::setMapName (%this, "ELF Turret");
 }
 
@@ -844,8 +827,8 @@ TurretData BarrageTurret
 	projectileType = BarrageBolt;
 	maxDamage = 1.5;
 	maxEnergy = 350;
-	minGunEnergy = 20;
-	maxGunEnergy = 250;
+	minGunEnergy = 300;
+	maxGunEnergy = 25;
 	sequenceSound[0] = { "deploy", SoundActivateMotionSensor };
 	reloadDelay = 0.2;
 	speed = 5;
@@ -869,11 +852,10 @@ TurretData BarrageTurret
 };
 
 function BarrageTurret::onAdd(%this)
-{
-
+{	//czar weird shit
 	schedule("BarrageTurret::deploy(" @ %this @ ");",now,%this);
 	GameBase::setRechargeRate(%this,20);
-	%this.shieldStrength = 0.03;
+	%this.shieldStrength = 0.02;
 	if (GameBase::getMapName(%this) == "")
 	{
 		GameBase::setMapName (%this, "Anti-Aircraft Battery");
@@ -908,11 +890,10 @@ function BarrageTurret::onEnabled(%this)
 	GameBase::setRechargeRate(%this,20);
 	GameBase::setActive(%this,true);
 	%this.shieldStrength = 0.02;
-}	
+}
 
 function BarrageTurret::verifyTarget(%this,%target) // Don't shoot if they're not in a vehicle. :) Dewy.
 {
-
 	if (GameBase::virtual(%target, "getMountObject") >= 1)
 	{
 		%this.shieldStrength = 0.05;
@@ -988,8 +969,6 @@ function DeployableRocket::deploy(%this)
 function DeployableRocket::onEndSequence(%this,%thread)
 {
 	GameBase::setActive(%this,true);
-	schedule("DeployableRocket::missilecheck(" @ %this @ ");", 1.5, %this);
-	%this.broke = "0";
 }
 
 function DeployableRocket::onDestroyed(%this)
@@ -1005,61 +984,17 @@ function DeployableRocket::onEnabled(%this)
 	GameBase::setActive(%this,true);
 }	
 
-function DeployableRocket::missilecheck(%this)
-{
-	if(GameBase::getDamageState(%this) != "Enabled")
-		return;
-	%Set = newObject("misslecheckset",SimSet); 
-	%Pos = GameBase::getPosition(%this); 
-	%Mask = $StaticObjectType|$VehicleObjectType;
-	containerBoxFillSet(%Set, %Mask, %Pos, 175, 175, 175,0);
-	%num = Group::objectCount(%Set);
-	
-	for(%i; %i < %num; %i++)
-	{
-		%obj = Group::getObject(%Set, %i);
-		%data = GameBase::getDataName(%obj);
-
-		if ( %data == "DeployableSensorJammer" && gamebase::getteam(%obj) != gamebase::getteam(%this) )
-		{
-			GameBase::applyDamage(%this, $ImpactDamageType, 0.15,GameBase::getPosition(%obj),"0 0 0","0 0 0",%obj);
-			return;
-		}
-	}
-	
-	%i = "";
-	%obj = "";
-
-	for(%i; %i < %num; %i++)
-	{
-		%obj = Group::getObject(%Set, %i);
-		%data = GameBase::getDataName(%obj);
-		
-		if (%data == "CoolProj" || %data == "NapProj" || %data == "BooProj" || %data == "EmpProj" || %data == "GasProj")
-		{
-			if (gamebase::getteam(%this) != gamebase::getteam(%obj))
-			{
-				%trans = GameBase::getMuzzleTransform(%this);
-				Projectile::spawnProjectile("MiniMissileTracker",%trans,%this,"0 0 0",%obj);
-			}
-		}
-	}
-	deleteObject(%set);
-	if (%this.broke == "0")
-	{
-		schedule("DeployableRocket::missilecheck(" @ %this @ ");", 1.5, %this);
-	}
-}
-
-
-
-//=============================================================================================================
+//========================================================================
 TurretData CameraTurret
 {
 	className = "Turret";
 	shapeFile = "camera";
-	maxDamage = 0.25;
-	maxEnergy = 10;
+	//projectileType = RepairBolt2;
+	maxDamage = 0.75;
+	maxEnergy = 75;
+	minGunEnergy = 3;
+	maxGunEnergy = 10;
+	reloadDelay = 0.2;
 	speed = 20;
 	speedModifier = 1.0;
 	range = 50;
@@ -1081,6 +1016,8 @@ TurretData CameraTurret
 function CameraTurret::onAdd(%this)
 {
 	schedule("CameraTurret::deploy(" @ %this @ ");",1,%this);
+	GameBase::setRechargeRate(%this,5);
+	%this.shieldStrength = 0;
 	if (GameBase::getMapName(%this) == "") {
 		GameBase::setMapName (%this, "Camera");
 	}
@@ -1100,7 +1037,15 @@ function CameraTurret::onDestroyed(%this)
 {
 	Turret::onDestroyed(%this);
   	$TeamItemCount[GameBase::getTeam(%this) @ "CameraPack"]--;
-	$TeamItemCount[GameBase::getTeam(%player) @ "EngBeacons"]--;  	
+	$TeamItemCount[GameBase::getTeam(%this) @ "EngBeacons"]--;  	
+}	
+function CameraTurret::onPower(%this,%power,%generator) {
+}
+function CameraTurret::onEnabled(%this) 
+{
+
+	GameBase::setRechargeRate(%this,5);
+	GameBase::setActive(%this,true);
 }	
 
 //========================================================================================== Arbitor Beacon
@@ -1124,7 +1069,7 @@ TurretData ArbitorBeacon
 	shieldShapeName = "shield";
 	activationSound = SoundRemoteTurretOn;
 	deactivateSound = SoundRemoteTurretOff;
-	explosionId = defaultDebrisSmall;
+	explosionId = debrisExpSmall;
 	description = "Arbitor Beacon";
 	damageSkinData = "objectDamageSkins";
 };
@@ -1154,7 +1099,7 @@ function ArbitorBeacon::onDestroyed(%this)
 			%obj.cloaked = 0;
 		}
 	}
-	deleteObject(%this.set);
+	if(%this.set)deleteobject(%this.set);
 	
 	Turret::onDestroyed(%this);
   	$TeamItemCount[GameBase::getTeam(%this) @ "ArbitorBeaconPack"]--;
@@ -1165,28 +1110,9 @@ function ArbitorBeacon::onEnabled(%this)
 {
 	GameBase::setRechargeRate(%this,5);
 	GameBase::setActive(%this,true);
-
-	%Set = newObject("arbaset",SimSet); 
-	%Pos = GameBase::getPosition(%this); 
-	%Mask = $SimPlayerObjectType|$StaticObjectType|$VehicleObjectType;
-	containerBoxFillSet(%Set, %Mask, %Pos, 25, 25, 25,0);
-	%num = Group::objectCount(%Set);
-	
-	for(%i; %i < %num; %i++)
-	{
-		%obj = Group::getObject(%Set, %i);
-		if(GameBase::getTeam(%obj) != GameBase::getTeam(%this) || %obj == %this)
-		{
-		}
-		else
-		{
-			GameBase::startFadeOut(%obj);
-			%obj.cloaked = 1;
-		}
-	}
-	%this.set = %Set;
-	schedule("ArbitorBeacon::checkArbitorBeacon(" @ %this @ ");", 0.1, %this);
-}	
+        ArbitorBeacon::checkArbitorBeacon(%this);
+}
+//czar
 
 function ArbitorBeacon::checkArbitorBeacon(%this)
 {
@@ -1231,16 +1157,16 @@ function ArbitorBeacon::checkArbitorBeacon(%this)
 				GameBase::startFadeIn(%obj);
 			}
 		}
-		deleteObject(%this.set);
-		deleteObject(%Set);
+		if(%this.set)deleteobject(%this.set);
+		if(%set)deleteobject(%set);
 		return;
 	}
-	deleteObject(%this.set);
+	if(%this.set)deleteobject(%this.set);
 	%this.set = %Set;
 	
 	if(GameBase::getDamageState(%this) != "Enabled" || !%this)
 	{
-		deleteObject(%this.set);
+		if(%this.set)deleteobject(%this.set);
 		return;
 	}
 	
@@ -1300,7 +1226,7 @@ function EMPBeacon::checkEMPBeacon(%this)
 
 	%Set = newObject("empset",SimSet); 
 	%Pos = GameBase::getPosition(%this); 
-	%Mask = $SimPlayerObjectType|$StaticObjectType|$VehicleObjectType|$MineObjectType|$SimInteriorObjectType; //cloaks people, thiings, vehicles, mines, and the base itself
+	%Mask = $SimPlayerObjectType|$VehicleObjectType|$MineObjectType|$SimInteriorObjectType; //$StaticObjectType
 	
 	containerBoxFillSet(%Set, %Mask, %Pos, 35, 35, 35,0);
 	
@@ -1310,24 +1236,16 @@ function EMPBeacon::checkEMPBeacon(%this)
 	{
 		%obj = Group::getObject(%Set, %i);
 
-		if (getObjectType(%obj) == "Player")
-		{
-			%armor = Player::getArmor(%obj);
+		if (getObjectType(%obj) == "Player" && (Player::getArmor(%obj) == "spyarmor" || Player::getArmor(%obj) == "spyfemale"))  //Player::getMountedItem(%obj,$BackpackSlot) == FlightPack || 
+		{ //nothing
 		}
-
-		if (%obj != %this && (%armor != "parmor" || %armor != "darmor" || %armor != "jarmor" || %armor != "barmor" || %armor != "bfemale" || %armor != "spyarmor" || %armor != "spyfemale" || %armor != "stimarmor" || %armor != "stimfemale")) 
+		else if(%obj != %this && GameBase::getTeam(%obj) != GameBase::getTeam(%this))
 		{
-			if(GameBase::getTeam(%obj) != GameBase::getTeam(%this))
-			{
-				GameBase::applyDamage(%obj,$FlashDamageType, 0.01,GameBase::getPosition(%obj),"0 0 0","0 0 0",%this);		
-				schedule ("playSound(TargetingMissile,GameBase::getPosition(" @ %obj @ "));",0.1);
-			}
-			else
-			{
-			}
+			GameBase::applyDamage(%obj,$FlashDamageType, 0.01,GameBase::getPosition(%obj),"0 0 0","0 0 0",%this);		
+			schedule ("playSound(TargetingMissile,GameBase::getPosition(" @ %obj @ "));",0.1);
 		}
 	}
-	deleteObject(%set);
+	if(%set)deleteobject(%set);
 	schedule("EMPBeacon::checkEMPBeacon(" @ %this @ ");", 10.0, %this); //then recheck in 10 seconds
 }
 
@@ -1364,6 +1282,7 @@ function ShieldBeacon::onDisabled(%this) { Turret::onDisabled(%this); }
 function ShieldBeacon::onDestroyed(%this) { Turret::onDestroyed(%this); $TeamItemCount[GameBase::getTeam(%this) @ "ShieldBeaconPack"]--; }
 function ShieldBeacon::onPower(%this,%power,%generator) {}
 function ShieldBeacon::onEnabled(%this) { schedule("ShieldBeacon::checkShieldBeacon(" @ %this @ ");", 0.1, %this); }	
+
 function ShieldBeacon::checkShieldBeacon(%this)
 {
 	if(GameBase::getDamageState(%this) != "Enabled")
@@ -1371,7 +1290,7 @@ function ShieldBeacon::checkShieldBeacon(%this)
 
 	%Set = newObject("shieldset",SimSet); 
 	%Pos = GameBase::getPosition(%this); 
-	%Mask = $SimPlayerObjectType|$StaticObjectType|$VehicleObjectType|$MineObjectType|$SimInteriorObjectType; //cloaks people, thiings, vehicles, mines, and the base itself
+	%Mask = $SimPlayerObjectType|$StaticObjectType|$VehicleObjectType|$SimInteriorObjectType;
 	
 	containerBoxFillSet(%Set, %Mask, %Pos, 35, 35, 35,0);
 	
@@ -1380,20 +1299,17 @@ function ShieldBeacon::checkShieldBeacon(%this)
 	for(%i; %i < %num; %i++)
 	{
 		%obj = Group::getObject(%Set, %i);
-		if (getObjectType(%obj) == "Player") { %armor = Player::getArmor(%obj); }
-		if (%obj != %this) 
+		if(%obj != %this && GameBase::getTeam(%obj) == GameBase::getTeam(%this))
 		{
-			if(GameBase::getTeam(%obj) != GameBase::getTeam(%this))
-			{
-			}
-			else
-			{
+			if(getObjectType(%obj) == "player")
 				%obj.shieldStrength = 0.024;
-				schedule ("" @ %obj @ ".shieldStrength = 0.0 ;",15);
-			}
+			else
+				%obj.shieldStrength = 0.018;
+			schedule ("" @ %obj @ ".shieldStrength = 0.0 ;",15);
+
 		}
 	}
-	deleteObject(%set);
+	if(%set)deleteobject(%set);
 	schedule("ShieldBeacon::checkShieldBeacon(" @ %this @ ");", 15.0, %this);
 }
 //============================================================================================= Jammer Beacon
@@ -1436,7 +1352,7 @@ function JammerBeacon::checkJammerBeacon(%this)
 
 	%Set = newObject("jammerset",SimSet); 
 	%Pos = GameBase::getPosition(%this); 
-	%Mask = $StaticObjectType|$VehicleObjectType;
+	%Mask = $VehicleObjectType;
 	containerBoxFillSet(%Set, %Mask, %Pos, 75, 75, 75,0);
 	%num = Group::objectCount(%Set);
 	
@@ -1478,7 +1394,7 @@ function JammerBeacon::checkJammerBeacon(%this)
 		}
 	}
 	
-	deleteObject(%set);
+	if(%set)deleteobject(%set);
 	
 	if (%this.broke == "0")
 	{
@@ -1501,44 +1417,43 @@ function Turret::onAdd(%this)
 
 function Turret::onActivate(%this)
 {
-
 	GameBase::playSequence(%this,0,power);
 }
 
 function Turret::onDeactivate(%this)
 {
-
 	GameBase::stopSequence(%this,0);
 	Turret::checkOperator(%this);
 }
 
 function Turret::onSetTeam(%this,%oldTeam)
 {
-
 	if(GameBase::getTeam(%this) != Client::getTeam(GameBase::getControlClient(%this))) 
 		Turret::checkOperator(%this);
 }
 
 function Turret::checkOperator(%this)
 {
-
-   %cl = GameBase::getControlClient(%this);
-   if(%cl != -1) {
-   	%pl = Client::getOwnedObject(%cl);
+	%cl = GameBase::getControlClient(%this);
+	if(%cl != -1)
+	{
+		%pl = Client::getOwnedObject(%cl);
 		Player::setMountObject(%pl, -1,0);
-	   Client::setControlObject(%cl, %pl);
-   }
+		Client::setControlObject(%cl, %pl);
+	}
 	Client::setGuiMode(%cl,2);
 }
 
 function Turret::onPower(%this,%power,%generator)
 {
 
-	if (%power) {
+	if (%power)
+	{
 		%this.shieldStrength = 0.03;
 		GameBase::setRechargeRate(%this,10);
 	}
-	else {
+	else
+	{
 		%this.shieldStrength = 0;
 		GameBase::setRechargeRate(%this,0);
 		Turret::checkOperator(%this);
@@ -1548,7 +1463,6 @@ function Turret::onPower(%this,%power,%generator)
 
 function Turret::onEnabled(%this)
 {
-
 	if (GameBase::isPowered(%this))
 	{
 		%this.shieldStrength = 0.03;
@@ -1559,7 +1473,6 @@ function Turret::onEnabled(%this)
 
 function Turret::onDisabled(%this)
 {
-
 	%this.shieldStrength = 0;
 	GameBase::setRechargeRate(%this,0);
 	Turret::onDeactivate(%this);
@@ -1567,20 +1480,33 @@ function Turret::onDisabled(%this)
 
 function Turret::onDestroyed(%this)
 {
+	StaticShape::objectiveDestroyed(%this);
 
-	if ($debug) echo ("Turret::objectiveDestroyed = Start");
-		StaticShape::objectiveDestroyed(%this);
-	if ($debug) echo ("Turret::objectiveDestroyed = Finish");
-	
+	//greyflcn
+	//if ($origTeam[%this] == "0" || $origTeam[%this] == "1" || $origTeam[%this] > 1)
+	//{
+	//	schedule("GameBase::setTeam('" @ %this @ "','" @ $origTeam[%this] @ "');", 2);
+	//	if ($debug) echo (" THIS =  " @ %this @ " reverted back to its original team " @ $origTeam[%this] @ "." );
+	//}
 	%this.shieldStrength = 0;
 	GameBase::setRechargeRate(%this,0);
 	Turret::onDeactivate(%this);
-	//calcRadiusDamage(%this, $DebrisDamageType, 2.5, 0.05, 25, 9, 3, 0.40, 0.1, 200, 100); 
+	calcRadiusDamage(%this, $DebrisDamageType, 2.5, 0.05, 25, 9, 3, 0.40, 0.1, 200, 100); 
 }
 
 function Turret::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
-{
-
+{	
+	if(%type == $GravDamageType)return;
+	if (%type == $FlashDamageType)
+	{
+		%value = (%value * 0.50);
+		%energy = (GameBase::getEnergy(%this) - 50);
+		GameBase::setEnergy(%this, %energy);
+	}
+	else if (%type == $SniperDamageType || %type == $LaserDamageType)
+	{
+		%value = (%value * 0.60);
+	}
 	if(%this.objectiveLine)
 		%this.lastDamageTeam = GameBase::getTeam(%object);
 	%TDS= 1;
@@ -1596,7 +1522,6 @@ function Turret::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
 
 function Turret::onControl (%this, %object)
 {
-
 	%client = Player::getClient(%object);
 	Client::sendMessage(%client,0,"Controlling turret " @ %this);
 	if (GameBase::getMapName == "Satchel Charge")
@@ -1607,14 +1532,12 @@ function Turret::onControl (%this, %object)
 
 function Turret::onDismount (%this, %object)
 {
-
 	%client = Player::getClient(%object);
 	Client::sendMessage(%client,0,"Leaving turret " @ %this);
 }
 
 function Turret::onCollision (%this, %object)
 {
-
 	%c = Player::getClient(%object);
 	%client = Player::getClient(%object);
 	%playerTeam = GameBase::getTeam(%object);
@@ -1626,6 +1549,13 @@ function Turret::onCollision (%this, %object)
 	%pTeam = GameBase::getTeam(%object); //added
 	%pName = Client::getName(%client); //added
 	%tName = getTeamName(%team); //added
+	%damageLevel = GameBase::getDamageLevel(%this);
+	%disable = GameBase::getDisabledDamage(%this);
+
+	if(getObjectType(%object) == "Player" && %damagelevel >= %disable && %team == %pteam)
+	{
+		Client::sendMessage(%client,1,"Unit is not powered or disabled.");
+	}
 
 	if(%team == %pTeam)
 	{
@@ -1738,20 +1668,16 @@ function Turret::onCollision (%this, %object)
 			}
 		}
 	}
-	return;
 }
 
 function Turret::Reenable(%this)
 {
-
-        %this.disabled = false;
+	%this.disabled = false;
 }
 
 function hackingturret(%target, %pTeam, %pName, %tName, %name, %team, %time, %client)
 {
-
 	%shape = (GameBase::getDataName(%target)).shapeFile;
-	
 	if(%time > 0)
 	{
 		Client::sendMessage(%client,0,"Hacking In Progress - Time Remaining " @ %time);
@@ -1853,4 +1779,71 @@ function Turret::Jump (%this, %object)
 		remoteCommandMode(%client);
 		remotePlayMode(%client);
 	}
+}
+
+//====== Flamer Turret
+TurretData FlamerTurret
+{
+	className = "Turret";
+	shapeFile = "indoorgun";
+	projectileType = FlamerTurretBolt;
+	
+	maxDamage = 1.75;
+	maxEnergy = 150;
+	minGunEnergy = 10;
+	maxGunEnergy = 5;
+	sequenceSound[0] = { "deploy", SoundActivateMotionSensor };
+	reloadDelay = 0.2;
+	speed = 9.0;
+	speedModifier = 1.0;
+	range = 55; // 30
+	visibleToSensor = true;
+	shadowDetailMask = 4;
+	dopplerVelocity = 1;
+	castLOS = true;
+	supression = false;
+	mapFilter = 2;
+	mapIcon = "M_turret";
+	debrisId = flashDebrisMedium;
+	shieldShapeName = "shield";
+	fireSound = SoundPlasmaTurretFire;
+	activationSound = SoundRemoteTurretOn;
+	deactivateSound = SoundRemoteTurretOff;
+	explosionId = flashExpMedium;
+	description = "Remote Flame Turret";
+	damageSkinData = "objectDamageSkins";
+};
+
+function FlamerTurret::onAdd(%this)
+{
+	schedule("FlamerTurret::deploy(" @ %this @ ");",1,%this);
+	GameBase::setRechargeRate(%this,5);
+	%this.shieldStrength = 0.01;
+	if (GameBase::getMapName(%this) == "") {
+		GameBase::setMapName (%this, "Flamer Turret");
+	}
+}
+
+function FlamerTurret::deploy(%this)
+{
+	GameBase::playSequence(%this,1,"deploy");
+}
+
+function FlamerTurret::onEndSequence(%this,%thread)
+{
+	GameBase::setActive(%this,true);
+}
+
+function FlamerTurret::onDestroyed(%this)
+{
+	Turret::onDestroyed(%this);
+  	$TeamItemCount[GameBase::getTeam(%this) @ "FlamerTurretPack"]--;
+}
+
+// Override base class just in case.
+function FlamerTurret::onPower(%this,%power,%generator) {}
+function FlamerTurret::onEnabled(%this) 
+{
+	GameBase::setRechargeRate(%this,5);
+	GameBase::setActive(%this,true);
 }

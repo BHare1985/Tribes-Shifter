@@ -1,4 +1,3 @@
-//========================================================================================= Vehicle Stations
 StaticShapeData VehicleStation
 {
    	description = "Station Vehicle Unit";
@@ -8,7 +7,7 @@ StaticShapeData VehicleStation
 	sequenceSound[0] = { "activate", SoundActivateInventoryStation };
 	sequenceSound[1] = { "power", SoundInventoryStationPower };
 	sequenceSound[2] = { "use", SoundUseInventoryStation };
-	maxDamage = 1.0;
+	maxDamage = 0.5;
 	debrisId = flashDebrisLarge;
 	mapFilter = 4;
 	mapIcon = "M_station";
@@ -16,6 +15,8 @@ StaticShapeData VehicleStation
 	shadowDetailMask = 16;
 	triggerRadius = 1.5;
    	explosionId = flashExpLarge;
+	shieldShapeName = "shield";
+	maxEnergy=200;
 };
 
 function VehicleStation::onEndSequence(%this,%thread)
@@ -121,15 +122,19 @@ function VehicleStation::checkBuying(%client,%item)
 							%objInWay--;
 						}
 						else
+						{ if(%set)deleteObject(%set); }
 							return 2;
 					}
-					else {
+					else
+					{
 						Client::SendMessage(%client,0,"ERROR - Vehicle creation pad busy"); 
+						if(%set)deleteObject(%set);
 						return 0;
 					}
 				}
 				else { 
 					Client::SendMessage(%client,0,"ERROR - Vehicle in creation area is mounted");
+					if(%set)deleteObject(%set);
 					return 0;
 				}
 			} 
@@ -142,8 +147,7 @@ function VehicleStation::checkBuying(%client,%item)
 				Gamebase::setMapName(%vehicle,%item.description);
             			%vehicle.clLastMount = %client;
 				addToSet("MissionCleanup", %vehicle);
-			  	%vehicle.fading = 1;
-				GameBase::setTeam(%vehicle,Client::getTeam(%client));
+			  	GameBase::setTeam(%vehicle,Client::getTeam(%client));
 
 				%padd = "0 0 1";
 				%pos = Vector::add(%markerPos, %padd);
@@ -153,7 +157,6 @@ function VehicleStation::checkBuying(%client,%item)
 					schedule("GameBase::startFadeIn(" @ %vehicle @ ");",2.5,%vehicle);
 					schedule("GameBase::setPosition(" @ %vehicle @ ",\"" @ %pos @ "\");",2.5,%vehicle);
 					schedule("GameBase::setRotation(" @ %vehicle @ ",\"" @ GameBase::getRotation(%obj) @ "\");",2.5,%vehicle);
-					schedule(%vehicle @ ".fading = \"\"; VehiclePad::checkSeq(" @ %obj @ "," @ %player.Station @ ");",5,%vehicle);
 					%obj.busy = getSimTime() + 5;
 				}
 				else
@@ -161,42 +164,78 @@ function VehicleStation::checkBuying(%client,%item)
 					GameBase::startFadeIn(%vehicle);
 					GameBase::setPosition(%vehicle,%pos);
 					GameBase::setRotation(%vehicle,GameBase::getRotation(%obj));
-				 	schedule(%vehicle @ ".fading = \"\"; VehiclePad::checkSeq(" @ %obj @ "," @ %player.Station @ ");",3,%vehicle);
-					%obj.busy = getSimTime() + 3;
+				 	%obj.busy = getSimTime() + 3;
 				}
-				deleteObject(%set);
+				if(%set)deleteObject(%set);
 				$TeamItemCount[Client::getTeam(%client) @ %item]++;
 				return 1;
 			}
 		}
 		else
 			Client::SendMessage(%client,0,"ERROR - Object in vehicle creation area");
-		deleteObject(%set);
+			if(%set)deleteObject(%set);
 	}	
 	else
 		Client::SendMessage(%client,0,"ERROR - Vehicle Pad Disabled");
-
-	return 0;
+                return 0;
 }
 
 
+
+function VehicleStation::onEnabled(%this)
+{
+	if (GameBase::isPowered(%this)) {
+		%this.shieldStrength = 0.015;				  
+		GameBase::setRechargeRate(%this,15);
+		GameBase::setActive(%this,true);
+	}
+	Station::onEnabled(%this);
+}
+
+function VehicleStation::onDisabled(%this)
+{
+	%this.shieldStrength = 0;
+	GameBase::setRechargeRate(%this,0);
+	Station::onDisabled(%this);
+	GameBase::setActive(%this,false);
+}
+
+function VehicleStation::onPower(%this,%power,%generator)
+{
+	if (%power) {
+		%this.shieldStrength = 0.015;
+		GameBase::setRechargeRate(%this,15);
+	}
+	else {
+		%this.shieldStrength = 0;
+		GameBase::setRechargeRate(%this,0);
+	}
+	Station::onPower(%this,%power,%generator);
+}
+
+function VehicleStation::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
+{
+	StaticShape::shieldDamage(%this,%type,%value,%pos,%vec,%mom,%object);
+}
+
 StaticShapeData VehiclePad
 {
-   	description = "Vehicle Pad";
+   description = "Vehicle Pad";
 	shapeFile = "vehi_pur_poles";
 	className = "Station";
 	visibleToSensor = true;
 	sequenceSound[0] = { "activate", SoundActivateInventoryStation };
 	sequenceSound[1] = { "power", SoundInventoryStationPower };
 	sequenceSound[2] = { "use", SoundUseInventoryStation };
-	maxDamage = 1.0;
+	maxDamage = 0.5;
 	debrisId = flashDebrisLarge;
 	mapFilter = 4;
+	maxEnergy = 5000;
+   shieldShapeName = "shield_medium";
 	mapIcon = "M_station";
-  	explosionId = flashExpLarge;
+   explosionId = flashExpLarge;
 	damageSkinData = "objectDamageSkins";
 };
-
 
 
 function VehiclePad::onActivate(%this)
@@ -211,24 +250,60 @@ function VehiclePad::onDeactivate(%this)
 
 function VehiclePad::onEnabled(%this)
 {
+	if (GameBase::isPowered(%this)) {
+		%this.shieldStrength = 0.03;				  
+		GameBase::setRechargeRate(%this,10);
+		GameBase::setActive(%this,true);
+	}
+}
+
+function VehiclePad::onDisabled(%this)
+{
+	%this.shieldStrength = 0;
+	GameBase::setRechargeRate(%this,0);
+	Sensor::onDeactivate(%this);
+}
+
+function Sensor::onDestroyed(%this)
+{
+	%this.shieldStrength = 0;
+	GameBase::setRechargeRate(%this,0);
+   StaticShape::onDestroyed(%this);
 }
 
 function VehiclePad::onAdd(%this)
 {
 }
 
-function VehiclePad::onCollision(%this, %object)
-{
+function VehiclePad::onCollision(%this, %obj)
+{	%damageLevel = GameBase::getDamageLevel(%this);
+	%disable = GameBase::getDisabledDamage(%this);
+	if(getObjectType(%obj) == "Player" && %damagelevel >= %disable && GameBase::getTeam(%this) == GameBase::getTeam(%obj))
+	{	%client = Player::getClient(%obj);
+		Client::sendMessage(%client,1,"Unit is not powered or disabled.");
+	}
 }
 
 function VehiclePad::onPower(%this,%power,%generator)
 {
-	if(!%power)
-		GameBase::setActive(%this,false);
+	if (%power) {
+		%this.shieldStrength = 0.3;
+		GameBase::setRechargeRate(%this,10);
+	}
+	else {
+		%this.shieldStrength = 0;
+		GameBase::setRechargeRate(%this,0);
+	}
+	GameBase::setActive(%this,%power);
 }
 
 function VehiclePad::checkSeq(%this, %station)
 {
 	if(%station.target == "")
 		GameBase::setActive(%this,false);
+}
+
+function VehiclePad::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
+{
+	StaticShape::shieldDamage(%this,%type,%value,%pos,%vec,%mom,%object);
 }

@@ -606,7 +606,7 @@ function onConnectionError(%client, %manager, %errorString)
       Quickstart();
       GuiPushDialog(MainWindow, "gui\\MessageDialog.gui");
       $errorString = "Connection to server error:\n" @ %errorString;
-		schedule("Control::setValue(MessageDialogTextFormat, $errorString);", 0);
+		schedule("Control::setValue(MessageDialogTextFormat, $errorString);", 0.01);
    }
 }
 
@@ -638,7 +638,7 @@ function onConnection(%message)
 		Quickstart();
       $errorString = "Connection to server rejected:\n" @ $errorString;
       GuiPushDialog(MainWindow, "gui\\MessageDialog.gui");
-		schedule("Control::setValue(MessageDialogTextFormat, $errorString);", 0);
+		schedule("Control::setValue(MessageDialogTextFormat, $errorString);", 0.01);
    }
    else
    {
@@ -653,13 +653,13 @@ function onConnection(%message)
             $errorString = "Connection to server lost:\n" @ $errorString;
 
          GuiPushDialog(MainWindow, "gui\\MessageDialog.gui");
-		   schedule("Control::setValue(MessageDialogTextFormat, $errorString);", 0);
+		   schedule("Control::setValue(MessageDialogTextFormat, $errorString);", 0.01);
       }
       else if(%message == "TimedOut")
       {
          $errorString = "Connection to server timed out.";
          GuiPushDialog(MainWindow, "gui\\MessageDialog.gui");
-		   schedule("Control::setValue(MessageDialogTextFormat, $errorString);", 0);
+		   schedule("Control::setValue(MessageDialogTextFormat, $errorString);", 0.01);
       }
    }
 }
@@ -702,7 +702,7 @@ function setupRecorderFile(%fileName)
 
 function EnterLobbyMode()
 {
-   schedule("ELM();", 0);
+   schedule("ELM();", 0.01);
 }
 
 function ELM()

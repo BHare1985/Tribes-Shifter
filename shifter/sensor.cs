@@ -1,7 +1,4 @@
 //-------------------------------------------------------------------------- 
-//-------------------------------------------------------------------------- 
-
-//-------------------------------------------------------------------------- 
 // Default sensor methods
 
 function Sensor::onActivate(%this)
@@ -9,6 +6,15 @@ function Sensor::onActivate(%this)
 	if(GameBase::isPowered(%this))
 	{
 		GameBase::playSequence(%this,0,"power");
+	}
+}
+
+function Sensor::onCollision(%this,%obj)
+{	%damageLevel = GameBase::getDamageLevel(%this);
+	%disable = GameBase::getDisabledDamage(%this);
+	if(getObjectType(%obj) == "Player" && %damagelevel >= %disable && GameBase::getTeam(%this) == GameBase::getTeam(%obj))
+	{	%client = Player::getClient(%obj);
+		Client::sendMessage(%client,1,"Unit is not powered or disabled.");
 	}
 }
 
@@ -68,9 +74,17 @@ function Sensor::onDestroyed(%this)
 
 function Sensor::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
 {
-   if(%this.objectiveLine)
+	if(%this.objectiveLine)
 		%this.lastDamageTeam = GameBase::getTeam(%object);
 	%TDS= 1;
+
+	if (%type == $FlashDamageType)
+	{
+		%value = (%value * 0.75);
+		%energy = (GameBase::getEnergy(%this) - 100);
+		GameBase::setEnergy(%this, %energy);
+	}	
+
 	if(GameBase::getTeam(%this) == GameBase::getTeam(%object))
 	{
 		%name = GameBase::getDataName(%this);
@@ -172,8 +186,6 @@ SensorData DeployableMotionSensor
 	mapFilter = 4;
 	mapIcon = "M_motionSensor";
 	damageSkinData = "objectDamageSkins";
-	//validateShape = true;
-	//validateMaterials = true;
 };
 
 
@@ -193,8 +205,6 @@ SensorData DeployablePulseSensor
 	supression = false;
 	mapFilter = 4;
 	mapIcon = "M_Radar";
-	//validateShape = true;
-	//validateMaterials = true;
 };
 
 
@@ -207,17 +217,14 @@ SensorData DeployableSensorJammer
 	visibleToSensor = true;
 	sequenceSound[0] = { "deploy", SoundActivateMotionSensor };
 	damageLevel = {0.8, 1.0};
-	maxDamage = 0.5;
+	maxDamage = 1.0;
 	debrisId = defaultDebrisSmall;
-	range = 80;
+	range = 100;
 	castLOS = true;
 	supression = true;
 	mapFilter = 4;
 	mapIcon = "M_sensorJammer";
-	//validateShape = true;
-	//validateMaterials = true;
 };
-
 
 
 function DeployableSensor::onAdd(%this)

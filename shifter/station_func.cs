@@ -16,8 +16,8 @@ function Station::onActivate(%this)
 
 function Station::onDeactivate(%this)
 {
-	GameBase::stopSequence(%this,2);
-	GameBase::setSequenceDirection(%this,1,0);
+		GameBase::stopSequence(%this,2);
+		GameBase::setSequenceDirection(%this,1,0);
 }
 
 function Station::onEndSequence(%this,%thread)
@@ -89,7 +89,7 @@ function Station::onEndSequence(%this,%thread)
 
 function Station::onPower(%this,%power,%generator)
 {
-	if (%power)
+	if (%power || $ceaseFire)
 	{
 		GameBase::playSequence(%this,0,"power");
 		GameBase::playSequence(%this,1);
@@ -105,7 +105,7 @@ function Station::onPower(%this,%power,%generator)
 
 function Station::onEnabled(%this)
 {
-	if (GameBase::isPowered(%this))
+	if (GameBase::isPowered(%this) || $ceaseFire)
 	{		
 		GameBase::playSequence(%this,0,"power");
 		GameBase::playSequence(%this,1);
@@ -128,10 +128,13 @@ function Station::checkTarget(%this)
 
 function Station::onDisabled(%this)
 {
-	GameBase::stopSequence(%this,0);
-	GameBase::setSequenceDirection(%this,1,0);
-	GameBase::pauseSequence(%this,1);
-	GameBase::stopSequence(%this,2);
+	if(!$ceaseFire)
+	{
+		GameBase::stopSequence(%this,0);
+		GameBase::setSequenceDirection(%this,1,0);
+		GameBase::pauseSequence(%this,1);
+		GameBase::stopSequence(%this,2);
+	}
 	Station::checkTarget(%this);
 	Station::weaponCheck(%this);
 }
@@ -162,60 +165,49 @@ function Station::getTarget(%this)
 
 function Station::onCollision(%this, %object)
 {
-	%obj = getObjectType(%object);
-	if (%obj == "Player")
+	if (getObjectType(%object) == "Flier")
+	{	
+		%data = GameBase::getDataName(%object);
+		GameBase::setDamageLevel(%object, 10.0);
+		return;	
+	}
+	if (getObjectType(%object) != "Player" || Player::isAIControlled(%object) || Player::isDead(%object) || isPlayerBusy(%object))
+		return;
+
+	%client = Player::getClient(%object);
+	//========================================== Spy Can Use Any Invo
+	%armor = Player::getArmor(%object);
+	if(%armor == parmor) {Client::sendMessage(%client,1,"You won't rid yourself of the penis this easily...");return;}
+//greyflcn
+	if(GameBase::getTeam(%object) == GameBase::getTeam(%this) || GameBase::getTeam(%this) == -1 || ((%armor == "spyarmor" || %armor == "spyfemale") && %object.infected != "true") )
 	{
-		if (Player::isAIControlled(%obj))
-			return;
-		if (Player::isDead(%obj))
-			return;
-
-		if (%obj == "Player" && isPlayerBusy(%object) == 0)
+		if (GameBase::getDamageState(%this) == "Enabled" && (GameBase::isPowered(%this) || %this.poweron == "True"))
 		{
-			%client = Player::getClient(%object);
-			//========================================== Spy Can Use Any Invo
-			%armor = Player::getArmor(%object); // == Get Players Armour Type
-
-			if(GameBase::getTeam(%object) == GameBase::getTeam(%this) || GameBase::getTeam(%this) == -1 || (%armor == "spyarmor" || %armor == "spyfemale") )
+			if (!%this.isuse)
 			{
-				 if(%armor != parmor) //=== PArmor Can not use any station.
-				 {
-					if (GameBase::getDamageState(%this) == "Enabled")
-					{
-						if (GameBase::isPowered(%this) || %this.poweron == "True") 
-						{ 
-							if (!%this.isuse)
-							{
-								%this.inuse = %this.target;
-								if(%this.enterTime == "")
-									%this.enterTime = getSimTime();
-								GameBase::setActive(%this,true);
-							}
-							else
-								Client::sendMessage(%client,1,"Unit is in use... Please wait.");
-						}
-						else 
-							Client::sendMessage(%client,1,"Unit is not powered");
-					}
-					else 
-						Client::sendMessage(%client,1,"Unit is disabled");
-				 }
-				 else Client::sendMessage(%client,1,"You won't rid yourself of the penis this easily...");
+				%this.inuse = %this.target;
+				if(%this.enterTime == "")
+					%this.enterTime = getSimTime();
+				GameBase::setActive(%this,true);
 			}
-			else if(Station::getTarget(%this) == %object)
-			{
-				%curTime = getSimTime();
-				if(%curTime - %object.stationDeniedStamp > 3.5 && GameBase::getDamageState(%this) == "Enabled")
-				{
-					Client::clearItemShopping(%client);
-					Station::onDeactivate(%this);
-					Station::onEndSequence(%this,1);
-					if(Client::getGuiMode(%client) != 1)
-						Client::setGuiMode(%client,1);
-					%object.stationDeniedStamp = %curTime;
-					Client::sendMessage(%client,0,"--ACCESS DENIED-- Wrong Team ~waccess_denied.wav");
-				}
-			}
+			else
+				Client::sendMessage(%client,1,"Unit is in use... Please wait.");
+		}
+		else 
+			Client::sendMessage(%client,1,"Unit is not powered or disabled.");
+	}
+	else if(Station::getTarget(%this) == %object)
+	{
+		%curTime = getSimTime();
+		if(%curTime - %object.stationDeniedStamp > 3.5 && GameBase::getDamageState(%this) == "Enabled")
+		{
+			Client::clearItemShopping(%client);
+			Station::onDeactivate(%this);
+			Station::onEndSequence(%this,1);
+			if(Client::getGuiMode(%client) != 1)
+				Client::setGuiMode(%client,1);
+			%object.stationDeniedStamp = %curTime;
+			Client::sendMessage(%client,0,"--ACCESS DENIED-- Wrong Team ~waccess_denied.wav");
 		}
 	}
 }
@@ -225,6 +217,7 @@ function Station::weaponCheck(%this)
 	if(%this.lastPlayer != "")
 	{
 		%player = %this.lastPlayer;
+		%client = Player::getClient(%player);
 		%player.Station = "";
 		if(Player::getMountedItem(%player,$WeaponSlot) == -1)
 		{
@@ -234,6 +227,8 @@ function Station::weaponCheck(%this)
 				%player.lastWeapon = "";
 	  		}
 		}
+		else
+			selectValidWeapon(%client);
 	 	%this.lastPlayer = "";
   	}
 }

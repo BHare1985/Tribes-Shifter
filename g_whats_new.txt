@@ -1,0 +1,243 @@
+\*        GreyFlcn Updates begin here:         =\*=\*=\*=\*=\*=\*=\*=
+=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*
+What's New 10-10
+---------------------------------
+Redid the ceasefire mode code, clipped the help menu stuffs
+
+What's New 9-30
+---------------------------------
+Goliath targeting beacon
+Vehicle bug
+Elf bug
+Mine bug
+
+What's New 9-26
+---------------------------------
+Accel distance lowered
+$flamerTurret = "true"; Yup, they been removed.  Bye bye
+Cease Fire enabled when match mode is started, ends on map change
+HeatSeekers aim at target, but do not track
+PlasmaCannon back to 9-28 spec
+
+Whats's New 9-24
+---------------------------------
+LasCannon, one blastwalls worth of damage
+
+Whats's New 9-23
+---------------------------------
+Arbitor touch vs teammates = Anti-EMP
+Chem gets targeting beacons as a tab menu option
+One more tweak for mortars
+Targeting Beacons deploy on any surface
+EngBeacon Cameras deploy on any surface
+
+Whats's New 9-22
+---------------------------------
+Sloppy fix for broadside elevator
+Targeting for mortars (FINALLY)
+Laser mines take 1 second to activate
+
+Whats's New 9-19
+---------------------------------
+Laser mines take 1 more second to deploy
+Fixed some laser mine code buggies
+Flightpack, cloak, Senjam, RMTSenJam packs allow you to dodge non-stinger rockets
+MDM emp radius upped to 8 meters wide
+Eng beacon Camera fixed deployment
+A rather clean fix for that 6 blastfloor thing (deployable platforms included)
+(If you don't know what that is, you probably won't notice.  That good :P)
+No fake death animation in matchs (cheat issues)
+Sniper rifle shot angle specs 100% like 9-28 (inheritedVelocityScale was off)
+Laser rifle/Sniper rifle damage little low vs turrets (actually means sniper works better)
+Stimming while using laser rifle will cut your energy the ammount of a full laser rifle shot.  Can pull off stimfire before this
+Extra plasma ball added to center of multi plasma
+Serverconfig.cs things
+---------------------
+$noBFfix = "true"; //Turn off the "inside blasfloor" bugfix
+$shifter::oldschool = "true";   //To turn off juggy ski momentum
+$noTabChange ="true";   //To make it so the mod tab is not shifter_v1G
+
+Whats's New 9-12
+---------------------------------
+Fixed some buggies
+Merc magnum
+Chem no EMP beacon damage
+Station weapon return
+Voting shows up on chatbox
+ELF/Grav Team damage reduced to one point per 0.7 seconds
+(so instead of -100, more like -2)
+
+Whats's New 9-07
+---------------------------------
+No sniper rifle "lag"
+Teleport pack gun removed, cleaned
+Telefragging w/ telepack
+Assassin Ninja Stars & Shockcharges on TAB menu
+Ion gun (testing) less: range-reload-energy, more: damage
+Disc Launcer Options, regular-rapid
+
+Whats's New 8-30
+---------------------------------
+Fixed range w/ throwing stars
+If telebeacon is set, can press pack to activate
+
+Whats's New 8-29
+---------------------------------
+Ass beacon
+Ass mines/grens can be picked up as packs
+Arb beacon cures EMP
+Teleport Pack changed liked Warped mod
+LasCannon lowered (1.75 blastwalls)
+Base projectile damage of plasma cannnon raised
+1 sec. plastique added to TAB menu (Heh)
+remoteEval(2048,weapon_plastic_plasvar,1);
+
+Whats's New 8-20
+---------------------------------
+remoteeval(2048, weapon_gravgun_pull); fun fun
+goliath beacons go diff (faster, less timer)
+arb beacons cure EMP :P
+
+Whats's New 8-16
+---------------------------------
+Fixed a few errors in the code.  Very nasty one in the mission change
+toughened up chem
+4 las lasers cheat.
+
+Whats's New 8-12
+---------------------------------
+DusktoDawn 'fix' (no more client crashes, and mines replaced w/ nukes)
+rail/mag do headshot damage
+
+Whats's New 8-10
+---------------------------------
+sound lag
+sniping off things
+
+Whats's New 7-30
+---------------------------------
+Fixed MDM EMP, 4m range
+naplam/hellfire code fixed back
+Fixed new assassin beacons explosions
+Czar's fairteams code (didn't work this run)
+
+Whats's New 7-28
+---------------------------------
+Cleaned all that shitz code(bugs)
+Fixed some FAT Ram leaks
+Death match spawning fixed
+New assassin beacons, shock charges
+Small sensors can deploy any angle
+Satchel code fixed
+
+Whats's New 7-25
+---------------------------------
+Trying some cleaned up code from Frag, Nuke and HP
+
+Whats's New 7-22
+---------------------------------
+Just cleaned up all the laggy weapons
+satchels are silent
+
+Whats's New 7-21
+---------------------------------
+Ammo stations go fast
+mech tree strong
+More elf damage
+chem gets elf
+rewrote player damage code and plasma cannon math
+
+Whats's New 7-16
+---------------------------------
+Laser rifle
+chems
+interceptor packs
+grenade launcher
+
+Whats's New 7-11
+---------------------------------
+Turret Damage redone (didn't keep this)
+mortars-cameras new and locking jamming  (didn't keep this either)
+
+Whats's New 7-05
+---------------------------------
+Loading Vmodules is so much faster (hop in and fire)
+Touch attacks, same armor cancel
+grenade launcher damage/kickback raised
+gravgun code fixed
+Equalizer code fixed 
+
+Whats New 6-23-2001  
+-----------------------------------------------------
+Magnum firing math chucked, more damage/kickback
+-Voodoo Suicide Bug removed 
+
+Whats New 6-20-2001  
+-----------------------------------------------------
+-Magnum damage
+-MDM although powerful does no emp damage
+-Sniper Rifle, sucks vs turrets, very powerful vs headhots
+-Railgun, weaker vs people, but stronger vs turrets
+-Spamgaurds on lasermines
+-Heatseeker, 350m locking range, can only LOCK or FIRE at active jetpacks or planes
+-No teleport packs
+-EMP mortar is magnetic
+
+BUGS FIXED
+-EMP Bug
+-Missile Station flag Bug
+-MDM lastshot
+-Invobuddy
+-HyperJump
+
+Whats New 5-20-2001  
+-----------------------------------------------------
+Shifter_HC Beta, GreyFlcn
+Heres a jumbled listing of some of the changes so far:
+
+Lockjaw renamed: HeatSeek can only lock/fire planes, turrets, and active jetpacks.
+Arbitor
+(death touch, elf)
+Mercenary
+(booster lag, no elf, no magnum)
+Dread
+(lasermine only drains on deploy, no nukes, no elf)
+Jugg
+(Rocket Jump, damage ratios)
+Scout
+(Stimsheild is now just as powerful as normal sheild)
+Assassin
+(No sheildpacks, can't get poisoned, Magnum, forward firing concussion beaconmines)
+Goliath
+(3+ mortars, rocket launcher pack, elf gun, stronger flamer, useable beacons, half damage to rockets, mines, and plasma)
+Same armor touch attacks cancel out
+Magnum, fun damage
+Equalizer, fun damage
+Dart Rifle (Goes through sheilds)
+Elf gun(35m range, if energy pack is present recharge cancels drain, if the target has energy, you gain energy)
+MDM (plasma damage)
+Disc Launcher (slightly)
+Interceptor
+Vehicle Sheilding
+Vehicle pad sheilding
+Valkirye module
+Nukes (none for dread, 3 for jugg)
+LaserCannon (damn powerful)
+Flamer turret
+20faves GUI support
+
+LAG
+-Plasma cannon
+-Merc Booster
+-Merc Booster pop
+-Vulcan
+
+BUGS
+-PlasmaCannon Overlap
+-Unlimited Detpacks
+-Interceptor wall clipping
+-Airbase lasers
+
+\*        GreyFlcn Updates end here:        =\*=\*=\*=\*=\*=\*=\*=\*
+=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*=\*
+

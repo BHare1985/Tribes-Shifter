@@ -97,17 +97,15 @@ MineData EMPBlast
 };
 
 function EMPBlast::onAdd(%this)
-{
-	if ($debug) echo ("Blammo");
-    schedule("Mine::Detonate(" @ %this @ ");",0.1,%this);
+{    schedule("Mine::Detonate(" @ %this @ ");",0.1,%this);
 }
+
 //==================================================================================================== Havoc Blast
 MineData HavocBlast
 {
 	className = "Mine";
 	description = "HavocBlast";
 	shapeFile = "breath";
-	shadowDetailMask = 4;
 	explosionId = ShockwaveThree;
 	explosionRadius = 20.0;
 	damageValue = 2.0;
@@ -134,6 +132,54 @@ function HavocBlast::onAdd(%this)
 	//%pos = Vector::add(%pos1, %padd);
 	//%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
 	//schedule ("Projectile::spawnProjectile(NCloud, \"" @ %trans @ "\", \"" @ %pl @ "\", \"" @ %vel @ "\");",0.1);
+}
+//greyflcn
+//====================================================================== MDM Blast
+MineData MDMBlast
+{
+	className = "Mine";
+	description = "MDMBlast";
+	shapeFile = "breath";
+	shadowDetailMask = 4;
+	explosionId = ShockwaveThree;
+	explosionRadius = 20.0;
+	damageValue = 3.0;
+	damageType = $PlasmaDamageType;
+	kickBackStrength = 0.1;
+	triggerRadius = 2.5;
+	maxDamage = 8.0;
+	shadowDetailMask = 0;
+	destroyDamage = 8.0;
+	damageLevel = {1.0, 1.0};
+};
+
+function MDMBlast::onAdd(%this)
+{	schedule("Mine::Detonate(" @ %this @ ");",0.1,%this);
+}
+
+//greyflcn
+//================================================= MDM Blast
+MineData MDMBlast2
+{
+	className = "Mine";
+	description = "MDMBlast2";
+	shapeFile = "breath";
+	shadowDetailMask = 0;
+	//explosionId = ShockwaveThree;
+	explosionRadius = 8.0;
+	damageValue = 0.1;
+	damageType = $FlashDamageType;
+	kickBackStrength = 0.1;
+	triggerRadius = 2.5;
+	maxDamage = 8.0;
+	shadowDetailMask = 0;
+	destroyDamage = 8.0;
+	damageLevel = {1.0, 1.0};
+};
+
+function MDMBlast2::onAdd(%this)
+{
+	schedule("Mine::Detonate(" @ %this @ ");",0.11,%this);
 }
 
 //======================================================================== Cloaking Blast
@@ -173,6 +219,6 @@ RocketData cloakingBlast
 
 function cloakingBlast::damageTarget(%target, %timeSlice, %damPerSec, %enDrainPerSec, %pos, %vec, %mom, %shooterId)
 {
-        GameBase::startFadeOut(%target);
-        schedule("GameBase::startFadeIn(" @ %target @ ");", 90);
+	GameBase::startFadeOut(%target);
+	schedule("GameBase::startFadeIn(" @ %target @ ");", 90);
 }

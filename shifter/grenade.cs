@@ -9,7 +9,7 @@
 // Plastique	- Chemeleon
 // Mortar	- Dreadnaught
 // FireBomb	- Goliath
-
+// OldGren - DM armor
 
 //==================================================================================================== Standard Grenade
 
@@ -85,7 +85,6 @@ function Tranqgrenade::Detonate(%this)
 {
 	%data = GameBase::getDataName(%this);
 	GameBase::setDamageLevel(%this, %data.maxDamage);
-
 }
 
 //==================================================================================================== EMP Grenade
@@ -118,8 +117,8 @@ function EMPgrenade::onAdd(%this)
 
 function EMPgrenade::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
 {
-   if (%type == $FlashDamageType)
-      %value = %value * 0.25;
+	if (%type == $FlashDamageType)
+		%value = %value * 0.25;
 
 	%damageLevel = GameBase::getDamageLevel(%this);
 	GameBase::setDamageLevel(%this,%damageLevel + %value);
@@ -184,7 +183,7 @@ MineData Concussion2
    shadowDetailMask = 4;
    explosionId = grenadeExp;
 	explosionRadius = 35.0;
-	damageValue = 0.50;
+	damageValue = 0.55;
 	damageType = $PlasmaDamageType; // burn the victim
 	kickBackStrength = 0;
 	triggerRadius = 0.5;
@@ -194,7 +193,7 @@ MineData Concussion2
 function Concussion2::onAdd(%this)
 {
 	%data = GameBase::getDataName(%this);
-	schedule("Mine::Detonate(" @ %this @ ");",5.0,%this);
+	schedule("Mine::Detonate(" @ %this @ ");",2.0,%this);
 }
 
 function Concussion2::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
@@ -270,7 +269,7 @@ function Nukebomb::onCollision(%this,%obj)
 		}
 		else
 		{	
-			deleteObject(%this);
+			if(%this)deleteObject(%this);
 			Client::sendMessage(%c,1,"You disarm the Plastique Explosive.");
 		}
 	}  
@@ -370,30 +369,45 @@ MineData Detbomb
 	friction = 1.0;
 	className = "Handgrenade";
 	description = "Handgrenade";
-   	shapeFile = "mine";
-	shadowDetailMask = 4;
+   	shapeFile = "armorPatch";
+	shadowDetailMask = 0;
 	explosionId = flashExpLarge;
 
-	explosionRadius = 10.0;
-	damageValue = 0.4;
+	explosionRadius = 3.0;
+	damageValue = 0.5;
 	damageType = $EnergyDamageType;
-	kickBackStrength = 250;
-	triggerRadius = 1.5;
-	maxDamage = 2.0;
+	kickBackStrength = 700;
+	triggerRadius = 2.0;
+	maxDamage = 8.0;
 };
 
 function Detbomb::onAdd(%this)
 {
 	%data = GameBase::getDataName(%this);
-	schedule("Mine::Detonate(" @ %this @ ");",5.0,%this);
+	schedule("Mine::Detonate(" @ %this @ ");",50.0,%this);
+}
+
+function Detbomb::onDestroyed(%this)
+{
+	%position = GameBase::getPosition(%this);
+	%posX = getWord(%position,0);
+	%posY = getWord(%position,1);
+	%posZ = getWord(%position,2);
+	%newposition = (%posX @ " " @ %posY @ " " @ (%posZ + 0.5));
+	gamebase::setposition(%this, %newposition);
 }
 
 function Detbomb::onCollision(%this, %object)
 {
 	%type = getObjectType(%object);
-	if (%type == "Player")
+	%thisClient = %this.deployer;
+	%objClient = Player::getClient(%object);
+	%thisTeam = GameBase::getTeam(%thisClient);
+	%objTeam = GameBase::getTeam(%object);
+	//echo("ThisTeam: "@%thisTeam@" - ObjTeam: "@%objTeam@" - %type"@%type@" - %thisClient"@%thisClient@" - %objClient"@%objClient);
+   if ((%type == "Player" && (%objTeam != %thisTeam || %objClient == %thisClient)) || (%type == "Turret" && %objTeam != %thisTeam))
 	{	
 		%data = GameBase::getDataName(%this);
-		schedule("Mine::Detonate(" @ %this @ ");",0.1,%this);
+		schedule("Mine::Detonate(" @ %this @ ");",0.01,%this);
 	}
 }

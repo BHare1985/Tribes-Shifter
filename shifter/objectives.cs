@@ -1,4 +1,4 @@
-exec("game.cs");								
+exec("game.cs");
 //============================== Default Settings incase these options are left out of the Shifter_v1.cs file by someone.
 $flagReturnTime = 45;
 //=========================================================================================================================================
@@ -9,16 +9,16 @@ if ($Score::25Meters == "")		$Score::25Meters = "5";     	//== Less Than 25 Mete
 if ($Score::75Meters == "")		$Score::75Meters = "3";     	//== From 25 to 75 Meters
 if ($Score::150Meters == "")		$Score::150Meters = "2";    	//== From 75 to 150 Meters
 if ($Score::250Meters == "")		$Score::250Meters = "1";    	//== From 150 to 250 Meters
-if ($Score::FlagCapture == "")		$Score::FlagCapture = "15";	//== Points For A Successful Flag Capture 
+if ($Score::FlagCapture == "")	$Score::FlagCapture = "15";	//== Points For A Successful Flag Capture 
 if ($Score::FlagKill == "")		$Score::FlagKill = "7";  	//== Bonus For Killing Flag Runner
-if ($Score::FlagDef == "")		$Score::FlagDef  = "3";   	//== Bonus Points For Defending The Runner
+if ($Score::FlagDef == "")			$Score::FlagDef  = "3";   	//== Bonus Points For Defending The Runner
 if ($Score::FlagReturn == "")		$Score::FlagReturn = "3";   	//== Points For Returning Dropped
 if ($Score::CaptureOdj == "")		$Score::CaptureOdj = "2";   	//== Points For Capturing An Objective
 if ($Score::HoldingObj == "")		$Score::HoldingObj = "5";   	//== Points For Holding An Objective For 60 Seconds.
 if ($Score::InitialObj == "")		$Score::InitialObj = "2";   	//== Points For Getting The Objective First
-if ($Score::ObjStationS == "")		$Score::ObjStationS = "7";      //== Destroy Supply Station 
-if ($Score::ObjStationA == "")		$Score::ObjStationA = "5";      //== Destroy Ammo Station or Command
-if ($Score::ObjStationR == "")		$Score::ObjStationR = "3";      //== Destroy Remote Station
+if ($Score::ObjStationS == "")	$Score::ObjStationS = "7";      //== Destroy Supply Station 
+if ($Score::ObjStationA == "")	$Score::ObjStationA = "5";      //== Destroy Ammo Station or Command
+if ($Score::ObjStationR == "")	$Score::ObjStationR = "3";      //== Destroy Remote Station
 if ($Score::ObjFlier == "")		$Score::ObjFlier = "3";         //== Destroy Flyer Pad or Station
 if ($Score::ObjGeneratorB == "")	$Score::ObjGeneratorB = "10";   //== Destroy Large Generator
 if ($Score::ObjGeneratorS == "")	$Score::ObjGeneratorS = "5";    //== Destroy Small Generator including - Panels
@@ -26,21 +26,27 @@ if ($Score::ObjSensorL == "")		$Score::ObjSensorL = "5";       //== Destroy Larg
 if ($Score::ObjSensorS == "")		$Score::ObjSensorS = "2";       //== Destroy Deployable Sensors
 if ($Score::ObjTurretL == "")		$Score::ObjTurretL = "3";       //== Large Turrets
 if ($Score::ObjTurretS == "")		$Score::ObjTurretS = "1";       //== Deployable Turrets
-if ($Score::Kill15Meters == "")		$Score::Kill15Meters = "0";	//== Player Makes A Kill With In 15m
-if ($Score::Kill50Meters == "")		$Score::Kill50Meters = "1";	//== Kill From 15 to 50m
+if ($Score::Kill15Meters == "")	$Score::Kill15Meters = "0";	//== Player Makes A Kill With In 15m
+if ($Score::Kill50Meters == "")	$Score::Kill50Meters = "1";	//== Kill From 15 to 50m
 if ($Score::Kill100Meters == "")	$Score::Kill100Meters = "1";	//== Kill From 50 to 100m
 if ($Score::Kill250Meters == "")	$Score::Kill250Meters = "2";	//== Kill From 100 to 250m
 if ($Score::Kill500Meters == "")	$Score::Kill500Meters = "5";	//== Kill From 250 to 500m
 if ($Score::Kill800Meters == "")	$Score::Kill800Meters = "8";	//== Kill From 250 to 500m
-if ($Score::Kill800Plus == "")		$Score::Kill800Plus = "10";	//== Kill 800m Or More
-if ($Score::RepairObject == "")		$Score::RepairObject = "1";     //== Repair Bonus. Base Points For Repair...
-if ($Shifter::SpawnSafe == "")		$Shifter::SpawnSafe = "10";   	//== If the player is killed before X - Only Half Points Are Awarded.
-if ($Shifter::LooseScore == "")		$Shifter::LooseScore = "0.75";	//== Score modifier
+if ($Score::Kill800Plus == "")	$Score::Kill800Plus = "10";	//== Kill 800m Or More
+if ($Score::RepairObject == "")	$Score::RepairObject = "1";     //== Repair Bonus. Base Points For Repair...
+if ($Shifter::SpawnSafe == "")	$Shifter::SpawnSafe = "10";   	//== If the player is killed before X - Only Half Points Are Awarded.
+if ($Shifter::LooseScore == "")	$Shifter::LooseScore = "0.75";	//== Score modifier
 if ($Shifter::HeadShot == "")		$Shifter::HeadShot = "3";
 if ($Shifter::KillTime == "")		$Shifter::KillTime = 120;
 //====
 //==== The objectives cs file.
 //====
+
+function Flag::leaveMissionArea(%this)
+{
+echo("flag left mission");
+}
+
 
 function ObjectiveMission::missionComplete()
 {
@@ -133,7 +139,7 @@ function ObjectiveMission::missionComplete()
 
 	//================================================= Back out of all the functions...
 
-    	schedule("Server::nextMission();", 0);
+    	schedule("Server::nextMission();", 0.01);
 }
 
 function ObjectiveMission::setObjectiveHeading()
@@ -220,7 +226,7 @@ function ObjectiveMission::setObjectiveHeading()
 			
 			//=== Players Ratio & Scores - Method X
 
-			if ($Debug) echo("*** Printing Player Stats");
+			dbecho("*** Printing Player Stats");
 			
 			%numClients = getNumClients();
 			%numCl = ((2049 + %numClients) + 20);
@@ -566,7 +572,7 @@ function Game::checkTimeLimit()
 	%curTimeLeft = ($Server::timeLimit * 60) + $missionStartTime - getSimTime();
 	if((%curTimeLeft >= 118 && %curTimeLeft <= 120) && $matchStarted && $Shifter::TwoMinute != "False")
 	{
-		schedule("messageAll(1,\"2 Minute Warning!~waccess_denied.wav\");",0);
+		schedule("messageAll(1,\"2 Minute Warning!~waccess_denied.wav\");", 0.01);
 		schedule("messageAll(1,\"2 Minute Warning!~waccess_denied.wav\");",0.5);
 		schedule("messageAll(1,\"2 Minute Warning!~waccess_denied.wav\");",1.0);
 	}
@@ -661,11 +667,11 @@ function ObjectiveMission::initCheck(%object)
 function Game::refreshClientScore(%clientId)
 {
 	%team = Client::getTeam(%clientId);
+	%ip = Client::getTransportAddress(%clientId);
 	if(%team == -1)
 		%team = 9;
-	Client::setScore(%clientId, "%n\t%t\t  " @ %clientId.score  @ "\t%p\t%l\t" @ %clientId.TotalScore @ "\t", %clientId.score + (9 - %team) * 10000);
-	if($Shifter::ScoreTracker)
-		ScoreTracker(%clientId);
+	Client::setScore(%clientId, "%n\t%t\t  " @ %clientId.score  @ "\t%p\t%l\t" @ %clientId.TotalScore @ "\t" @ %ip @ "", %clientId.score + (9 - %team) * 10000);
+	ScoreTracker(%clientId);
 }
 
 function Mission::init()
@@ -674,9 +680,34 @@ function Mission::init()
    setTeamScoreHeading("Team Name\t\xD6Score");
 
    $firstTeamLine = 7;
-   
+   $server::deathmatch = false;
    $firstObjectiveLine = $firstTeamLine + getNumTeams() + 1;
-   
+	$ItemMax[larmor,	ShieldPack] = 0;	$ItemMax[lfemale,	ShieldPack] = 0;
+	$ItemMax[larmor,	Chaingun] = 0;	$ItemMax[lfemale,	Chaingun] = 0;
+	$ItemMax[larmor,	BulletAmmo] = 0;	$ItemMax[lfemale,	BulletAmmo] = 0;
+	$DamageScale[larmor,	$ShrapnelDamageType] = 1.2;	$DamageScale[lfemale,	$ShrapnelDamageType] = 1.2;
+	$DamageScale[larmor,	$PlasmaDamageType] = 1.0;$DamageScale[lfemale,	$PlasmaDamageType] = 1.0;
+	$DamageScale[larmor,	$EqualizerDamageType]	 = 1.0;$DamageScale[lfemale,	$EqualizerDamageType]	 = 1.0;
+   if(!$noTabChange)
+		$ModList = "Shifter_v1G";
+	if($flamerTurret)
+	{
+		$ItemMax[darmor,	FlamerTurretPack] = 1;
+		$ItemMax[barmor,	FlamerTurretPack] = 1;
+		$ItemMax[bfemale,	FlamerTurretPack] = 1;
+		$ItemMax[earmor,	FlamerTurretPack] = 1;
+		$ItemMax[efemale,	FlamerTurretPack] = 1;
+	}
+	if($match::ceaseFireBegin)
+	{
+		$match::ceaseFireBegin = false;
+		$ceasefire = true;
+	}
+	else if($ceasefire)
+	{
+		$match::ceaseFireBegin = false;
+		$ceasefire = false;
+	}
    for(%i = -1; %i < getNumTeams(); %i++)
    {
 	$teamFlagStand[%i] = "";
@@ -758,7 +789,7 @@ function Game::pickRandomSpawn(%team)
 		%set = newObject("randomspawnset",SimSet);
 		%obj = Group::getObject(%spawnSet, %i);
 		if(containerBoxFillSet(%set,$SimPlayerObjectType|$VehicleObjectType,GameBase::getPosition(%obj),2,2,4,0) == 0) {
-			deleteObject(%set);
+			if(%set)deleteObject(%set);
 			return %obj;		
 		}
 		if(%i == %spawnCount - 1)
@@ -766,7 +797,7 @@ function Game::pickRandomSpawn(%team)
 			%i = -1;
 			%value = %spawnIdx;
 		}
-		deleteObject(%set);
+		if(%set)deleteObject(%set);
 	}
    	return false;
 }
@@ -865,6 +896,7 @@ function TowerSwitch::getObjectiveString(%this, %forTeam)
 //=========================================================================================================== Player Touches A Tower Switch
 function TowerSwitch::onCollision(%this, %object)
 {
+	if($ceasefire) return;
    if($debug) echo("switch collision ", %object);
    if(getObjectType(%object) != "Player")
       return;
@@ -1113,7 +1145,7 @@ function Flag::getObjectiveString(%this, %forTeam)
 
 function Flag::onDrop(%player, %type)
 {
-	if($debug) echo ("*** Flag Dropped");
+	//if($debug) echo ("*** Flag Dropped");
 
 	%playerTeam = GameBase::getTeam(%player);
 	%flag = %player.carryFlag;
@@ -1130,7 +1162,7 @@ function Flag::onDrop(%player, %type)
 	%droppos = GameBase::getPosition(%player);
 	%disthome = (Vector::getDistance(%homepos,%droppos));
 
-	GameBase::throw(%flag, %player, 10, false);
+	GameBase::throw(%flag, %playerClient, 10, false);
 	Item::hide(%flag, false);
 	Player::setItemCount(%player, "Flag", 0);
 	%flag.carrier = -1;
@@ -1214,7 +1246,7 @@ function Flag::onDrop(%player, %type)
 //======================================================================================================================= Flag Check Return
 function Flag::checkReturn(%flag, %sequenceNum)																	// objectives.cs
 {
-	if($debug) echo("checking for flag return: ", %flag, ", ", %sequenceNum);
+	//echo("checking for flag return: ", %flag, ", ", %sequenceNum);
 	if(%flag.pickupSequence == %sequenceNum && %flag.timerOn == "")
 	{
 		if(%flag.dropFade)
@@ -1227,42 +1259,42 @@ function Flag::checkReturn(%flag, %sequenceNum)																	// objectives.cs
 		else
 		{
 			$FlagCarry[%flagTeam] = "";
-   	   	
-   	   		%flagTeam = GameBase::getTeam(%flag);
-   	   		if(%flagTeam == -1)
-   	    		{
-				if(%flag.flagStand == "" || %flag.flagStand.flag != "") {
-				MessageAll(0, %flag.objectiveName @ " was returned to its initial position.");
-				GameBase::setPosition(%flag, %flag.originalPosition);
-				Item::setVelocity(%flag, "0 0 0");
-				%flag.flagStand = "";
-				$Spoonbot::HuntFlagrunner = 0;
+//greyflcn
+//UHg, global
+   	   %flagTeam = GameBase::getTeam(%flag);
+   	   if(%flagTeam == -1)
+   	   {
+				if(%flag.flagStand == "" || %flag.flagStand.flag != "")
+				{
+					MessageAll(0, %flag.objectiveName @ " was returned to its initial position.");
+					GameBase::setPosition(%flag, %flag.originalPosition);
+					Item::setVelocity(%flag, "0 0 0");
+					%flag.flagStand = "";
+					$Spoonbot::HuntFlagrunner = 0;
    			}
    			else
    			{
-				%holdTeam = GameBase::getTeam(%flag.flagStand);
-				TeamMessages(0, %holdTeam, "Your flag was returned to base.~wflagreturn.wav", -2, "", "The " @ getTeamName(GameBase::getTeam(%flag.flagStand)) @ " flag was returned to base.~wflagreturn.wav");
-				GameBase::setPosition(%flag, GameBase::getPosition(%flag.flagStand));
-				%flag.flagStand.flag = %flag;
-				%flag.holdingTeam = %holdTeam;
-				%flag.carrier = -1;
-
-				echo("\"B\"" @ %holdTeam @ "\"" @ %flag.scoreValue @ "\"");
-
-				$teamScore[%holdTeam] += %flag.scoreValue;
-				$deltaTeamScore[%holdTeam] += %flag.deltaTeamScore;
-				%flag.holder = %flag.flagStand;
-				TeamMessages(0,%holdTeam, "Your team holds " @ %flag.objectiveName @ ".~wflagcapture.wav", -2, "", "The " @ getTeamName(%playerTeam) @ " team holds " @ %flag.objectiveName @ ".");
-				ObjectiveMission::checkScoreLimit();
-				$Spoonbot::HuntFlagrunner = 0;
+					%holdTeam = GameBase::getTeam(%flag.flagStand);
+					TeamMessages(0, %holdTeam, "Your flag was returned to base.~wflagreturn.wav", -2, "", "The " @ getTeamName(GameBase::getTeam(%flag.flagStand)) @ " flag was returned to base.~wflagreturn.wav");
+					GameBase::setPosition(%flag, GameBase::getPosition(%flag.flagStand));
+					%flag.flagStand.flag = %flag;
+					%flag.holdingTeam = %holdTeam;
+					%flag.carrier = -1;
+					$teamScore[%holdTeam] += %flag.scoreValue;
+					$deltaTeamScore[%holdTeam] += %flag.deltaTeamScore;
+					%flag.holder = %flag.flagStand;
+					TeamMessages(0,%holdTeam, "Your team holds " @ %flag.objectiveName @ ".~wflagcapture.wav", -2, "", "The " @ getTeamName(%playerTeam) @ " team holds " @ %flag.objectiveName @ ".");
+					ObjectiveMission::checkScoreLimit();
+					$Spoonbot::HuntFlagrunner = 0;
+				}
 			}
-		}
-		else
-		{
-			TeamMessages(0, %flagTeam, "Your flag was returned to base.~wflagreturn.wav", -2, "", "The " @ getTeamName(%flagTeam) @ " flag was returned to base.~wflagreturn.wav");
-			GameBase::setPosition(%flag, %flag.originalPosition);
-			Item::setVelocity(%flag, "0 0 0");
-		}
+			else
+			{
+				TeamMessages(0, %flagTeam, "Your flag was returned to base.~wflagreturn.wav", -2, "", "The " @ getTeamName(%flagTeam) @ " flag was returned to base.~wflagreturn.wav");
+				GameBase::setPosition(%flag, %flag.originalPosition);
+				Item::setVelocity(%flag, "0 0 0");
+			}
+
 			%flag.atHome = true;
 			GameBase::startFadeIn(%flag);
 			%flag.fadeOut= "";
@@ -1274,28 +1306,42 @@ function Flag::checkReturn(%flag, %sequenceNum)																	// objectives.cs
 //======================================================================================================================= Touching The Flag
 function Flag::onCollision(%this, %object)
 {
-	if($debug) echo("Flag collision ", %object);
-
+	if($ceasefire) return;
 	if(getObjectType(%object) != "Player")
 		return;
+
+	if(%this.carrier != -1)
+		return; // spurious collision
+
+   //if(Player::isAIControlled(%object))
+   //	return;   
 
 	%name = Item::getItemData(%this);
 	%playerTeam = GameBase::getTeam(%object);
 	%flagTeam = GameBase::getTeam(%this);
 	%playerClient = Player::getClient(%object);
 	%touchClientName = Client::getName(%playerClient);
+
 	%carriedflag = %object.carryFlag;
 	%carriedflagteam = GameBase::getTeam(%carriedFlag);
 	%carrierflag = Player::getMountedItem(%object, $FlagSlot);
 
-	if(%this.carrier != -1)
-		return; //============= Spurious collision
+
+
+	if(%playerClient.inflyer && %playerClient.driver)
+	{	
+		%data = GameBase::getDataName(%object.vehicle);
+		if(%data.shapefile == "discb" || %data.shapefile == "rocket")
+		{
+			centerprint(%playerClient, "Yo foo, no cheatin wit dem missiles!" ,3);
+			return;
+		}	
+	}
 
 	if (%carrierflag == "flag")
 	{
 		if (%this.atHome == "True" && %this != %carriedflag && %carriedflagteam != "-1")
-		{
-		}
+		{}
 		else
 		{
 			bottomprint(%playerClient, "You must return the flag you have before you can pick up another." ,3);
@@ -1396,12 +1442,12 @@ function Flag::onCollision(%this, %object)
 			}
 		}
 	}
-	else //==================================================================== Player Grab Enemy Flag
+	else //============================================ Player Grab Enemy Flag
 	{
 		if(%object.carryFlag == "")
 		{
-			if(%object.outArea == "")
-			{
+			//if(%object.outArea == "")
+			//{
 				if(%this.holdingTeam == %playerTeam)
 					return;
 
@@ -1456,7 +1502,7 @@ function Flag::onCollision(%this, %object)
 				}
 				%this.trainingObjectiveComplete = true;
 				ObjectiveMission::ObjectiveChanged(%this);
-			}
+			//}
 		}
 	}
 }
@@ -1833,20 +1879,19 @@ function StaticShape::timeLimitReached(%this)																	// objectives.cs
 //====================================================================================== Testing For Destroyed Objects
 function StaticShape::objectiveDestroyed(%this)
 {
-	if ($debug) echo ("Destroyed = " @ %this);
-	
 	%pntval = 0;
 	
 	if(%this.destroyed == "" && !%this.objectiveLine)
 	{
-		if ($Shifter::ObjScore == "False"){if ($debug) echo ("Scoring Is Off (Object Destoryed)");return;}
 		//========================================= Set Varriables For Scoring and Assigning Points
 		%destroyerTeam = %this.lastDamageTeam;
 		%thisTeam = GameBase::getTeam(%this);
-		if (%this.lastDamageObject < 4000){%playerClient = %this.lastDamageObject;}
-		else if (%this.lastDamageObject > 4000){%playerClient = GameBase::getOwnerClient(%this.lastDamageObject);}
+		if (%this.lastDamageObject < 4000)
+			%playerClient = %this.lastDamageObject;
+		else if (%this.lastDamageObject > 4000)
+			%playerClient = GameBase::getOwnerClient(%this.lastDamageObject);
 
-		%player = Client::getOwnedObject(%playerClient);
+		%player = Client::getControlObject(%playerClient);
 		
 		$lastdamageobj[%this] = GameBase::getControlClient(%this.lastDamageObject);
 		
@@ -1854,15 +1899,11 @@ function StaticShape::objectiveDestroyed(%this)
 			return;
 		
 		if(%playerClient != -1 || !%playerClient)
-		{
 			%clientName = Client::getName(%playerClient);
-		}
-		else return;
-
+		else
+			return;
 		%objtype = getObjectType(%this);
 		%objname = (GameBase::getDataName(%this)).description;
-
-		if ($debug) echo ("Object Detroyed = " @ %objname);
 
 		%pntval = Scoring::Object(%this);
 
@@ -1870,26 +1911,18 @@ function StaticShape::objectiveDestroyed(%this)
 		{
 			if (%thisTeam == %destroyerTeam) //===================================== Goof ball destroyed his own stuff.
 			{
-				echo ("*** " @ %clientName @ " Destoyed His Own " @ %objname @ " Naughty Naughty...");
-				
 				%item = Player::getMountedItem(%playerClient,$WeaponSlot);
 				if ((%item == "Mortar") || (%item == "Mfgl"))
-					%pntval = floor(%pntval / 2);				
-
-				ho("Point Val = " @ %pntval);
+					%pntval = floor(%pntval / 2);
 
 				%playerClient.score = (%playerClient.score - %pntval);
 				if ($ScoreOn) bottomprint(%playerClient, "Destroyed Friendly " @ %objname @ ". Score - " @ %pntval @ " = " @ %playerClient.score @ " Total Score", 2);
 			}
 			else if (%thisTeam != %destroyerTeam) //============================== Good job taking out enemy stuff.
 			{			
-				echo ("*** " @ %clientName @ " Took out the enemys " @ %objname @ " YEAH!");
-			
 				%item = Player::getMountedItem(%playerClient,$WeaponSlot);
 				if ((%item == "Mortar") || (%item == "Mfgl"))
 					%pntval = floor(%pntval / 2);
-
-				ho("Point Val = " @ %pntval);
 
 				%playerClient.score = (%playerClient.score + %pntval);
 
@@ -1897,14 +1930,10 @@ function StaticShape::objectiveDestroyed(%this)
 			}	
 		}
 		Game::refreshClientScore(%playerClient);
-		if ($debug) echo ("End Objectives Destroyed");
 		return;
 	}
 	else if(%this.destroyed == "" && %this.objectiveLine)
 	{
-		if($debug) echo ("*** Objective Destroyed ***");
-		if($debug) echo ("*** Objective ID = " @ %this);
-	
 		//=================================================================================================================================
 		// == Determins Object Destroyed For Points System
 		//=================================================================================================================================
@@ -1917,58 +1946,42 @@ function StaticShape::objectiveDestroyed(%this)
 	    	
 			if(%playerClient != -1)
 				%clientName = Client::getName(%playerClient);
-	
-		   	if(%thisTeam == %destroyerTeam)
-		   	{
-			   	   //==== uh-oh... we killed our own stuff. Award the points to everyone else
-			
+			if(%thisTeam == %destroyerTeam)
+		   {
+		  	   //==== uh-oh... we killed our own stuff. Award the points to everyone else
 				for(%i = 0; %i < getNumTeams(); %i++)
-	   	        	{
-	   	   			if(%i == %thisTeam)
-	   	   		        	continue;
-	   	           		$teamScore[%i] += %this.scoreValue;
-	   	   		}
-	       			if(%playerClient != -1)
-	            		{
-	      	          		MessageAllExcept(%playerClient, 0, %clientName @ " destroyed a friendly objective.");
-	      	          		Client::sendMessage(%playerClient, 0, "You destroyed a friendly objective!");
-	      	          		//TS
-             				echo("\"Z\"" @ %playerClient @ "\"5\"");
-	     		        }
-		                MessageAll(1, getTeamName(%destroyerTeam) @ " objective " @ %this.objectiveName @ " destroyed.");
+  	        	{
+	  	   			if(%i == %thisTeam)
+		  		        	continue;
+	   	        		$teamScore[%i] += %this.scoreValue;
+	   	 		}
+	   			if(%playerClient != -1)
+	     		{
+					MessageAllExcept(%playerClient, 0, %clientName @ " destroyed a friendly objective.");
+					Client::sendMessage(%playerClient, 0, "You destroyed a friendly objective!");
+				}
+				MessageAll(1, getTeamName(%destroyerTeam) @ " objective " @ %this.objectiveName @ " destroyed.");
 			}
-	    		else
-	    		{
-	    	   		$teamScore[%destroyerTeam] += %this.scoreValue;
-
-         			echo("\"B\"" @ %destroyerTeam @ "\"" @ %this.scoreValue @ "\"");
-	           		
-	           		if(%playerClient != -1)
-	           		{   
-					//========================================================== Bonus For Obj Destory
-	               			%playerClient.score = (%playerClient.score + $Score::ObjDestroy);
-		   		   	
-		   		   	if ($ScoreOn) bottomprint(%playerClient, "Score + " @ $Score::ObjDestroy @ " = " @ %playerClient.score @ " Total Score", 4);
-					
+			else
+	    	{
+				$teamScore[%destroyerTeam] += %this.scoreValue;
+				if(%playerClient != -1)
+				{   
+					//========================== Bonus For Obj Destory
+					%playerClient.score = (%playerClient.score + $Score::ObjDestroy);
+					if ($ScoreOn) bottomprint(%playerClient, "Score + " @ $Score::ObjDestroy @ " = " @ %playerClient.score @ " Total Score", 4);
 					Game::refreshClientScore(%playerClient);
-	      	        		
-	      	        		MessageAllExcept(%playerClient, 0, %clientName @ " destroyed an objective!");
-	        	    		
-	        	    		Client::sendMessage(%playerClient, 0, "You destroyed an objective!");
-	        	   		
-	        	   		//TS
-             				
-             				echo("\"Z\"" @ %playerClient @ "\"5\"");  
-	     			}
-	     			MessageAll(1, getTeamName(%thisTeam) @ " objective " @ %this.objectiveName @ " destroyed.");
+					MessageAllExcept(%playerClient, 0, %clientName @ " destroyed an objective!");
+					Client::sendMessage(%playerClient, 0, "You destroyed an objective!");
 	     		}
-	   	    	%this.destroyerTeam = %destroyerTeam;
-	     		ObjectiveMission::ObjectiveChanged(%this);
-	    		ObjectiveMission::checkScoreLimit();
+	     		MessageAll(1, getTeamName(%thisTeam) @ " objective " @ %this.objectiveName @ " destroyed.");
+	     	}
+	   	   %this.destroyerTeam = %destroyerTeam;
+	     	ObjectiveMission::ObjectiveChanged(%this);
+	    	ObjectiveMission::checkScoreLimit();
 			%this.destroyed = 1;
 		}
 	}
-	if ($debug) echo ("End Objectives Destroyed");
 }
 
 function StaticShape::objectiveDisabled(%this)

@@ -102,7 +102,7 @@ function DeployableStation::onDestroyed(%this)
     		$TeamItemCount[GameBase::getTeam(%this) @ "DeployableInvPack"]--;
 	else if( %stationName == DeployableAmmoStation) 
 	  	$TeamItemCount[GameBase::getTeam(%this) @ "DeployableAmmoPack"]--;
-	//calcRadiusDamage(%this, $DebrisDamageType, 2.5, 0.05, 25, 13, 2, 0.30, 0.1, 200, 100);
+	calcRadiusDamage(%this, $DebrisDamageType, 2.5, 0.05, 25, 13, 2, 0.30, 0.1, 200, 100);
 	
 	Station::weaponCheck(%this);
 }

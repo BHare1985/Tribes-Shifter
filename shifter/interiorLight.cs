@@ -1,5 +1,5 @@
-//-------------------------------------- Interior light scripting functions...
-//                                        based on the tsshape animation functions
+//------------ Interior light scripting functions...
+//  based on the tsshape animation functions
 //
 function Interior::lightOn(%int, %light)
 {

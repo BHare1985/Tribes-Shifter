@@ -1,1 +1,1 @@
-Shifter v1 mod developered by Emo1313.
+GreyFlcn's version of Shifter v1 called Shifter v1G.

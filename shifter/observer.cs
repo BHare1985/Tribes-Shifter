@@ -1,21 +1,11 @@
 $GuiModeCommand    = 2;
 $LastControlObject = 0;
 
-function Observer::triggerDown(%client)
-{
-}
+function Observer::triggerDown(%client){}
+function Observer::orbitObjectDeleted(%cl){}
+function Observer::leaveMissionArea(%cl){}
 
-function Observer::orbitObjectDeleted(%cl)
-{
-}
-
-function Observer::leaveMissionArea(%cl)
-{
-}
-
-function Observer::enterMissionArea(%cl)
-{
-}
+function Observer::enterMissionArea(%cl){}
 
 function Observer::triggerUp(%client)
 {
@@ -23,10 +13,8 @@ function Observer::triggerUp(%client)
 	{
 		if(%client.dieTime + $Server::respawnTime < getSimTime())
 		{
-			//echo ("TriggerUp 1");
 			if(Game::playerSpawn(%client, true))
 			{
-				echo ("TriggerUp 2");
 				%client.observerMode = "";
 				Observer::checkObserved(%client);
 			}
@@ -43,16 +31,12 @@ function Observer::triggerUp(%client)
 	else if(%client.observerMode == "justJoined")
 	{
 		%client.observerMode = "";
-		
-		//echo ("Justjoin 1");
 		Game::playerSpawn(%client, false);
-		//echo ("Justjoin 1");	
 	}
 	else if(%client.observerMode == "pregame" && $Server::TourneyMode)
 	{
 		if($CountdownStarted)
 			return;
-
 		if(%client.notready)
 		{
 			%client.notready = "";
@@ -120,7 +104,8 @@ function Observer::enterObserverMode(%clientId)
 	remotePlayMode(%clientId);
 	return true;
 }
-
+ //greyflcn
+//very suspicios
 function Observer::checkObserved(%client)
 {
 	for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
@@ -211,14 +196,17 @@ function Observer::setTargetClient(%client, %target)
 	return true;
 }
 
-function Observer::CheckFlagViewers()
-{
-	%flag = $FlagCarry[%flagTeam];
-	if (!%flag)
-	{
-		
-	}
-}
+
+//greyflcn
+//uhg...again
+//function Observer::CheckFlagViewers()
+//{
+//	%flag = $FlagCarry[%flagTeam];
+//	if (!%flag)
+//	{
+//		
+//	}
+//}
 
 function Observer::nextObservable(%client)
 {

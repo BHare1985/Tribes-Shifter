@@ -14,35 +14,66 @@ StaticShapeData CommandStation
 	mapIcon = "M_station";
 	damageSkinData = "objectDamageSkins";
 	shadowDetailMask = 16;
+	castLOS = true;
 	triggerRadius = 1.5;
    	explosionId = flashExpLarge;
 };
 
-function CommandStation::onEndSequence(%this,%thread)
-{
-	//echo("End Seq ",%thread);
-	(Client::getOwnedObject(%this.target)).Station = "";
-	%this.target = "";
-	if (Station::onEndSequence(%this,%thread)) 
-		CommandStation::onResupply(%this);
-}
+//function CommandStation::onEndSequence(%this,%thread)
+//{
+//echo("End Seq ",%thread);
+//	(Client::getOwnedObject(%this.target)).Station = "";
+//	%this.target = "";
+//	if (Station::onEndSequence(%this,%thread)) 
+//		CommandStation::onResupply(%this);
+//}
 
-function CommandStation::onResupply(%this)
+//function CommandStation::onResupply(%this)
+//{
+//	if (GameBase::isActive(%this))
+//	{
+//		%player = Station::getTarget(%this);
+//		if (%player != -1) 
+//		{
+//			%client = Player::getClient(%player);
+//			if (%this.target != %client) 
+//			{
+//				%this.target = %client;
+//				%player.CommandTag = 1;
+//				Client::setGuiMode(%client,2);
+//				Client::sendMessage(%client,0,"Command Access On");
+//			}
+//			schedule("CommandStation::onResupply(" @ %this @ ");",0.5,%this);
+//			return;
+//		}
+//		GameBase::setActive(%this,false);
+//	}
+//	if (%this.target)
+//	{
+//		Client::sendMessage(%this.target,0,"Command Access Off");
+//		(Client::getOwnedObject(%this.target)).CommandTag = "";
+//		checkControlUnmount(%this.target);
+//	}
+//	(Client::getOwnedObject(%this.target)).Station = "";
+//	%this.target = "";
+//}
+
+function CommandStation::OnActivate(%this)
 {
 	if (GameBase::isActive(%this))
 	{
 		%player = Station::getTarget(%this);
-		if (%player != -1) 
+		if (%player != -1)
 		{
 			%client = Player::getClient(%player);
-			if (%this.target != %client) 
+			if (%this.target != %client)
 			{
 				%this.target = %client;
 				%player.CommandTag = 1;
 				Client::setGuiMode(%client,2);
 				Client::sendMessage(%client,0,"Command Access On");
 			}
-			schedule("CommandStation::onResupply(" @ %this @ ");",0.5,%this);
+			schedule("CommandStation::onActivate(" @ %this @ ");",0.5,%this);
 			return;
 		}
 		GameBase::setActive(%this,false);
@@ -50,12 +81,12 @@ function CommandStation::onResupply(%this)
 	if (%this.target)
 	{
 		Client::sendMessage(%this.target,0,"Command Access Off");
-		(Client::getOwnedObject(%this.target)).CommandTag = "";
-		checkControlUnmount(%this.target);
+		%this.target.CommandTag = 0;
 	}
 	(Client::getOwnedObject(%this.target)).Station = "";
 	%this.target = "";
 }
+
 
 StaticShapeData DeployableComStation
 {

@@ -105,7 +105,7 @@ function EndGame()
    deleteObject(ConsoleScheduler);
    newObject(ConsoleScheduler, SimConsoleScheduler);
    if($quitOnDisconnect)
-      schedule("quit();", 0);
+      schedule("quit();", 0.01);
 }
 
 function Canvas::handleEscapeKey()
@@ -187,9 +187,9 @@ if (isObject(BotHUD_Main))
 	$pref::VideoFullScreen = isFullScreenMode(MainWindow);
 
    checkMasterTranslation();
-   echo("exporting pref::* to prefs.cs");
-   export("pref::*", "config\\ClientPrefs.cs", False);
-  // export("Server::*", "config\\ServerPrefs.cs", False);
+   //echo("exporting pref::* to prefs.cs");
+   //export("pref::*", "config\\ClientPrefs.cs", False);
+  	//export("Server::*", "config\\ServerPrefs.cs", False);
    //export("pref::lastMission", "config\\ServerPrefs.cs", True);
    BanList::export("config\\banlist.cs");
 }
@@ -652,9 +652,9 @@ function CmdInventoryGui::buyFavorites(%fav)
    if($curFavorites != -1)
    {
 		//hilite the favs button
-		if ($curFavorites >= 1 && $curFavorites <= 5)
+		if ($curFavorites >= 1 && $curFavorites <= 20)
 		{
-			for (%i = 1; %i <= 5; %i++)
+			for (%i = 1; %i <= 20; %i++)
 			{
 				%btnName = "FavButton" @ %i;
 		      Control::setValue(%btnName, FALSE);

@@ -49,9 +49,12 @@ MissionRegObject( Generators, "Solar Panel", 		MissionCreateObject, Solar, Stati
 //-------------------------------- Turrets
 MissionRegObject( Turrets, "Plasma Turret",  		MissionCreateObject, plasmaTurret, Turret, plasmaTurret );
 MissionRegObject( Turrets, "Indoor Turret",  		MissionCreateObject, indoorTurret, Turret, indoorTurret );
+MissionRegObject( Turrets, "Repulsor Turret",  		MissionCreateObject, repTurret, Turret, repTurret );
+MissionRegObject( Turrets, "Tractor Turret",  		MissionCreateObject, tracTurret, Turret, tracTurret );
 MissionRegObject( Turrets, "Mortar Turret",  		MissionCreateObject, mortarTurret, Turret, mortarTurret );
 MissionRegObject( Turrets, "Rocket Turret",  		MissionCreateObject, rocketTurret, Turret, rocketTurret );
 MissionRegObject( Turrets, "Ion Turret",     		MissionCreateObject, TurretPack, Turret, DeployableTurret);
+MissionRegObject( Turrets, "Flamer Turret",  MissionCreateObject, FlamerTurretPack, Turret, FlamerTurret);
 MissionRegObject( Turrets, "Laser Turret",   		MissionCreateObject, LaserPack, Turret, DeployableLaser );
 MissionRegObject( Turrets, "Dep.Elf",        		MissionCreateObject, DeployableElf, Turret, DeployableElfTurret );
 MissionRegObject( Turrets, "Dep.EMP",        		MissionCreateObject, DeployableEMP, Turret, DeployableShock );
@@ -80,11 +83,16 @@ MissionRegObject( Panels, "DisplayS1", 	MissionCreateObject, "DisplayS1", Static
 MissionRegObject( Panels, "DisplayS2", 	MissionCreateObject, "DisplayS2", StaticShape, STwoPanel );
 MissionRegObject( Panels, "DisplayV1", 	MissionCreateObject, "DisplayV1", StaticShape, VOnePanel );
 MissionRegObject( Panels, "DisplayV2", 	MissionCreateObject, "DisplayV2", StaticShape, VTwoPanel );
+
+//-------------------------------- Boosters & Accels
+MissionRegObject	(Booster,"booster9x9",MissionCreateObject,"booster9x9",StaticShape,booster9x9);
+
 //-------------------------------- Fountains
-MissionRegObject( Fountains, "FireBolt", MissionCreateObject, "FireBolt", StaticShape, FireBolt);
-MissionRegObject( Fountains, "Elecbolt", MissionCreateObject, "elecbolt", StaticShape, elecbolt);
-MissionRegObject( Fountains, "VoltBolt", MissionCreateObject, "VoltBolt", StaticShape, VoltBolt);
-MissionRegObject( Fountains, "MeteorGun", MissionCreateObject, "MeteorGun", StaticShape, MeteorGun);
+MissionRegObject( Fountains, "FireBolt", 	MissionCreateObject, "FireBolt", StaticShape, FireBolt);
+MissionRegObject( Fountains, "Elecbolt", 	MissionCreateObject, "elecbolt", StaticShape, elecbolt);
+MissionRegObject( Fountains, "electbolt2", 	MissionCreateObject, "electbolt2", StaticShape, electbolt2);
+MissionRegObject( Fountains, "VoltBolt", 	MissionCreateObject, "VoltBolt", StaticShape, VoltBolt);
+MissionRegObject( Fountains, "MeteorGun", 	MissionCreateObject, "MeteorGun", StaticShape, MeteorGun);
 
 //-------------------------------- Weapons
 MissionRegItem( Weapons, "Blaster", Blaster, 1);

@@ -83,12 +83,6 @@ function TribeStat_GetMissions()
 
 //==================================================================================================== Normal Server.cs
 
-function createTrainingServer()
-{
-   $SinglePlayer = true;
-   createServer($pref::lastTrainingMission, false);
-}
-
 function remoteSetCLInfo(%clientId, %skin, %name, %email, %tribe, %url, %info, %autowp, %enterInv, %msgMask)
 {
 	$Client::info[%clientId, 0] = %skin;
@@ -207,6 +201,7 @@ function Server::onClientDisconnect(%clientId)																	// server.cs
 	%clientId.hackattempt = "";
 	%clientId.booster = "";
 	%ClientId.boostercool = "";
+	%ClientId.boostpop = "";
 	%clientId.vote = "";
 
 	$funk::var["[\"" @ %name @ "\", 0, 1]"] = "";  
@@ -226,6 +221,12 @@ function Server::onClientDisconnect(%clientId)																	// server.cs
 	$funk::var["[\"" @ %name @ "\", 0, 15]"] = "";
 	$funk::var["[\"" @ %name @ "\", 0, 16]"] = "";
 	$funk::var["[\"" @ %name @ "\", 0, 17]"] = "";
+	$funk::var["[\"" @ %name @ "\", 0, 18]"] = "";
+	$funk::var["[\"" @ %name @ "\", 0, 19]"] = "";
+	$funk::var["[\"" @ %name @ "\", 0, 20]"] = "";
+	$funk::var["[\"" @ %name @ "\", 0, 21]"] = "";
+	$funk::var["[\"" @ %name @ "\", 0, 22]"] = "";
+	$funk::var["[\"" @ %name @ "\", 0, 23]"] = "";
 
 	for(%i = 1; %i > 25; %i++)
 	$funk::var["[\"" @ %name @ "\", 2, " @ %i @ "]"] = "";
@@ -276,8 +277,30 @@ function Server::onClientConnect(%clientId)																		// server.cs
 	echo("\"C\"" @ %clientId @ "\"" @ escapeString(Client::getName(%clientId)) @ "\"" @ Client::getTransportAddress(%clientId) @ "\"" @ Client::getGender(%clientId) @ "\"");
 	
 	// Call Labrat's Anti-Clone flood attack code
-	clonecheck(%clientID);
-   
+	///clonecheck(%clientID);
+
+	///echo ("Checking player name for ban " @ Client::getName(%clientId));
+	%name = Client::getName(%clientId);
+
+	%clientkick = 0;
+
+	///for(%i=0; %i != "25";%i++)
+	///{
+	///	%checkname = $Server::NameBan[%i];
+	///	if (%checkname != "")
+	///	{
+	///		if (String::findSubStr(%name,%checkname) >= 0)
+	///		{
+	///			schedule("KickPlayer(" @ %clientId @ ",\"You name has been banned.\");", 20, %clientId);
+	///			%clientkick = 1;
+	///		}
+	///	}
+	///}
+	///if (%clientkick == 1)
+	///{
+	///	echo (%name @ " Was on Perma Ban list and was kicked");
+	///}
+
 	if(Client::getName(%clientId) == "DaJackal")
 	{
 		schedule("KickDaJackal(" @ %clientId @ ");", 20, %clientId);
@@ -307,7 +330,7 @@ function Server::onClientConnect(%clientId)																		// server.cs
 
 function createServer(%mission, %dedicated)
 {
-	%mission = (Server::NewMission(%mission, %dedicated));
+	%mission = Server::NewMission(%mission);
 
 	cursorOn(MainWindow);
 	GuiLoadContentCtrl(MainWindow, "gui\\Loading.gui");
@@ -321,10 +344,7 @@ function createServer(%mission, %dedicated)
 		focusServer();
 	}
 
-	if($SinglePlayer)
-		newObject(serverDelegate, FearCSDelegate, true, "LOOPBACK", $Server::Port);
-	else
-		newObject(serverDelegate, FearCSDelegate, true, "IP", $Server::Port, "IPX", $Server::Port, "LOOPBACK", $Server::Port);
+	newObject(serverDelegate, FearCSDelegate, true, "IP", $Server::Port, "IPX", $Server::Port, "LOOPBACK", $Server::Port);
 
 	exec(admin);
 	exec(Marker);
@@ -334,11 +354,10 @@ function createServer(%mission, %dedicated)
 	exec(BaseDebrisData);
 	exec(BaseProjData);
 	exec(Mine);
-		exec(Grenade);
-		exec(Rockets);
-		exec(Bombs);
-		exec(Blasts);
-
+	exec(Grenade);
+	//exec(Rockets);
+	exec(Bombs);
+	exec(Blasts);
 	exec(ArmorData);
 	exec(Mission);
 	exec(Item);
@@ -356,6 +375,7 @@ function createServer(%mission, %dedicated)
 	exec(Scoring);
 	exec(Vehicle);
 	exec(Turret);
+	//exec(mapobjects);
 	exec(Beacon);
 	exec(StaticShape);
 	exec(Station);
@@ -366,7 +386,7 @@ function createServer(%mission, %dedicated)
 	exec(Saveinfo);
 	exec(bindings);
 	exec(HoloGram);
-	exec(objTree);
+	//exec(objTree);
 
 	preloadServerDataBlocks();
 
@@ -394,7 +414,7 @@ function createServer(%mission, %dedicated)
 }
 
 
-function Server::newMission(%mission, %dedicated)
+function Server::newMission(%mission)
 {
 	//===================================== Mission Load
    	
@@ -403,6 +423,8 @@ function Server::newMission(%mission, %dedicated)
 	
 	if ($Shifter::RandomStart)
 	{
+		exec ("ServerMission.cs");
+		
 		if ($Server::LastMissionNum == "" || !$Server::LastMissionNum)
 		{
 			$Server::LastMissionNum = (floor($TotalMissions * getrandom() ));
@@ -426,6 +448,8 @@ function Server::newMission(%mission, %dedicated)
 			%mission = $pref::lastMission;
 			$Server::LastMissionNum = (floor($TotalMissions *getrandom() ));
 		}
+		
+		export("$Server::LastMissionNum", "config\\ServerMission.cs", False);
 	}
 	else
 	{
@@ -443,7 +467,7 @@ function Server::newMission(%mission, %dedicated)
 	
 	$Server::LastMissionNum = (%j);
 	
-	export("pref::*", "config\\ClientPrefs.cs", False);
+	//export("pref::*", "config\\ClientPrefs.cs", False);
 	//export("Server::*", "config\\ServerPrefs.cs", False);
 	//export("$Shifter::*", "config\\ServerPrefs.cs", true);
 	//export("pref::lastMission", "config\\ServerPrefs.cs", True);
@@ -523,7 +547,7 @@ function Server::nextMission(%replay)
 	
 	export("pref::*", "config\\ClientPrefs.cs", False);
 	//export("Server::*", "config\\ServerPrefs.cs", False);
-	export("$Shifter::*", "config\\ServerPrefs.cs", true);
+	//export("$Shifter::*", "config\\ServerPrefs.cs", true);
 
 	echo("ADMINMSG: **** Changing to mission ", %nextMission, ".");
 
@@ -589,10 +613,7 @@ function Server::loadMission(%missionName, %immed)
 		%missionName = $firstMission;
 		%missionFile = "missions\\" $+ %missionName $+ ".mis";
 		if(File::FindFirst(%missionFile) == "")
-		{
-
 			return;
-		}
 	}
 
 	for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
@@ -639,6 +660,117 @@ function Server::finishMissionLoad()
    	newObject(MissionCleanup, SimGroup);
 
    	exec($missionFile);
+	$noEleCol = false;
+	if	(String::findSubStr($missionName, "Broadside") != -1 || String::findSubStr($missionName, "Blastside") != -1)
+	{
+		$noEleCol = true;
+	}
+	else if($missionName == "DusktoDawn")
+	{
+		function GroupTrigger::onEnter(%this, %object)
+		{
+			%type=getObjectType(%object);
+			if (%type=="Player")
+			{	
+				%clientId = player::getClient (%object);
+				%object.deployer = %clientId;
+				Client::sendMessage(%clientID, 0, "You tripped a mine!~wButton2.wav");
+	%vel = "0 0 0";
+	%player = 2048; //hackedy hack
+	%pos = gamebase::getposition(%object);
+	%Set = newObject("nukeset",SimSet);
+	%Mask = $SimPlayerObjectType|$StaticObjectType|$VehicleObjectType|$MineObjectType|$SimInteriorObjectType;
+	containerBoxFillSet(%Set, %Mask, %Pos, 15, 15, 25, 0);
+	%num = Group::objectCount(%Set);
+	for(%i; %i < %num; %i++)
+	{
+		%obj = Group::getObject(%Set, %i);
+		GameBase::applyDamage(%obj, $NukeDamageType, 1.5, %pos, "0 0 0", "0 0 0", %player);		
+	}
+	if(%set)deleteObject(%set);
+
+	%pos1 = %pos;
+	%rot = (gamebase::getrotation(%object));
+	%dir = (Vector::getfromrot(%rot));	
+	%trans1 = (%rot @ " " @ %dir @ " " @ %rot);
+
+	%padd = "0 0 2.0";%pos = Vector::add(%pos1, %padd);
+	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(NBaseLight, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");", 0.01);
+
+	%padd = "0 0 2.0";%pos = Vector::add(%pos1, %padd);
+	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(NBase, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.1);
+	
+	%obj = newObject("","Mine","NRing1"); 
+	schedule("GameBase::throw("@%obj@","@%player@",0,false);",0.01, %player);
+	addToSet("MissionCleanup", %obj);
+	schedule("GameBase::setPosition(" @ %obj @ ",\""@%pos@"\");", 0.01, %player); 	
+	
+	%padd = "0 0 3.0";%pos = Vector::add(%pos1, %padd);
+	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(QuietNRing, \"" @ %trans @ "\", \"" @ %player @ "\", \"0 0 10\");",1.1);
+
+	%padd = "0 0 4.0";%pos = Vector::add(%pos1, %padd);
+	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(NRing, \"" @ %trans @ "\", \"" @ %player @ "\", \"0 0 10\");",0.2);
+
+	%padd = "0 0 8.0";%pos = Vector::add(%pos1, %padd);
+	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(QuietNRing, \"" @ %trans @ "\", \"" @ %player @ "\", \"0 0 10\");",0.2);
+	
+	%padd = "0 0 10.0";%pos = Vector::add(%pos1, %padd);
+	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(NBlast, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.3);
+	
+	%obj = newObject("","Mine","NRing1"); 
+	schedule("GameBase::throw("@%obj@","@%player@",0,false);",0.01, %player);
+	addToSet("MissionCleanup", %obj);
+	schedule("GameBase::setPosition(" @ %obj @ ",\""@%pos@"\");", 0.01, %player); 	
+ 	
+	%padd = "0 0 25.0";%pos = Vector::add(%pos1, %padd);
+	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(QuietNBlast, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.1);
+
+	%padd = "0 0 35.0";%pos = Vector::add(%pos1, %padd);
+	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(NBlast, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.1);
+	
+	%obj = newObject("","Mine","NRing1"); 
+	schedule("GameBase::throw("@%obj@","@%player@",0,false);",0.01, %player);
+	addToSet("MissionCleanup", %obj);
+	schedule("GameBase::setPosition(" @ %obj @ ",\""@%pos@"\");", 0.01, %player); 	
+	
+	%padd = "0 0 45.0";%pos = Vector::add(%pos1, %padd);
+	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(QuietNBlast, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.1);
+	
+	%padd = "15.0 0 60.0";%pos = Vector::add(%pos1, %padd);
+	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(NCloud, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.1);
+
+	%padd = "-15.0 0 60.0";%pos = Vector::add(%pos1, %padd);
+	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(QuietNCloud, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.1);
+
+	%padd = "0 15.0 60.0";%pos = Vector::add(%pos1, %padd);
+	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(QuietNCloud, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.1);
+
+	%padd = "0 -15.0 60.0";%pos = Vector::add(%pos1, %padd);
+	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(QuietNCloud, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.1);
+
+	%padd = "0 0 75.0";%pos = Vector::add(%pos1, %padd);
+	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(QuietNCloud, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.1);
+
+	%padd = "0 0 65";%pos = Vector::add(%pos1, %padd);
+	%trans = "0 0 0 0 0 0 0 0 0 " @ %pos;
+	schedule ("Projectile::spawnProjectile(NRing, \"" @ %trans @ "\", \"" @ %player @ "\", \"" @ %vel @ "\");",0.2);
+			}
+		}
+	}
 	
 	Mission::init(); 		//-- Init for next mission
 	Mission::reinitData();		//-- Init Items
@@ -681,7 +813,7 @@ function Server::finishMissionLoad()
 		echo ("ADMINMSG **** Mission Cycle On Mission Number " @ $Shifter::MissionCycle @ ".");
 	}
 	
-	if ($Shifter::TeamJuggle > 0 && $Shifter::TeamJuggle < $Shifter::MissionCycle)
+	if ($Shifter::TeamJuggle > 0 && $Shifter::TeamJuggle < $Shifter::MissionCycle && !$Server::TourneyMode)
 	{
 		$Shifter::MissionCycle = 0;
 		echo ("ADMINMSG **** Resetting Players Teams - Mission Reset Every " @ $Shifter::TeamJuggle @ " Mission.");
@@ -692,8 +824,8 @@ function Server::finishMissionLoad()
 	$teamplay = (getNumTeams() != 1);
 	purgeResources(true);
 
-	schedule("Server::CheckMatchStarted();", 3600);
-	schedule("Server::nextMission();", 18000);
+	//schedule("Server::CheckMatchStarted();", 3600);
+	//schedule("Server::nextMission();", 18000);
 	
 	return "True";
 }

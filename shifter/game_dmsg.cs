@@ -23,10 +23,10 @@ $deathMsg[$IDamageType, 1]      	= "%1 gives %2 an overdose of lead.";
 $deathMsg[$IDamageType, 2]      	= "%1 fills %2 full of holes.";
 $deathMsg[$IDamageType, 3]      	= "%1 mows down %2.";
 
-$deathMsg[$EnergyDamageType, 0]      	= "%2 dies of turret trauma.";
-$deathMsg[$EnergyDamageType, 1]      	= "%2 is chewed to pieces by a turret.";
-$deathMsg[$EnergyDamageType, 2]      	= "%2 walks into a stream of turret fire.";
-$deathMsg[$EnergyDamageType, 3]      	= "%2 ends up on the wrong side of a turret.";
+$deathMsg[$EnergyDamageType, 0]      	= "%2 dies of lethal injection.";
+$deathMsg[$EnergyDamageType, 1]      	= "%2 is chewed to pieces by venom.";
+$deathMsg[$EnergyDamageType, 2]      	= "%2 finds out why people are afraid of snakes.";
+$deathMsg[$EnergyDamageType, 3]      	= "%2 has too much poison in %4 diet.";
 
 $deathMsg[$PlasmaDamageType, 0]      	= "%2 feels the warm glow of %1's plasma.";
 $deathMsg[$PlasmaDamageType, 1]      	= "%1 gives %2 a white-hot plasma injection.";
@@ -90,7 +90,7 @@ $deathMsg[$GravDamageType, 3]	     	= "%2 never saw it coming from %1.";
 
 $deathMsg[$SniperDamageType, 0]	     	= "%1 rips %2 a new one..";
 $deathMsg[$SniperDamageType, 1]	     	= "%2 gets sniped by %1.";
-$deathMsg[$SniperDamageType, 2]	     	= "%1 cap %2 with a sniper round.";
+$deathMsg[$SniperDamageType, 2]	     	= "%1 caps %2 with a sniper round.";
 $deathMsg[$SniperDamageType, 3]	     	= "%2 stood still to long for %1.";
 
 $deathMsg[$BoomStickDamageType, 0]	= "%2 was turned into swiss cheese by %1.";
@@ -112,6 +112,11 @@ $deathMsg[$HBlasterDamageType, 0]	= "%2 was cut down by %1's HyperBlaster..";
 $deathMsg[$HBlasterDamageType, 1]	= "%2 gets pinned by %1's HyperBlaster.";
 $deathMsg[$HBlasterDamageType, 2]	= "%2 takes some puny bolts from %1's HyperBlaster.";
 $deathMsg[$HBlasterDamageType, 3]	= "%2 was sent to meet %4 maker by %1's HyperBlaster.";
+
+$deathMsg[$EqualizerDamageType, 0]	= "%1's equalizer shows %2 what it's like to be holy.";
+$deathMsg[$EqualizerDamageType, 1]	= "Now %2 knows what it feels like to be swiss cheese.";
+$deathMsg[$EqualizerDamageType, 2]	= "%1 mow's down %2 with a few explosive flachettes.";
+$deathMsg[$EqualizerDamageType, 3]	= "%2 collects a few explosive rounds for %1.";
 
 $deathMsg[-2,0]				= "%1 ends it all.";
 $deathMsg[-2,1]				= "%1 takes %2 own life.";

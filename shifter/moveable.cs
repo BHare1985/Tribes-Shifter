@@ -312,6 +312,7 @@ function Elevator::onLast(%this)
 
 function Elevator::onCollision(%this, %object)
 {
+	if($noEleCol) return;
 	%armor = Player::getArmor(%object);
 
 	if(!Player::isDead(%object) && getObjectType(%object) == "Player")
@@ -335,14 +336,14 @@ function Elevator::onCollision(%this, %object)
 	}
 	else
 	{
-		GameBase::applyDamage(%object,$CrushDamageType,0.01,GameBase::getPosition(%this),"0 0 0","0 0 0",%this);
+		GameBase::applyDamage(%object,$CrushDamageType,0.1,GameBase::getPosition(%this),"0 0 0","0 0 0",%this);
 	}
 }
 
 function Elevator::onBlocker(%this,%obj)
 {
 	%name = getObjectType(%obj);
-	//echo ("Name " @ %name);
+	%shape = (GameBase::getDataName(%obj)).shapeFile;
 	if (%name == "Player")
 	{
 		GameBase::applyDamage(%obj,$CrushDamageType,0.01,
@@ -350,7 +351,7 @@ function Elevator::onBlocker(%this,%obj)
 	}
 	else
 	{
-		GameBase::applyDamage(%obj,$CrushDamageType,0.25,
+		GameBase::applyDamage(%obj,$CrushDamageType,0.5,
 			GameBase::getPosition(%this),"0 0 0","0 0 0",%this);
 	}
 }
@@ -997,4 +998,5 @@ function Door::onTrigger(%this,%object,%trigger)
 {
 
 }
+
 

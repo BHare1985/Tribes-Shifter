@@ -4,7 +4,7 @@ function ScoreTracker(%clientId)
 
 	if ($Shifter::ScoreTracker)
 	{
-		echo ("Checking For Crappy Score");
+		//echo ("Checking For Crappy Score");
 		
 		if (!$Shifter::CheckScores || $Shifter::CheckScores == "" || $Shifter::CheckScores == "0")
 		{
@@ -33,17 +33,17 @@ function ScoreTracker(%clientId)
 		else if (%clientId.score < $Shifter::WarnScore3)
 		{
 			bottomprint(%clientId, "<jc><f2>You will be kicked if your score falls to low. This is your *LAST* warning.<f0>", 10);
-			echo("ADMINMSG: **** Shifter Is Checking For Poopy Player");
+			//echo("ADMINMSG: **** Shifter Is Checking For Poopy Player");
 		}
 		else if (%clientId.score < $Shifter::WarnScore2)
 		{
 			bottomprint(%clientId, "<jc><f2>LEVEL TWO WARNING - You will be kicked if your score falls to low.<f0>", 10);
-			echo("ADMINMSG: **** Shifter Is Checking For Poopy Player");
+			//echo("ADMINMSG: **** Shifter Is Checking For Poopy Player");
 		}
 		else if (%clientId.score < $Shifter::WarnScore1)
 		{
 			bottomprint(%clientId, "<jc><f2>LEVEL ONE WARNING - You will be kicked if your score falls to low.<f0>", 10);
-			echo("ADMINMSG: **** Shifter Is Checking For Poopy Player");
+			//echo("ADMINMSG: **** Shifter Is Checking For Poopy Player");
 		}
 	}
 }

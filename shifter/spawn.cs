@@ -7,7 +7,6 @@
 
 if (!$Shifter::SaveOn)
 {
-	if ($Debug) echo ("Loading Standard Equip Set");
 	$spawnBuyList[0] = MediumArmor;
 	$spawnBuyList[1] = HyperB;
 	$spawnBuyList[2] = Chaingun;

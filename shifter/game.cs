@@ -4,9 +4,6 @@ exec("shban.cs");
 if($Shifter::noSwearing)
 	exec("SHBadwordlist.cs");
 
-if($Shifter::ScoreTracker)
-	exec("scoretracker.cs");
-
 exec("remote.cs");
 
 exec("spawn.cs");
@@ -17,7 +14,7 @@ exec("damage.cs");
 
 if (getNumTeams() == 2)
 {	
-	if ($debug) echo ("There are only 2 team init Fair Teams");
+	dbecho ("There are only 2 team init Fair Teams");
 	exec("fairteams.cs");
 }
 
@@ -159,13 +156,13 @@ $AutoRespawn = 0;
 //===============================================================================================================
 function Game::playerSpawned(%pl, %clientId, %armor)
 {
-	echo ("============================ Spawning Player");
-	if ($debug) echo ("PL - " @ %pl @ "");
-	if ($debug) echo ("CL - " @ %clientId @ "");
-	if ($debug) echo ("ST - " @ %clientId.spawntype @ "");
+	dbecho ("============================ Spawning Player");
+	dbecho ("PL - " @ %pl @ "");
+	dbecho ("CL - " @ %clientId @ "");
+	dbecho ("ST - " @ %clientId.spawntype @ "");
 	
-	$Shifter::JustSpawned[%clientId] = "True";
-	schedule ("$Shifter::JustSpawned[" @ %clientId @ "] = False;",$Shifter::SpawnSafe);
+	%clientId.JustSpawned = true;
+	schedule (%clientId @ ".JustSpawned = False;",$Shifter::SpawnSafe);
 
 	if(%clientId.custom)
 	{
@@ -173,26 +170,25 @@ function Game::playerSpawned(%pl, %clientId, %armor)
 	}
 	
 	%clientId.spawntime = getsimtime();
-	%power = IsPowerDown(gamebase::getteam(%clientId));
-
-echo ("POWER = " @ %power);
+	//%power = IsPowerDown(gamebase::getteam(%clientId));
+	//echo ("POWER = " @ %power);
 
 	//=================================================================== Custom Spawn Settings
 	//== Spawn Notifications Added By Ascain.
 	
-	if ($Shifter::PowerCheck != "False" && !%power)
+	//if ($Shifter::PowerCheck != "False" && !%power)
+	//{
+	//	dbecho ("SPAWN - Power down - standard");
+	//	standardSpawnList(%clientId);
+	//	schedule ("bottomprint( " @ %clientId @ ", \"<jc><f2>You have spawned in standard armor, YOUR POWER IS DOWN!!!\", 10);" ,3);
+	//	
+	//	if (Game::playerSetSpawned(%pl, %clientId, %armor))
+	//		return true;
+	//	return false;
+	//}else
+	if (%clientId.spawntype == "standard")
 	{
-		echo ("SPAWN - Power down - standard");
-		standardSpawnList(%clientId);
-		schedule ("bottomprint( " @ %clientId @ ", \"<jc><f2>You have spawned in standard armor, YOUR POWER IS DOWN!!!\", 10);" ,3);
-		
-		if (Game::playerSetSpawned(%pl, %clientId, %armor))
-			return true;
-		return false;
-	}	
-	else if (%clientId.spawntype == "standard")
-	{
-		echo ("SPAWN - Normal Standard");
+		dbecho ("SPAWN - Normal Standard");
 		standardSpawnList(%clientId);
 		bottomprint(%clientId, "<jc><f2>You have spawned in <f0>" @ $fa_armor @ "<f2> armor with a <f0>" @ $fa_pack @ "<f2> backpack.", 10);
 		
@@ -202,7 +198,7 @@ echo ("POWER = " @ %power);
 	}
 	else if (%clientId.spawntype == "random")
 	{
-		echo ("SPAWN - Random");
+		dbecho ("SPAWN - Random");
 		randomSpawnList(%clientId);
 		bottomprint(%clientId, "<jc><f2>You have spawned in <f0>" @ $fa_armor @ "<f2> armor with a <f0>" @ $fa_pack @ "<f2> backpack.", 10);
 		
@@ -212,7 +208,7 @@ echo ("POWER = " @ %power);
 	}
 	else if (%clientId.spawntype == "favs")
 	{
-		echo ("SPAWN - Favs");
+		dbecho ("SPAWN - Favs");
 		if (%clientId.favsettings) { bottomprint(%clientId, "<jc><f2>You have spawned with your last bought favorites.", 10);}
 		else { bottomprint(%clientId, "<jc><f2>You must select your favorites first before you can be spawned with them.", 10);}
 		
@@ -222,7 +218,7 @@ echo ("POWER = " @ %power);
 	}
 	else if ($Shifter::SaveOn && %clientId.SavedInfo && %clientId.spawntype == "saved")
 	{
-		echo ("SPAWN - Player Saved");
+		dbecho ("SPAWN - Player Saved");
 		savedSpawnList(%clientId);
 		%clientId.spawntype = %clientId.spawntypetwo;
 		
@@ -230,13 +226,13 @@ echo ("POWER = " @ %power);
 			return true;
 		return false;
 	}
-	echo ("SPAWN - Ooops No Spawn!?!");
+	dbecho ("SPAWN - Ooops No Spawn!?!");
 } 
 
 function Game::playerSetSpawned(%pl, %clientId, %armor)
 {
 	//======================================================================================== Buy Actual Items
-	if ($Debug) echo ("Buying Inventory");
+	dbecho ("Buying Inventory");
 
 	%clientId.spawn = 1;
 	%max = getNumItems();
@@ -246,7 +242,7 @@ function Game::playerSetSpawned(%pl, %clientId, %armor)
 		buyItem(%clientId,%item);
 		if(%item.className == Weapon) 
 			%clientId.spawnWeapon = %item;
-		if ($Debug) echo ("Buying = " @ %item);
+		dbecho ("Buying = " @ %item);
 	}
 	for (%i = 0; %i < 6; %i++)
 	{
@@ -274,11 +270,11 @@ function Game::playerSetSpawned(%pl, %clientId, %armor)
 		%clientId.spawnnum++;
 		if (%clientId.spawnnum > 1)
 		{
-			if ($debug) echo ("*** Server Public Announce");
+			dbecho ("*** Server Public Announce");
 			centerprint (%clientId, "<jc>" @ $Shifter::PublicNotice @ "",4);
 			%clientId.spawnnum = 0;
 		}
-		if ($debug) echo ("*** Server Public Announce - END");
+		dbecho ("*** Server Public Announce - END");
 	}
       	return true;
 }
@@ -291,7 +287,7 @@ function Game::playerSpawn(%clientId, %respawn)
    	if(!$ghosting)
       		return false;
 
-	if ($debug) echo ("ST1" @ %clientId.spawntype @ "");
+	dbecho ("ST1" @ %clientId.spawntype @ "");
 
 	if (!$Shifter::SpawnType || $Shifter::SpawnType != "random" || $Shifter::SpawnType != "standard")
 	{
@@ -301,7 +297,7 @@ function Game::playerSpawn(%clientId, %respawn)
 	if (%clientId.spawntype != "favs" && %clientId.spawntype != "random" && %clientId.spawntype != "standard" && %clientId.spawntype != "saved")
 	{
 		%clientId.spawntype = $Shifter::SpawnType;
-		if ($debug) echo ("ST2" @ %clientId.spawntype @ "");
+		dbecho ("ST2" @ %clientId.spawntype @ "");
 	}
 
 	Client::clearItemShopping(%clientId);
@@ -331,17 +327,17 @@ function Game::playerSpawn(%clientId, %respawn)
 	   		%armor = "lfemale";
 
 	   	%pl = spawnPlayer(%armor, %spawnPos, %spawnRot);
-	   	if ($debug) echo("SPAWN: cl:" @ %clientId @ " pl:" @ %pl @ " marker:" @ %spawnMarker @ " armor:" @ %armor);
+	   	dbecho("SPAWN: cl:" @ %clientId @ " pl:" @ %pl @ " marker:" @ %spawnMarker @ " armor:" @ %armor);
 	   	
 	   	if(%pl != -1)
 	   	{
 	   	   	GameBase::setTeam(%pl, Client::getTeam(%clientId));
 	   	   	Client::setOwnedObject(%clientId, %pl);
 	   	   	
-	   	   	echo ("Game::playerSpawned 1");
+	   	   	dbecho ("Game::playerSpawned 1");
 	   	   	if (!Game::playerSpawned(%pl, %clientId, %armor, %respawn))
 	   	   	{
-	   	   		echo ("Spawn Failed");
+	   	   		dbecho ("Spawn Failed");
 	   	   		Client::sendMessage(%clientId,0,"Sorry Respawn Failed - Try again later ");
 	   	   		return false;
 	   	   	}
@@ -386,7 +382,7 @@ function Game::pickRandomSpawn(%team)
 
 		if(containerBoxFillSet(%set,$SimPlayerObjectType|$VehicleObjectType,GameBase::getPosition(%obj),2,2,4,0) == 0)
 		{
-			deleteObject(%set);
+			if(%set)deleteObject(%set);
 			return %obj;		
 		}
 
@@ -395,7 +391,7 @@ function Game::pickRandomSpawn(%team)
 			%i = -1;
 			%value = %spawnIdx;
 		}
-		deleteObject(%set);
+		if(%set)deleteObject(%set);
 	}
 	return false;
 }
@@ -471,12 +467,17 @@ function Game::startMatch()																						// game.cs
 	$matchStarted = true;
 	$missionStartTime = getSimTime();
 	messageAll(0, "Match started.");
+	if($ceasefire)
+	{
+		BottomPrintAll("<F1><jc>::::Cease Fire enabled For THIS Mission::::",5);
+		messageAll(0, "Set Your faves! You now have full Invo Access!~wteleport2.wav");
+	}
 	Game::resetScores();	
 
 	echo("\"M\"" @ $missionName @ "\"" @ ($Server::timeLimit * 60) + $missionStartTime - getSimTime() @ "\"");
 
 	//======================= Create Power Object Tree
-	DumpObjectTree();
+	//DumpObjectTree();
 
 	%numTeams = getNumTeams();
 	for(%i = 0; %i < %numTeams; %i = %i + 1)
@@ -485,7 +486,7 @@ function Game::startMatch()																						// game.cs
 		schedule("replenishTeamEnergy(" @ %i @ ");", $secTeamEnergy);
 	}
 
-	echo ("Match Observer");
+	dbecho ("Match Observer");
 	for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
 	{
 		if(%cl.observerMode == "pregame")
@@ -495,7 +496,7 @@ function Game::startMatch()																						// game.cs
 		}
 		Game::refreshClientScore(%cl);
 	}
-	echo ("Match Observer Done");
+	dbecho ("Match Observer Done");
 
 	Game::checkTimeLimit();
 }
@@ -507,9 +508,9 @@ function Game::autoRespawn(%client)
 {
 	if(%client.dead == 1)
 	{
-		echo ("AutoRespawn 1");
+		dbecho ("AutoRespawn 1");
 		Game::playerSpawn(%client, "true");
-		echo ("AutoRespawn 2");
+		dbecho ("AutoRespawn 2");
 	}
 }
 
@@ -521,8 +522,8 @@ function Game::initialMissionDrop(%clientId)
    	if($Server::TourneyMode)
    	{
       		%clName = Client::getName(%clientId);
-      		if ($debug) echo($Shifter::tag0 @ " " @ %clName @ " " @ String::findSubStr(%clName,$Shifter::Tag0 @ %clientId));
-      		if ($debug) echo($Shifter::tag1 @ " " @ %clName @ " " @ String::findSubStr(%clName,$Shifter::Tag1 @ %clientId));
+      		dbecho($Shifter::tag0 @ " " @ %clName @ " " @ String::findSubStr(%clName,$Shifter::Tag0 @ %clientId));
+      		dbecho($Shifter::tag1 @ " " @ %clName @ " " @ String::findSubStr(%clName,$Shifter::Tag1 @ %clientId));
       		if(String::findSubStr(%clName,$Shifter::Tag0) >= 0)
 		{
 			GameBase::setTeam(%clientId, 0);
@@ -810,7 +811,7 @@ function Game::checkTimeLimit()
 
 	if((%curTimeLeft >= 119 && %curTimeLeft <= 120) && $matchStarted && $Shifter::TwoMinute != "False")
 	{
-		schedule("messageAll(1,\"2 Minute Warning!~waccess_denied.wav\");",0);
+		schedule("messageAll(1,\"2 Minute Warning!~waccess_denied.wav\");", 0.01);
 		schedule("messageAll(1,\"2 Minute Warning!~waccess_denied.wav\");",0.5);
 		schedule("messageAll(1,\"2 Minute Warning!~waccess_denied.wav\");",1.0);
 	}
@@ -830,12 +831,12 @@ function Game::checkTimeLimit()
 //======================================================================================================== Reset Client Scores Back To Zero
 function Game::resetScores(%client)
 {
-	if ($debug) echo("*** Resetting Client Scores");
+	dbecho("*** Resetting Client Scores");
 	if(%client == "")
 	{
 	   	for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
 	   	{
-			if ($debug) echo ("*** Begin Scores For " @ %cl);
+			dbecho ("*** Begin Scores For " @ %cl);
 	
 	   		%cl.scoreKills = 0;
    	   		%cl.scoreDeaths = 0;
@@ -847,7 +848,7 @@ function Game::resetScores(%client)
 			else
 				%cl.TKCount = 0;
 		}
-		echo ("Reset Scores Finished");
+		dbecho ("Reset Scores Finished");
 	}
 	else
 	{
@@ -857,7 +858,7 @@ function Game::resetScores(%client)
 		}
 		else
 		{
-			if ($debug) echo ("*** Resetting Scores For " @ %client);
+			dbecho ("*** Resetting Scores For " @ %client);
 			if (%client.TKCount > 0)
 				%client.TKCount = %cl.TKCount;
 			else
@@ -871,17 +872,26 @@ function Game::resetScores(%client)
 			%client.score = 0;
 			%client.ismuted=False;
 			%client.telepoint = False;
+			%client.heatup = s0;
+			%client.heatlock = 0;
+			%client.plasmacharge = 0;
+			%client.charging = 0;
+			%client.lascharge = 0;
+			%client.boosted = 0;
+			%client.stimTime = 0;
+			%client.empTime = 0;
+			%client.poisonTime = 0;
+			%client.burnTime = 0;
+			%client.shieldTime = 0;
+			%client.cloakTime = 0;
+			%client.ovd = 0;
+			schedule("%client.NRGTDOff = 0;", 1.0, %client);
 		}
 	}
 }
 
 function remoteSetArmor(%player, %armorType)
 {
-	%client = Player::getClient(%player);
-	if(%client.isGod)
-	{
-	   	Player::setArmor(%player, %armorType);
-	}
 }
 
 //========================================================================================================== SetUp Players Stats On Connect
@@ -896,10 +906,26 @@ function Game::onPlayerConnected(%playerId)
 	%playerId.favsettings = "False";
 	%playerId.Plastic = 15;
 	%playerId.boosted = 0;
-	%playerId.telepoint = False;
+	%playerId.telepoint = 0;
 	%playerId.hackattempt = 0;
-	%clientId.booster = 0;
-	%ClientId.boostercool = 0;
+	%playerId.booster = 0;
+	%playerId.boostercool = 0;
+	%playerId.boostpop = 0;
+	%playerId.heatup = s0;
+	%playerId.heatlock = 0;
+	%playerId.plasmacharge = 0;
+	%playerId.charging = 0;
+	%playerId.lascharge = 0;
+	%playerId.stimTime = 0;
+	%playerId.empTime = 0;
+	%playerId.poisonTime = 0;
+	%playerId.burnTime = 0;
+	%playerId.shieldTime = 0;
+	%playerId.cloakTime = 0;
+	%playerId.ovd = 0;
+	%playerId.NRGTDOff = 0;
+	schedule("%playerId.NRGTDOff = 0;", 1.0, %playerId);
+	%playerId.telepoint = 0;
 
 	for (%i = 0; %i <= 21; %i++)
 	{
@@ -962,11 +988,11 @@ function Game::setRandomTeam()
 	bottomprintall ("<jc>Randomly Assigning Teams - Occurs Every " @ $Shifter::TeamJuggle @ " Missions.");
 	%numTeams = getNumTeams();
 	%numPlayers = getNumClients();
-	echo ("*********************** BEGINING TEAM ASSIGNMENT");
+	dbecho ("*********************** BEGINING TEAM ASSIGNMENT");
 	
 	if (!%numPlayers)
 	{
-		if ($debug) echo ("ADMINMSG **** No Players In Game Not Assigning Teams");
+		dbecho ("ADMINMSG **** No Players In Game Not Assigning Teams");
 		return;
 	}
 
@@ -977,7 +1003,7 @@ function Game::setRandomTeam()
 		%pl = getClientByIndex(%i);
 		%player[%i] = %pl;
 		gamebase::setteam(%pl, -1);
-		echo ("**** Clearing Player Teams " @ %pl);
+		dbecho ("**** Clearing Player Teams " @ %pl);
 	}
 
 	%assigned = 0;
@@ -986,7 +1012,7 @@ function Game::setRandomTeam()
 	{
 		if (%k > 2000)
 		{	
-			echo ("**** Could Not Assign All Players In Given Time - Breaking Loop.");	
+			dbecho ("**** Could Not Assign All Players In Given Time - Breaking Loop.");	
 			break;
 		}
 		
@@ -1002,9 +1028,9 @@ function Game::setRandomTeam()
 			%assigned++;
 		}
 	}
-	echo ("***********************");
-	echo ("**** Players Assigned To Teams = " @ %assigned @ " out of " @ %numplayers);
-	echo ("*********************** DONE WITH TEAM ASSIGNMENT");
+	dbecho ("***********************");
+	dbecho ("**** Players Assigned To Teams = " @ %assigned @ " out of " @ %numplayers);
+	dbecho ("*********************** DONE WITH TEAM ASSIGNMENT");
 }
 
 function AllOnTeam()
@@ -1021,7 +1047,7 @@ function AllOnTeam()
 
 function Game::clientKilled(%playerId, %killerId)
 {
-	echo ("Game::clientKilled (" @ %playerId @ " - " @ %killerId @ ").");
+	dbecho ("Game::clientKilled (" @ %playerId @ " - " @ %killerId @ ").");
 }
 
 function Client::leaveGame(%clientId)
@@ -1035,7 +1061,7 @@ function Client::leaveGame(%clientId)
 
 function Player::onKilled(%this)
 {
-	echo("*** Player Killed ***");
+	dbecho("*** Player Killed ***");
 	%this.Station = "";
 
    	$killedflagcarry = "False";
@@ -1043,14 +1069,21 @@ function Player::onKilled(%this)
 	%cl = GameBase::getOwnerClient(%this);
 	%cl.dead = 1;
 
-	%cl.heatup = "0";
-	%cl.heatlock = "0";
-	%cl.plasmacharge = "0";
-	%cl.charging = "0";
-	%cl.lascharge = "0";
+	%cl.heatup = 0;
+	%cl.heatlock = 0;
+	%cl.plasmacharge = 0;
+	%cl.charging = 0;
+	%cl.lascharge = 0;
 	%cl.boosted = 0;
-	$StimTime[%cl] = "0";
+	%cl.stimTime = 0;
+	%cl.empTime = 0;
+	%cl.poisonTime = 0;
+	%cl.burnTime = 0;
+	%cl.shieldTime = 0;
+	%cl.cloakTime = 0;
 	%cl.ovd = 0;
+	schedule("%cl.NRGTDOff = 0;", 1.0, %cl);
+	//schedule(%cl@".telepoint = 0;", 15);
 
 	if($AutoRespawn > 0)
 		schedule("Game::autoRespawn(" @ %cl @ ");",$AutoRespawn,%cl);
@@ -1096,7 +1129,7 @@ function Player::onKilled(%this)
 		%cl.lastkillpos = %kdpos;
 		$killedarmor = Player::getArmor(%this);
 
-		schedule("GameBase::startFadeOut(" @ %this @ ");", $CorpseTimeoutValue, %this);
+		schedule("GameBase::startFadeOut(" @ %this @ ");", 900, %this);
 		Client::setOwnedObject(%cl, -1);
 		Client::setControlObject(%cl, Client::getObserverCamera(%cl));
 		Observer::setOrbitObject(%cl, %this, 5, 5, 5);
@@ -1117,8 +1150,8 @@ function Client::onKilled(%playerId, %killerId, %damageType, %vertPos, %quadrant
 	else
 		echo("\"K\"" @ %killerId @ "\"" @ %playerId @ "\"" @ %damageType @ "\"" @ "1" @ "\"");   
 
-	echo ("*** Player " @ %playerId);
-	echo ("*** Killer " @ %killerId);
+	dbecho ("*** Player " @ %playerId);
+	dbecho ("*** Killer " @ %killerId);
 
 	%killedflag = $killedflagcarry;	
 	%playerId.guiLock = true;
@@ -1204,22 +1237,43 @@ function Client::onKilled(%playerId, %killerId, %damageType, %vertPos, %quadrant
 				%killedpos = $lastkillpos;				//== Killed Pos
 				%killerpos = GameBase::getPosition(%killerId);          //== Killers Pos
 				%killdist = Vector::getDistance(%killedpos,%killerpos);	//== Distance from Killed Player To Enemy Flag
-			
-				if (%vertPos == "head" && (%damagetype == $SniperDamageType || %damagetype == $BulletDamageType || %damagetype == $LaserDamageType) )
+
+				if (%vertPos == "head" && (%damagetype == $SniperDamageType || %damagetype == $LaserDamageType) )
 				{
-					%msg = "HEAD SHOT";
+					if(%quadrant == "middle_front") //- Direct Head Shot
+					{
+						%msg = "HEAD SHOT";
+					}
+					else if(%quadrant == "middle_back" || %quadrant == "middle_middle") //- Back Of Head Shit
+					{
+						%msg = "!! EXTREME HEAD SHOT - BONUS 5 POINTS!!";
+						%score += 5;
+					}
+					else
+					{
+						%msg = "HEAD SHOT";
+					}
 				}
 			
-				if ($Shifter::JustSpawned[%playerId])
+				if (%playerId.JustSpawned)
 				{
 					%score = floor (%score / 2);
 					if($debug) echo ("*** Player Just Spawned - Points Are Halved");
 				}
-			
 				if (%killerId.missilekill){%score = floor(%score * 0.25);}
 			
-				echo (" SCORE " @ %score);
 			}
+			
+			
+		%distance = floor (%killerId.lastkill);
+		%killerId.lastkill = "0";
+
+		if (%distance)
+		{
+			%msg = "" @ %msg @ " Distance = " @ %distance @ " Meters";
+      			//Client::sendMessage(%killerId,0,"Kill @ " @ %distance @ ".");
+      			//Client::sendMessage(%playerId,0,"Killed @ " @ %distance @ ".");
+		}
 
 			%killerId.scoreKills++;					//=== Killer Number Of Kills
             		%playerId.scoreDeaths++;  				//=== Killed Player Deaths
@@ -1257,11 +1311,11 @@ function CheckTeamKiller(%killerId,%playerId,%damagetype, %vertPos, %quadrant)
 				{
 					%pppos = GameBase::getPosition(%cl);
 					%dist = Vector::getDistance(%ppos,%pppos);
-					if ($debug) echo("***" @ Client::getName(%cl) @ " was " @ %dist @ " from " @ Client::getName(%playerId) @ " Prox = " @ $SHAntiTeamKillProximity);
+					dbecho("***" @ Client::getName(%cl) @ " was " @ %dist @ " from " @ Client::getName(%playerId) @ " Prox = " @ $SHAntiTeamKillProximity);
 
 					if(%dist < $SHAntiTeamKillProximity)
 					{
-						if ($debug) echo("***Player "@ Client::getName(%playerId) @" was close, kill is accidental.");
+						dbecho("***Player "@ Client::getName(%playerId) @" was close, kill is accidental.");
 						Client::sendMessage(%killerId, 0, "You team killed...");
 						return;
 					}
@@ -1277,7 +1331,7 @@ function CheckTeamKiller(%killerId,%playerId,%damagetype, %vertPos, %quadrant)
 	   		
 		%score = (Scoring::killpoints(%playerId, %killerId, %vertPos,%quadrant));
 
-		if ($Shifter::JustSpawned[%playerId] == "false")
+		if (%playerId.JustSpawned == "false")
 		{
 			%killerId.scoreDeaths++;						//=== Killer Number Of Kills
 			%killerId.score = (%killerId.score - %score);				//=== Killer Score
@@ -1294,6 +1348,14 @@ function CheckTeamKiller(%killerId,%playerId,%damagetype, %vertPos, %quadrant)
 		//====================================== Refresh Scores
 		Game::refreshClientScore(%killerId);
 		Game::refreshClientScore(%playerId);
+
+		%distance = floor(%killerId.lastkill);
+		%killerId.lastkill = "0";
+
+		if (%distance)
+		{
+			%msg = "" @ %msg @ " Distance = " @ %distance @ " Meters";
+		}
 
 		if (%killedflag)
 		{
@@ -1378,8 +1440,8 @@ function MatchAssign()
 	{
 		%pl = getClientByIndex(%i);
 		%clName = Client::getName(%pl);
-		if ($debug) echo($Shifter::tag0 @ " " @ %clName @ " " @ String::findSubStr(%clName,$Shifter::Tag0 @ %pl));
-      		if ($debug) echo($Shifter::tag1 @ " " @ %clName @ " " @ String::findSubStr(%clName,$Shifter::Tag1 @ %pl));
+		dbecho($Shifter::tag0 @ " " @ %clName @ " " @ String::findSubStr(%clName,$Shifter::Tag0 @ %pl));
+      		dbecho($Shifter::tag1 @ " " @ %clName @ " " @ String::findSubStr(%clName,$Shifter::Tag1 @ %pl));
       		if(String::findSubStr(%clName,$Shifter::Tag0) == 0)
 		 {
 			GameBase::setTeam(%pl,0);

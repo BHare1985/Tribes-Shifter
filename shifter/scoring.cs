@@ -2,7 +2,7 @@ echo ("Executing A.S.S.");
 
 function Scoring::Object(%this)
 {
-	if ($Shifter::ObjScore == "False"){if ($debug) echo ("Scoring Is Off (Object Destoryed)");return;}
+	if ($Shifter::ObjScore == "False"){dbecho ("Scoring Is Off (Object Destoryed)");return;}
 
 	%destroyerTeam = %this.lastDamageTeam;						//=== Team who destroyed Object.
 	%thisTeam = GameBase::getTeam(%this); 						//=== Team whos object belongs.
@@ -15,8 +15,9 @@ function Scoring::Object(%this)
 	{
 		%playerClient = GameBase::getOwnerClient(%this.lastDamageObject);	//=== Player Who Did The Damage.
 	}
-
-	$lastdamageobj[%this] = GameBase::getControlClient(%this.lastDamageObject);
+	//$lastdamageobj[%this]
+	//greyflcn
+	%this.lastdamageobj = GameBase::getControlClient(%this.lastDamageObject);
 
 	if(%playerClient != -1 || !%playerClient)					//=== Get The Players Name Who Killed.
 		%clientName = Client::getName(%playerClient);
@@ -24,7 +25,7 @@ function Scoring::Object(%this)
 	%objtype = getObjectType(%this);
 	%objname = (GameBase::getDataName(%this)).description;
 
-	if ($debug) echo ("Object Detroyed = " @ %objname);
+	dbecho ("Object Detroyed = " @ %objname);
 
 	if (%thisTeam == -1) //=== Doesnt Matter - Not A Team Item
 		return;
@@ -147,7 +148,7 @@ function Scoring::Object(%this)
 
 function Scoring::killpoints(%playerId, %killerId, %damagetype, %vertPos, %quadrant)
 {
-	if ($Shifter::PlrScore == "False"){if ($debug) echo ("Scoring Is Off (Player Kill)");return;}
+	if ($Shifter::PlrScore == "False"){dbecho ("Scoring Is Off (Player Kill)");return;}
 
 	//==================================================================================================================== Advanced Scoring
 	//== See also in the objectives.cs file for the print out of stats... Currently Stats are printed for all players... 
@@ -314,6 +315,51 @@ function Scoring::killpoints(%playerId, %killerId, %damagetype, %vertPos, %quadr
 		%score += %killscore;
 	}
 	
-	if ($debug) echo ("Player Killed SCORE " @ %score);
+	dbecho ("Player Killed SCORE " @ %score);
 	return %score;
+}
+
+function ScoreTracker(%clientId)
+{
+	%addr = Client::getTransportAddress(%clientId);
+
+	if (!$Shifter::CheckScores || $Shifter::CheckScores == "" || $Shifter::CheckScores == "0")
+	{
+		$Shifter::CheckScores = 30;
+	}
+
+	if (%clientId.score < $Shifter::WarnScoreFinal)
+	{
+		%name = Client::getName(%clientId);
+		if ($Server::Admin["noban", %name] && %clientId.noban)
+		{
+			echo ("ADMINMSG **** " @ %name @ " has crappy Score but is NoBan");
+			return;
+		}
+		else if (%clientId.noban)
+		{
+			echo ("ADMINMSG **** " @ %name @ " has crappy Score but is NoBan");
+			return;
+		}
+		
+		MessageAll(1, Client::getName(%clientId) @ " got Kicked For Having A Crappy Score...");
+		bottomprintall("<jc><f1>" @ Client::getName(%clientId) @ " <f0> got Kicked For Having A Crappy Score...<f1>", 10);
+		echo("ADMINMSG: **** " @ Client::getName(%clientId) @ " got Kicked For Having A Crappy Score...");
+		KickPlayer(%clientId, "You were kicked for having a crappy score. Score = " @ %clientId.score );
+	}
+	else if (%clientId.score < $Shifter::WarnScore3)
+	{
+		bottomprint(%clientId, "<jc><f2>You will be kicked if your score falls to low. This is your *LAST* warning.<f0>", 10);
+		//echo("ADMINMSG: **** Shifter Is Checking For Poopy Player");
+	}
+	else if (%clientId.score < $Shifter::WarnScore2)
+	{
+		bottomprint(%clientId, "<jc><f2>LEVEL TWO WARNING - You will be kicked if your score falls to low.<f0>", 10);
+		//echo("ADMINMSG: **** Shifter Is Checking For Poopy Player");
+	}
+	else if (%clientId.score < $Shifter::WarnScore1)
+	{
+		bottomprint(%clientId, "<jc><f2>LEVEL ONE WARNING - You will be kicked if your score falls to low.<f0>", 10);
+		//echo("ADMINMSG: **** Shifter Is Checking For Poopy Player");
+	}
 }

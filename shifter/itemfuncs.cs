@@ -4,9 +4,9 @@
 // Holds functions for varrious items in the game, including cloaking and stim, as well as varrious beacons 
 // and other stuff. All are special functions specific to a given item.
 //
-//==================================================================================================== Det.Bug
+//=========================================================== Det.Bug
 
-//====================================== Checkhackable Returns TRUE if NOT in the list.
+//========================= Checkhackable Returns TRUE if NOT in the list.
 function checkHackable(%name, %shape)
 {
 
@@ -87,7 +87,6 @@ function hackingItem(%target, %pTeam, %pName, %tName, %name, %team, %time, %clie
 						Player::blowUp(%this);
 						GameBase::applyDamage(%player,$FlashDamageType,0.90,GameBase::getPosition(%player),"0 0 0","0 0 0",%target);
 						%target.infected = "false";
-						//echo ("hackerror");
 						return;
 					}
 					else
@@ -114,7 +113,7 @@ function hackingItem(%target, %pTeam, %pName, %tName, %name, %team, %time, %clie
 					    Client::sendMessage(%client,1,"You disarm the DetPack.");
 						%client.score = %client.score + 2;
 						Game::refreshClientScore(%client);
-						deleteObject(%target);
+						if(%target)deleteObject(%target);
 					}
 				}
 				else
@@ -123,10 +122,10 @@ function hackingItem(%target, %pTeam, %pName, %tName, %name, %team, %time, %clie
 					TeamMessages(1, %team, %pName @ " hacked into your teams " @ %name @ "!");
 					GameBase::setTeam(%target,%pTeam);
 					
-					if($Shifter::HackedTime > 0)
-					{
-						schedule("GameBase::setTeam('" @ %target @ "','" @ $origTeam[%target] @ "');", $Shifter::HackedTime);
-					}
+					//if($Shifter::HackedTime > 0)
+					//{
+					//	schedule("GameBase::setTeam('" @ %target @ "','" @ $origTeam[%target] @ "');", $Shifter::HackedTime);
+					//}
 
 					if(%target < $minHacked || $minHacked == -1)
 					{
@@ -146,26 +145,23 @@ function hackingItem(%target, %pTeam, %pName, %tName, %name, %team, %time, %clie
 function checkDeployArea(%client,%pos)
 {
   	%set=newObject("set",SimSet);
-	%num=containerBoxFillSet(%set,$VehicleObjectType | $StaticObjectType | $ItemObjectType | $SimPlayerObjectType,%pos,1,1,1,1);
+	%num=containerBoxFillSet(%set,$VehicleObjectType | $StaticObjectType | $ItemObjectType | $SimPlayerObjectType,%pos,1,1.5,1,0);
 	%n = Group::objectCount(%set);	
 	
 	if(!%num)
 	{
-		deleteObject(%set);
+		if(%set)deleteObject(%set);
 		return 1;
 	}
 
 	%datab = GameBase::getDataName(Group::getObject(%set,0));
 	%obj = (getObjectType(Group::getObject(%set,0)));
-	
-	echo ("obj " @ %obj);
-	
-	if ((%obj == "SimTerrain" || %obj == "InteriorShape" || %datab == "DeployablePlatform" || %datab == "LargeAirBasePlatform"  || %datab == "BlastFloor" || %datab == "BlastWall" || %datab == "LargeEmplacementPlatform"))
+	if(%set)deleteObject(%set);
+	if (%obj == "SimTerrain" || %obj == "InteriorShape" || %datab == "DeployablePlatform" || %datab == "LargeAirBasePlatform"  || %datab == "BlastFloor" || %datab == "BlastWall" || %datab == "LargeEmplacementPlatform")
 	{
-		deleteObject(%set);
 		return 1;
 	}
-	else if(%num == 1 && getObjectType(Group::getObject(%set,0)) == "Player")
+	else if(%num == 1 && %obj == "Player")
 	{
 		%obj = Group::getObject(%set,0);	
 		if(Player::getClient(%obj) == %client)	
@@ -176,7 +172,6 @@ function checkDeployArea(%client,%pos)
 	else
 		Client::sendMessage(%client,1,"Unable to deploy - Item in the way");
 	
-	deleteObject(%set);
 	return 0;
 }
 
@@ -208,12 +203,12 @@ function CheckForObjects(%pos, %l, %w, %h)
 			}
 			else
 			{
-				deleteObject(%set);
+				if(%set)deleteObject(%set);
 				return False;
 			}
 		}
 	}
-	deleteObject(%set);
+	if(%set)deleteObject(%set);
 	return True;
 }
 
@@ -299,7 +294,7 @@ $TurretBoxMinHeight = 15;    	//Define Min Height from another turret
 // %angle   = Check angel (to mount on walls, etc.) (True/False/Player) Checks angel - Does Not Check - Uses Players Rotation Reguardless
 // %freq    = Check Frequency (True/False) = Too Many Other Turrets
 // %prox    = Check Proximity (True/False) = Too Many Of SAME Type Of Item
-// %noinside= Checks to see if deployment is IN a building. (True - Checks To See, And will not allow a turret to be deployed inside)
+// %noinside= Checks to see if deployment is IN a building. 0 = No check - >0 is number of meters up to check.
 // %area    = Check Area (for objects in the way) (True/False)
 // %surface = Check Surface Type  (True/False)
 // %range   = Max deploy distance from player (number best between 3 and 5) meters from player.
@@ -328,14 +323,8 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 
 			if (%surface)
 			{
-				if (%obj == "SimTerrain" || %obj == "InteriorShape")
-				{
-				
-				}
-				else if (%datab == "DeployablePlatform" || %datab == "LargeAirBasePlatform" || %datab == "BlastFloor" || %datab == "BlastWall" || %datab == "LargeEmplacementPlatform")
-				{
-
-				}
+				if (%obj == "SimTerrain" || %obj == "InteriorShape" || %datab == "DeployablePlatform" || %datab == "LargeAirBasePlatform" || %datab == "BlastFloor" || %datab == "BlastWall" || %datab == "LargeEmplacementPlatform")
+				{}
 				else
 				{
 					Client::sendMessage(%client,1,"Can only deploy on terrain or buildings...");
@@ -348,19 +337,20 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 				%set = newObject("proxset",SimSet);
 				%num = containerBoxFillSet(%set,$StaticObjectType,%pos,$TurretBoxMinLength,$TurretBoxMinWidth,$TurretBoxMinHeight,0);
 				%num = CountObjects(%set,%deploy,%num);
-				deleteObject(%set);
+				if(%set)deleteObject(%set);
 				if($MaxNumTurretsInBox > %num){}
 				else
 				{
 					Client::sendMessage(%client,1,"Frequency Overload - Too close to other " @ %deploy @ "s.");
 					return;
 				}
-			
 				%set = newObject("minimumset",SimSet);
 				%Mask = $StaticObjectType|$VehicleObjectType|$ItemObjectType;
 				%num = containerBoxFillSet(%Set, %Mask, %pos, 2.5,2.5,2.5, 0);
 				%num = CountObjects(%set,"",%num);
-				deleteObject(%set);
+				if(%set)deleteObject(%set);
+//greyflcn
+//Uhg, whats this crap doing?
 				if(!%num){}else
 				{
 					Client::sendMessage(%client,1,"Frequency Overload - Too close to other remote turrets");
@@ -371,7 +361,7 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 			if (%noinside)
 			{
 				%padd = "0 0 10";%poss = Vector::add(%pos, %padd);
-				for (%b=1; %b < 15; %b++)
+				for (%b=1; %b < %noinside; %b++)
 				{
 					%padd = "0 0 " @ %b;
 					%poss = Vector::add(%pos, %padd);
@@ -383,20 +373,56 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 					Client::sendMessage(%client,0,"You can not deploy " @ %name @ ", space to enclosed.");
 					return; 
 				}
-
-
 			}
 			if (%freq)
 			{
 				%set = newObject("freqset",SimSet);%Mask = $StaticObjectType|$VehicleObjectType|$ItemObjectType;
 				%num = containerBoxFillSet(%Set, %Mask, $los::position, $TurretBoxMaxLength/2,$TurretBoxMaxWidth/2,$TurretBoxMaxHeight/2, 0);
 				%num = CountObjects(%set,"",%num);
-				deleteObject(%set);
+				if(%set)deleteObject(%set);
 				if(%num > 0)
 				{
 					Client::sendMessage(%client,1,"Other objects in the way.");
 					return;
 				}				
+			}
+//greyflcn bugfix
+//Fix for airbase lasers
+//Fix for 4 lasers in the same spot
+			if (%name == "Laser Turret")
+			{
+				%posX = getWord(%Pos,0);
+				%posY = getWord(%Pos,1) - 1;
+				%posZ = getWord(%Pos,2);
+				%newpos = %posX @ " " @ %posY @ " " @ %posZ;
+				%set = newObject("laserset",SimSet);
+				%num0 = containerBoxFillSet(%Set, %Mask, %newpos, 1,2,1,0);
+				%num = CountObjects(%set,%deploy,%num0);
+				if(%set)deleteObject(%set);
+				if(%num)
+				{
+					Client::sendMessage(%client,1,"Frequency Overload - Too close to other " @ %deploy @ "s.");
+					return;
+				}
+				if(%datab == "LargeAirBasePlatform")
+				{
+					if (Vector::dot($los::normal,"0 0 1") > 0.7)
+					{
+						%prot = GameBase::getRotation(%player);
+						%zRot = getWord(%prot,2);
+						if (Vector::dot($los::normal,"0 0 1") > 0.6)
+							%rot = "0 0 " @ %zRot;
+						else if (Vector::dot($los::normal,"0 0 -1") > 0.6)
+							%rot = "3.14159 0 " @ %zRot;
+						else
+							%rot = Vector::getRotation($los::normal);
+					}
+					else
+					{
+						Client::sendMessage(%client,1,"Can only deploy on flat surfaces");
+						return 0;
+					}
+				}
 			}
 
 			if (%angle == "True")
@@ -405,22 +431,12 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 				{
 					%prot = GameBase::getRotation(%player);
 					%zRot = getWord(%prot,2);
-
 					if (Vector::dot($los::normal,"0 0 1") > 0.6)
-					{
 						%rot = "0 0 " @ %zRot;
-					}
+					else if(Vector::dot($los::normal,"0 0 -1") > 0.6)
+						%rot = "3.14159 0 " @ %zRot;
 					else
-					{
-						if (Vector::dot($los::normal,"0 0 -1") > 0.6)
-						{
-							%rot = "3.14159 0 " @ %zRot;
-						}
-						else
-						{
-							%rot = Vector::getRotation($los::normal);
-						}
-					}
+						%rot = Vector::getRotation($los::normal);
 				}
 				else
 				{
@@ -429,41 +445,25 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 				}
 			}
 			else if (%angle == "Player")
-			{
 				%rot = GameBase::getRotation(%player);
-			}
 			else if(%angle == "Flat")
-			{
 				%rot = "-1.54564 0.02591 -3.09105";
-
-			}
 			else if (!%angle || %angle == "False")
 			{
 				%prot = GameBase::getRotation(%player);
 				%zRot = getWord(%prot,2);
 				if (Vector::dot($los::normal,"0 0 1") > 0.6)
-				{
 					%rot = "0 0 " @ %zRot;
-				}
+				else if (Vector::dot($los::normal,"0 0 -1") > 0.6)
+					%rot = "3.14159 0 " @ %zRot;
 				else
-				{
-					if (Vector::dot($los::normal,"0 0 -1") > 0.6)
-					{
-						%rot = "3.14159 0 " @ %zRot;
-					}
-					else
-					{
-						%rot = Vector::getRotation($los::normal);
-					}
-				}			
+					%rot = Vector::getRotation($los::normal);
 			}
 
 			if (%area)
 			{
 				if(!checkDeployArea(%client,$los::position))
-				{
 					return 0;
-				}
 			}
 
 			%turret = newObject(%name,%type, %deploy,true);
@@ -511,15 +511,15 @@ function Item::deployShape(%player,%name,%shape,%item)
 	%client = Player::getClient(%player);
 	if($TeamItemCount[GameBase::getTeam(%player) @ %item] < $TeamItemMax[%item]) 
 	{
-		if (GameBase::getLOSInfo(%player,3)) {
+		if (GameBase::getLOSInfo(%player,7)) {
 
 			%obj = getObjectType($los::object);
 			if (%obj == "SimTerrain" || %obj == "InteriorShape" || %obj == "DeployablePlatform")
 			{
 				if (Vector::dot($los::normal,"0 0 1") > 0.7) 
 				{
-					if(checkDeployArea(%client,$los::position)) 
-					{
+					//if(checkDeployArea(%client,$los::position)) 
+					//{
 						%sensor = newObject("","Sensor",%shape,true);
  	        	  	 		addToSet("MissionCleanup", %sensor);
 						GameBase::setTeam(%sensor,GameBase::getTeam(%player));
@@ -529,7 +529,7 @@ function Item::deployShape(%player,%name,%shape,%item)
 						playSound(SoundPickupBackpack,$los::position);
 						echo("MSG: ",%client," deployed a ",%name);
 						return true;
-					}
+					//}
 				}
 				else 
 					Client::sendMessage(%client,0,"Can only deploy on flat surfaces");
@@ -565,7 +565,7 @@ function checkPlayerCash(%client)
 function recountitem(%itemname)
 {
 	if ($debug) echo ("Reiniting - " @ %itemname @ "");
-	for(%i = -1; %i < 8 ; %i++)
+	for(%i = -1; %i < 5 ; %i++)
 		$TeamItemCount[%i @ %itemname] = 0;
 }
 //==============================================================
@@ -593,6 +593,7 @@ function Mission::reinitData()
 	recountitem("EmplacementPack");
 	recountitem("EmpM");
 	recountitem("EngBeacons");
+	recountitem("FlamerTurretPack");
 	recountitem("ForceFieldPack");
 	recountitem("GasM");
 	recountitem("HAPCVehicle");
@@ -636,6 +637,15 @@ function Mission::reinitData()
 		$TeamItemCountAOE[%i] = 0;
 	}
 
+	for(%ClientId = Client::getFirst(); %ClientId != -1; %ClientId = Client::getNext(%ClientId))
+	{
+		%ClientId.boosted = 0;
+		%ClientId.boostercool = 0;
+		%ClientId.boostpop = 0;
+		%ClientId.plasfired = 0;
+		%ClientId.lasfired = 0;
+	}
+
 	$totalNumCameras = 0;
 	$totalNumTurrets = 0;
 
@@ -663,33 +673,41 @@ function telebeacon(%clientId)
 	}
 }
 
-//========================================================================================================= Scout Stim
-
+//============================================================= Scout Stim
 function ScoutStim(%clientId, %player, %item)
 {
 	%armor = Player::getArmor(%player);
 
+	if (%armor == "sfemale" || %armor == "sarmor" || %armor == "stimarmor" || %armor == "stimfemale")
+	{}
+	else
+	{
+		GameBase::applyDamage(%player, $EnergyDamageType,3,1.0,1.0,1.0,%player);
+		remoteKill(%clientId);
+		%clientId.stimTime = 0;
+		%clientId.ovd = 0;
+		messageall(0, Client::getName(%clientId) @ " overdosed... How sad.");
+		return;
+	}
+
 	if($debug) echo ("P- " @ %player @ "");
 	if($debug) echo ("Cl- " @ %clientId @ "");
 	
-	if ($stimTime[%clientId] > 0)
+	if (%clientId.stimTime > 0)
 	{
 		Client::sendMessage(%clientId,0,"Already Stimmed!");
-		$StimTime[%clientId]=0;
+		%clientId.stimTime = %clientId.stimTime + 5;
 	}
 	else
 	{
 		if (%armor == "sarmor")
-		{
 			Player::setArmor(%player,stimarmor);
-		}
 		else if (%armor == "sfemale")
-		{
 			Player::setArmor(%player,stimfemale);
-		}
+		if(Player::getMountedItem(%player,$WeaponSlot) == laserRifle) GameBase::setEnergy(%player, 20);
 		Player::decItemCount(%player, %item);
 		Client::sendMessage(%clientId,0,"You used a Stim Pack!");
-		$stimTime[%clientId] = 10;
+		%clientId.stimTime = 10;
 		CheckStim(%clientId, %player);		
 	}
 }
@@ -701,7 +719,7 @@ function OverDoseStim (%clientId, %player)
 		
 		Client::sendMessage(%clientId,0,"You took a little too much.");
 		messageall(0, Client::getName(%clientId) @ " overdosed... How sad.");
-		$StimTime[%clientId]=0;
+		%clientId.stimTime=0;
 		GameBase::applyDamage(%player, $EnergyDamageType, 3, 1.0,1.0, 1.0, %player);
 		remoteKill(%clientId);
 }
@@ -714,11 +732,11 @@ function CheckStim(%clientId, %player)
 	if  (Player::isDead(%player))
 		return;
 
-	if($StimTime[%clientId] > 0)
+	if(%clientId.stimTime > 0)
 	{
 		Player::trigger(%client,$BackpackSlot,false);
 
-		$StimTime[%clientId] -= 2; 
+		%clientId.stimTime -= 2; 
 		
 		%drrate = GameBase::getDamageLevel(%player) - 0.035; //==== Damage Rate When Stimmed
 		%clientId.damagelevel = %drrate;
@@ -752,14 +770,14 @@ function CheckStim(%clientId, %player)
 				%clientId.scoreDeaths++;
       				%clientId.score--;
 				Game::refreshClientScore(%clientId);
-				$StimTime[%clientId] = 0;
+				%clientId.stimTime = 0;
 				return;
 			}
 
 		}
 		else
 		{
-			$StimTime[%clientId] = 0;
+			%clientId.stimTime = 0;
 		}
 		schedule("CheckStim(" @ %clientId @ ", " @ %player @ ");",2,%player);
    	}
@@ -767,15 +785,32 @@ function CheckStim(%clientId, %player)
 	{
 		Client::sendMessage(%clientId,0,"Stim Effect Wears Off.");
 		%armor = Player::getArmor(%player);
+		if(!%clientId.damagelevel) %clientId.damagelevel = 50;
 		
 		if (%armor == "stimarmor")
 		{
 			Player::setArmor(%player,sarmor);
+			//if(Player::getItemCount(%player,FAKElaserRifle))
+			//{
+			//	%rifle = Player::getMountedItem(%player,$WeaponSlot);
+			//	Player::setItemCount(%player, FAKElaserRifle, 0);
+			//	Player::setItemCount(%player, laserRifle, 1);
+			//	if(%rifle == FAKElaserRifle) Player::useItem(%player,laserRifle);
+			//	else Player::useItem(%player, %rifle);
+			//}
 			GameBase::setDamageLevel(%player,%clientId.damagelevel);
 		}
 		else if (%armor == "stimfemale")
 		{
 			Player::setArmor(%player,sfemale);
+			//if(Player::getItemCount(%player,FAKElaserRifle))
+			//{
+			//	%item = Player::getMountedItem(%player,$WeaponSlot);
+			//	Player::setItemCount(%player, FAKElaserRifle, 0);
+			//	Player::setItemCount(%player, laserRifle, 1);
+			//	if(%rifle == FAKElaserRifle) Player::useItem(%player,laserRifle);
+			//	else Player::useItem(%player, %rifle);
+			//}
 			GameBase::setDamageLevel(%player,%clientId.damagelevel);
 		}
 	}					
@@ -790,26 +825,26 @@ function Renegades_startShield(%clientId, %player)
 	%armor = Player::getArmor(%player);
 
 	if (%armor == "jarmor")
-		%player.shieldStrength = 0.016;
+		%player.shieldStrength = 0.018;
 	else
-		%player.shieldStrength = 0.006;
+		%player.shieldStrength = 0.009;
 
-	if($shieldTime[%clientId] == 0)
+	if(%clientId.shieldTime == 0)
 	{
-		$shieldTime[%clientId] = 20;
+		%clientId.shieldTime = 20;
 		checkPlayerShield(%clientId, %player);
 	}
 	else
-		$shieldTime[%clientId] = 20;
+		%clientId.shieldTime = 20;
 }
 
 
 function checkPlayerShield(%clientId, %player)
 {
 	%armor = Player::getArmor(%player);
-	if($shieldTime[%clientId] > 0)
+	if(%clientId.shieldTime > 0)
 	{
-		$shieldTime[%clientId] -= 2;  
+		%clientId.shieldTime -= 2;  
 
 		if  ((!Player::isDead(%player)) && (%armor == "darmor" || %armor == "dfemale" || %armor == "jarmor"))
 		{
@@ -819,7 +854,7 @@ function checkPlayerShield(%clientId, %player)
 		}
 		else
 		{
-			$shieldTime[%clientId] = 0;
+			%clientId.shieldTime = 0;
 		}
 		
 
@@ -848,22 +883,22 @@ function Renegades_startCloak(%clientId, %player)
 	
 	//Player::setDetectParameters(%player , 50,150);
 
-	if($cloakTime[%clientId] == 0)
+	if(%clientId.cloakTime == 0)
 	{
-		$cloakTime[%clientId] = 20;
+		%clientId.cloakTime = 20;
 		checkPlayerCloak(%clientId, %player);
 	}
 	else
-		$cloakTime[%clientId] = 20;
+		%clientId.cloakTime = 20;
 }
 
 
 function checkPlayerCloak(%clientId, %player)
 {
 	%armor = Player::getArmor(%player);
-	if($cloakTime[%clientId] > 0)
+	if(%clientId.cloakTime > 0)
 	{
-		$cloakTime[%clientId] -= 2;  
+		%clientId.cloakTime -= 2;  
 		
 		if  ((!Player::isDead(%player)) &&  (%armor == "aarmor" || %armor == "afemale"))
 		{
@@ -871,7 +906,7 @@ function checkPlayerCloak(%clientId, %player)
 		}
 		else
 		{
-			$cloakTime[%clientId] = 0;
+			%clientId.cloakTime = 0;
 		}
 		schedule("checkPlayerCloak(" @ %clientId @ ", " @ %player @ ");",2,%player);
     	}
@@ -894,12 +929,12 @@ function EngBeacon(%clientId, %player, %bec)
 	%client = Player::getClient(%player);
 	if (GameBase::getLOSInfo(%player,5))
 	{
-		%obj = getObjectType($los::object);
-		%set=newObject("set",SimSet);
-		%num=containerBoxFillSet(%set,$StaticObjectType | $ItemObjectType | $SimPlayerObjectType,$los::position,0.3,0.3,0.3,1);
-		deleteObject(%set);
-		if(!%num)
-		{
+		//%obj = getObjectType($los::object);
+		//%set=newObject("set",SimSet);
+		//%num=containerBoxFillSet(%set,$StaticObjectType | $ItemObjectType | $SimPlayerObjectType,$los::position,0.3,0.3,0.3,1);
+		//if(%set)deleteObject(%set);
+		//if(!%num)
+		//{
 			%team = GameBase::getTeam(%player);
 			%beacon = newObject("Target Beacon", "StaticShape", "DefaultBeacon", true);
 			addToSet("MissionCleanup", %beacon);
@@ -911,9 +946,9 @@ function EngBeacon(%clientId, %player, %bec)
 			Client::sendMessage(%client,0,"Beacon deployed");
 			playSound(SoundPickupBackpack,$los::position);
 			return true;
-		}
-		else
-			Client::sendMessage(%client,0,"Unable to deploy - Item in the way");
+		//}
+		//else
+		//	Client::sendMessage(%client,0,"Unable to deploy - Item in the way");
 	}
 	else
 	{
@@ -925,57 +960,42 @@ function EngBeacon(%clientId, %player, %bec)
 
 //==================================================================================================== Engineer Camera
 
-function EngCamera(%clientId, %player, %bec)
+function EngCamera(%client, %player, %bec)
 {
 	%item = "CameraPack";
-	%client = Player::getClient(%player);
-		if (GameBase::getLOSInfo(%player,3))
+	if (GameBase::getLOSInfo(%player,3))
+	{
+		%prot = GameBase::getRotation(%player);
+		%zRot = getWord(%prot,2);
+		if (Vector::dot($los::normal,"0 0 1") > 0.6)
 		{
-			%obj = getObjectType($los::object);
-			if (%obj == "SimTerrain" || %obj == "InteriorShape" || %obj == "DeployablePlatform")
-			{
-				%prot = GameBase::getRotation(%player);
-				%zRot = getWord(%prot,2);
-				if (Vector::dot($los::normal,"0 0 1") > 0.6)
-				{
-					%rot = "0 0 " @ %zRot;
-				}
-				else
-				{
-					if (Vector::dot($los::normal,"0 0 -1") > 0.6)
-					{
-						%rot = "3.14159 0 " @ %zRot;
-					}
-					else {
-						%rot = Vector::getRotation($los::normal);
-					}
-				}
-				if(checkDeployArea(%client,$los::position))
-				{
-					%camera = newObject("Camera","Turret",CameraTurret,true);
-	   	      			addToSet("MissionCleanup", %camera);
-					GameBase::setTeam(%camera,GameBase::getTeam(%player));
-					GameBase::setRotation(%camera,%rot);
-					GameBase::setPosition(%camera,$los::position);
-					Gamebase::setMapName(%camera,"Camera#"@ $totalNumCameras++ @ " " @ Client::getName(%client));
-					Client::sendMessage(%client,0,"Camera deployed");
-					playSound(SoundPickupBackpack,$los::position);
-					if($debug) echo("MSG: ",%client," deployed a Camera");
-					Player::decItemCount(%player,%bec);
-					GameBase::startFadeOut(%camera);
-						return true;
-				}
-			}
-			else 
-			{
-				Client::sendMessage(%client,0,"Can only deploy on terrain or buildings");
-			}
+			%rot = "0 0 " @ %zRot;
 		}
-		else 
+		else
 		{
-			Client::sendMessage(%client,0,"Deploy position out of range");		
+			if (Vector::dot($los::normal,"0 0 -1") > 0.6)
+				%rot = "3.14159 0 " @ %zRot;
+			else
+				%rot = Vector::getRotation($los::normal);
 		}
-return false;
+			%camera = newObject("Camera","Turret",CameraTurret,true);
+			addToSet("MissionCleanup", %camera);
+			GameBase::setTeam(%camera,GameBase::getTeam(%player));
+			GameBase::setRotation(%camera,%rot);
+			GameBase::setPosition(%camera,$los::position);
+			Gamebase::setMapName(%camera,"Camera#"@ $totalNumCameras++ @ " " @ Client::getName(%client));
+			Client::sendMessage(%client,0,"Camera deployed");
+			playSound(SoundPickupBackpack,$los::position);
+			if($debug) echo("MSG: ",%client," deployed a Camera");
+			Player::decItemCount(%player,%bec);
+			//GameBase::startFadeOut(%camera);
+			return true;
+	}
+	else 
+	{
+		Client::sendMessage(%client,0,"Deploy position out of range");		
+	}
+	return false;
 }
 
 //==================================================================================================== Sniper Jammer
@@ -1128,8 +1148,8 @@ function itemFuncs::AmmoBoom(%playerId)
 
 	if (%armor == "larmor") 	  {%kval = 200;}
 	else if (%armor == "lfemale")	  {%kval = 200;}
-	else if (%armor == "marmor")	  {%kval = 500;}
-	else if (%armor == "mfemale")	  {%kval = 500;}
+	else if (%armor == "marmor")	  {%kval = 800;}
+	else if (%armor == "mfemale")	  {%kval = 800;}
 	else if (%armor == "earmor") 	  {%kval = 700;}
 	else if (%armor == "efemale")	  {%kval = 700;}
 	else if (%armor == "spyarmor")    {%kval = 200;}
@@ -1138,16 +1158,17 @@ function itemFuncs::AmmoBoom(%playerId)
 	else if (%armor == "sfemale")	  {%kval = 200;}
 	else if (%armor == "stimarmor")	  {%kval = 200;}
 	else if (%armor == "stimfemale")  {%kval = 200;}
-	else if (%armor == "barmor") 	  {%kval = 800;}
-	else if (%armor == "bfemale")	  {%kval = 800;}
-	else if (%armor == "darmor") 	  {%kval = 900;}
+	else if (%armor == "barmor") 	  {%kval = 1100;}
+	else if (%armor == "bfemale")	  {%kval = 1100;}
+	else if (%armor == "darmor") 	  {%kval = 1000;}
 	else if (%armor == "harmor")	  {%kval = 1000;}
 	else if (%armor == "aarmor")	  {%kval = 200;}
 	else if (%armor == "afemale")	  {%kval = 200;}
-	else if (%armor == "dmarmor")	  {%kval = 500;}
-	else if (%armor == "dmfemale")    {%kval = 500;}
+	//else if (%armor == "dmarmor")	  {%kval = 500;}
+	//else if (%armor == "dmfemale")    {%kval = 500;}
 	else if (%armor == "parmor")      {%kval = 0;}
 	else if (%armor == "jarmor")	  {%kval = 1000;}
+	
 	for (%i = 0; %i < %max; %i = %i + 1)
 	{
 		%count = Player::getItemCount(%playerId,%i);
@@ -1157,10 +1178,10 @@ function itemFuncs::AmmoBoom(%playerId)
 		if (%itemname == "Grenade") {%mod = (3*%count);%chance = %chance + %mod; if (%rnd - %mod < 0){%boom[%k] = "GrenadeShell " @ %i;}}		
 		else if (%itemname == "mineammo") {%mod = (5*%count);%chance = %chance + %mod; if (%rnd - %mod < 0){%boom[%k] = "GrenadeShell " @ %i;%k++;}}
 		else if (%itemname == "RocketAmmo") {%mod = (4*%count);%chance = %chance + %mod; if (%rnd - %mod < 0){%boom[%k] = "StingerMissile " @ %i;%k++;}}
-		else if (%itemname == "BulletAmmo") {%mod = (0.1*%count);%chance = %chance + %mod; if (%rnd - %mod < 0){%boom[%k] = "ChaingunBullet " @ %i;%k++;}}
+		else if (%itemname == "BulletAmmo") {%mod = (0.1*%count);%chance = %chance + %mod; if (%rnd - %mod < 0){%boom[%k] = "ChaingunBullet1 " @ %i;%k++;}}
 		else if (%itemname == "VulcanAmmo") {%mod = (0.15*%count);%chance = %chance + %mod; if (%rnd - %mod < 0){%boom[%k] = "VulcanBullet " @ %i;%k++;}}
 		else if (%itemname == "GrenadeAmmo") {%mod = (3*%count);%chance = %chance + %mod; if (%rnd - %mod < 0){%boom[%k] = "GrenadeShell " @ %i;%k++;}}
-		else if (%itemname == "MortarAmmo") { %mod = (12*%count); %chance = %chance + %mod; if (%rnd - %mod < 0) { %boom[%k] = "MortarShell " @ %i; %k++; } }
+		else if (%itemname == "MortarAmmo") { %mod = (12*%count); %chance = %chance + %mod; if (%rnd - %mod < 0) { %boom[%k] = "MortarShell1 " @ %i; %k++; } }
 		else if (%itemname == "MfglAmmo") {%mod = (75*%count);%chance = %chance + %mod; if (%rnd - %mod < 0){%boom[%k] = "FgcShell " @ %i;%k++;}}
 		else if (%itemname == "AutoRocketAmmo") {%mod = (10*%count);%chance = %chance + %mod; if (%rnd - %mod < 0){%boom[%k] = "StingerMissile " @ %i;%k++;}}
 	}
@@ -1193,26 +1214,4 @@ function itemFuncs::AmmoBoom(%playerId)
 			}
 		}
 	}
-}
-
-function Mine::Detonate(%this)
-{
-	%client = %this.deployer;
-	%player = client::getownedobject(%client);
-
-	Client::setOwnedObject(%client, %this);
-	Client::setOwnedObject(%client, %player);
-	
-	%data = GameBase::getDataName(%this);
-	GameBase::setDamageLevel(%this, %data.maxDamage);
-}
-
-
-function Mine::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
-{
-   if (%type == $MineDamageType)
-      %value = %value * 0.25;
-
-	%damageLevel = GameBase::getDamageLevel(%this);
-	GameBase::setDamageLevel(%this,%damageLevel + %value);
 }

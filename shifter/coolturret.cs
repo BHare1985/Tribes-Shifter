@@ -760,12 +760,12 @@ FlierData NapProj
 	visibleDriver = true;
 	driverPose = 22;
 };
-function ShortCoolProj::onAdd(%this){	%this.smoking = "1";%this.driver = 1;Vehicle::SetSmoke(%this);}
-function NapProj::onAdd(%this){		%this.smoking = "1";%this.driver = 1;Vehicle::SetSmoke(%this);}
-function CoolProj::onAdd(%this){	%this.smoking = "1";%this.driver = 1;Vehicle::SetSmoke(%this);}
-function BooProj::onAdd(%this){		%this.smoking = "1";%this.driver = 1;Vehicle::SetSmoke(%this);}
-function EmpProj::onAdd(%this){		%this.smoking = "1";%this.driver = 1;Vehicle::SetSmoke(%this);}
-function GasProj::onAdd(%this){		%this.smoking = "1";%this.driver = 1;Vehicle::SetSmoke(%this);}
+function ShortCoolProj::onAdd(%this){	%this.smoking = "1";%this.driver = 1;} //Vehicle::SetSmoke(%this);
+function NapProj::onAdd(%this){		%this.smoking = "1";%this.driver = 1;} //Vehicle::SetSmoke(%this);
+function CoolProj::onAdd(%this){	%this.smoking = "1";%this.driver = 1;} //Vehicle::SetSmoke(%this);
+function BooProj::onAdd(%this){		%this.smoking = "1";%this.driver = 1;} //Vehicle::SetSmoke(%this);
+function EmpProj::onAdd(%this){		%this.smoking = "1";%this.driver = 1;} //Vehicle::SetSmoke(%this);
+function GasProj::onAdd(%this){		%this.smoking = "1";%this.driver = 1;} //Vehicle::SetSmoke(%this);
 
 function NapProj::onFire(%this)
 {
@@ -883,7 +883,7 @@ function AOE::check(%pos, %radius, %type, %object, %cl, %dam)
 			%obj = Group::getObject(%Set, %i);
 			GameBase::applyDamage(%obj, %type, %dam, GameBase::getPosition(%obj), "0 0 0", "0 0 0", %pl);		
 		}
-		deleteObject(%set);
+		if(%set)deleteObject(%set);
 	}
 
 	GameBase::applyRadiusDamage(%type, %pos, %radius, 0.01, 2, %object);
@@ -946,7 +946,7 @@ function DeployableAoe::onDestroyed(%this)
 {  
 	GameBase::setActive(%this,false); 
 	Turret::onDestroyed(%this);
-	deleteobject(%this);
+	if(%this)deleteobject(%this);
 } 
 
 function DeployableAoe::onPower(%this,%power,%generator) {}

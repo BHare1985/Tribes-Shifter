@@ -29,7 +29,7 @@ function Game::clientKilled(%playerId, %killerId)
 function Game::playerSpawned(%pl, %clientId, %armor)
 {	  
    Client::setSkin(%clientId, $Client::info[%clientId, 0]);
-   Player::setItemCount(%clientId,$ArmorName[%armor],1);
+   Player::setItemCount(%clientId,LightArmor,1);
    Player::setItemCount(%clientId,Blaster,1);
    Player::setItemCount(%clientId,RepairKit,1);
 	Player::useItem(%pl,Blaster);
@@ -39,6 +39,7 @@ function Game::playerSpawned(%pl, %clientId, %armor)
 		DMTEAM::checkMissionObjectives();
 		DMTEAM::echoScores();
 	}
+	return true;
 }
 
 function Player::leaveMissionArea(%player)
@@ -129,7 +130,7 @@ function Vote::changeMission()
 function DM::checkMissionObjectives(%playerId) 
 {
    if(DM::missionObjectives(%playerId)) 
-      schedule("nextMission();", 0);
+      schedule("nextMission();", 0.01);
 	if($DMScoreLimit > 0)
 		if((Player::getClient(%playerId)).scoreKills >= $DMScoreLimit) 
 		{
@@ -244,7 +245,7 @@ function DMTEAM::checkMissionObjectives()
    for(%p = 0; %p < $numTeams; %p = %p + 1) 
    {
 	  if(DMTEAM::teamMissionObjectives(%p))
-	     schedule("Server::nextMission();", 0);
+	     schedule("Server::nextMission();", 0.01);
    }
 }
 
@@ -365,6 +366,13 @@ function Mission::init()
       setTeamScoreHeading("");
       setClientScoreHeading("Player Name\t\x55Kills\t\x75Deaths\t\xA5Efficiency\t\xE3Ping\t\xFFPL");
    }
+	$server::deathmatch = true;
+	$ItemMax[larmor,	ShieldPack] = 1;			$ItemMax[lfemale,	ShieldPack] = 1;
+	$ItemMax[larmor,	Chaingun] = 1;			$ItemMax[lfemale,	Chaingun] = 1;
+	$ItemMax[larmor,	BulletAmmo] = 75;			$ItemMax[lfemale,	BulletAmmo] = 75;
+	$DamageScale[larmor,	$ShrapnelDamageType] = 1.0;	$DamageScale[lfemale,	$ShrapnelDamageType] = 1.0;
+	$DamageScale[larmor,	$PlasmaDamageType] = 0.9;$DamageScale[lfemale,	$PlasmaDamageType] = 0.9;
+	$DamageScale[larmor,	$EqualizerDamageType]	 = 0.9;$DamageScale[lfemale,	$EqualizerDamageType]	 = 0.9;
    $dieSeqCount = 0;
    //setup ai if any
    AI::setupAI();

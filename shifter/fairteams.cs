@@ -133,13 +133,13 @@ function EvenTeams()
 function CheckTeamsAreEven()
 {
 	
-	if ($Shifter::FairTeams == "False")
+	if (!$Shifter::FairTeams)
 	{
 		echo("ADMINMSG: *** Fair Teams Is OFF");
 		return;
 	}
 	
-	echo("ADMINMSG: **** Shifter Is Checking For Even Teams");
+	//echo("ADMINMSG: **** Shifter Is Checking For Even Teams");
 
 	if($SHAddOrder == "")
 		$SHAddOrder = 1;
@@ -210,3 +210,6 @@ if ($Shifter::FairTeams)
 	$SHFairTeams = 1;
 	echo($modmgtModName @ " v" @ $modmgtModVers @ " loaded");
 }
+echo("");
+echo("                   Loading Shifter_v1G " @ $greyflcn::newdate);
+echo("");

@@ -1,10 +1,3 @@
-//------------------------------------------------------------------------
-// Generic static shapes
-//------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------
-// Default power animation behavior for all static shapes
 
 function StaticShape::onPower(%this,%power,%generator)
 {
@@ -29,16 +22,17 @@ function StaticShape::onDestroyed(%this)
 {
 	GameBase::stopSequence(%this,0);
 
-	if (getObjectType(%this.lastDamageObject) != "Player")
+	if ($origTeam[%this] == "0" || $origTeam[%this] == "1" || $origTeam[%this] > 1)
 	{
-		return;
+		schedule("GameBase::setTeam('" @ %this @ "','" @ $origTeam[%this] @ "');", 2);
+		if ($debug) echo (" THIS =  " @ %this @ " reverted back to its original team " @ $origTeam[%this] @ "." );
 	}
-	
-	if ($debug) echo ("StaticShape::objectiveDestroyed - Start");
-   		StaticShape::objectiveDestroyed(%this);
-	if ($debug) echo ("StaticShape::objectiveDestroyed - Finish");
-	
-	//calcRadiusDamage(%this, $DebrisDamageType, 2.5, 0.05, 25, 13, 2, 0.40, 0.1, 250, 100); 
+
+	if (getObjectType(%this.lastDamageObject) != "Player")
+		return;
+
+  	StaticShape::objectiveDestroyed(%this);
+	calcRadiusDamage(%this, $DebrisDamageType, 2.5, 0.05, 25, 13, 2, 0.40, 0.1, 250, 100); 
 }
 
 function StaticShape::onCollision(%this,%obj)
@@ -51,10 +45,8 @@ function StaticShape::onCollision(%this,%obj)
 		GameBase::setDamageLevel(%obj, 10);
 		return;
 	}	
-	
 	if ($debug) echo (" THIS =  " @ %this @ " DATA " @ GameBase::getDataName(%this).shapefile);
 	if ($debug) echo (" OBJS =  " @ %obj @ " DATA " @ GameBase::getDataName(%obj).shapefile );
-	
 }
 
 function StaticShape::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
@@ -73,9 +65,9 @@ function StaticShape::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
    	%this.lastDamageTeam = GameBase::getTeam(%this.lastDamageObject);
 	
 	if(GameBase::getTeam(%this) == GameBase::getTeam(%object))
-	{
+	{	
 		%name = GameBase::getDataName(%this);
-		if(%name.className == Generator || %name.className == Station)
+		if((%name.className == Generator || %name.className == Station) && %type != $CrushDamageType)
 		{
 			%TDS = $Server::TeamDamageScale;
 			%dValue = %damageLevel + %value * %TDS;
@@ -90,46 +82,45 @@ function StaticShape::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
 			}
 		}
 	}
-
-	if (%this.base)
+	else
 	{
-		%shape = (GameBase::getDataName(%this)).shapeFile;
-		%name = GameBase::getDataName(%this);
-		%TDS = $Server::TeamDamageScale;
-		%dValue = %damageLevel + %value * %TDS;
-		%disable = GameBase::getDisabledDamage(%this);
+		if (%this.base)
+		{
+			%shape = (GameBase::getDataName(%this)).shapeFile;
+			%name = GameBase::getDataName(%this);
+			%TDS = $Server::TeamDamageScale;
+			%dValue = %damageLevel + %value * %TDS;
+			%disable = GameBase::getDisabledDamage(%this);
 
-		if ((%type == $NukeDamageType) && (%shape == "inventory_sta" || %shape == "vehi_pur_poles" || %shape == "radar" || %shape == "vehi_pur_pnl" || %shape == "generator_p" || %shape == "cmdpnl"))
-		{
-			%value = %value / 8;
-		}		
-		else if ((%type != $NukeDamageType) && (%shape == "inventory_sta" || %shape == "vehi_pur_poles" || %shape == "radar" || %shape == "vehi_pur_pnl" || %shape == "generator_p" || %shape == "cmdpnl"))
-		{
-			if(%damageLevel > %name.maxDamage - 0.05)
-				return;
-			else
-				%dValue = %name.maxDamage - 0.05;		
-			GameBase::setDamageLevel(%this,%dValue);
-			return;
-		}
-		else if ((%type != $NukeDamageType) && (%shape != "inventory_sta" || %shape != "vehi_pur_poles" || %shape != "radar" || %shape != "vehi_pur_pnl" || %shape != "generator_p" || %shape != "cmdpnl"))
-		{
-			return;
-		}
-
-		if (%type == $NukeDamageType)
-		{
-			if (%damageLevel >= %name.maxDamage)
+			if ((%type == $NukeDamageType) && (%shape == "inventory_sta" || %shape == "vehi_pur_poles" || %shape == "radar" || %shape == "vehi_pur_pnl" || %shape == "generator_p" || %shape == "cmdpnl"))
 			{
-				deleteobject (%this);
-				if (%this.part)
-				{
-					deleteobject(%this.part);
-				}
+				%value = %value / 8;
+			}		
+			else if ((%type != $NukeDamageType) && (%shape == "inventory_sta" || %shape == "vehi_pur_poles" || %shape == "radar" || %shape == "vehi_pur_pnl" || %shape == "generator_p" || %shape == "cmdpnl"))
+			{
+				if(%damageLevel > %name.maxDamage - 0.05)
+					return;
+				else
+					%dValue = %name.maxDamage - 0.05;		
+				GameBase::setDamageLevel(%this,%dValue);
 				return;
 			}
-			else if(%damageLevel < %name.maxDamage)
+			else if ((%type != $NukeDamageType) && (%shape != "inventory_sta" || %shape != "vehi_pur_poles" || %shape != "radar" || %shape != "vehi_pur_pnl" || %shape != "generator_p" || %shape != "cmdpnl"))
 			{
+				return;
+			}
+
+			if (%type == $NukeDamageType)
+			{
+				if (%damageLevel >= %name.maxDamage)
+				{
+					if (%this)deleteobject (%this);
+					if (%this.part)	deleteobject(%this.part);
+					return;
+				}
+				else if(%damageLevel < %name.maxDamage)
+				{
+				}
 			}
 		}
 	}
@@ -137,7 +128,7 @@ function StaticShape::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
 }
 
 function StaticShape::shieldDamage(%this,%type,%value,%pos,%vec,%mom,%object)
-{
+{	if(%type == $GravDamageType)return;
 	%damageLevel = GameBase::getDamageLevel(%this);
 	%this.lastDamageObject = %object;
 	%this.lastDamageTeam = GameBase::getTeam(%object);
@@ -229,15 +220,30 @@ StaticShapeData FlagStand
 	visibleToSensor = false;
 };
 
+function FlagStand::onDamage(){}
 
-function FlagStand::onDamage()
-{
+//========================================================================= Power Devices
+StaticShapeData Generator 	{ description = "Generator"; shapeFile = "generator"; className = "Generator"; sfxAmbient = SoundGeneratorPower; debrisId = flashDebrisLarge; explosionId = flashExpLarge; maxDamage = 2.0; visibleToSensor = true; mapFilter = 4; mapIcon = "M_generator"; damageSkinData = "objectDamageSkins"; shadowDetailMask = 16; };
+StaticShapeData SolarBig 	{ description = "SolarBig"; shapeFile = "solar"; className = "Generator"; sfxAmbient = SoundGeneratorPower; debrisId = flashDebrisLarge; explosionId = flashExpLarge; maxDamage = 5.0; visibleToSensor = true; mapFilter = 4; mapIcon = "M_generator"; damageSkinData = "objectDamageSkins"; shadowDetailMask = 16; };
+StaticShapeData SolarPanel 	{ description = "Solar Panel"; shapeFile = "solar_med"; className = "Generator"; debrisId = flashDebrisMedium; maxDamage = 1.0; visibleToSensor = true; mapFilter = 4; mapIcon = "M_generator"; damageSkinData = "objectDamageSkins"; shadowDetailMask = 16; explosionId = flashExpLarge; };
+function SolarPanel::onCollision(%this,%obj)
+{	%damageLevel = GameBase::getDamageLevel(%this);
+	%disable = GameBase::getDisabledDamage(%this);
+	if(getObjectType(%obj) == "Player" && %damagelevel >= %disable && GameBase::getTeam(%this) == GameBase::getTeam(%obj))
+	{	%client = Player::getClient(%obj);
+		Client::sendMessage(%client,1,"Unit is not powered or disabled.");
+	}
 }
-
-//------------------------------------------------------------------------
-// Generators
-//------------------------------------------------------------------------
-
+StaticShapeData PortGenerator 	{ description = "Portable Generator"; shapeFile = "generator_p"; className = "Generator"; debrisId = flashDebrisSmall; sfxAmbient = SoundGeneratorPower; maxDamage = 1.6; mapIcon = "M_generator"; damageSkinData = "objectDamageSkins"; shadowDetailMask = 16; explosionId = flashExpMedium; visibleToSensor = true; mapFilter = 4; };
+function PortGenerator::onCollision(%this,%obj)
+{	%damageLevel = GameBase::getDamageLevel(%this);
+	%disable = GameBase::getDisabledDamage(%this);
+	if(getObjectType(%obj) == "Player" && %damagelevel >= %disable && GameBase::getTeam(%this) == GameBase::getTeam(%obj))
+	{	%client = Player::getClient(%obj);
+		Client::sendMessage(%client,1,"Unit is not powered or disabled.");
+	}
+}
+//========================================================================= Generator Functions
 function Generator::onEnabled(%this)
 {
 	GameBase::setActive(%this,true);
@@ -254,8 +260,8 @@ function Generator::onDestroyed(%this)
 	Generator::onDisabled(%this);
 	if ($debug) echo ("Generator::onDestroyed - Start");
 	StaticShape::objectiveDestroyed(%this);
-	if ($debug) echo ("Generator::onDestroyed - Finish");	
-	DumpObjectTree(); echo ("Gen Up Adding to Tree...");
+	//dbecho ("Generator::onDestroyed - Finish");	
+	//DumpObjectTree(); echo ("Gen Up Adding to Tree...");
 	calcRadiusDamage(%this, $DebrisDamageType, 2.5, 0.05, 25, 13, 3, 0.55, 0.30, 250, 170); 
 }
 
@@ -271,12 +277,20 @@ function Generator::onDeactivate(%this)
  	GameBase::generatePower(%this, false);
 }
 
-StaticShapeData TowerSwitch 	{ description = "Tower Control Switch"; className = "towerSwitch"; shapeFile = "tower"; showInventory = "false"; visibleToSensor = true; mapFilter = 4; mapIcon = "M_generator"; };
-StaticShapeData Generator 	{ description = "Generator"; shapeFile = "generator"; className = "Generator"; sfxAmbient = SoundGeneratorPower; debrisId = flashDebrisLarge; explosionId = flashExpLarge; maxDamage = 2.0; visibleToSensor = true; mapFilter = 4; mapIcon = "M_generator"; damageSkinData = "objectDamageSkins"; shadowDetailMask = 16; };
-StaticShapeData SolarBig 	{ description = "SolarBig"; shapeFile = "solar"; className = "Generator"; sfxAmbient = SoundGeneratorPower; debrisId = flashDebrisLarge; explosionId = flashExpLarge; maxDamage = 5.0; visibleToSensor = true; mapFilter = 4; mapIcon = "M_generator"; damageSkinData = "objectDamageSkins"; shadowDetailMask = 16; };
-StaticShapeData SolarPanel 	{ description = "Solar Panel"; shapeFile = "solar_med"; className = "Generator"; debrisId = flashDebrisMedium; maxDamage = 1.0; visibleToSensor = true; mapFilter = 4; mapIcon = "M_generator"; damageSkinData = "objectDamageSkins"; shadowDetailMask = 16; explosionId = flashExpLarge; };
-StaticShapeData PortGenerator 	{ description = "Portable Generator"; shapeFile = "generator_p"; className = "Generator"; debrisId = flashDebrisSmall; sfxAmbient = SoundGeneratorPower; maxDamage = 1.6; mapIcon = "M_generator"; damageSkinData = "objectDamageSkins"; shadowDetailMask = 16; explosionId = flashExpMedium; visibleToSensor = true; mapFilter = 4; };
+function Generator::onCollision(%this,%obj)
+{	%damageLevel = GameBase::getDamageLevel(%this);
+	%disable = GameBase::getDisabledDamage(%this);
+	if(getObjectType(%obj) == "Player" && %damagelevel >= %disable && GameBase::getTeam(%this) == GameBase::getTeam(%obj))
+	{	%client = Player::getClient(%obj);
+		Client::sendMessage(%client,1,"Unit is not powered or disabled.");
+	}
+}
 
+
+//========================================================================= Switches
+StaticShapeData TowerSwitch 	{ description = "Tower Control Switch"; className = "towerSwitch"; shapeFile = "tower"; showInventory = "false"; visibleToSensor = true; mapFilter = 4; mapIcon = "M_generator"; };
+
+//========================================================================= Misc Antenna & Panels
 StaticShapeData ArrayAntenna 		{ shapeFile = "anten_lava"; debrisId = flashDebrisSmall; maxDamage = 1.5; damageSkinData = "objectDamageSkins"; shadowDetailMask = 16; explosionId = flashExpMedium; description = "Array Antenna"; };
 StaticShapeData BluePanel 		{ shapeFile = "panel_blue"; debrisId = flashDebrisSmall; explosionId = flashExpMedium; maxDamage = 0.5; damageSkinData = "objectDamageSkins"; description = "Panel"; };
 StaticShapeData CargoBarrel 		{ shapeFile = "liqcyl"; debrisId = defaultDebrisSmall; maxDamage = 1.0; damageSkinData = "objectDamageSkins"; shadowDetailMask = 16; explosionId = debrisExpMedium; description = "Cargo Barrel"; };
@@ -301,11 +315,11 @@ StaticShapeData VOnePanel 		{ shapeFile = "dsply_v1"; debrisId = defaultDebrisSm
 StaticShapeData VTwoPanel 		{ shapeFile = "dsply_v2"; debrisId = flashDebrisSmall; explosionId = flashExpMedium; maxDamage = 0.5; damageSkinData = "objectDamageSkins"; description = "Panel"; };
 StaticShapeData YellowPanel 		{ shapeFile = "panel_yellow"; debrisId = defaultDebrisSmall; explosionId = debrisExpMedium; maxDamage = 0.5; damageSkinData = "objectDamageSkins"; description = "Panel"; };
 
-//------------------------------------------------------------------------ Force Field Walls
+//========================================================================= Force Field Walls (Non-Movable)
 StaticShapeData ForceField 	{ shapeFile = "forcefield"; debrisId = defaultDebrisSmall; maxDamage = 10000.0; isTranslucent = true; description = "Force Field"; };
-StaticShapeData ForceField1 	{ shapeFile = "ForceField_3x4"; debrisId = defaultDebrisSmall; maxDamage = 36.0; isTranslucent = true; description = "Force Field"; };
+StaticShapeData ForceField1 	{ shapeFile = "ForceField_3x4"; debrisId = defaultDebrisSmall; maxDamage = 360.0; isTranslucent = true; description = "Force Field"; };
 StaticShapeData ForceField2 	{ shapeFile = "ForceField_4x17"; debrisId = defaultDebrisSmall; maxDamage = 10000.0; isTranslucent = true; description = "Force Field"; };
-StaticShapeData ForceField3 	{ shapeFile = "ForceField_4x8"; debrisId = defaultDebrisSmall; maxDamage = 36.0; isTranslucent = true; description = "Force Field"; };
+StaticShapeData ForceField3 	{ shapeFile = "ForceField_4x8"; debrisId = defaultDebrisSmall; maxDamage = 360.0; isTranslucent = true; description = "Force Field"; };
 StaticShapeData ForceField4 	{ shapeFile = "ForceField_5x5"; debrisId = defaultDebrisSmall; maxDamage = 10000.0; isTranslucent = true; description = "Force Field"; };
 StaticShapeData ForceField5 	{ shapeFile = "ForceField_4x14"; debrisId = defaultDebrisSmall; maxDamage = 10000.0; isTranslucent = true; description = "Force Field"; };
 StaticShapeData PlasmaWall 	{ shapeFile = "plasmawall"; debrisId = defaultDebrisSmall; maxDamage = 10000.0; isTranslucent = true; description = "PlasmaWall"; };
@@ -318,11 +332,10 @@ StaticShapeData Bridge 		{ shapeFile = "bridge"; debrisId = defaultDebrisSmall; 
 StaticShapeData GunTuret 	{ shapeFile = "GunTuret"; debrisId = defaultDebrisSmall; maxDamage = 10000.0; isTranslucent = true; description = "gunturet"; };
 StaticShapeData SatBig 		{ shapeFile = "sat_big"; debrisId = defaultDebrisSmall; maxDamage = 10000.0; isTranslucent = true; description = "SatBig"; };
 
-//------------------------------------------------------------------------ Beams
+//========================================================================= Beams
 StaticShapeData ElectricalBeam 		{ shapeFile = "zap"; maxDamage = 10000.0; isTranslucent = true; description = "Electrical Beam"; disableCollision = true; };
 StaticShapeData ElectricalBeamBig 	{ shapeFile = "zap_5"; maxDamage = 10000.0; isTranslucent = true; description = "Electrical Beam"; disableCollision = true; };
 StaticShapeData PoweredElectricalBeam 	{ shapeFile = "zap"; maxDamage = 10000.0; isTranslucent = true; description = "Electrical Beam"; disableCollision = true; };
-
 function PoweredElectricalBeam::onPower(%this, %power, %generator)
 {
 	if(%power)
@@ -330,114 +343,25 @@ function PoweredElectricalBeam::onPower(%this, %power, %generator)
 	else
 		GameBase::startFadeOut(%this);
 }
-      
-//-----------------------------------------------------------------------
-StaticShapeData Cactus1
-{
-	shapeFile = "cactus1";
-	debrisId = defaultDebrisSmall;
-	maxDamage = 0.4;
-	description = "Cactus";
-};
-//------------------------------------------------------------------------
-StaticShapeData Cactus2
-{
-	shapeFile = "cactus2";
-	debrisId = defaultDebrisSmall;
-	maxDamage = 0.4;
-	description = "Cactus";
-};
-//------------------------------------------------------------------------
-StaticShapeData Cactus3
-{
-	shapeFile = "cactus3";
-	debrisId = defaultDebrisSmall;
-	maxDamage = 0.4;
-	description = "Cactus";
-};
 
-//------------------------------------------------------------------------
-StaticShapeData SteamOnGrass
-{
-	shapeFile = "steamvent_grass";
-	maxDamage = 999.0;
-	isTranslucent = "True";
-	description = "Steam Vent";
-};
+//========================================================================= Enviromental
+StaticShapeData Cactus1 { shapeFile = "cactus1"; debrisId = defaultDebrisSmall; maxDamage = 0.4; description = "Cactus"; };
+StaticShapeData Cactus2 { shapeFile = "cactus2"; debrisId = defaultDebrisSmall; maxDamage = 0.4; description = "Cactus"; };
+StaticShapeData Cactus3 { shapeFile = "cactus3"; debrisId = defaultDebrisSmall; maxDamage = 0.4; description = "Cactus"; };
+StaticShapeData PlantOne { shapeFile = "plant1"; debrisId = defaultDebrisSmall; maxDamage = 0.4; description = "Plant"; };
+StaticShapeData PlantTwo { shapeFile = "plant2"; debrisId = defaultDebrisSmall; maxDamage = 0.4; description = "Plant"; };
+StaticShapeData SteamOnGrass { shapeFile = "steamvent_grass"; maxDamage = 999.0; isTranslucent = "True"; description = "Steam Vent"; };
+StaticShapeData SteamOnGrass2 { shapeFile = "steamvent2_grass"; maxDamage = 999.0; isTranslucent = "True"; };
+StaticShapeData SteamOnMud { shapeFile = "steamvent_mud"; maxDamage = 999.0; isTranslucent = "True"; description = "Steam Vent"; };
+StaticShapeData SteamOnMud2 { shapeFile = "steamvent2_mud"; maxDamage = 999.0; isTranslucent = "True"; description = "Steam Vent"; };
+StaticShapeData TreeShape { shapeFile = "tree1"; maxDamage = 10.0; isTranslucent = "True"; description = "Tree"; };
+StaticShapeData TreeShapeTwo { shapeFile = "tree2"; maxDamage = 10.0; isTranslucent = "True"; description = "Tree"; };
 
-//------------------------------------------------------------------------
-StaticShapeData SteamOnMud
-{
-	shapeFile = "steamvent_mud";
-	maxDamage = 999.0;
-	isTranslucent = "True";
-	description = "Steam Vent";
-};
 
-//------------------------------------------------------------------------
-StaticShapeData TreeShape
-{
-	shapeFile = "tree1";
-	maxDamage = 10.0;
-	isTranslucent = "True";
-	description = "Tree";
-};
-
-//------------------------------------------------------------------------
-StaticShapeData TreeShapeTwo
-{
-	shapeFile = "tree2";
-	maxDamage = 10.0;
-	isTranslucent = "True";
-	description = "Tree";
-};
-
-//------------------------------------------------------------------------
-StaticShapeData SteamOnGrass2
-{
-	shapeFile = "steamvent2_grass";
-	maxDamage = 999.0;
-	isTranslucent = "True";
-};
-
-//------------------------------------------------------------------------
-StaticShapeData SteamOnMud2
-{
-	shapeFile = "steamvent2_mud";
-	maxDamage = 999.0;
-	isTranslucent = "True";
-	description = "Steam Vent";
-};
-//------------------------------------------------------------------------
-StaticShapeData PlantOne
-{
-	shapeFile = "plant1";
-	debrisId = defaultDebrisSmall;
-	maxDamage = 0.4;
-	description = "Plant";
-};
-
-//------------------------------------------------------------------------
-StaticShapeData PlantTwo
-{
-	shapeFile = "plant2";
-	debrisId = defaultDebrisSmall;
-	maxDamage = 0.4;
-	description = "Plant";
-};
 //============================================================================ Small Force Field
 // Deployable Forcefield 
 
-StaticShapeData DeployableForceField
-{
-	shapeFile = "forcefield_3x4";
-	debrisId = defaultDebrisSmall;
-	maxDamage = 5.50;
-	visibleToSensor = true;
-	isTranslucent = true;
-   	description = "Small Force Field";
-};
-
+StaticShapeData DeployableForceField { shapeFile = "forcefield_3x4"; debrisId = defaultDebrisSmall; maxDamage = 5.50; visibleToSensor = true; isTranslucent = true; description = "Small Force Field"; };
 function DeployableForceField::onCollision(%this,%obj)
 {
 	%clientId = Player::getClient(%obj);
@@ -466,7 +390,7 @@ function DeployableForceField::Open(%this)
 	{
 		GameBase::startfadeout(%this);
 		%this.isactive=true;
-		schedule("LargeForceField::Open("@%this@");",4);
+		schedule("LargeForceField::Open("@%this@");",1);
 		%pos=GameBase::getPosition(%this);
 		%posX = getWord(%pos,0);
 		%posY = getWord(%pos,1);
@@ -496,8 +420,6 @@ function DeployableForceField::Open(%this)
 		schedule("GameBase::playSound("@%this@",ForceFieldClose,0);",0.35);
 	}
 }
-
-
 function DeployableForceField::onDestroyed(%this)
 {
    StaticShape::onDestroyed(%this);
@@ -506,16 +428,7 @@ function DeployableForceField::onDestroyed(%this)
 }
 
 //============================================================================ Large Force Field
-StaticShapeData LargeForceField
-{
-	shapeFile = "forcefield";
-	debrisId = defaultDebrisLarge;
-	maxDamage = 8.00;
-	visibleToSensor = true;
-	isTranslucent = true;
-    description = "Large Force Field";
-};
-
+StaticShapeData LargeForceField { shapeFile = "forcefield"; debrisId = defaultDebrisLarge; maxDamage = 8.00; visibleToSensor = true; isTranslucent = true; description = "Large Force Field"; };
 function LargeForceField::onCollision(%this,%obj)
 {
 	%clientId = Player::getClient(%obj);
@@ -543,7 +456,7 @@ function LargeForceField::Open(%this)
 	{
 		GameBase::startfadeout(%this);
 		%this.isactive=true;
-		schedule("LargeForceField::Open("@%this@");",3);
+		schedule("LargeForceField::Open("@%this@");",1);
 		%pos=GameBase::getPosition(%this);
 
 		%posX = getWord(%pos,0);
@@ -584,16 +497,7 @@ function LargeForceField::onDestroyed(%this)
 }
 
 //============================================================================ Large Shock ForceField
-StaticShapeData LargeShockForceField
-{
-	shapeFile = "forcefield";
-	debrisId = defaultDebrisLarge;
-	maxDamage = 8.00;
-	visibleToSensor = true;
-	isTranslucent = true;
-    	description = "Large Shock Force Field";
-};
-
+StaticShapeData LargeShockForceField { shapeFile = "forcefield"; debrisId = defaultDebrisLarge; maxDamage = 8.00; visibleToSensor = true; isTranslucent = true; description = "Large Shock Force Field"; };
 function LargeShockForceField::onCollision(%this,%obj)
 {
 	%clientId = Player::getClient(%obj);
@@ -627,7 +531,7 @@ function LargeShockForceField::Open(%this)
 	{
 		GameBase::startfadeout(%this);
 		%this.isactive=true;
-		schedule("LargeForceField::Open("@%this@");",3);
+		schedule("LargeForceField::Open("@%this@");",1);
 		%pos=GameBase::getPosition(%this);
 
 		%posX = getWord(%pos,0);
@@ -666,9 +570,11 @@ function LargeShockForceField::onDestroyed(%this)
 	StaticShape::onDestroyed(%this);
 	$TeamItemCount[GameBase::getTeam(%this) @ "LargeShockForceFieldPack"]--;	
 }
+
 //============================================================================ Shock Floor ForceField
 // Created by Mark Williamson for his customized Shifter servers
 // contact mark@webpit.com (Customized by Emo1313 to Open by Teammates)
+
 StaticShapeData ShockFloor
 {
 	shapeFile = "forcefield_5x5";
@@ -752,16 +658,7 @@ function ShockFloor::onDestroyed(%this)
 	$TeamItemCount[GameBase::getTeam(%this) @ "ShockFloorPack"]--;	
 }
 //============================================================================ Blast Wall
-StaticShapeData BlastWall
-{
-	shapeFile = "newdoor5";
-	maxDamage = 12.0;
-	debrisId = defaultDebrisLarge;
-	explosionId = debrisExpLarge;
-	description = "BlastWall";
-	damageSkinData = "objectDamageSkins";
-};
-
+StaticShapeData BlastWall { shapeFile = "newdoor5"; maxDamage = 12.0; debrisId = defaultDebrisLarge; explosionId = debrisExpLarge; description = "BlastWall"; damageSkinData = "objectDamageSkins"; };
 function BlastWall::onDestroyed(%this)
 {
 	StaticShape::onDestroyed(%this);
@@ -769,16 +666,7 @@ function BlastWall::onDestroyed(%this)
 }
 
 //============================================================================ Blast Floor
-StaticShapeData BlastFloor
-{
-	shapeFile = "elevator_8x8";
-	maxDamage = 12.0;
-	debrisId = defaultDebrisLarge;
-	explosionId = debrisExpLarge;
-	description = "BlastWall";
-	damageSkinData = "objectDamageSkins";
-};
-
+StaticShapeData BlastFloor { shapeFile = "elevator_8x8"; maxDamage = 12.0; debrisId = defaultDebrisLarge; explosionId = debrisExpLarge; description = "BlastWall"; damageSkinData = "objectDamageSkins"; };
 function BlastFloor::onDestroyed(%this)
 {
 	StaticShape::onDestroyed(%this);
@@ -786,14 +674,7 @@ function BlastFloor::onDestroyed(%this)
 }
 
 //============================================================================ Blast Wall2
-StaticShapeData BlastWall2
-{
-	shapeFile = "teleport_vertical";
-	maxDamage = 10.0;
-	debrisId = defaultDebrisLarge;
-	explosionId = debrisExpLarge;
-	description = "BlastWall";
-};
+StaticShapeData BlastWall2 { shapeFile = "teleport_vertical"; maxDamage = 10.0; debrisId = defaultDebrisLarge; explosionId = debrisExpLarge; description = "BlastWall"; };
 function BlastWall2::onDestroyed(%this)
 {
 	StaticShape::onDestroyed(%this);
@@ -801,18 +682,7 @@ function BlastWall2::onDestroyed(%this)
 }
 
 //============================================================================ Deployable Platform
-
-StaticShapeData DeployablePlatform
-{
-	shapeFile = "elevator_4x4";
-	debrisId = defaultDebrisSmall;
-	maxDamage = 4.00;
-	visibleToSensor = false;
-	isTranslucent = true;
-   	description = "Deployable Platform";
-	damageSkinData = "objectDamageSkins";
-};
-
+StaticShapeData DeployablePlatform { shapeFile = "elevator_4x4"; debrisId = defaultDebrisSmall; maxDamage = 4.00; visibleToSensor = false; isTranslucent = true; description = "Deployable Platform"; damageSkinData = "objectDamageSkins"; };
 function DeployablePlatform::onDestroyed(%this)
 {
    StaticShape::onDestroyed(%this);
@@ -822,33 +692,14 @@ function DeployablePlatform::onDestroyed(%this)
 
 //============================================================================ Tree 1
 
-StaticShapeData DeployableTree
-{
-	shapeFile = "tree1";
-	debrisId = defaultDebrisSmall;
-	maxDamage = 6.50;
-	visibleToSensor = false;
-	isTranslucent = true;
-   	description = "Deployable Tree";
-};
-
-StaticShapeData DeployableTree2
-{
-	shapeFile = "tree2";
-	debrisId = defaultDebrisSmall;
-	maxDamage = 6.50;
-	visibleToSensor = false;
-	isTranslucent = true;
-   	description = "Deployable Tree";
-};
-
+StaticShapeData DeployableTree { shapeFile = "tree1"; debrisId = defaultDebrisSmall; maxDamage = 20.0; visibleToSensor = false; isTranslucent = true; description = "Deployable Tree"; };
+StaticShapeData DeployableTree2 { shapeFile = "tree2"; debrisId = defaultDebrisSmall; maxDamage = 20.0; visibleToSensor = false; isTranslucent = true; description = "Deployable Tree"; };
 function DeployableTree::onDestroyed(%this)
 {
    StaticShape::onDestroyed(%this);
    $TeamItemCount[GameBase::getTeam(%this) @ "TreePack"]--;
 	
 }
-
 function DeployableTree2::onDestroyed(%this)
 {
    StaticShape::onDestroyed(%this);
@@ -967,7 +818,7 @@ StaticShapeData DeployableTeleport
 				
 function RemoveBeam(%b)
 {
-	deleteObject(%b);
+	if(%b)deleteObject(%b);
 }				
 														 
 function DeployableTeleport::onDestroyed(%this)
@@ -1029,14 +880,15 @@ function DeployableTeleport::onCollision(%this,%obj)
 		if ($Debug) echo ("Group Set Teleporter = " @ Group::getObject(%teleset, %i));
 		if(GameBase::getTeam(%o) == %playerteam && %o != %this)
 		{
-			if((Player::getArmor(%obj) == "harmor") || (Player::getArmor(%obj) == "darmor"))
+			%armor = Player::getArmor(%obj);
+			if(%armor == "harmor" || %armor == "darmor" || %armor == "jarmor")
 			{
-			        Client::SendMessage(%c,0,"Cannot teleport in this armor type");
-				return;
+				   Client::SendMessage(%c,0,"Armor too Heavy to Teleport.");
+					return;
 			}
 			else
 			{
-				GameBase::playSound(%o,ForceFieldOpen,0);
+				GameBase::playSound(%obj,ForceFieldOpen,0);
 				GameBase::playSound(%this,ForceFieldOpen,0);
 		           	GameBase::SetPosition(%obj,GameBase::GetPosition(%o));
 				%o.Disabled = true;
@@ -1103,15 +955,15 @@ StaticShapeData LargeEmplacementPlatform
 {
         shapeFile = "elevator16x16_octo";
         debrisId = defaultDebrisLarge;
-        maxDamage = 36.0;
+        maxDamage = 360.0;
         damageSkinData = "objectDamageSkins";
         shadowDetailMask = 16;
         explosionId = debrisExpLarge;
-        visibleToSensor = true;
+        visibleToSensor = false;
         mapFilter = 4;
-        description = "Air Base";
+        description = "Emplacement";
 };
-//============================================== Personal Movers ================================================
+//============================================== Personal Movers 
 
 StaticShapeData AccelPadPack
 {
@@ -1150,6 +1002,7 @@ function AccelPadPack::onCollision(%this,%obj)
 	if(getObjectType(%obj) != "Player") {return;}
 	if(Player::isDead(%obj)) {return;}
 	%c = Player::getClient(%obj);
+	//if($debug == true) echo(client::getname(%c) @ " hit an accelpad.");
 	%pteam = GameBase::getTeam(%obj);
 	%oteam = GameBase::getTeam(%this);
 	%diffZ=getWord(GameBase::getPosition(%obj),2)-getWord(GameBase::getPosition(%this),2);
@@ -1164,12 +1017,18 @@ function AccelPadPack::onCollision(%this,%obj)
 	%diffX=%ostartX-%tstartX;
 	%diffY=%ostartY-%tstartY;
 	%diffZ=%ostartZ-%tstartZ;
+//Math and stuff
+	//make sure to clear this greyflcn, on mapchange
+	//		%obj.accelpad=-1;
+	if(!%obj.accelpad || %obj.accelpad == 0) { %obj.accelpad = %this; }
+	//else { return; }
+
 	if(%pteam==%oteam)
 	{
-		if(%obj.deployStandby!=1)
+		if(%obj.deployStandby!=1 && %this == %obj.accelpad)
 		{
 			if(%diffZ>0.950)
-			{
+			{	
 				%obj.deployStandby=1;
 				%msg="<f1>Accelerator Pad : <f0>Face the direction you want to go, then jump or use your jets.  You may walk off the platform to avoid being deployed.";
 				remoteEval(%c, "BP", %msg, 0);
@@ -1180,13 +1039,15 @@ function AccelPadPack::onCollision(%this,%obj)
 		{
 			remoteEval(%c, "CP", "", 0);
 			%obj.deployStandby=0;
+			%obj.accelpad=0;
 		}
 	}
 	return;
 }
 
 function AccelPadPack::CheckPlayer(%this,%obj)
-{
+{	//if($debug == true) echo("Checking this object: " @ %obj);
+	if(%obj.accelpad == %this)
 	%tpos=GameBase::getPosition(%this);
 	%opos=GameBase::getPosition(%obj);
 	%tstartX=getWord(%tpos,0);
@@ -1217,29 +1078,37 @@ function AccelPadPack::CheckPlayer(%this,%obj)
 		%zlen=50;
 		%rnd=floor(getrandom()*30);
 		
-		if (%armor == "scoutarmor" || %armor == "scoutfemale" || %armor == "spyarmor" || %armor == "spyfemale" || %armor == "larmor" || %armor == "lfemale" || %armor == "stimarmor" || %armor == "stimfemale")
- 		{
-			playSound(debrisMediumExplosion,%tpos);
- 		}
+		//if (%armor == "scoutarmor" || %armor == "scoutfemale" || %armor == "spyarmor" || %armor == "spyfemale" || %armor == "larmor" || %armor == "lfemale" || %armor == "stimarmor" || %armor == "stimfemale")
+ 		//{
+		//	playSound(debrisMediumExplosion,%tpos);
+ 		//}
 		if (%armor == "barmor" || %armor == "bfemale" || %armor == "aarmor" || %armor == "afemale" || %armor == "earmor" || %armor == "efemale" || %armor == "marmor" || %armor == "mfemale")
  		{
-			playSound(debrisMediumExplosion,%tpos);
 			%len-=10;
-			%zlen-=15; 
+			//%zlen-=5; 
  		}
 		if (%armor == "darmor" || %armor == "jarmor" || %armor == "parmor")
  		{
-			playSound(debrisMediumExplosion,%tpos);
 			%len-=35;
-			%zlen-=35;
+			%zlen-=15;
  		}
+		playSound(debrisMediumExplosion,%tpos);
+		playSound(bigExplosion2,%tpos);//debrisSmallExplosion
 
-		playSound(debrisSmallExplosion,%tpos);
+
+		%mass=%armor.mass;
+		%trans=GameBase::getMuzzleTransform(%obj);
+		%normvec=GetWord(%trans, 3) @ " " @ GetWord(%trans, 4) @ " " @ GetWord(%trans, 5);
+		%rot=Vector::add( Vector::getRotation( %normvec ), "1.571 0 0" );
+		%vec=Vector::getFromRot(%rot, %len*%mass, 0);
+		Player::applyImpulse(%player,%vec);
+		playSound(debrisMediumExplosion,gamebase::getposition(%player));
 
 		%vec=Vector::getFromRot(%rot,%len*%mass,%zlen*%mass);
 		Player::applyImpulse(%obj,%vec);
-		schedule(%obj@".deployStandby=0;",0.1);
+		schedule(%obj@".deployStandby=0;",0.04);
 		%recall=0;
+		//%obj.accelpad=0;
 	}
 	else if(%deploy<0)
 	{
@@ -1251,7 +1120,7 @@ function AccelPadPack::CheckPlayer(%this,%obj)
 		schedule("AccelPadPack::CheckPlayer("@%this@","@%obj@");",0.05);
 	}
 	else
-	{
+	{	%obj.accelpad = 0;
 		remoteEval(%client, "CP", "", 0);
 	}
 }
@@ -1287,17 +1156,125 @@ function DeployableLaunch::onCollision(%this,%obj)
 	Player::applyImpulse(%obj,%jumpDir);
 }
 
+// FireBolt Fountain
+StaticShapeData FireBolt	{ damageSkinData = "objectDamageSkins"; shapeFile = "plasmabolt"; maxDamage = 10000; maxEnergy = 200; mapFilter = 2; visibleToSensor = false; explosionId = debrisExpLarge; debrisId = flashDebrisLarge; lightRadius = 12.0; lightType = 1; lightColor = {1.0,0.0,0.2}; side = "single"; isTranslucent = false; };
+function FireBolt::onAdd(%this) { schedule ("FireBolt::Pop(" @ %this @ ");",3); }
+function FireBolt::Pop(%this)   { %pos = Gamebase::getposition(%this); %trans = "0 0 0 0 0 0.9 0 0 0 " @ %pos; %fired = Projectile::spawnProjectile(FireBoltProj, %trans ,%this,"0 0 0"); %random = floor(getRandom() * 3)+1; schedule ("FireBolt::Pop(" @ %this @ ");",%random,%this); }
+RocketData FireBoltProj		{ bulletShapeName  = "plasmabolt.dts"; explosionTag = plasmaExp; collisionRadius  = 0.0; mass = 0.0; damageClass = 0; damageValue = 0.15; damageType = $PlasmaDamageType; explosionRadius = 1.0; kickBackStrength = 0; muzzleVelocity   = 5.0; terminalVelocity = 5.0; acceleration = 5.0; totalTime = 1.5; liveTime = 1.5; lightRange = 1.0; lightColor = { 1, 1, 0 }; inheritedVelocityScale = 0.0; trailType = 2; trailString = "plasmabolt.dts"; smokeDist   = 5.0; soundId = SoundJetHeavy; };
+function FireBolt::onDamage(%this) {}
+
+// Electric Fountain
+StaticShapeData elecbolt	{ damageSkinData = "objectDamageSkins"; shapeFile = "fusionbolt"; maxDamage = 10000; maxEnergy = 200; mapFilter = 2; visibleToSensor = false; explosionId = debrisExpLarge; debrisId = flashDebrisLarge; lightRadius = 12.0; lightType = 1; lightColor = {1.0,0.0,0.2}; side = "single"; isTranslucent = false; };
+function elecbolt::onAdd(%this) { schedule ("elecbolt::Pop(" @ %this @ ");",3); }
+function elecbolt::Pop(%this) 	{ %pos = Gamebase::getposition(%this); %trans = "0 0 0 0 0 0.9 0 0 0 " @ %pos; %fired1 = Projectile::spawnProjectile(elecboltProj, %trans ,%this,"0 0 0"); schedule ("elecbolt::Pop(" @ %this @ ");",5,%this); }
+RocketData elecboltProj		{ bulletShapeName  = "fusionbolt.dts"; explosionTag = energyExp; collisionRadius  = 0.0; mass = 0.0; damageClass = 0; damageValue = 0.15; damageType = $ElectricityDamageType; explosionRadius = 1.0; kickBackStrength = 0; muzzleVelocity   = 2.5; terminalVelocity = 2.5; acceleration = 2.5; totalTime = 4; liveTime = 4; lightRange = 4.0; lightColor = { 0, 0, 2 }; inheritedVelocityScale = 0.0; trailType = 2; trailString = "shockwave.dts"; smokeDist   = 5.0; soundId = SoundJetHeavy; };
+function elecbolt::onDamage(%this) {}
+
+// Electric Fountain 2
+StaticShapeData electbolt2		{ damageSkinData = "objectDamageSkins"; shapeFile = "fusionbolt"; maxDamage = 10000; maxEnergy = 200; mapFilter = 2; visibleToSensor = false; explosionId = debrisExpLarge; debrisId = flashDebrisLarge; lightRadius = 12.0; lightType = 1; lightColor = {1.0,0.0,0.2}; side = "single"; isTranslucent = false; };
+function electbolt2::onAdd(%this) 	{ schedule ("electbolt2::Pop(" @ %this @ ");",3); }
+function electbolt2::Pop(%this) 	{ %pos = Gamebase::getposition(%this); %trans = "0 0 0 0 0 0.9 0 0 0 " @ %pos; %fired1 = Projectile::spawnProjectile(electbolt2Proj, %trans ,%this,"0 0 0"); schedule ("electbolt2::Pop(" @ %this @ ");",5,%this); }
+RocketData electbolt2Proj		{ bulletShapeName  = "fusionbolt.dts"; explosionTag = LargeShockwave; collisionRadius  = 0.0; mass = 0.0; damageClass = 0; damageValue = 0.05; damageType = $ElectricityDamageType; explosionRadius = 15.0; kickBackStrength = 0; muzzleVelocity   = 2.5; terminalVelocity = 25; acceleration = 3; totalTime = 8; liveTime = 8; lightRange = 4.0; lightColor = { 0, 0, 2 }; inheritedVelocityScale = 0.0; trailType = 2; trailString = "shockwave_large.dts"; smokeDist   = 15.0; soundId = SoundJetHeavy; };
+function electbolt2::onDamage(%this) 	{}
+
+// Electric Fountain 3
+StaticShapeData electbolt3		{ damageSkinData = "objectDamageSkins"; shapeFile = "fusionbolt"; maxDamage = 10000; maxEnergy = 200; mapFilter = 2; visibleToSensor = false; explosionId = debrisExpLarge; debrisId = flashDebrisLarge; lightRadius = 12.0; lightType = 1; lightColor = {1.0,0.0,0.2}; side = "single"; isTranslucent = false; };
+function electbolt3::onAdd(%this) 	{ schedule ("electbolt3::Pop(" @ %this @ ");",3); }
+function electbolt3::Pop(%this) 	{ %pos = Gamebase::getposition(%this); %trans = "0 0 0 0 0 0.9 0 0 0 " @ %pos; %fired1 = Projectile::spawnProjectile(electbolt3Proj, %trans ,%this,"0 0 0"); schedule ("electbolt3::Pop(" @ %this @ ");",5,%this); }
+GrenadeData electbolt3Proj 		{ bulletShapeName    = "shield_medium.dts"; explosionTag       = ShockwaveTwo; collideWithOwner   = False; ownerGraceMS       = 400; collisionRadius    = 1.0; mass               = 50.0; elasticity         = 0.01; damageClass        = 1;damageValue        = 12.00; damageType         = $NukeDamageType; explosionRadius    = 35.0; kickBackStrength   = 250.0; maxLevelFlightDist = 0; totalTime          = 500.0; liveTime           = 5.0; projSpecialTime    = 0.1; inheritedVelocityScale = 1.5; smokeName          = "shield_large.dts"; soundId = explosion4; };
+function electbolt3::onDamage(%this) 	{}
+
+
+
+// Meteor
+StaticShapeData MeteorGun2 		{ className = "MeteorGun2"; damageSkinData = "objectDamageSkins"; shapeFile = "plasmabolt"; maxDamage = 10000; maxEnergy = 200; mapFilter = 2; visibleToSensor = false; explosionId = debrisExpLarge; debrisId = flashDebrisLarge; lightRadius = 12.0; lightType = 1; lightColor = {1.0,0.0,0.2}; side = "single"; isTranslucent = false; };
+function MeteorGun2::onAdd(%this)	{ schedule ("MeteorGun2::Pop(" @ %this @ ");",3); }
+function MeteorGun2::onDamage(%this) {}
+
+function MeteorGun2::Pop(%this) 	
+{
+	%pos = Gamebase::getposition(%this);
+
+	for(%i = 1; %i < 10; %i++)
+	{
+		%a = getRandom();%b = getRandom();%c = getRandom();%trans = "0 0 0 " @ -%a @ " " @ -%b @ " -0.9 0 0 0 " @ %pos;Projectile::spawnProjectile(MeteorGun2Proj1, %trans ,%this,"1 1 1");
+	}
+	%random = floor(getRandom() * 5)+5;
+	schedule ("MeteorGun2::Pop(" @ %this @ ");",%random,%this);
+}
+
+RocketData MeteorGun2Proj1
+{ 
+	bulletShapeName = "enbolt.dts"; 
+	explosionTag = turretExp; 
+	collisionRadius = 0.0;
+	mass = 2.0; 
+	damageClass = 1;
+    	damageValue = 0.55; 
+	damageType = $ElectricityDamageType; 
+	explosionRadius = 10; 
+	kickBackStrength = 1.0; 
+	muzzleVelocity = 500.0; 
+	terminalVelocity = 500.0;
+	acceleration = 250.0; 
+	totalTime = 10.5; 
+	liveTime = 10.3; 
+	lightRange = 5.0; 
+	lightColor = { 0.0, 0.7, 3.5 }; 
+	inheritedVelocityScale = 0.2; 
+	trailType = 1;
+	trailLength = 1500; 
+	trailWidth = 2.1; 
+	soundId = SoundJetHeavy;
+};
+
+// Volter Fountain
+StaticShapeData VoltBolt { damageSkinData = "objectDamageSkins";  shapeFile = "plasmabolt"; maxDamage = 10000; maxEnergy = 200; mapFilter = 2; visibleToSensor = false; explosionId = debrisExpLarge; debrisId = flashDebrisLarge; lightRadius = 12.0;  lightType = 1; lightColor = {1.0,0.0,0.2}; side = "single"; isTranslucent = false; };
+function VoltBolt::onAdd(%this) {  schedule ("VoltBolt::Pop(" @ %this @ ");",3); }
+function VoltBolt::onDamage(%this){}
+function VoltBolt::Pop(%this) { %pos = Gamebase::getposition(%this); %up = getRandom(); %trans = "0 0 0 0 0 " @ %up @ " 0 0 0 " @ %pos; %fired = Projectile::spawnProjectile(VoltBoltProj, %trans ,%this,"0 0 0"); %random = floor(getRandom() * 3)+1; schedule ("VoltBolt::Pop(" @ %this @ ");",5,%this); }
+GrenadeData VoltBoltProj { explosionTag = plasmaExp; collideWithOwner = True; ownerGraceMS = 50; collisionRadius = 10.0; mass = 5.0; elasticity = 0.1; damageClass = 1; damageValue = 0.30; damageType = $ElectricityDamageType; explosionRadius = 5.0; kickBackStrength = 0.1; maxLevelFlightDist = 75; totalTime = 4.0; liveTime = 0.02; projSpecialTime = 0.01; lightRange = 10.0; lightColor = { 1, 1, 0 };  inheritedVelocityScale = 1.5; smokeName = "plasmatrail.dts"; soundId = SoundJetLight; };
+
+// Meteor
+StaticShapeData MeteorGun 		{ className = "MeteorGun"; damageSkinData = "objectDamageSkins"; shapeFile = "plasmabolt"; maxDamage = 10000; maxEnergy = 200; mapFilter = 2; visibleToSensor = false; explosionId = debrisExpLarge; debrisId = flashDebrisLarge; lightRadius = 12.0; lightType = 1; lightColor = {1.0,0.0,0.2}; side = "single"; isTranslucent = false; };
+function MeteorGun::onAdd(%this) 	{ schedule ("MeteorGun::Pop(" @ %this @ ");",3); }
+function MeteorGun::Pop(%this) 		{ %pos = Gamebase::getposition(%this); %up = getRandom(); %trans = "0 0 0 0 0 " @ -%up @ " 0 0 0 " @ %pos; %fired  = Projectile::spawnProjectile(MeteorGunProj1, %trans ,%this,"1 1 1"); %random = floor(getRandom() * 5)+5; schedule ("MeteorGun::Pop(" @ %this @ ");",%random,%this); }
+GrenadeData MeteorGunProj1 		{ bulletShapeName    = "plasmaex.dts"; explosionTag       = ShockwaveTwo; collideWithOwner   = False; ownerGraceMS       = 400; collisionRadius    = 1.0; mass               = 50.0; elasticity         = 0.01; damageClass        = 1;damageValue        = 12.00; damageType         = $NukeDamageType; explosionRadius    = 35.0; kickBackStrength   = 250.0; maxLevelFlightDist = 0; totalTime          = 500.0; liveTime           = 5.0; projSpecialTime    = 0.1; inheritedVelocityScale = 1.5; smokeName          = "plasmatrail.dts"; soundId = explosion4; };
+function MeteorGun::onDamage(%this) {}
+
+//Uranium's custom static shape registers
+//these antenna declorations won't affect regular antennas since they're redeclared
+//with new names
+
+StaticShapeData SuperSmallAntenna { shapeFile = "anten_small"; debrisId = defaultDebrisSmall; maxDamage = 1.0; damageSkinData = "objectDamageSkins"; shadowDetailMask = 16; explosionId = flashExpMedium; description = "Small Antenna"; };
+StaticShapeData SuperMediumAntenna { shapeFile = "anten_med"; debrisId = flashDebrisSmall; maxDamage = 1.5; damageSkinData = "objectDamageSkins"; shadowDetailMask = 16; explosionId = flashExpMedium; description = "Medium Antenna"; };
+StaticShapeData SuperLargeAntenna { shapeFile = "anten_lrg"; debrisId = defaultDebrisSmall; maxDamage = 1.5; damageSkinData = "objectDamageSkins"; shadowDetailMask = 16; explosionId = debrisExpMedium; description = "Large Antenna"; };
+
+function SuperSmallAntenna::onDamage() {}
+function SuperMediumAntenna::onDamage() {}
+function SuperLargeAntenna::onDamage() {}
+
+StaticShapeData platform_4x4 		{ shapeFile = "elevator_4x4"; maxDamage = 10000.0; description = "Platform"; disableCollision = false; isTranslucent = False; }; function platform_4x4::onDamage() { }
+StaticShapeData platform_4x5 		{ shapeFile = "elevator_4x5"; maxDamage = 10000.0; description = "Platform"; disableCollision = false; isTranslucent = False; }; function platform_4x5::onDamage() { }
+StaticShapeData platform_5x5 		{ shapeFile = "elevator_5x5"; maxDamage = 10000.0; description = "Platform"; disableCollision = false; isTranslucent = False; }; function platform_5x5::onDamage() { }
+StaticShapeData platform_6x4 		{ shapeFile = "elevator6x4"; maxDamage = 10000.0; description = "Platform"; disableCollision = false; isTranslucent = False; }; function platform_6x4::onDamage() { }
+StaticShapeData platform_6x4thin 	{ shapeFile = "elevator6x4thin"; maxDamage = 10000.0; description = "Platform"; disableCollision = false; isTranslucent = False; }; function platform_6x4thin::onDamage() { }
+StaticShapeData platform_6x5 		{ shapeFile = "elevator_6x5"; maxDamage = 10000.0; description = "Platform"; disableCollision = false; isTranslucent = False; }; function platform_6x5::onDamage() { }
+StaticShapeData platform_6x6thin 	{ shapeFile = "elevator6x6thin"; maxDamage = 10000.0; description = "Platform"; disableCollision = false; isTranslucent = False; }; function platform_6x6thin::onDamage() { }
+StaticShapeData platform_6x6		{ shapeFile = "elevator_6x6"; maxDamage = 10000.0; description = "Platform"; disableCollision = false; isTranslucent = False; }; function platform_6x6::onDamage() { }
+StaticShapeData platform_6x6octa 	{ shapeFile = "elevator_6x6_octagon"; maxDamage = 10000.0; description = "Platform"; disableCollision = false; isTranslucent = False; }; function platform_6x6_octagon::onDamage() { }
+StaticShapeData platform_8x4 		{ shapeFile = "elevator_8x4"; maxDamage = 10000.0; description = "Platform"; disableCollision = false; isTranslucent = False; }; function platform_8x4::onDamage() { }
+StaticShapeData platform_8x6 		{ shapeFile = "elevator_8x6"; maxDamage = 10000.0; description = "Platform"; disableCollision = false; isTranslucent = False; }; function platform_8x6::onDamage() { }
+StaticShapeData platform_8x8 		{ shapeFile = "elevator_8x8"; maxDamage = 10000.0; description = "Platform"; disableCollision = false; isTranslucent = False; }; function platform_8x8::onDamage() { }
+StaticShapeData platform_9x9 		{ shapeFile = "elevator_9x9"; maxDamage = 10000.0; description = "Platform"; disableCollision = false; isTranslucent = False; }; function platform_9x9::onDamage() { }
+StaticShapeData platform_16x16Octa 	{ shapeFile = "elevator16x16_octo"; maxDamage = 10000.0; description = "Platform"; disableCollision = false; isTranslucent = False; }; function platform_16x16octa::onDamage() { }
+StaticShapeData ShockwaveM 		{ shapeFile = "shockwave_large"; maxDamage = 10000.0; description = "Shockwave"; disableCollision = false; isTranslucent = False; }; function ShockwaveM::onDamage() { }
 
 //Uranium's custom static shape registers
 StaticShapeData Fire { shapeFile = "plasmabolt"; maxDamage = 10000.0; description = "Fire"; disableCollision = false; isTranslucent = true;  };
-
-//don't want the fire to go out
 function Fire::onDamage(){}
 StaticShapeData Twiggy{shapeFile = "mrtwig"; maxDamage = 10000.0; description = "Twig"; }; 
-
-//save the twigs...for your tomorrow
 function Twiggy::onDamage(){}
-
 //slow flares
 ItemData SlowSmallOrange 	{ description = ""; shapeFile = "breath"; showInventory = false; shadowDetailMask = 4; lightType = 2; lightRadius = 5; lightTime = 0.5; lightColor = { 1, 0.5, 0 }; };
 ItemData SlowMedOrange 		{ description = ""; shapeFile = "breath"; showInventory = false; shadowDetailMask = 4; lightType = 2; lightRadius = 10; lightTime = 0.5; lightColor = { 1, 0.5, 0 }; };
@@ -1317,7 +1294,6 @@ ItemData SlowLargeGreen 	{ description = ""; shapeFile = "breath"; showInventory
 ItemData SlowSmallWhite 	{ description = ""; shapeFile = "breath"; showInventory = false; shadowDetailMask = 4; lightType = 2; lightRadius = 5; lightTime = 0.5; lightColor = { 1, 1, 1 }; };
 ItemData SlowMedWhite 		{ description = ""; shapeFile = "breath"; showInventory = false; shadowDetailMask = 4; lightType = 2; lightRadius = 10; lightTime = 0.5; lightColor = { 1, 1, 1 }; };
 ItemData SlowLargeWhite 	{ description = ""; shapeFile = "breath"; showInventory = false; shadowDetailMask = 4; lightType = 2; lightRadius = 15; lightTime = 0.5; lightColor = { 1, 1, 1 }; };
-
 //fast flares
 ItemData FastSmallOrange 	{ description = ""; shapeFile = "breath"; showInventory = false; shadowDetailMask = 4; lightType = 2; lightRadius = 5; lightTime = 0.07; lightColor = { 1, 0.5, 0 }; };
 ItemData FastMedOrange 		{ description = ""; shapeFile = "breath"; showInventory = false; shadowDetailMask = 4; lightType = 2; lightRadius = 10; lightTime = 0.07; lightColor = { 1, 0.5, 0 }; };
@@ -1337,32 +1313,4 @@ ItemData FastLargeGreen 	{ description = ""; shapeFile = "breath"; showInventory
 ItemData FastSmallWhite 	{ description = ""; shapeFile = "breath"; showInventory = false; shadowDetailMask = 4; lightType = 2; lightRadius = 5; lightTime = 0.07; lightColor = { 1, 1, 1 }; };
 ItemData FastMedWhite 		{ description = ""; shapeFile = "breath"; showInventory = false; shadowDetailMask = 4; lightType = 2; lightRadius = 10; lightTime = 0.07; lightColor = { 1, 1, 1 }; };
 ItemData FastLargeWhite 	{ description = ""; shapeFile = "breath"; showInventory = false; shadowDetailMask = 4; lightType = 2; lightRadius = 15; lightTime = 0.07; lightColor = { 1, 1, 1 }; };
-
-// FireBolt Fountain
-StaticShapeData FireBolt	{ className = "FireBolt"; damageSkinData = "objectDamageSkins"; shapeFile = "plasmabolt"; maxDamage = 10000; maxEnergy = 200; mapFilter = 2; visibleToSensor = false; explosionId = debrisExpLarge; debrisId = flashDebrisLarge; lightRadius = 12.0; lightType = 1; lightColor = {1.0,0.0,0.2}; side = "single"; isTranslucent = false; };
-function FireBolt::onAdd(%this) { schedule ("FireBolt::Pop(" @ %this @ ");",3); }
-function FireBolt::Pop(%this)   { %pos = Gamebase::getposition(%this); %trans = "0 0 0 0 0 0.9 0 0 0 " @ %pos; %fired = Projectile::spawnProjectile(FireBoltProj, %trans ,%this,"0 0 0"); %random = floor(getRandom() * 3)+1; schedule ("FireBolt::Pop(" @ %this @ ");",%random,%this); }
-RocketData FireBoltProj		{ bulletShapeName  = "plasmabolt.dts"; explosionTag = plasmaExp; collisionRadius  = 0.0; mass = 0.0; damageClass = 0; damageValue = 0.15; damageType = $PlasmaDamageType; explosionRadius = 1.0; kickBackStrength = 0; muzzleVelocity   = 5.0; terminalVelocity = 5.0; acceleration = 5.0; totalTime = 1.5; liveTime = 1.5; lightRange = 1.0; lightColor = { 1, 1, 0 }; inheritedVelocityScale = 0.0; trailType = 2; trailString = "plasmabolt.dts"; smokeDist   = 5.0; soundId = SoundJetHeavy; };
-function FireBolt::OnDamage(%this) {}
-
-// Electric Fountain
-StaticShapeData elecbolt	{ className = "elecbolt"; damageSkinData = "objectDamageSkins"; shapeFile = "fusionbolt"; maxDamage = 10000; maxEnergy = 200; mapFilter = 2; visibleToSensor = false; explosionId = debrisExpLarge; debrisId = flashDebrisLarge; lightRadius = 12.0; lightType = 1; lightColor = {1.0,0.0,0.2}; side = "single"; isTranslucent = false; };
-function elecbolt::onAdd(%this) { schedule ("elecbolt::Pop(" @ %this @ ");",3); }
-function elecbolt::Pop(%this) 	{ %pos = Gamebase::getposition(%this); %trans = "0 0 0 0 0 0.9 0 0 0 " @ %pos; %fired1 = Projectile::spawnProjectile(elecboltProj, %trans ,%this,"0 0 0"); schedule ("elecbolt::Pop(" @ %this @ ");",5,%this); }
-RocketData elecboltProj		{ bulletShapeName  = "fusionbolt.dts"; explosionTag = energyExp; collisionRadius  = 0.0; mass = 0.0; damageClass = 0; damageValue = 0.15; damageType = $ElectricityDamageType; explosionRadius = 1.0; kickBackStrength = 0; muzzleVelocity   = 2.5; terminalVelocity = 2.5; acceleration = 2.5; totalTime = 4; liveTime = 4; lightRange = 4.0; lightColor = { 0, 0, 2 }; inheritedVelocityScale = 0.0; trailType = 2; trailString = "fusionbolt.dts"; smokeDist   = 5.0; soundId = SoundJetHeavy; };
-function elecbolt::OnDamage(%this) {}
-
-// Volter Fountain
-StaticShapeData VoltBolt 	{ className = "VoltBolt"; damageSkinData = "objectDamageSkins"; shapeFile = "plasmabolt"; maxDamage = 10000; maxEnergy = 200; mapFilter = 2; visibleToSensor = false; explosionId = debrisExpLarge; debrisId = flashDebrisLarge; lightRadius = 12.0; lightType = 1; lightColor = {1.0,0.0,0.2}; side = "single"; isTranslucent = false; };
-function VoltBolt::onAdd(%this) { schedule ("VoltBolt::Pop(" @ %this @ ");",3); }
-function VoltBolt::Pop(%this) 	{ %pos = Gamebase::getposition(%this); %up = getRandom(); %trans = "0 0 0 0 0 " @ %up @ " 0 0 0 " @ %pos; %fired = Projectile::spawnProjectile(VoltBoltProj, %trans ,%this,"0 0 0"); %random = floor(getRandom() * 3)+1; schedule ("VoltBolt::Pop(" @ %this @ ");",%random,%this); }
-GrenadeData VoltBoltProj 	{ explosionTag = plasmaExp; collideWithOwner = True; ownerGraceMS = 50; collisionRadius = 10.0; mass = 5.0; elasticity = 0.1; damageClass = 1; damageValue = 0.30; damageType = $ElectricityDamageType; explosionRadius = 5.0; kickBackStrength = 0.1; maxLevelFlightDist = 75; totalTime = 4.0; liveTime = 0.02; projSpecialTime = 0.01; lightRange = 10.0; lightColor = { 1, 1, 0 };  inheritedVelocityScale = 1.5; smokeName = "plasmatrail.dts"; soundId = SoundJetLight; };
-function VoltBolt::OnDamage(%this) {}
-
-// Meteor
-StaticShapeData MeteorGun 		{ className = "MeteorGun"; damageSkinData = "objectDamageSkins"; shapeFile = "plasmabolt"; maxDamage = 10000; maxEnergy = 200; mapFilter = 2; visibleToSensor = false; explosionId = debrisExpLarge; debrisId = flashDebrisLarge; lightRadius = 12.0; lightType = 1; lightColor = {1.0,0.0,0.2}; side = "single"; isTranslucent = false; };
-function MeteorGun::onAdd(%this) 	{ schedule ("MeteorGun::Pop(" @ %this @ ");",3); }
-function MeteorGun::Pop(%this) 		{ %pos = Gamebase::getposition(%this); %up = getRandom(); %trans = "0 0 0 0 0 " @ -%up @ " 0 0 0 " @ %pos; %fired  = Projectile::spawnProjectile(MeteorGunProj1, %trans ,%this,"1 1 1"); %random = floor(getRandom() * 5)+5; schedule ("MeteorGun::Pop(" @ %this @ ");",%random,%this); }
-GrenadeData MeteorGunProj1 		{ bulletShapeName    = "plasmaex.dts"; explosionTag       = LargeShockwave; collideWithOwner   = False; ownerGraceMS       = 400; collisionRadius    = 1.0; mass               = 50.0; elasticity         = 0.01; damageClass        = 1;       // 0 impact, 1, radius damageValue        = 12.00; damageType         = $NukeDamageType; explosionRadius    = 35.0; kickBackStrength   = 250.0; maxLevelFlightDist = 0; totalTime          = 500.0; liveTime           = 5.0; projSpecialTime    = 0.1; inheritedVelocityScale = 1.5; smokeName          = "plasmatrail.dts"; soundId = explosion4; };
-function MeteorGun::OnDamage(%this) {}
 

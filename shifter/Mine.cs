@@ -1,11 +1,10 @@
 //===============================
 // Mine Data
 //===============================
-// Anti-Personel Mine		- Scout, Goliath
+// Anti-Personel Mine- Scout, Goliath, Mercinary
 // Proximity Mine		- Engineer
 // SubSpace Mine		- Chemeleon
-// Mock-Repair Kit		- Assassin
-// Speed Boost			- Mercinary
+// Mock-Repair Kit	- Assassin
 // Flag Mine			- Assassin
 // ShockWave			- Arbitor
 // Replicator			- Engineer
@@ -55,12 +54,12 @@ function AntipersonelMine::deployCheck(%this)
 	 	GameBase::setActive(%this,true);
 		%set = newObject("mineset",SimSet);
 		
-		if(1 != containerBoxFillSet(%set,$MineObjectType,GameBase::getPosition(%this),1,1,1,0)) {
+		if(containerBoxFillSet(%set,$MineObjectType,GameBase::getPosition(%this),1,1,1,0) > 1) {
 			%data = GameBase::getDataName(%this);
 			GameBase::setDamageLevel(%this, %data.maxDamage);
 		}
 		
-		deleteObject(%set); //
+		if(%set) deleteObject(%set); //
 	}
 	else 
 		schedule("AntipersonelMine::deployCheck(" @ %this @ ");", 3, %this);
@@ -114,24 +113,19 @@ function ProxMine::onCollision(%this,%object)
 {
 	%type = getObjectType(%object);
 	%data = GameBase::getDataName(%this);
+	%proxteam = GameBase::getTeam(%this);
 
-	if ((%type == "Player" || %data == Vehicle || %type == "Moveable") &&
-			GameBase::isActive(%this)
-			&& (GameBase::getTeam(%this)!=GameBase::getTeam(%object)) //no teamdmg
-			) 
+	if ((%type == "Player" || %data == "Vehicle" || %type == "Moveable") && GameBase::isActive(%this) && %proxteam!=GameBase::getTeam(%object))
 	{		
-	
-		if ($ScreamerDelay == "" || $ScreamerDelay == 0)
+		if (%proxteam.prxMineActive == "" || !%proxteam.prxMineActive)		
 		{
-			$proxteam = GameBase::getTeam(%this);
-			$ScreamerDelay = "1";
-			TeamMessages(1, $proxteam, "Incomming Enemies. ~wusepack.wav~wusepack.wav~wusepack.wav~wusepack.wav~wusepack.wav");
-			schedule("$ScreamerDelay = 0;", 10);
-			//echo ("Alerting Team");
+			%proxteam.prxMineActive = 1;
+			TeamMessages(1, %proxteam, "Incoming Enemies.~waccess_denied.wav");
+			schedule(%proxteam @ ".prxMineActive = 0;", 10);
 		}
-
 	}		
 }
+
 
 function ProxMine::deployCheck(%this)
 {
@@ -140,7 +134,7 @@ function ProxMine::deployCheck(%this)
 	 	GameBase::setActive(%this,true);
 		%set = newObject("proxmineset",SimSet);
 
-		deleteObject(%set); //
+		if(%set) deleteObject(%set); //
 	}
 	else 
 		schedule("ProxMine::deployCheck(" @ %this @ ");", 3, %this);
@@ -200,13 +194,12 @@ function SubspaceMine::deployCheck(%this)
 		GameBase::setActive(%this,true);
 
 		%set = newObject("subspset",SimSet);
-
-		if(1 != containerBoxFillSet(%set,$MineObjectType,GameBase::getPosition(%this),1,1,1,0)) 
+		if(containerBoxFillSet(%set,$MineObjectType,GameBase::getPosition(%this),1,1,1,0) > 1) 
 		{
 			%data = GameBase::getDataName(%this);
 			GameBase::setDamageLevel(%this, %data.maxDamage);
 		}
-		deleteObject(%set);
+		if(%set) deleteObject(%set);
 	}
 	else 
         schedule("SubspaceMine::deployCheck(" @ %this @ ");", 3, %this);
@@ -228,10 +221,10 @@ function SubspaceMine::onCollision(%this,%object)
 MineData HoloMine
 {
 	className = "Mine";
-   description = "Hologram";
-   shapeFile = "armorPack";
-   shadowDetailMask = 4;
-   explosionId = mineExp;
+   	description = "Hologram";
+   	shapeFile = "armorPack";
+  	shadowDetailMask = 4;
+   	explosionId = mineExp;
 	explosionRadius = 15.0; //250
 	damageValue = 0.75; //0
 	damageType = $MineDamageType;
@@ -258,12 +251,28 @@ function HoloMine::onCollision(%this,%object)
 {
 	%type = getObjectType(%object);
 	%data = GameBase::getDataName(%this);
-	if ((%type == "Player" || %data == HoloMine|| %data == Vehicle || %type == "Moveable") &&
-			GameBase::isActive(%this)
-			&& (GameBase::getTeam(%this)!=GameBase::getTeam(%object)) //no teamdmg
-			) 
+
+	//&& GameBase::isActive(%this)
+
+	if (	(%type == "Player" || %data == HoloMine || %data == Vehicle || %type == "Moveable")
+			&& (GameBase::getTeam(%this)!=GameBase::getTeam(%object))
+		) 
 		GameBase::setDamageLevel(%this, %data.maxDamage);
+	else
+	{
+		%armor = Player::getArmor(%object);
+		%pack = Player::getMountedItem(%object,$BackpackSlot);
+		if (%type == "Player" && GameBase::getTeam(%this) == GameBase::getTeam(%object) && (%armor == "larmor" || %armor == "lfemale") && %pack == -1)
+		{
+			%client = GameBase::getOwnerClient(%object);
+			player::setitemcount(%object, RepairPack, 1);
+			player::mountItem(%object, RepairPack, $BackpackSlot);
+			Client::sendMessage(%client,0,"You received a RepairPack backpack~wDryfire1.wav");
+			deleteobject(%this);
+		}
+	}
 }
+
 
 function HoloMine::deployCheck(%this)
 {
@@ -271,11 +280,11 @@ function HoloMine::deployCheck(%this)
 	{
 	 	GameBase::setActive(%this,true);
 		%set = newObject("holomineset",SimSet);
-		if(1 != containerBoxFillSet(%set,$MineObjectType,GameBase::getPosition(%this),1,1,1,0)) {
+		if(containerBoxFillSet(%set,$MineObjectType,GameBase::getPosition(%this),1,1,1,0) > 1) {
 			%data = GameBase::getDataName(%this);
 			GameBase::setDamageLevel(%this, %data.maxDamage);
 		}
-		deleteObject(%set); //
+		if(%set) deleteObject(%set); //
 	}
 	else 
 		schedule("HoloMine::deployCheck(" @ %this @ ");", 3, %this);
@@ -289,150 +298,6 @@ function HoloMine::onDestroyed(%this)
 function HoloMine::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
 {
    if (%type == $MineDamageType)
-      %value = %value * 0.25;
-
-	%data = GameBase::getDataName(%this);
-	if((%data.maxDamage/1.5) < %this.damage+%value) 
-		GameBase::setDamageLevel(%this, %data.maxDamage);
-	else 
-		%this.damage += %value;
-}
-
-
-//==================================================================================================== Speed Boost
-// Super Speed boost
-
-MineData Booster
-{
-	className = "Mine";
-   description = "Speed Booster";
-   shapeFile = "mine";
-   shadowDetailMask = 4;
-   explosionId = mineExp;
-	explosionRadius = 8.0; //250
-	damageValue = 0.0; //0
-	damageType = $MineDamageType;
-	kickBackStrength = 300; //500
-	triggerRadius = 250; //250
-	maxDamage = 0.0;//0
-	shadowDetailMask = 0;
-	destroyDamage = 1.0;
-	damageLevel = {1.0, 1.0};
-};
-
-function Booster::onAdd(%this)
-{
-	%this.damage = 0;
-	Booster::deployCheck(%this);
-}
-
-function Booster::onCollision(%this,%object)
-{
-	%type = getObjectType(%object);
-	%data = GameBase::getDataName(%this);
-	if ((%type == "Player" || %data == Boost || %data == Vehicle || %type == "Moveable") &&
-			GameBase::isActive(%this)) 
-		GameBase::setDamageLevel(%this, %data.maxDamage);
-}
-
-function Booster::deployCheck(%this)
-{
-	if (GameBase::isAtRest(%this))
-	{
-		GameBase::playSequence(%this,1,"deploy");
-	 	GameBase::setActive(%this,true);
-		%set = newObject("boosterset",SimSet);
-		if(1 != containerBoxFillSet(%set,$MineObjectType,GameBase::getPosition(%this),1,1,1,0)) {
-			%data = GameBase::getDataName(%this);
-			GameBase::setDamageLevel(%this, %data.maxDamage);
-		}
-		//deleteObject(%set);
-	}
-	else 
-		schedule("Booster::deployCheck(" @ %this @ ");", 3, %this);
-}	
-
-function Booster::onDestroyed(%this)
-{
-	//$TeamItemCount[GameBase::getTeam(%this) @ "Beacon"]--;
-}
-
-function Boosert::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
-{
-   if (%type == $MineDamageType)
-      %value = %value * 0.25;
-
-	%data = GameBase::getDataName(%this);
-	if((%data.maxDamage/1.5) < %this.damage+%value) 
-		GameBase::setDamageLevel(%this, %data.maxDamage);
-	else 
-		%this.damage += %value;
-}
-
-//==================================================================================================== Flag Mine - Decoy
-
-MineData Hologram
-{
-	className = "Mine";
-	description = "Flag";
-	shapeFile = "flag";
-	shadowDetailMask = 4;
-	explosionId = mineExp;
-	explosionRadius = 5.0; //250
-	damageValue = 0.75; //0
-	damageType = $MineDamageType;
-	kickBackStrength = 150; //500
-	triggerRadius = 2.5; //250 //2.5
-	maxDamage = 3.00;//0
-	shadowDetailMask = 0;
-	destroyDamage = 2.0;
-	damageLevel = {1.0, 1.0};
-
-	lightType = 2;   // Pulsing
-	lightRadius = 4;
-	lightTime = 1.5;
-	lightColor = { 1, 1, 1 };
-
-};
-
-function Hologram::onAdd(%this)
-{
-	%this.damage = 0;
-	Hologram::deployCheck(%this);
-}
-
-function Hologram::onCollision(%this,%object)
-{
-	%type = getObjectType(%object);
-	%data = GameBase::getDataName(%this);
-        if (!(GameBase::getTeam(%object) == GameBase::getTeam(%this)) && (%type == "Player" || %data == Vehicle || %type == "Moveable") && GameBase::isActive(%this)) 
-		GameBase::setDamageLevel(%this, %data.maxDamage);
-}
-
-function Hologram::deployCheck(%this)
-{
-	if (GameBase::isAtRest(%this))
-	{
-		GameBase::playSequence(%this,1,"deploy");
-	 	GameBase::setActive(%this,true);
-		%set = newObject("hologramset",SimSet);
-		if(1 != containerBoxFillSet(%set,$MineObjectType,GameBase::getPosition(%this),1,1,1,0)) {
-			%data = GameBase::getDataName(%this);
-			GameBase::setDamageLevel(%this, %data.maxDamage);
-		}
-		deleteObject(%set);
-	}
-	else 
-		schedule("Hologram::deployCheck(" @ %this @ ");", 3, %this);
-}	
-
-function Hologram::onDestroyed(%this)
-{
-}
-
-function Hologram::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
-{
-   if (%type == $ShrapnelDamageType)
       %value = %value * 0.25;
 
 	%data = GameBase::getDataName(%this);
@@ -473,22 +338,22 @@ function ShockMine::onAdd(%this)
 }
 function ShockMine::onCollision(%this,%obj)
 {
-    if(getObjectType(%obj) != "Player")
+	if(getObjectType(%obj) != "Player")
 	{
-        return;
+		return;
 	}
 
-    if(Player::isDead(%obj))
+	if(Player::isDead(%obj))
 	{
-        return;
+		return;
 	}
 
-    %playerTeam = GameBase::getTeam(%obj);
+	%playerTeam = GameBase::getTeam(%obj);
 	%teleTeam = GameBase::getTeam(%this);
 
 	if (GameBase::getTeam(%this)!= GameBase::getTeam(%obj))
 	{
-        GameBase::startFadeIn(%this);
+		GameBase::startFadeIn(%this);
 		schedule("Mine::Detonate(" @ %this @ ");",0.2,%this);
 	}
 }
@@ -516,7 +381,7 @@ MineData ReplicatorMine
 	description = "Replicating Mine";
 	shapeFile = "sensor_small";
 	shadowDetailMask = 4;
-	explosionId = plasmaExp;
+	explosionId = RepMineExp;//plasmaExp;
 	explosionRadius = 10.0;
 	damageValue = 0.65;
 	damageType = $MineDamageType;
@@ -559,13 +424,13 @@ function ReplicatorMine::deployCheck(%this)
 		
 		%set = newObject("replicatorset",SimSet);
 		
-		if(1 != containerBoxFillSet(%set,$MineObjectType,GameBase::getPosition(%this),1,1,1,0) || $TeamItemCount[%team @ "replicatingmine"] > $TeamItemMax[replicatingmine])
+		if(containerBoxFillSet(%set,$MineObjectType,GameBase::getPosition(%this),1,1,1,0) > 1 || $TeamItemCount[%team @ "replicatingmine"] > $TeamItemMax[replicatingmine])
 		{
 			%this.generation = 5;
 			%data = GameBase::getDataName(%this);
 			GameBase::setDamageLevel(%this, %data.maxDamage);
 		}
-		deleteObject(%set);
+		if(%set) deleteObject(%set);
 	}
 	else 
 		schedule("ReplicatorMine::deployCheck(" @ %this @ ");", 3, %this);
@@ -620,18 +485,18 @@ function replicateMines(%this, %generation)
 MineData Telebeacon
 {
 	className = "Mine";
-        description = "Telebeacon";
-        shapeFile = "sensor_small";
-        shadowDetailMask = 4;
-        explosionId = ShockwaveFour;
-        explosionRadius = 5.0;
-        damageValue = 0.15;
+	description = "Telebeacon";
+	shapeFile = "discb";
+	shadowDetailMask = 4;
+	explosionId = ShockwaveFour;
+	explosionRadius = 5.0;
+	damageValue = 0.15;
 	damageType = $MineDamageType;
 	kickBackStrength = 450;
 	triggerRadius = 2.5;
 	maxDamage = 0.5;
 	shadowDetailMask = 0;
-	destroyDamage = 1.0;
+	destroyDamage = 2.0;
 	damageLevel = {1.0, 1.0};
 };
 
@@ -639,37 +504,35 @@ function Telebeacon::onAdd(%this)
 {
 	if ($debug) echo("Telebeacon Mine Added");
 	%this.damage = 0;
-        Telebeacon::deployCheck(%this);
+	GameBase::setActive(%this,true);
+   Telebeacon::deployCheck(%this);
 }
 
 function Telebeacon::deployCheck(%this)
 {
 	if (GameBase::isAtRest(%this))
 	{
-		GameBase::setActive(%this,true);
 		%clientId = %this.deployer;
 		%pos = GameBase::getPosition(%this);
 		%clientId.telepoint = %pos;
 		bottomprint(%clientId, "<jc><f2>Your TeleBeacon Is Now Active, Use Pack To Teleport!", 3);
 	}
 	else 
-        	schedule("Telebeacon::deployCheck(" @ %this @ ");", 3, %this);
+		schedule("Telebeacon::deployCheck(" @ %this @ ");", 0.1, %this);
 }	
 
-function Telebeacon::onCollision(%this,%object)
-{
-	return;
-}
+function Telebeacon::onCollision(%this,%object){}
 
 function Telebeacon::onDestroyed(%this)
 {
-	%clientId = %this.deployer;
-	bottomprint(%clientId, "<jc><f2>Your TeleBeacon Has Been Destroyed!!!", 3);
-	%clientId.telepoint = "false";
-	$TeamItemCount[GameBase::getTeam(%this) @ "TeleBeacons"]--;
+	%client = %this.deployer;
+	bottomprint(%client, "<jc><f2>Your TeleBeacon Has Been Destroyed!!!", 3);
+	%client.telepoint = "false";
+	%client.telebeacon = "false";
+	%client.teledisk = "false";
 }
 
-function Teleceacon::onDeactivate(%this)
+function Telebeacon::onDeactivate(%this)
 {
 	Telebeacon::onDestroyed(%this);
 }
@@ -700,7 +563,7 @@ MineData PickUpPack
 function PickUpPack::onAdd(%this)
 {
 	PickUpPack::deployCheck(%this);
-	schedule ("deleteobject( " @ %this @ ");",120);
+	schedule ("deleteobject( " @ %this @ ");",120,%this);
 }
 
 function PickUpPack::onCollision(%this,%player)
@@ -708,23 +571,19 @@ function PickUpPack::onCollision(%this,%player)
 	if(getObjectType(%player) != "Player") {return;}
 	if(Player::isDead(%player)) {return;}
 
-    	%client = Player::getClient(%player);
-    	%plTeam = GameBase::getTeam(%player);
+  	%client = Player::getClient(%player);
+  	%plTeam = GameBase::getTeam(%player);
 	%ppTeam = GameBase::getTeam(%this);
 	%armor = Player::getArmor(%obj);
 	
 	if (%player != -1)
 	{
 		%cnt = Station::itemsToResupply(%player);
-		//echo ("Ammount " @ %cnt);
-		
 		if(getSimTime() - %this.enterTime > 11)
 			%cnt = 0;
 			
 		if (%cnt != 0)
-		{
 			return;
-		}
 	}
 	GameBase::setActive(%this,false);
 	%this.enterTime="";
@@ -737,7 +596,6 @@ function PickUpPack::deployCheck(%this)
 	 	GameBase::setActive(%this,true);
 		Gamebase::setMapName(%this, "Pick Up Pack");
 		%this.ammount = 5000;	
-		//echo ("Active");
 	}
 	else
 	{
@@ -745,232 +603,7 @@ function PickUpPack::deployCheck(%this)
 	}
 }
 
-TurretData MineNet
-{
-	className = "Turret";
-	shapeFile = "camera";
-	projectileType = HoverMine;
-	maxDamage = 0.22;
-	maxEnergy = 75;
-	minGunEnergy = 10;
-	maxGunEnergy = 60;
-	sequenceSound[0] = { "deploy", SoundActivateMotionSensor };
-	reloadDelay = 0.8;
-	speed = 100.0;
-	speedModifier = 100.5;
-	range = 28;
-	visibleToSensor = true;
-	shadowDetailMask = 4;
-	dopplerVelocity = 0;
-	castLOS = true;
-	supression = false;
-	debrisId = flashDebrisMedium;
-	shieldShapeName = "shield";
-	fireSound = SoundFireLaser;
-	activationSound = SoundRemoteTurretOn;
-	deactivateSound = SoundRemoteTurretOff;
-	explosionId = flashExpMedium;
-	description = "MineNet";
-};
-function MineNet::onAdd(%this)
-{
- 	schedule ("GameBase::setActive(" @ %this @ ",true);", 0.5);
-	schedule ("MineNet::DeployNet(" @ %this @ ");", 0.7, %this);
-}
-
-function MineNet::DeployNet(%this)
-{
-	%pos = gamebase::getposition(%this);
-	%rot = gamebase::getrotation(%this);
-
-	if (%this.deploy)
-		return;
-	%this.deploy = 1;
-	
-	%rot = getword (%rot, 0) @ " " @ (getword(%rot, 1)) @ " " @ (getword(%rot, 2) / 4);
-	
-	%y0 = Vector::getFromRot(%rot, 0);
-	%y1 = Vector::getFromRot(%rot, 10);
-	%y2 = Vector::getFromRot(%rot, 20);
-	%y3 = Vector::getFromRot(%rot, -10);
-	%y4 = Vector::getFromRot(%rot, -20);
-
-	schedule ("MineNet::PopMine (\"" @ %this @ "\",\"" @  %pos @ "\", \"" @ %rot @ "\");",0.1);	
-
-
-	for (%x = 0; %x < 5; %x++)
-	{
-		%k = %y[%x];
-		%padd = getword (%k, 0) @ " " @ getword (%k, 1) @ " -14.0";
-		%pos1 = Vector::add(gamebase::getposition(%this), %padd);
-		schedule ("MineNet::PopMine (\"" @ %this @ "\",\"" @  %pos1 @ "\", \"" @ %rot @ "\");",0.22);	
-	}
-	for (%x = 0; %x < 5; %x++)
-	{
-		%k = %y[%x];
-		%padd = getword (%k, 0) @ " " @ getword (%k, 1) @ " -7.0";
-		%pos1 = Vector::add(gamebase::getposition(%this), %padd);
-		schedule ("MineNet::PopMine (\"" @ %this @ "\",\"" @  %pos1 @ "\", \"" @ %rot @ "\");",0.26);	
-	}
-	for (%x = 0; %x < 5; %x++)
-	{
-		%k = %y[%x];
-		%padd = getword (%k, 0) @ " " @ getword (%k, 1) @ " 0";
-		%pos1 = Vector::add(gamebase::getposition(%this), %padd);
-		schedule ("MineNet::PopMine (\"" @ %this @ "\",\"" @  %pos1 @ "\", \"" @ %rot @ "\");",0.35);	
-	}
-	for (%x = 0; %x < 5; %x++)
-	{
-		%k = %y[%x];
-		%padd = getword (%k, 0) @ " " @ getword (%k, 1) @ " 7.0";
-		%pos1 = Vector::add(gamebase::getposition(%this), %padd);
-		schedule ("MineNet::PopMine (\"" @ %this @ "\",\"" @  %pos1 @ "\", \"" @ %rot @ "\");",0.45);	
-	}
-	for (%x = 0; %x < 5; %x++)
-	{
-		%k = %y[%x];
-		%padd = getword (%k, 0) @ " " @ getword (%k, 1) @ " 14.0";
-		%pos1 = Vector::add(gamebase::getposition(%this), %padd);
-		schedule ("MineNet::PopMine (\"" @ %this @ "\",\"" @  %pos1 @ "\", \"" @ %rot @ "\");",0.65);	
-	}
-}
-
-function MineNet::PopMine(%this, %pos, %rot)
-{
-	if (!CheckForObjects(%pos, 5,5,5))
-	{
-		if ($debug) echo ("Obstructed");
-		return;
-	}
-	else
-	{
-		%obj = newObject("NetMine","Turret", "MineNetKnot",true);
-		GameBase::setTeam(%obj,GameBase::getTeam(%this));
-		GameBase::setPosition(%obj,%pos);
-		addToSet("MissionCleanup", %obj);
-		//echo ("Team " @ GameBase::getTeam(%obj));
-	}
-}
-
-TurretData MineNetKnot
-{
-	className = "Turret";
-	shapeFile = "camera";
-	projectileType = HoverMine;
-	maxDamage = 0.22;
-	maxEnergy = 75;
-	minGunEnergy = 10;
-	maxGunEnergy = 60;
-	sequenceSound[0] = { "deploy", SoundActivateMotionSensor };
-	reloadDelay = 0.8;
-	speed = 100.0;
-	speedModifier = 100.5;
-	range = 28;
-	visibleToSensor = true;
-	shadowDetailMask = 4;
-	dopplerVelocity = 0;
-	castLOS = true;
-	supression = false;
-	debrisId = flashDebrisMedium;
-	shieldShapeName = "shield";
-	fireSound = SoundFireLaser;
-	activationSound = SoundRemoteTurretOn;
-	deactivateSound = SoundRemoteTurretOff;
-	explosionId = flashExpMedium;
-	description = "MineNet";
-};
-
-
-function MineNetKnot::onFire(%this) 
-{
-}
-
-function MineNetKnot::onAdd(%this)
-{
-	GameBase::startFadeIn(%this);
-	schedule("MineNetKnot::deploy(" @ %this @ ");",1,%this);
-	GameBase::setRechargeRate(%this,5);
-	%this.shieldStrength = 0.0;
-	%time = 120 + (getrandom() * 10);
-	schedule("MineNetKnot::Remove(" @ %this @ ");",120);
-	%this.active = 1;
-}
-
-function MineNetKnot::deploy(%this) { GameBase::playSequence(%this,1,"deploy"); }
-function MineNetKnot::onEndSequence(%this,%thread) { GameBase::setActive(%this,true); }
-function MineNetKnot::onDestroyed(%this) { Turret::onDestroyed(%this); }
-function MineNetKnot::onPower(%this,%power,%generator) {}
-function MineNetKnot::onEnabled(%this) { GameBase::setRechargeRate(%this,5); GameBase::setActive(%this,true); }	
-
-function MineNetKnot::onCollision(%this,%object)
-{
-	if (gamebase::getteam(%this) != gamebase::getteam(%object))
-	{
-		%pos = gamebase::getposition(%this);
-		%data = GameBase::getDataName(%this);
-		GameBase::setDamageLevel(%this, %data.maxDamage);
-		GameBase::applyRadiusDamage($MineDamageType, %pos, 12, 1.0, 1.0, %this);
-	}
-}
-function MineNetKnot::verifyTarget(%this,%target) 
-{
-	
-	%tpos = gamebase::getposition(%this);
-	%ppos = gamebase::getposition(%target);
-	
-	%dist = Vector::getDistance(%tpos, %ppos);
-	
-	if (%dist < 27)
-	{
-		schedule("MineNetKnot::Remove(" @ %this @ ");",0.7);
-		return "True";
-	}
-}
-
-function MineNetKnot::Remove(%this)
-{
-	if (%this.active == 1)
-	{
-		%this.active = 0;
-		deleteobject(%this);
-	}
-	else
-		return;
-}
-
-SeekingMissileData HoverMine
-{
-  	bulletShapeName = "sensor_small.dts";
-	explosionTag = rocketExp;
-	collisionRadius = 0.0;
-	mass = 2.0;
-	damageClass = 1;
-	damageValue = 0.6;
-	damageType = $MineDamageType;
-	explosionRadius = 9.5;
-	kickBackStrength = 20.0;
-	muzzleVelocity = 10.0;
-	terminalVelocity = 515.0;
-	acceleration = 100.0;
-	totalTime = 21.0;
-	liveTime = 55.0;
-	lightRange = 5.0;
-	lightColor = { 1.0, 0.7, 0.5 };
-	inheritedVelocityScale = 0.5;
-	seekingTurningRadius = 1.0;
-	nonSeekingTurningRadius = 1.1;
-	proximityDist = 1.5;
-	lightRange = 5.0;
-	lightColor = { 0.4, 0.4, 1.0 };
-	
-	trailType   = 1;
-	trailLength = 10;
-	trailWidth  = 0.10;
-	
-	inheritedVelocityScale = 0.5;
-	soundId = SoundJetHeavy;   
-};
-
+function PickUpPack::onDestroyed(%this){}
 //============================================================================================ Anti-Personel Mine
 
 MineData AntipersonelLightMine
@@ -980,7 +613,7 @@ MineData AntipersonelLightMine
    	shapeFile = "mine";
    	shadowDetailMask = 4;
    	explosionId = mineExp;
-	explosionRadius = 5.0;
+	explosionRadius = 15.0;
 	damageValue = 0.25;
 	damageType = $MineDamageType;
 	kickBackStrength = 50;
@@ -989,7 +622,6 @@ MineData AntipersonelLightMine
 	shadowDetailMask = 0;
 	destroyDamage = 1.0;
 	damageLevel = {1.0, 1.0};
-	//validateShape = true;
 };
 
 function AntipersonelLightMine::onAdd(%this)
@@ -1002,10 +634,7 @@ function AntipersonelLightMine::onCollision(%this,%object)
 {
 	%type = getObjectType(%object);
 	%data = GameBase::getDataName(%this);
-	if ((%type == "Player" || %data == AntipersonelLightMine || %data == Vehicle || %type == "Moveable") &&
-			GameBase::isActive(%this)
-			&& (GameBase::getTeam(%this)!=GameBase::getTeam(%object)) //no teamdmg
-			) 
+	if ((%type == "Player" || %data == AntipersonelLightMine || %data == Vehicle || %type == "Moveable") &&	GameBase::isActive(%this) && (GameBase::getTeam(%this)!=GameBase::getTeam(%object)) ) 
 		GameBase::setDamageLevel(%this, %data.maxDamage);
 }
 
@@ -1032,4 +661,186 @@ function AntipersonelLightMine::onDamage(%this,%type,%value,%pos,%vec,%mom,%obje
 		GameBase::setDamageLevel(%this, %data.maxDamage);
 	else 
 		%this.damage += %value;
+}
+
+//==================================================================================================== Flag Mine - Decoy
+
+MineData Hologram
+{
+	className = "Mine";
+	description = "Flag";
+	shapeFile = "flag";
+	shadowDetailMask = 4;
+	explosionId = mineExp;
+	explosionRadius = 5.0;
+	damageValue = 0.75;
+	damageType = $MineDamageType;
+	kickBackStrength = 150;
+	triggerRadius = 2.5;
+	maxDamage = 3.00;
+	shadowDetailMask = 0;
+	destroyDamage = 2.0;
+	damageLevel = {1.0, 1.0};
+	lightType = 2;
+	lightRadius = 4;
+	lightTime = 1.5;
+	lightColor = { 1, 1, 1 };
+};
+
+function Hologram::onAdd(%this)
+{
+	%this.damage = 0;
+	GameBase::setActive(%this,true);
+	Hologram::deployCheck(%this);
+}
+
+function Hologram::onCollision(%this,%object)
+{
+	%type = getObjectType(%object);
+	%data = GameBase::getDataName(%this);
+	//if ((%type == "Player" || %data == Hologram || %data == Vehicle || %type == "Moveable") && GameBase::isActive(%this))
+   if (!(GameBase::getTeam(%object) == GameBase::getTeam(%this)) && (%type == "Player" || %data == Vehicle || %type == "Moveable")) 
+		GameBase::setDamageLevel(%this, %data.maxDamage);
+	else
+	{
+		%armor = Player::getArmor(%object);
+		%pack = Player::getMountedItem(%object,$BackpackSlot);
+		if (%type == "Player" && GameBase::getTeam(%this) == GameBase::getTeam(%object) && (%armor == "larmor" || %armor == "lfemale") && %pack == -1)
+		{
+			%client = GameBase::getOwnerClient(%object);
+			player::setitemcount(%object, DeployableSensorJammerPack, 1);
+			player::mountItem(%object, DeployableSensorJammerPack, $BackpackSlot);
+			Client::sendMessage(%client,0,"You received a DeployableSensorJammerPack backpack~wDryfire1.wav");
+			deleteobject(%this);
+		}
+	}
+}
+
+
+function Hologram::deployCheck(%this)
+{
+	if (GameBase::isAtRest(%this)) 
+	{
+		GameBase::playSequence(%this,1,"deploy");
+		%set = newObject("set",SimSet);
+		if(containerBoxFillSet(%set,$MineObjectType,GameBase::getPosition(%this),1,1,1,0) > 1)
+		{
+			%data = GameBase::getDataName(%this);
+			GameBase::setDamageLevel(%this, %data.maxDamage);
+		}
+		if(%set) deleteObject(%set);
+	}
+	else 
+		schedule("Hologram::deployCheck(" @ %this @ ");", 3, %this);
+}	
+
+function Hologram::onDestroyed(%this)
+{ %position=GameBase::getPosition(%this);
+ %posX = getWord(%position,0);
+ %posY = getWord(%position,1);
+ %posZ = getWord(%position,2);
+ %newposition = (%posX @ " " @ %posY @ " " @ (%posZ + 0.5));
+ gamebase::setposition(%this, %newposition);
+ $TeamItemCount[GameBase::getTeam(%this) @ "mineammo"]++;
+}
+
+function Hologram::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
+{
+   	if (%type == $ShrapnelDamageType)
+      		%value = %value * 0.25;
+
+	%data = GameBase::getDataName(%this);
+	if((%data.maxDamage/1.5) < %this.damage+%value) 
+		GameBase::setDamageLevel(%this, %data.maxDamage);
+	else 
+		%this.damage += %value;
+}
+
+//dmmine
+MineData DmMine
+{
+	className = "Mine";
+   	description = "Antipersonel Mine";
+   	shapeFile = "mine";
+   	shadowDetailMask = 4;
+   	explosionId = mineExp;
+	explosionRadius = 10.0;
+	damageValue = 0.75;
+	damageType = $MineDamageType;
+	kickBackStrength = 150;
+	triggerRadius = 2.5;
+	maxDamage = 0.5;
+	shadowDetailMask = 0;
+	destroyDamage = 1.0;
+	damageLevel = {1.0, 1.0};
+	//validateShape = true;
+};
+
+function DmMine::onAdd(%this)
+{
+	%this.damage = 0;
+	DmMine::deployCheck(%this);
+}
+
+function DmMine::onCollision(%this,%object)
+{
+	%type = getObjectType(%object);
+	%data = GameBase::getDataName(%this);
+	if ((%type == "Player" || %data == DmMine || %data == Vehicle || %type == "Moveable") && GameBase::isActive(%this)) 
+		GameBase::setDamageLevel(%this, %data.maxDamage);
+}
+
+function DmMine::deployCheck(%this)
+{
+	if (GameBase::isAtRest(%this)) 
+	{
+		GameBase::playSequence(%this,1,"deploy");
+	 	GameBase::setActive(%this,true);
+		%set = newObject("mineset",SimSet);
+		
+		if(containerBoxFillSet(%set,$MineObjectType,GameBase::getPosition(%this),1,1,1,0) > 1) {
+			%data = GameBase::getDataName(%this);
+			GameBase::setDamageLevel(%this, %data.maxDamage);
+		}
+		
+		if(%set) deleteObject(%set); //
+	}
+	else 
+		schedule("DmMine::deployCheck(" @ %this @ ");", 3, %this);
+}	
+
+function DmMine::onDestroyed(%this){}
+
+function DmMine::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
+{
+   if (%type == $MineDamageType)
+      %value = %value * 0.25;
+
+	%data = GameBase::getDataName(%this);
+	if((%data.maxDamage/1.5) < %this.damage+%value) 
+		GameBase::setDamageLevel(%this, %data.maxDamage);
+	else 
+		%this.damage += %value;
+}
+
+
+function Mine::Detonate(%this)
+{
+	%client = %this.deployer;
+	%player = client::getownedobject(%client);
+
+	Client::setOwnedObject(%client, %this);
+	Client::setOwnedObject(%client, %player);
+	
+	%data = GameBase::getDataName(%this);
+	GameBase::setDamageLevel(%this, %data.maxDamage);
+}
+
+function Mine::onDamage(%this,%type,%value,%pos,%vec,%mom,%object)
+{
+	if (%type == $MineDamageType)
+		%value = %value * 0.25;
+
+	%damageLevel = GameBase::getDamageLevel(%this);
+	GameBase::setDamageLevel(%this,%damageLevel + %value);
 }

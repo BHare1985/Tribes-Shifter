@@ -11,14 +11,14 @@ function remoteSay(%clientId, %team, %message)
 
 	%msg = %clientId @ " \"" @ escapeString(%message) @ "\"";
 
-    	if($Shifter::noSwearing)
-    	{
-    		CheckBadWords(%clientId,%message);
+   if($Shifter::noSwearing)
+   {
+   	CheckBadWords(%clientId,%message);
 	}
 
 	if (%clientId.ismuted)
 	{
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You have been Muted by admin, for talking too much...\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You have been Muted by admin, for talking too much...\", 3);", 0.01);
 		return;
 	}
 
@@ -50,8 +50,6 @@ function remoteSay(%clientId, %team, %message)
 		}
 	}
 
-	%armor = Player::getArmor(%clientId);
-
 	if(%team)
 	{
 		if($dedicated) echo("SAYTEAM: " @ %msg);
@@ -72,7 +70,7 @@ function remoteSay(%clientId, %team, %message)
 	{
 		if($Server::TourneyMode && $Shifter::GlobalTChat != "True" && !%clientId.isadmin && !%clientId.islead)
 		{
-			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Only Leaders & Admins Can Speak Globally In Tourney Mode...\", 3);", 0);
+			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Only Leaders & Admins Can Speak Globally In Tourney Mode...\", 3);", 0.01);
 			return;
 		}
 
@@ -91,19 +89,19 @@ function remoteIssueCommand(%commander, %cmdIcon, %command, %wayX, %wayY, %dest1
 {
 	if (%commander.ismuted)
 	{
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You have been Muted by admin, for talking too much...\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You have been Muted by admin, for talking too much...\", 3);", 0.01);
 		return;
 	}
-	if ($Shifter::ComChat && !isnetworkdown(gamebase::getteam(%clientId)) && !ispowerdown(gamebase::getteam(%clientId)))
-	{
-		schedule ("bottomprint( " @ %clientId @ ", \"<jc><f2>Your sensor array and power are down, TEAM ONLY Com's Do Not Function!!!\", 10);" ,0.2);
-		return 0;
-	}
+	//if ($Shifter::ComChat && !isnetworkdown(gamebase::getteam(%clientId)) && !ispowerdown(gamebase::getteam(%clientId)))
+	//{
+	//	schedule ("bottomprint( " @ %clientId @ ", \"<jc><f2>Your sensor array and power are down, TEAM ONLY Com's Do Not Function!!!\", 10);" ,0.2);
+	//	return 0;
+	//}
 	if($dedicated)
 	{
 		echo("COMMANDISSUE: " @ %commander @ " \"" @ %command @ "\"");
 	}
-	echo("Command Issued " @ %command);	
+	dbecho("Command Issued " @ %command);	
 
 	// issueCommandI takes waypoint 0-1023 in x,y scaled mission area issueCommand takes float mission coords.
 
@@ -113,13 +111,13 @@ function remoteIssueCommand(%commander, %cmdIcon, %command, %wayX, %wayY, %dest1
 	issueCommandI(%commander, %dest[%i], %cmdIcon, %command, %wayX, %wayY);
 	echo ("Dest " @ %dest[%i]);
 	}
-	}
+}
 
 function remoteIssueTargCommand(%commander, %cmdIcon, %command, %targIdx, %dest1, %dest2, %dest3, %dest4, %dest5, %dest6, %dest7, %dest8, %dest9, %dest10, %dest11, %dest12, %dest13, %dest14)
 {
 	if (%commander.ismuted)
 	{
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You have been Muted by admin, for talking too much...\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You have been Muted by admin, for talking too much...\", 3);", 0.01);
 		return;
 	}
 	

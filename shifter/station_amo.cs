@@ -9,7 +9,7 @@ StaticShapeData AmmoStation
 	sequenceSound[0] = { "activate", SoundActivateAmmoStation };
 	sequenceSound[1] = { "power", SoundAmmoStationPower };
 	sequenceSound[2] = { "use", SoundUseAmmoStation };
-	maxDamage = 1.0;
+	maxDamage = 1.25;
 	debrisId = flashDebrisLarge;
 	mapFilter = 4;
 	mapIcon = "M_station";
@@ -20,11 +20,18 @@ StaticShapeData AmmoStation
 
 function AmmoStation::onEndSequence(%this,%thread)
 {
-	//echo("End Seq ",%thread);
-	if(%this.clTeamEnergy == "")
-		%this.clTeamEnergy = (Player::getClient(Station::getTarget(%this))).TeamEnergy;
-	if (Station::onEndSequence(%this,%thread)) 
+	%player = Station::getTarget(%this);
+	if(%this.clTeamEnergy == "") %this.clTeamEnergy = (Player::getClient(%player)).TeamEnergy;
+	if (Station::onEndSequence(%this,%thread))
+	{
+		//%weapon = Player::getMountedItem(%player,$WeaponSlot);
+		//if(%weapon != -1)
+		//{
+		//	%player.lastWeapon = %weapon;
+		//	Player::unMountItem(%player,$WeaponSlot);
+		//}
 		AmmoStation::onResupply(%this);
+	}
 }									
 											
 function AmmoStation::onResupply(%this)
@@ -50,6 +57,10 @@ function AmmoStation::onResupply(%this)
 				}
 				%client = Player::getClient(%player);
 				Client::sendMessage(%client,0,"Resupply Complete");
+				%client.stimTime = 0;
+				%client.ovd = 0;
+				%client.poisonTime = 0;
+				%client.burnTime = 0;
 				Client::setInventoryText(%client, "<f1><jc>TEAM ENERGY: " @ $TeamEnergy[Client::getTeam(%client)]);
 			}
 			GameBase::setActive(%this,false);
@@ -68,23 +79,44 @@ function AmmoStation::onResupply(%this)
 function AmmoStation::resupply(%player,%weapon,%item,%delta)
 {
 	%delta = checkResources(%player,%item,%delta,1);		
+	%armor = Player::getArmor(%player);
 	if(%delta > 0) 
 	{						
 		if(%item == RepairPatch) 
 		{
 			teamEnergyBuySell(%player,%item.price * %delta * -1);
-			GameBase::repairDamage(%player,0.06);
+			//GameBase::repairDamage(%player,20.0);
+			GameBase::SetDamageLevel(%player,0);
 			return %delta;
 		}
 		else if (%item == MineAmmo || %item == Grenade || %item == RepairKit || %item == Beacon) 
 		{
-			teamEnergyBuySell(%player,%item.price * %delta * -1);
-			Player::incItemCount(%player,%item,%delta);
-			return %delta;
+			
+			//Player::incItemCount(%player,%item,%delta);
+			if(Player::getMountedItem(%player,$BackpackSlot) == ammopack)
+			{
+				teamEnergyBuySell(%player,%item.price * %delta * -1);
+				teamEnergyBuySell(%player,%item.price * %delta * -1);
+				Player::setItemCount(%player, MineAmmo, ($ItemMax[%armor, MineAmmo] + 5));
+				Player::setItemCount(%player, Grenade, ($ItemMax[%armor, Grenade] + 5));
+				Player::setItemCount(%player, Beacon, ($ItemMax[%armor, Beacon] + 3));
+				Player::setItemCount(%player, RepairKit, 1);
+				return %delta;
+			}
+			else
+			{
+				teamEnergyBuySell(%player,%item.price * %delta * -1);
+				Player::setItemCount(%player, MineAmmo, $ItemMax[%armor, MineAmmo]);
+				Player::setItemCount(%player, Grenade, $ItemMax[%armor, Grenade]);
+				Player::setItemCount(%player, Beacon, $ItemMax[%armor, Beacon]);
+				Player::setItemCount(%player, RepairKit, 1);
+				return %delta;
+			}
 		}
 		else if (Player::getItemCount(%player,%weapon)) 
 		{
 			teamEnergyBuySell(%player,%item.price * %delta * -1);
+			//Player::setItemCount(%player,%item,$ItemMax[%armor, %item]);
 			Player::incItemCount(%player,%item,%delta);
 			return %delta;
 		}
@@ -98,7 +130,7 @@ StaticShapeData DeployableAmmoStation
 	description = "Remote Ammo Unit";
 	shapeFile = "ammounit_remote";
 	className = "DeployableStation";
-	maxDamage = 0.25;
+	maxDamage = 1.00;
 	sequenceSound[0] = { "deploy", SoundActivateMotionSensor };
 	sequenceSound[1] = { "use", SoundUseAmmoStation };
 	sequenceSound[2] = { "power", SoundAmmoStationPower };
@@ -131,7 +163,17 @@ function DeployableAmmoStation::onActivate(%this)
 	{
 		GameBase::playSequence(%this,1,"use");
 		schedule("AmmoStation::onResupply(" @ %this @ ");",0.5,%this);
+		%this.lastPlayer = Station::getTarget(%this);
+		%player = %this.lastPlayer;
+		%player.Station = %this;
+		%this.target = Player::getClient(Station::getTarget(%this));
+		//%weapon = Player::getMountedItem(%player,$WeaponSlot);
+		//if(%weapon != -1)
+		//{
+		//	%player.lastWeapon = %weapon;
+		//	Player::unMountItem(%player,$WeaponSlot);
+		//}
 	}
-	else 
-		GameBase::setActive(%this,false);
+	else
+	GameBase::setActive(%this,false);
 }

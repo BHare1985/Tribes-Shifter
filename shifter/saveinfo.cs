@@ -10,7 +10,7 @@ function SaveCharacter(%clientId)
 
 	if ($Client::info[%clientId, 5] == "")
 	{
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You must specify a password in the OtherInfo field in your player profile.\", 5);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You must specify a password in the OtherInfo field in your player profile.\", 5);", 0.01);
 		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>If you would like to save your profile.\", 5);", 5);	
 		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Disconnect, enter a password that you would like to use in the OtherInfo field.\", 5);", 10);
 		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Reconnect and you will be able to save your profile.\", 5);", 15);
@@ -32,7 +32,7 @@ function SaveCharacter(%clientId)
 			$funk::var["[\"" @ %name @ "\", 1]"] = "";
 		}
 
-		echo("Saving player " @ %name @ " (" @ %clientId @ ")...");
+		//echo("Saving player " @ %name @ " (" @ %clientId @ ")...");
 
 		%playerId = %clientId;
 		%clientId.TotalKills = %clientId.TotalKills + %playerId.scoreKills;
@@ -59,13 +59,17 @@ function SaveCharacter(%clientId)
 		$funk::var["[\"" @ %name @ "\", 0, 16]"] = %clientId.obsmode;
 		$funk::var["[\"" @ %name @ "\", 0, 17]"] = %clientId.spymode;
 		$funk::var["[\"" @ %name @ "\", 0, 18]"] = %clientId.booster;
+		$funk::var["[\"" @ %name @ "\", 0, 19]"] = %clientId.disc;
+		$funk::var["[\"" @ %name @ "\", 0, 21]"] = %clientId.AssBcn;
+		$funk::var["[\"" @ %name @ "\", 0, 22]"] = %clientId.ChemBeacon;
+		$funk::var["[\"" @ %name @ "\", 0, 23]"] = %clientId.GolBeacon;
 		
 		$funk::var["[\"" @ %name @ "\", password]"] = $Client::info[%clientId, 5];
 		
-		if(%clientId.dead != "1" || %clientId.observerMode == "" || client::getownedobject(%clientId) != "-1")
+		if(%clientId.dead != "1" && %clientId.observerMode == "" && client::getownedobject(%clientId) != "-1")
 		{
 			%ii = 0;
-			if ($debug) echo ("Armor Type = " @ checkarmor(%cliendId) @ "") ;
+			//if ($debug) echo ("Armor Type = " @ checkarmor(%cliendId) @ "") ;
 			%max = getNumItems();
 			for (%i = 0; %i < %max; %i++)
 			{
@@ -73,20 +77,20 @@ function SaveCharacter(%clientId)
 
 				if (%itemcount = Player::getItemCount(%clientId, %checkItem))
 				{
-					if (%itemcount)
-					{
-						if ($debug) echo ("Item Count  = " @ %itemcount @ "");
-						if ($debug) echo ("Item Type   = " @ %checkitem @ "");
-					}
+					//if (%itemcount)
+					//{
+					//	if ($debug) echo ("Item Count  = " @ %itemcount @ "");
+					//	if ($debug) echo ("Item Type   = " @ %checkitem @ "");
+					//}
 
 					if(%itemcount && %checkItem == checkarmor(%clientId))
 					{
-						if ($debug) echo("Saving armor " @ %checkItem @ " for " @ %clientId);
+						//if ($debug) echo("Saving armor " @ %checkItem @ " for " @ %clientId);
 						$funk::var["[\"" @ %name @ "\", 1]"] = %checkItem @ "";
 					}
 					else if(%itemcount)
 					{
-						if ($debug) echo("Saving item/weapon " @ %checkItem @ " for " @ %clientId);
+						//if ($debug) echo("Saving item/weapon " @ %checkItem @ " for " @ %clientId);
 						%ii++;
 						$funk::var["[\"" @ %name @ "\", 2, " @ %ii @ "]"] = %checkItem @ " " @ %itemcount;
 					}
@@ -100,7 +104,7 @@ function SaveCharacter(%clientId)
 		export("funk::var[\"" @ %name @ "\",*", "config\\" @ %name @ ".cs", false);
 		
 		if ($Debug) echo("Save complete for " @ %name @ ".");
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You profile has been saved.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Your profile has been saved.\", 3);", 0.01);
 	}
 }
 
@@ -138,12 +142,12 @@ function LoadCharacter(%clientId)
 	%filename = %name @ ".cs";
 	%playerId = %clientId;
 
-	if ($Debug) echo ("Cinfo 1" @ $Client::info[%clientId, 1] @ "");
-	if ($Debug) echo ("Cinfo 2" @ $Client::info[%clientId, 2] @ "");
-	if ($Debug) echo ("Cinfo 3" @ $Client::info[%clientId, 3] @ "");
-	if ($Debug) echo ("Cinfo 4" @ $Client::info[%clientId, 4] @ "");
-	if ($Debug) echo ("Cinfo 5" @ $Client::info[%clientId, 5] @ "");
-	if ($Debug) echo ("Cinfo 6" @ $Client::info[%clientId, 6] @ "");
+	//if ($Debug) echo ("Cinfo 1" @ $Client::info[%clientId, 1] @ "");
+	//if ($Debug) echo ("Cinfo 2" @ $Client::info[%clientId, 2] @ "");
+	//if ($Debug) echo ("Cinfo 3" @ $Client::info[%clientId, 3] @ "");
+	//if ($Debug) echo ("Cinfo 4" @ $Client::info[%clientId, 4] @ "");
+	//if ($Debug) echo ("Cinfo 5" @ $Client::info[%clientId, 5] @ "");
+	//if ($Debug) echo ("Cinfo 6" @ $Client::info[%clientId, 6] @ "");
 
 	if(isFile("config\\" @ %filename))
 	{
@@ -178,6 +182,10 @@ function LoadCharacter(%clientId)
 			%clientId.obsmode = $funk::var[%name, 0, 16];
 			%clientId.spymode = $funk::var[%name, 0, 17];
 			%clientId.booster = $funk::var[%name, 0, 18];
+			%clientId.disc = $funk::var[%name, 0, 19];
+			%clientId.AssBcn = $funk::var[%name, 0, 21];
+			%clientId.ChemBeacon = $funk::var[%name, 0, 22];
+			%clientId.GolBeacon = $funk::var[%name, 0, 23];
 
 			if ($matchStarted != "True")
 			{
@@ -203,7 +211,7 @@ function LoadCharacter(%clientId)
 		}
 		else
 		{
-			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You must specify a password in the OtherInfo field in your player profile.\", 5);", 0);
+			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You must specify a password in the OtherInfo field in your player profile.\", 5);", 0.01);
 			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>If you would like to save your profile.\", 5);", 5);
 			for(%i = 1; %i <= 30; %i++)
 				$funk::var[%name, 0, %i] = "";
@@ -216,7 +224,7 @@ function LoadCharacter(%clientId)
 	}
 	else
 	{
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You must specify a password in the OtherInfo field in your player profile.\", 5);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You must specify a password in the OtherInfo field in your player profile.\", 5);", 0.01);
 		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>If you would like to save your profile.\", 5);", 5);
 
 		//================================================================= give defaults

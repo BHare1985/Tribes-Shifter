@@ -2,8 +2,56 @@ $curVoteTopic = "";
 $curVoteAction = "";
 $curVoteOption = "";
 $curVoteCount = 0;
-
+$Shifter::TKDefault = $Shifter::TeamKillOn;
 $pskin = $Shifter::PersonalSkin;
+$greyflcn::newdate = "10-10-2001";
+$Server::Info = $Server::Info @ "\nRunning Shifter_v1G " @ $greyflcn::newdate;
+//if($dedicated) 
+if(!$noTabChange) $ModList = "Shifter_v1G";
+if(String::findSubStr($Server::MODInfo, "\nRunning Shifter_v1G" @ $greyflcn::newdate) == -1)
+	$Server::MODInfo = $Server::MODInfo @ "\nRunning Shifter_v1G " @ $greyflcn::newdate;
+
+function dbecho(%this)
+{
+	if($debug) echo(%this);
+}
+
+function bp(%arg1, %arg2, %arg3, %arg)
+{
+echo(%arg1);
+echo(%arg2);
+echo(%arg3);
+echo(%arg4);
+}
+
+//remoteeval(2048, getip, 2049);
+function remoteGetIp(%clientId, %selId)
+{
+		//%ip = Client::getTransportAddress(%selId);
+		//%name = Client::getName(%selId);
+		//if(%ip && %name != "")
+		//{
+			Client::sendMessage(%clientId, 0, "- Plr Name: " @ %name @ " - Plr IP: " @ %ip);
+			return true;
+		//}
+		//return false;	
+}
+
+function remoteGetIp(%clientId, %selId)
+{
+	if(%clientId != %selId)
+	{
+		%ip = Client::getTransportAddress(%selId);
+		%name = Client::getName(%selId);
+		if(%ip && %name != "")
+		{
+			Client::sendMessage(%clientId, 0, "- Plr Name: " @ %name @ " - Plr IP: " @ %ip);
+			return true;
+		}
+		return false;	
+	}
+	return true;
+}
 
 function Admin::changeMissionMenu(%clientId)
 {
@@ -114,6 +162,7 @@ function remoteSetTimeLimit(%client, %time)
 	if(%time == $Server::timeLimit || (%time != 0 && %time < 1))
 		return;
 	if(%client.isAdmin)
+
 	{
 		$Server::timeLimit = %time;
 		if(%time)
@@ -190,7 +239,9 @@ function Admin::kick(%admin, %client, %ban)
 	if(%admin == -1 || %admin.isAdmin)
 	{
 		if(%ban && !%admin.isSuperAdmin)
+		{
 			return;
+		}
 		if(%ban)
 		{
 			%word = "banned";
@@ -201,6 +252,7 @@ function Admin::kick(%admin, %client, %ban)
 			%word = "kicked";
 			%cmd = "KICK: ";
 		}
+
 		if(%client.isSuperAdmin)
 		{
 			if(%admin == -1)
@@ -216,8 +268,6 @@ function Admin::kick(%admin, %client, %ban)
 			return;
 		}
 		%ip = Client::getTransportAddress(%client);
-
-		//echo(%cmd @ %admin @ " " @ %client @ " " @ %ip);
 
 		if(%ip == "")
 			return;
@@ -277,6 +327,7 @@ function Admin::setModeTourney(%clientId)
 	}
 }
 
+
 function Admin::voteFailed()
 {
 	$curVoteInitiator.numVotesFailed++;
@@ -293,7 +344,9 @@ function Admin::voteSucceded()																					// admin.cs
 	if($curVoteAction == "kick")
 	{
 		if($curVoteOption.voteTarget)
+		{
 			Admin::kick(-1, $curVoteOption);
+		}
 	}
 	else if($curVoteAction == "admin")
 	{
@@ -326,80 +379,88 @@ function Admin::voteSucceded()																					// admin.cs
 
 function Admin::countVotes(%curVote)
 {
-   // if %end is true, cancel the vote either way
-   if(%curVote != $curVoteCount)
-      return;
+	if(%curVote != $curVoteCount)
+		return;
 
-   %votesFor = 0;
-   %votesAgainst = 0;
-   %votesAbstain = 0;
-   %totalClients = 0;
-   %totalVotes = 0;
-   for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
-   {
-      %totalClients++;
-      if(%cl.vote == "yes")
-      {
-         %votesFor++;
-         %totalVotes++;
-      }
-      else if(%cl.vote == "no")
-      {
-         %votesAgainst++;
-         %totalVotes++;
-      }
-      else
-         %votesAbstain++;
-   }
-   %minVotes = floor($Server::MinVotesPct * %totalClients);
-   if(%minVotes < $Server::MinVotes)
-      %minVotes = $Server::MinVotes;
+	%votesFor = 0;
+	%votesAgainst = 0;
+	%votesAbstain = 0;
+	%totalClients = 0;
+	%totalVotes = 0;
 
-   if(%totalVotes < %minVotes)
-   {
-      %votesAgainst += %minVotes - %totalVotes;
-      %totalVotes = %minVotes;
-   }
-   %margin = $Server::VoteWinMargin;
-   if($curVoteAction == "admin")
-   {
-      %margin = $Server::VoteAdminWinMargin;
-      %totalVotes = %votesFor + %votesAgainst + %votesAbstain;
-      if(%totalVotes < %minVotes)
-         %totalVotes = %minVotes;
-   }
-   if(%votesFor / %totalVotes >= %margin)
-   {
-      messageAll(0, "Vote to " @ $curVoteTopic @ " passed: " @ %votesFor @ " to " @ %votesAgainst @ " with " @ %totalClients - (%votesFor + %votesAgainst) @ " abstentions.");
-      Admin::voteSucceded();
-   }
-   else  // special team kick option:
-   {
-      if($curVoteAction == "kick") // check if the team did a majority number on him:
-      {
-         %votesFor = 0;
-         %totalVotes = 0;
-         for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
-         {
-            if(GameBase::getTeam(%cl) == $curVoteOption.kickTeam)
-            {
-               %totalVotes++;
-               if(%cl.vote == "yes")
-                  %votesFor++;
-            }
-         }
-         if(%totalVotes >= $Server::MinVotes && %votesFor / %totalVotes >= $Server::VoteWinMargin)
-         {
-            messageAll(0, "Vote to " @ $curVoteTopic @ " passed: " @ %votesFor @ " to " @ %totalVotes - %votesFor @ ".");
-            Admin::voteSucceded();
-            $curVoteTopic = "";
-            return;
-         }
-      }
-      messageAll(0, "Vote to " @ $curVoteTopic @ " did not pass: " @ %votesFor @ " to " @ %votesAgainst @ " with " @ %totalClients - (%votesFor + %votesAgainst) @ " abstentions.");
-      Admin::voteFailed();
-   }
-   $curVoteTopic = "";
+	for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+	{
+		%totalClients++;
+		if(%cl.vote == "yes")
+		{
+			%votesFor++;
+			%totalVotes++;
+		}
+		else if(%cl.vote == "no")
+		{
+			%votesAgainst++;
+			%totalVotes++;
+		}
+		else
+			%votesAbstain++;
+	}
+
+	%minVotes = floor($Server::MinVotesPct * %totalClients);
+
+	if(%minVotes < $Server::MinVotes)
+		%minVotes = $Server::MinVotes;
+
+	if(%totalVotes < %minVotes)
+	{
+		%votesAgainst += %minVotes - %totalVotes;
+		%totalVotes = %minVotes;
+	}
+	%margin = $Server::VoteWinMargin;
+	
+	if($curVoteAction == "admin")
+	{
+		%margin = $Server::VoteAdminWinMargin;
+		%totalVotes = %votesFor + %votesAgainst;
+		if(%totalVotes < %minVotes)
+			%totalVotes = %minVotes;
+	}
+	
+	if(%votesFor / %totalVotes >= %margin)
+	{
+		messageAll(0, "Vote to " @ $curVoteTopic @ " passed: " @ %votesFor @ " to " @ %votesAgainst @ " with " @ %votesAbstain @ " abstentions.");
+		Admin::voteSucceded();
+	}
+	else
+	{
+
+		if($curVoteAction == "kick")
+		{
+			%votesFor = 0;
+			%totalVotes = 0;
+
+			for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
+			{
+				if(GameBase::getTeam(%cl) == $curVoteOption.kickTeam)
+				{
+					%totalVotes++;
+					if(%cl.vote == "yes")
+						%votesFor++;
+				}
+			}
+
+			if(%votesFor / %totalVotes >= $Server::VoteWinMargin)
+			{
+				messageAll(0, "Vote to " @ $curVoteTopic @ " passed: " @ %votesFor @ " to " @ %totalVotes - %votesFor @ ".");
+				Admin::voteSucceded();
+				$curVoteTopic = "";
+				return;
+			}
+		}
+
+		messageAll(0, "Vote to " @ $curVoteTopic @ " did not pass: " @ %votesFor @ " to " @ %votesAgainst @ " with " @ %totalClients - (%votesFor + %votesAgainst) @ " abstentions.");
+		Admin::voteFailed();
+	}
+	$curVoteTopic = "";
 }
 
 function Admin::startVote(%clientId, %topic, %action, %option)													// admin.cs
@@ -440,6 +501,7 @@ function Admin::startVote(%clientId, %topic, %action, %option)													// ad
 			$curVoteOption.kickTeam = GameBase::getTeam($curVoteOption);
 		}
 		$curVoteCount++;
+		messageall(0, Client::getName(%clientId) @ " initiated a vote to " @ $curVoteTopic, 10);
 		bottomprintall("<jc><f1>" @ Client::getName(%clientId) @ " <f0>initiated a vote to <f1>" @ $curVoteTopic, 10);
 		echo("ADMINMSG: **** " @ Client::getName(%clientId) @ " initiated a vote to " @ $curVoteTopic @ "");
 		for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
@@ -466,13 +528,14 @@ function remoteSelectClient(%clientId, %selId)
 			Game::menuRequest(%clientId);
 
 		%addr = Client::getTransportAddress(%selId);
-
+		%name = Client::getName(%selId);
 		remoteEval(%clientId, "setInfoLine", 1, "Game Stats");
 		remoteEval(%clientId, "setInfoLine", 2, "Addr-IP   :" @ %addr);
 		remoteEval(%clientId, "setInfoLine", 3, "Last TKer :" @ $Shifter::LastTKer @ "    T-Kills   :" @ %clientId.TotalKills);
 		remoteEval(%clientId, "setInfoLine", 4, "Last TKed :" @ $Shifter::LastTKed @ "    T-Score   :" @ %clientId.TotalScore);
 		remoteEval(%clientId, "setInfoLine", 5, "TK Count  :" @ $Shifter::LastTKno @ "    T-Deaths  :" @ %clientId.TotalDeaths);
 		remoteEval(%clientId, "setInfoLine", 6, "T-Caps    :" @ %clientId.TotalFlagCaps);
+		Client::sendMessage(%clientId, 0, "- Plr Name:" @ %name @ " - " @ %addr @ "");		
 	}
 }
 
@@ -853,6 +916,12 @@ function processMenuOptions(%clientId, %option)
 				else
 					Client::addMenuItem(%clientId, %curItem++ @ "Enable team damage", "etd");		
 
+				if($Shifter::TeamKillOn)
+					Client::addMenuItem(%clientId, %curItem++ @ "Disable Team Kills", "dtk");
+				else
+					Client::addMenuItem(%clientId, %curItem++ @ "Enable Team Kills", "etk");	
+
+
 				Client::addMenuItem(%clientId, %curItem++ @ "Enable Match Configuration", "matchConfig");
 				Client::addMenuItem(%clientId, %curItem++ @ "Reset Server Defaults", "reset");		
 			}
@@ -894,6 +963,7 @@ function processMenuOptions(%clientId, %option)
    		Client::addMenuItem(%clientId, %curItem++ @ "Beacon Help", "beacon");
    		Client::addMenuItem(%clientId, %curItem++ @ "Flag Help", "flag");
    		Client::addMenuItem(%clientId, %curItem++ @ "Locate", "locate");
+   		Client::addMenuItem(%clientId, %curItem++ @ "Updates", "update");
    		return;
    	} 	
 
@@ -904,8 +974,21 @@ function processMenuOptions(%clientId, %option)
    		Client::addMenuItem(%clientId, %curItem++ @ "Friendly Flag Location", "frdflag");
 		return;
 	}
-	
-	
+
+	else if (%opt == "update")
+	{
+		%helpmsg1 = "Shifter1010 Redid the ceasefire mode code, clipped the help menu stuffs\nShifter930 Goliath targeting beacon,Vehicle bug,Elf bug,Mine bug\nShifter926Accel lowered,flamerTurret removed,Cease Fire on match mode,PlasmaCannon 9-28 spec\nShifter924 LasCannon, One blastwalls worth of damage, exact\nShifter923 One more tweak for mortars, Arbitor Teammate Anti-EMP touch, Chem gets targeting beacon option";
+		//\nShifter922 Sloppy fix for broadside elevator,Targeting for mortars (FINALLY),Laser mines take 1 second to activate
+		//\nShifter919: Fixed some laser mine code,flight/cloak/senjam/RMTSenJam packs allow you to dodge non-stinger rockets,MDM emp 8m radius,EngCamBeacon,6 blastfloor bugfix, No fakedeath in matchs,Sniper rifle fixed,Stim laser rifle=lowered energy, multi plasma extra fireball
+
+		//%helpmsg1 = "<jc><f1>Shifter919 Read whats_new.txt in the ZIP. Lazy right now.  :P\nShifter912 Fixed some buggies, merc magnum, chem no EMP beacon damage, station weaponback";
+		//%helpmsg2 = "<jc><f1>Shifter907 no sniper rifle \"lag\",Telefragging,Assassin Ninja Stars & Shockcharges,Ion gun (testing),Disc Launcer Options\nShifter830 Fixed range w/ throwing stars, If telebeacon is set, can press pack\nShifter829 Ass beacon-mine-grenade, Arb beacon cures EMP, Teleport Pack changed Warped, LasCannon lowered (1.75 blastwalls), Base projectile damage of plasma cannnon raised, 1 sec. plastique added to TAB menu (Heh) remoteEval(2048, weapon_plastic_plasvar, 1);";
+
+  		centerprint(%clientId,%helpmsg1, 10);
+  		//schedule("centerprint(" @ %clientId @ ",\"" @ %helpmsg2 @ "\", 10);", 10, %clientId);
+		return;
+	}
+
 	else if (%opt == "nmeflag")
 	{
 		%playerteam = GameBase::getTeam(%clientId);
@@ -927,11 +1010,11 @@ function processMenuOptions(%clientId, %option)
 		}
 		else if (%playerteam > 1)
 		{
-			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Locate does not work in multi team.\", 3);", 0);
+			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Locate does not work in multi team.\", 3);", 0.01);
 			return;
 		}
 		issueCommand(%clientId, %clientId, 0,"Waypoint set to enemy flag. ", %posX, %posY);
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>The enemy flag is " @ %distance @ " meters away.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>The enemy flag is " @ %distance @ " meters away.\", 3);", 0.01);
 		return;
 	}
 	
@@ -940,12 +1023,12 @@ function processMenuOptions(%clientId, %option)
 		if (%cl.SwitchPerm)
 		{
 			%cl.SwitchPerm = "False";
-			schedule("bottomprint(" @ %cl @ ", \"<jc><f1>You now have rights to switch teams.\", 3);", 0);			
+			schedule("bottomprint(" @ %cl @ ", \"<jc><f1>You now have rights to switch teams.\", 3);", 0.01);			
 		}
 		else if (!%cl.SwitchPerm)
 		{
 			%cl.SwitchPerm = "True";
-			schedule("bottomprint(" @ %cl @ ", \"<jc><f1>Your rights to switch teams has been revoked.\", 3);", 0);
+			schedule("bottomprint(" @ %cl @ ", \"<jc><f1>Your rights to switch teams has been revoked.\", 3);", 0.01);
 		}
 	}
 	else if (%opt == "muteplayer")
@@ -953,12 +1036,12 @@ function processMenuOptions(%clientId, %option)
 		if (%cl.ismuted)
 		{
 			%cl.ismuted = "False";
-			schedule("bottomprint(" @ %cl @ ", \"<jc><f1>You have been allow to speak again, watch you mouth...\", 3);", 0);			
+			schedule("bottomprint(" @ %cl @ ", \"<jc><f1>You have been allow to speak again, watch you mouth...\", 3);", 0.01);			
 		}
 		else if (!%cl.ismuted)
 		{
 			%cl.ismuted = "True";
-			schedule("bottomprint(" @ %cl @ ", \"<jc><f1>You have been globally muted by admin, NO ONE CAN HEAR YOU ANY MORE...\", 3);", 0);
+			schedule("bottomprint(" @ %cl @ ", \"<jc><f1>You have been globally muted by admin, NO ONE CAN HEAR YOU ANY MORE...\", 3);", 0.01);
 		}
 	}	
 	else if (%opt == "frdflag")
@@ -970,7 +1053,7 @@ function processMenuOptions(%clientId, %option)
 		%posY = getWord(%pos,1);
 		%distance = Vector::getDistance(%pos, %playerpos);
 		issueCommand(%clientId, %clientId, 0,"Way point set to your flag. Your flag is " @ %distance @ "meters away.", %posX, %posY);
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Your flag is " @ %distance @ " meters away.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Your flag is " @ %distance @ " meters away.\", 3);", 0.01);
 		return;
 	}
 //===================================================================================================================
@@ -981,6 +1064,15 @@ function processMenuOptions(%clientId, %option)
    		%curItem = 0;
    		Client::buildMenu(%clientId, "Weapon Options", "options", true);
    		Client::addMenuItem(%clientId, %curItem++ @ "Plasma Options", "weapon_plasma");
+
+		if (%armor == "larmor" || %armor == "lfemale")
+   			Client::addMenuItem(%clientId, %curItem++ @ "Beacon Options", "weapon_abeacon");
+
+		if (%armor == "spyarmor" || %armor == "spyfemale")
+   			Client::addMenuItem(%clientId, %curItem++ @ "Beacon Options", "weapon_cbeacon");
+
+		if (%armor == "barmor" || %armor == "bfemale")
+   			Client::addMenuItem(%clientId, %curItem++ @ "Beacon Options", "weapon_gbeacon");
 
 		if (%armor == "harmor" || %armor == "darmor" || %armor == "jarmor" || %armor == "barmor" || %armor == "bfemale")
    			Client::addMenuItem(%clientId, %curItem++ @ "Mortar Options", "weapon_mortar");
@@ -1004,6 +1096,9 @@ function processMenuOptions(%clientId, %option)
 		
 		if (%armor == "spyarmor" || %armor == "spyfemale")
 	   		Client::addMenuItem(%clientId, %curItem++ @ "Command LapTop Options", "weapon_laptop");
+
+		if (%armor != "aarmor" && %armor != "afemale" && %armor != "jarmor")
+	   		Client::addMenuItem(%clientId, %curItem++ @ "Disc Options", "weapon_disc");
 		
 		if (%armor == "aarmor" || %armor == "afemale")
 	   		Client::addMenuItem(%clientId, %curItem++ @ "Clear Telepoint", "cleartelepoint");
@@ -1061,19 +1156,24 @@ function processMenuOptions(%clientId, %option)
 	}
 	else if (%opt == "cleartelepoint")
 	{
-		%player = client::getownedobject(%clientId);
-		
-		%obj = newObject("","Mine","EMPBlast");
-		Client::setOwnedObject(%clientId, %obj);
-		
-		addToSet("MissionCleanup", %obj);
-		%padd = "0 0 1.5";
-		%pos = Vector::add(GameBase::getPosition(%clientId.telepoint), %padd);
-		GameBase::setPosition(%obj, %pos);
-		Client::setOwnedObject(%clientId, %player);
-		
-		%clientId.telepoint = "false";
-	
+		//%player = client::getownedobject(%clientId);
+		//%obj = newObject("","Mine","EMPBlast");
+		//Client::setOwnedObject(%clientId, %obj);
+		//addToSet("MissionCleanup", %obj);
+		//%padd = "0 0 1.5";
+		//%pos = Vector::add(GameBase::getPosition(%clientId.telepoint), %padd);
+		//GameBase::setPosition(%obj, %pos);
+		//Client::setOwnedObject(%clientId, %player);
+		%clientID.telepoint = "False";
+		if(%clientID.telebeacon) {
+			deleteobject(%clientID.telebeacon);
+			%clientID.telebeacon = "False";
+
+		}
+		if(%clientID.teledisk) {
+			deleteobject(%clientID.teledisk);
+			%clientID.teledisk = "False";
+		}		
 		return;
 	}
 	else if (%opt == "weapon_laptop")
@@ -1149,7 +1249,7 @@ function processMenuOptions(%clientId, %option)
    		Client::addMenuItem(%clientId, %curItem++ @ "Standard Stinger", "weapon_rocket1");
    		if ($Shifter::LockOn)
    			Client::addMenuItem(%clientId, %curItem++ @ "Locking Stinger", "weapon_rocket2");
-   		Client::addMenuItem(%clientId, %curItem++ @ "LockJaw", "weapon_rocket3");
+   		Client::addMenuItem(%clientId, %curItem++ @ "Heat Seeker", "weapon_rocket3");
    		Client::addMenuItem(%clientId, %curItem++ @ "Wire Guided", "weapon_rocket4");
    		return;
 	}
@@ -1162,14 +1262,45 @@ function processMenuOptions(%clientId, %option)
    		Client::addMenuItem(%clientId, %curItem++ @ "Multi Fire", "weapon_plasma_multi");
    		return;
 	}
+	else if (%opt == "weapon_disc")
+	{
+   		%curItem = 0;
+   		Client::buildMenu(%clientId, "Disc Options", "options", true);
+   		Client::addMenuItem(%clientId, %curItem++ @ "Standard Fire", "weapon_disc_regular");
+   		Client::addMenuItem(%clientId, %curItem++ @ "Rapid Fire", "weapon_disc_rapid");
+   		return;
+	}
 	else if (%opt == "weapon_dmines")
 	{
    		%curItem = 0;
    		Client::buildMenu(%clientId, "Mine Options", "options", true);
    		Client::addMenuItem(%clientId, %curItem++ @ "DLM (Laser Mines)", "weapon_dmines1");
    		Client::addMenuItem(%clientId, %curItem++ @ "Standard", "weapon_dmines2");
-   		//Client::addMenuItem(%clientId, %curItem++ @ "Light AP-Mine", "weapon_dmines3");
    		return;
+	}
+	else if (%opt == "weapon_abeacon")
+	{
+  		%curItem = 0;
+  		Client::buildMenu(%clientId, "Beacon Options", "options", true);
+  		Client::addMenuItem(%clientId, %curItem++ @ "Poison Throwing Stars", "weapon_abeacon1");
+  		Client::addMenuItem(%clientId, %curItem++ @ "Shock Charges", "weapon_abeacon2");
+ 		return;
+	}
+	else if (%opt == "weapon_cbeacon")
+	{
+  		%curItem = 0;
+  		Client::buildMenu(%clientId, "Beacon Options", "options", true);
+  		Client::addMenuItem(%clientId, %curItem++ @ "Satchel", "weapon_cbeacon1");
+  		Client::addMenuItem(%clientId, %curItem++ @ "Targeting", "weapon_cbeacon2");
+ 		return;
+	}
+	else if (%opt == "weapon_gbeacon")
+	{
+  		%curItem = 0;
+  		Client::buildMenu(%clientId, "Beacon Options", "options", true);
+  		Client::addMenuItem(%clientId, %curItem++ @ "FireBomb", "weapon_gbeacon1");
+  		Client::addMenuItem(%clientId, %curItem++ @ "Targeting", "weapon_gbeacon2");
+ 		return;
 	}
 	else if (%opt == "weapon_gravgun")
 	{
@@ -1177,12 +1308,14 @@ function processMenuOptions(%clientId, %option)
    		Client::buildMenu(%clientId, "GravGun Options", "options", true);
    		Client::addMenuItem(%clientId, %curItem++ @ "Tractor Effect", "weapon_gravgun_tract");
    		Client::addMenuItem(%clientId, %curItem++ @ "Repulse Effect", "weapon_gravgun_repulse");
+   		Client::addMenuItem(%clientId, %curItem++ @ "Grapler Effect", "weapon_gravgun_pull");
    		return;
 	}
 	else if (%opt == "weapon_plastic")
 	{
    		%curItem = 0;
    		Client::buildMenu(%clientId, "Plastique Options", "options", true);
+   		Client::addMenuItem(%clientId, %curItem++ @ "1 Sec. Delay", "weapon_plastic_plas1");
    		Client::addMenuItem(%clientId, %curItem++ @ "2 Sec. Delay", "weapon_plastic_plas2");
    		Client::addMenuItem(%clientId, %curItem++ @ "5 Sec. Delay", "weapon_plastic_plas5");
    		Client::addMenuItem(%clientId, %curItem++ @ "10 Sec. Delay", "weapon_plastic_plas10");
@@ -1234,69 +1367,69 @@ function processMenuOptions(%clientId, %option)
 	if (%opt == "booster_norm")
 	{
 		%clientId.booster = "0";
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Booster Set To Normal Mode.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Booster Set To Normal Mode.\", 3);", 0.01);
    		return;
 	}
 	else if (%opt == "booster_adv")
 	{
 		%clientId.booster = "1";
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Booster Ser To Advanced Mode.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Booster Ser To Advanced Mode.\", 3);", 0.01);
    		return;
 	}
 	//=============================================================================================== Engineer Mines
 	if (%opt == "weapon_engmine_proxy")
 	{
 		%clientId.EngMine = "0";
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mine Set To Proximity Detector.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mine Set To Proximity Detector.\", 3);", 0.01);
    		return;
 	}
 	else if (%opt == "weapon_engmine_cloak")
 	{
 		%clientId.EngMine = "1";
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mine Set To Cloaking Mine.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mine Set To Cloaking Mine.\", 3);", 0.01);
    		return;
 	}
 	else if (%opt == "weapon_engmine_laser")
 	{
 		%clientId.EngMine = "2";
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mine Set To Point Defense Laser Mine.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mine Set To Point Defense Laser Mine.\", 3);", 0.01);
    		return;
 	}
 	else if (%opt == "weapon_engmine_stand")
 	{
 		%clientId.EngMine = "3";
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mine Set To Standard Anti-Personell Mine.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mine Set To Standard Anti-Personell Mine.\", 3);", 0.01);
    		return;
 	}
 	else if (%opt == "weapon_engmine_replica")
 	{
 		%clientId.EngMine = "4";
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mine Set To Replicator Mine.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mine Set To Replicator Mine.\", 3);", 0.01);
    		return;
 	}
 	//==================================================================================== Engineer Beacons
 	else if (%opt == "weapon_engbeacon_standard")
 	{
 		%clientId.EngBeacon = "0";
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Beacon Set To Standard.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Beacon Set To Standard.\", 3);", 0.01);
    		return;
 	}
 	else if (%opt == "weapon_engbeacon_camera")
 	{
 		%clientId.EngBeacon = "1";
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Beacons Set To Cloaking Camera.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Beacons Set To Cloaking Camera.\", 3);", 0.01);
    		return;
 	}
 	else if (%opt == "weapon_engbeacon_antimissile")
 	{
 		%clientId.EngBeacon = "2";
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Beacons Set To Anti-Missile Screen, only protects from Guided Missiles.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Beacons Set To Anti-Missile Screen, only protects from Guided Missiles.\", 3);", 0.01);
    		return;
 	}
 	else if (%opt == "weapon_engbeacon_medikit")
 	{
 		%clientId.EngBeacon = "3";
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Beacons Set To Medi Kit Patch. Help You And Your Team Mates On The Field.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Beacons Set To Medi Kit Patch. Help You And Your Team Mates On The Field.\", 3);", 0.01);
    		return;
 	}		
 
@@ -1310,14 +1443,14 @@ function processMenuOptions(%clientId, %option)
 			Player::setItemCount(%clientId, Hackit, 0);
 			Player::setItemCount(%clientId, DisIt, 0);
 			Player::mountItem(%clientId, Fixit, $WeaponSlot);		
-			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Repair Gun Option Selected.\", 3);", 0);
+			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Repair Gun Option Selected.\", 3);", 0.01);
 		}
 		else
 		{		
 			if (Player::getItemCount(%clientId, FixIt))
-				schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Your Engineer Gun Is Already Set To Repair Mode.\", 3);", 0);
+				schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Your Engineer Gun Is Already Set To Repair Mode.\", 3);", 0.01);
 			else			
-				schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You do not possess a Engineer Gun.\", 3);", 0);
+				schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You do not possess a Engineer Gun.\", 3);", 0.01);
 		}
 
    		return;
@@ -1331,14 +1464,14 @@ function processMenuOptions(%clientId, %option)
 			Player::setItemCount(%clientId, DisIt, 0);
 			Player::setItemCount(%clientId, Hackit, 1);
 			Player::mountItem(%clientId, HackIt, $WeaponSlot);
-			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Hacking Option Selected.\", 3);", 0);
+			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Hacking Option Selected.\", 3);", 0.01);
 		}
 		else
 		{		
 			if (Player::getItemCount(%clientId, HackIt))
-				schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Your Engineer Gun Is Already Set To Hacking Mode.\", 3);", 0);
+				schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Your Engineer Gun Is Already Set To Hacking Mode.\", 3);", 0.01);
 			else			
-				schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You do not possess a Engineer Gun.\", 3);", 0);
+				schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You do not possess a Engineer Gun.\", 3);", 0.01);
 		}
 		
    		return;
@@ -1352,42 +1485,48 @@ function processMenuOptions(%clientId, %option)
 			Player::setItemCount(%clientId, Hackit, 0);
 			Player::setItemCount(%clientId, DisIt, 1);
 			Player::mountItem(%clientId, DisIt, $WeaponSlot);
-			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Disassymbler Option Selected.\", 3);", 0);
+			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Disassymbler Option Selected.\", 3);", 0.01);
 		}
 		else
 		{		
 			if (Player::getItemCount(%clientId, DisIt))
-				schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Your Engineer Gun Is Already Set To Disassymbler Mode.\", 3);", 0);
+				schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Your Engineer Gun Is Already Set To Disassymbler Mode.\", 3);", 0.01);
 			else			
-				schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You do not possess a Engineer Gun.\", 3);", 0);
+				schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You do not possess a Engineer Gun.\", 3);", 0.01);
 		}
 		
    		return;
 	}
 
 	//=============================================================================================== Plastique
+	if (%opt == "weapon_plastic_plas1")
+	{
+		%clientId.Plastic = 1;
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Plastique Delay Set To 1 Sec.\", 3);", 0.01);
+   		return;
+	}
 	if (%opt == "weapon_plastic_plas2")
 	{
 		%clientId.Plastic = 2;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Plastique Delay Set To 2 Sec.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Plastique Delay Set To 2 Sec.\", 3);", 0.01);
    		return;
 	}
 	else if (%opt == "weapon_plastic_plas5")
 	{
 		%clientId.Plastic = 5;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Plastique Delay Set To 5 Sec.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Plastique Delay Set To 5 Sec.\", 3);", 0.01);
    		return;
 	}
 	else if (%opt == "weapon_plastic_plas10")
 	{
 		%clientId.Plastic = 10;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Plastique Delay Set To 10 Sec.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Plastique Delay Set To 10 Sec.\", 3);", 0.01);
    		return;
 	}
 	else if (%opt == "weapon_plastic_plas15")
 	{
 		%clientId.Plastic = 15;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Plastique Delay Set To 15 Sec.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Plastique Delay Set To 15 Sec.\", 3);", 0.01);
    		return;
 	}
 
@@ -1395,50 +1534,66 @@ function processMenuOptions(%clientId, %option)
 	if (%opt == "weapon_mortar_regular")
 	{
 		%clientId.Mortar = 0;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Standard Mortar Selected.\", 3);", 0);
-   		return;
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Standard Mortar Selected.\", 3);", 0.01);
+		%player = Client::getOwnedObject(%clientId);
+		%wep = Player::getMountedItem(%player,$WeaponSlot);
+		if(%wep == mortar || %wep == mortar0 || %wep == mortar1 || %wep == mortar2)
+			Player::useItem(%player,mortar);
+		  	return;
 	}
 	else if (%opt == "weapon_mortar_emp")
 	{
 		%clientId.Mortar = 1;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Magnetic Pulse Shell Selected.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Magnetic Pulse Shell Selected.\", 3);", 0.01);
+		%player = Client::getOwnedObject(%clientId);
+		%wep = Player::getMountedItem(%player,$WeaponSlot);
+		if(%wep == mortar || %wep == mortar0 || %wep == mortar1 || %wep == mortar2)
+			Player::useItem(%player,mortar);
    		return;
 	}
 	else if (%opt == "weapon_mortar_frag")
 	{
 		%clientId.Mortar = 2;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Fragmenting Shell Selected.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Fragmenting Shell Selected.\", 3);", 0.01);
+		%player = Client::getOwnedObject(%clientId);
+		%wep = Player::getMountedItem(%player,$WeaponSlot);
+		if(%wep == mortar || %wep == mortar0 || %wep == mortar1 || %wep == mortar2)
+			Player::useItem(%player,mortar);
    		return;
 	}
 	else if (%opt == "weapon_mortar_mdm")
 	{
 		%clientId.Mortar = 3;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>MDM Shell Selected.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>MDM Shell Selected.\", 3);", 0.01);
+		%player = Client::getOwnedObject(%clientId);
+		%wep = Player::getMountedItem(%player,$WeaponSlot);
+		if(%wep == mortar || %wep == mortar0 || %wep == mortar1 || %wep == mortar2)
+			Player::useItem(%player,mortar);
    		return;
 	}
 	//======================================================================== Rocket Options
 	if (%opt == "weapon_rocket1")
 	{
 		%clientId.rocket = 0;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Stinger Rocket Initiated.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Stinger Rocket Initiated.\", 3);", 0.01);
    		return;
 	}
 	else if (%opt == "weapon_rocket2")
 	{
 		%clientId.rocket = 1;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Stinger Locking Initiated.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Stinger Locking Initiated.\", 3);", 0.01);
    		return;
 	}
 	else if (%opt == "weapon_rocket3")
 	{
 		%clientId.rocket = 2;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Lock Jaw Initiated.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Heat Seeking Initiated.\", 3);", 0.01);
    		return;
 	}
 	else if (%opt == "weapon_rocket4")
 	{
 		%clientId.rocket = 3;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Wire Guided System Initiated.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Wire Guided System Initiated.\", 3);", 0.01);
    		return;
 	}
 
@@ -1446,513 +1601,116 @@ function processMenuOptions(%clientId, %option)
 	if (%opt == "weapon_dmines1")
 	{
 		%clientId.dmines = 0;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mines Set To DLM.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mines Set To DLM.\", 3);", 0.01);
    		return;
 	}
 	else if (%opt == "weapon_dmines2")
 	{
 		%clientId.dmines = 1;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mines Set To Standard.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mines Set To Standard.\", 3);", 0.01);
    		return;
 	}
 	else if (%opt == "weapon_dmines3")
 	{
 		%clientId.dmines = 2;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mines Set To Light-AP.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mines Set To Light-AP.\", 3);", 0.01);
    		return;
+	}
+
+	//==================================================Assassin Beacon
+	if (%opt == "weapon_abeacon1")
+	{
+		%clientId.AssBcn = 0;
+		bottomprint(%clientId, "<jc><f1>Beacon Set To Poison Throwing Stars.", 3);
+   	return;
+	}
+	else if (%opt == "weapon_abeacon2")
+	{
+		%clientId.AssBcn = 1;
+		bottomprint(%clientId, "<jc><f1>Beacon Set To Shock Charge.", 3);
+  		return;
+	}
+
+	if (%opt == "weapon_cbeacon1")
+	{
+		%clientId.ChemBeacon = 0;
+		bottomprint(%clientId, "<jc><f1>Beacon Set To Satchel.", 3);
+   	return;
+	}
+	else if (%opt == "weapon_cbeacon2")
+	{
+		%clientId.ChemBeacon = 1;
+		bottomprint(%clientId, "<jc><f1>Beacon Set To Targeting.", 3);
+  		return;
+	}
+
+	if (%opt == "weapon_gbeacon1")
+	{
+		%clientId.GolBeacon = 0;
+		bottomprint(%clientId, "<jc><f1>Beacon Set To FireBomb.", 3);
+   	return;
+	}
+	else if (%opt == "weapon_gbeacon2")
+	{
+		%clientId.GolBeacon = 1;
+		bottomprint(%clientId, "<jc><f1>Beacon Set To Targeting.", 3);
+  		return;
 	}
 
 	//========================================================================= Plasma Options
 	if (%opt == "weapon_plasma_regular")
 	{
 		%clientId.Plasma = 0;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Standard Plasma Bolt Selected.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Standard Plasma Bolt Selected.\", 3);", 0.01);
    		return;
 	}
 	else if (%opt == "weapon_plasma_rapid")
 	{
 		%clientId.Plasma = 1;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Rapid-Bold Plasma Selected.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Rapid-Bold Plasma Selected.\", 3);", 0.01);
    		return;
 	}
 	else if (%opt == "weapon_plasma_multi")
 	{
 		%clientId.Plasma = 2;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Multi-Bold Plasma Selected.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Multi-Bold Plasma Selected.\", 3);", 0.01);
    		return;
 	}
-
+	else if (%opt == "weapon_disc_regular")
+	{
+		%clientId.disc = 0;
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Standard Disc Shell Selected.\", 3);", 0.01);
+   		return;
+	}
+	else if (%opt == "weapon_disc_rapid")
+	{
+		%clientId.disc = 1;
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Rapid Disc Shell Selected.\", 3);", 0.01);
+   		return;
+	}
 	//======================================================================= Grav Gun Options
 	else if (%opt == "weapon_gravgun_tract")
 	{
 		%clientId.gravbolt = 0;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Grav Gun Tractor Setting Selected.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Grav Gun Tractor Setting Selected.\", 3);", 0.01);
    		return;
 	}
 	else if (%opt == "weapon_gravgun_repulse")
 	{
 		%clientId.gravbolt = 1;
-		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Grav Gun Repulse Setting Selected.\", 3);", 0);
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Grav Gun Repulse Setting Selected.\", 3);", 0.01);
    		return;
 	}
-//=============================================================================== Print Help Menu Selections
-   	
-   	if (%opt == "weapon") //================================================================================== Weapons Help
-   	{
-   		if ($Shifter::Debug) echo ("Weapon - " @ %weapon);
-
-		if (%armor == "-1")
-		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> You do not currently have a weapon mounted.\", 10);", 0);		
-		}
-		if (%weapon == "Blaster")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The blaster is a modified version of the original with a little more kick.\", 10);", 0);
-		}
-		if (%weapon == "PlasmaGun")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The plasma gun has not changed much, great for taking out heavies and lights at close range.\", 10);", 0);
-		}
-		if (%weapon == "ChainGun")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The chain gun, with a explosive tipped ammo.\", 10);", 0);
-		}
-		if (%weapon == "DiscLauncher")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> This disc-launcher has undergone only a slight projectile speed upgrade.\", 10);", 0);
-		}
-		if (%weapon == "GrenadeLauncher")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The grenade-launcher is the same stock weapon as always.\", 10);", 0);
-		}
-		if (%weapon == "Mortar")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The heavies best friend, the mortar has only under gone a slight speed upgrade in fire rate.\", 10);", 0);
-		}
-		if (%weapon == "LaserRifle")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The laser rifle has not changed, still a great deal for taking out enemies at long range.\", 10);", 0);
-		}
-		if (%weapon == "RocketLauncher")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The target locking rocket launcher, get them in your cross hairs and the rocket will lock to its target.\", 10);", 0);
-		}
-		if (%weapon == "SniperRifle")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> This is a projectile based version of its brother LserRifle... Fires a very fast projectile instead of a laser.\", 10);", 0);
-		}
-		if (%weapon == "ConCun")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The shock wave cannon is a great weapon for getting away from the enemy or getting the enemy away from you. Does very little damage.\", 10);", 0);
-		}
-		if (%weapon == "EnergyRifle")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The good-ole ELF gun. Suck the enemies energy right out with this one.\", 10);", 0);
-		}
-		if (%weapon == "RailGun")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The rail-gun is a quite nasty, high speed projectile weapon that can lay out a light or medium armor in one shot. Very little ammo capasity.\", 10);", 0);
-		}
-		if (%weapon == "Mfgl")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Tactical Nuke. This is the most devistating weapn in the game. How ever you will not get points or credit for its massive destructiveness.\", 10);", 0);
-		}
-		if (%weapon == "Silencer")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The magnum is a smaller version of the Rail Gun, Less damage but a much greater rate of fire.\", 10);", 0);
-		}
-		if (%weapon == "Vulcan")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Vulcan is the BIG brother to the chain-gun, firing several more rounds a seconds can lay out the largest targets in quick time.\", 10);", 0);
-		}
-		if (%weapon == "IonGun")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> This is one very devistating weapon, developed for use with the arbitor armor, the Ion Cannon drains massive energy, but is worth it.\", 10);", 0);
-		}
-		if (%weapon == "Flamer")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> This Goliath only weapon is great on the enemy at close range, but does little damage to turrets and stations, etc...\", 10);", 0);
-		}
-		if (%weapon == "TranqGun")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Tranq... Much like the Sniper Rifle, does very little initial damage, but poisons the enemy.\", 10);", 0);
-		}
-		if (%weapon == "HyperB")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The HyperBlaster is the light-weight rapid firing little brother to the Blaster.\", 10);", 0);
-		}
-		if (%weapon == "Volter")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Volter is an arbitor only weapon that is quite devistating if used correctly, firing a ion charged stream of plasma.\", 10);", 0);
-		}
-		if (%weapon == "FixIt")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Engineers firend, this little repair gun doesnt need a repair-pack but will repair in great time.\", 10);", 0);
-		}
-		if (%weapon == "GravGun")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The grav gun can be a flag runners worst nightmare. Grabbing at pulling the enemy to you and back into firing range.\", 10);", 0);
-		}
-		if (%weapon == "BoomStick")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Boomstick (shotgun) will match the little guy with the big-boys at close range.\", 10);", 0);
-		}
-		if (%weapon == "TargetingLaser")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The targetting laser will allow you to pin point targets for heavies to launch mortars at.\", 10);", 0);
-		}
-		if (%weapon == "RepairGun")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>The repair gun comes with the repair pack and will allow you to repair other players and your own base items.\", 10);", 0);
-		}
-   	}
-   	if (%opt == "flag") //======================================================================================= Flag Help
-   	{
-
-		if (%flag == "-1")
-		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You are not carrying a flag! .\", 10);", 0);		
-		}   	
-		if (%flag == "flag")
-		{
-			if ($Shifter::FlagNoReturn == "True")
-			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You are carrying a flag, you need to take the flag to your flag stand!.\", 10);", 0); 			
-			else
-			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You are carrying a flag, you need to take the flag to your flag stand!.\", 10);", 0);		
-		}
+	else if (%opt == "weapon_gravgun_pull")
+	{
+		%clientId.gravbolt = 2;
+		schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Grav Gun Repulse Grapler Selected.\", 3);", 0.01);
+   		return;
 	}
 
-   	if (%opt == "pack") //======================================================================================= Pack Help
-   	{
-   			//echo ("Pack - " @ %pack);	
-
-		if (%armor == "-1")
-		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> You do not currently have a pack.\", 10);", 0);		
-		}
-		if (%pack == "EnergyPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The energy pack will regenerate your energy quicker and you will use less.\", 10);", 0);
-		}
-		if (%pack == "RepairPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The repair pack gives you the ability to repair items and other players.\", 10);", 0);
-		}
-		if (%pack == "ShieldPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Shield pack will convert your energy into shielding to resist damage.\", 10);", 0);
-		}
-		if (%pack == "SensorJammerPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Sensor Jammer will dampen your sensor signal with in a certain radius.\", 10);", 0);
-		}
-		if (%pack == "RocketPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Deployable rocket turret is a smaller version of the large base rocket turret.\", 10);", 0);
-		}
-		if (%pack == "LaserPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Deployable laser turret is the God of turrets, they can be attached to nearly any surface for devistating results.\", 10);", 0);
-		}
-		if (%pack == "CloakingDevice")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Cloaking Device will make you invisable to enemies as well as friendly.\", 10);", 0);
-		}
-		if (%pack == "StealthShieldPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Stealth Shield will hide you from turrets and locking missles.\", 10);", 0);
-		}
-		if (%pack == "LapTop")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Command Lap Top will allow you to use varrious remote items with out being at a command station.\", 10);", 0);
-		}
-		if (%pack == "ShockPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The EMP turret will drop en EMP blasting shell that will knock out all enemy energy ans shielding as well as friendly.\", 10);", 0);
-		}
-		if (%pack == "TargetPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Mortar turret can be deployed but will only fire when it is being commanded.\", 10);", 0);
-		}
-		if (%pack == "SuicidePack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The suicide pack is quite devistating, basically a nuclear device that you can drop, it will detonate in 20 seconds after drop.\", 10);", 0);
-		}
-		if (%pack == "DetPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The suicide pack is quite devistating, basically a nuclear device that you can drop, it will detonate in 20 seconds after drop..\", 10);", 0);
-		}
-		if (%pack == "CameraPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The camera pack will allow you to spy on the enemy (from a command station or lap top), placed in a sneaky location they might not even see it.\", 10);", 0);
-		}
-		if (%pack == "TurretPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Ion turret is quite nasty, firing the same bolts as the Ion Cannon gun.\", 10);", 0);
-		}
-		if (%pack == "AmmoPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The ammo pack gives you an extra supplt of ammo for those long trips.\", 10);", 0);
-		}
-		if (%pack == "DeployableInvPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The deployable inventory station is quite nice for those far away mission, allowing you to purchace weapons, ammo and turrets.\", 10);", 0);
-		}
-		if (%pack == "DeployableAmmoPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> This small deployable station allows you to resupply just like the larger ones in your base.\", 10);", 0);
-		}
-		if (%pack == "MotionSensorPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The motion sensor will allow your turrets to see targets that are cloaked or shielded by sensor surpression.\", 10);", 0);
-		}
-		if (%pack == "PulseSensorPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The deployable pulse sensor is a smaller version of the pulsing sensor found on many bases.\", 10);", 0);
-		}
-		if (%pack == "DeployableSensorJammerPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The deployable sensor jammer will shield you and your team mates from enemy sensors.\", 10);", 0);
-		}
-		if (%pack == "DeployableComPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The deployable command center will allow you or a team mate to command turrets and other remote items from afar.\", 10);", 0);
-		}
-		if (%pack == "LaserTurret")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Deployable Plasma turret is a version of the base defence, it jsut can not take quite the same ammount of damage.\", 10);", 0);
-		}
-		if (%pack == "ForceFieldPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> This is a smaller version of the force-fields found in some bases, make sure that you do not block your only enterance with it.\", 10);", 0);
-		}
-		if (%pack == "LargeForceFieldPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The larger force field is a stonger version of the regular force field, it can sustain a good deal of damage.\", 10);", 0);
-		}
-		if (%pack == "DeployableElf")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Deployable ELF turret is the smaller companion to the larger base defence version and can be mounted any where.\", 10);", 0);
-		}
-		if (%pack == "TeleportPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Teleport pack is just that. A Telepad platform. You must use two of these.\", 10);", 0);
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> Place one where you want to start and the other were you want to go, your team can use it too.\", 10);", 10);
-		}
-		if (%pack == "TripwirePack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The blast wall is a great defence, it can take great ammounts of heavy damage but is misleading in that...\", 10);", 0);
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The blast wall can only take smaller ammount of lesser damage...\", 10);", 10);
-		}
-		if (%pack == "PlatformPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The deployable platform has many uses such as covering things up and blocking floor or cieling enterences.\", 10);", 0);
-		}
-		if (%pack == "TreePack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Mechanical tree serves little purpose but can be used for cover in many cases.\", 10);", 0);
-		}
-		if (%pack == "FgcPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Containment pack is needed for the Tactical Nuke, when wielded by a Dreadnaught.\", 10);", 0);
-		}
-		if (%pack == "MechPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Deployable Interceptor pack is basically a small portable weaponless version of the Interceptor flier.\", 10);", 0);
-		}
-		if (%pack == "HoloPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The HoloGram is just that, a Holo of a friendly player, it will not do anything other than stand there, great for a sniper decoy.\", 10);", 0);
-		}
-		if (%pack == "RegenerationPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The regeneration pack will allow you to heal your self, you can switch it on and leave it for isntant healing when you most need it.\", 10);", 0);
-		}
-		if (%pack == "LightningPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Teleport pack will do just that, teleport you in a random direction, but be careful you could end up in the wrong place.\", 10);", 0);
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> You can lock a Telepoint with the weapons options menu to bring you back to a specific location.\", 10);", 10);
-		}
-		if (%pack == "PlantPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The healing plant will allow all how touches it to begin to heal quite quickly.\", 10);", 0);
-		}
-		if (%pack == "FlightPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The flight pack gives lighter armors a mush greater energy supply and quicker regeneration time.\", 10);", 0);
-		}
-		if (%pack == "SMRPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Auto-Rocket is a shoulder mounted rocket launcher that works just like the normal launcher.\", 10);", 0);
-		}
-		if (%pack == "LaunchPack")
-		{
-   			schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The launch pad is a small platform that when hit will jet you into the air, great for getting a long way.\", 10);", 0);
-		}
-  	}   
-
-   	else if (%opt == "mine") //================================================================================================= Mines
-   	{
-		if ($Shifter::Debug) echo ("Armor = " @ %armor);
-   		
-		if (%armor == "-1")
-		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> You are either dead or in observer mode.\", 10);", 0);
-		}
-		if (%armor == "spyarmor" || %armor == "spyfemale") 		//== Chemeleon
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>The chemeleon mines are cloaking anti-personel mines.\", 10);", 0);
-   		}
-   		if (%armor == "sarmor" || %armor == "sfemale") 			//== Scout
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Scout armor mines are standard anti personel mines.\", 10);", 0);
-   		}
-   		if (%armor == "larmor" || %armor == "lfemale") 			//== Assasin
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>The Assassin armor mines are very simple flag decoys.\", 10);", 0);
-   		}
-   		if (%armor == "aarmor" || %armor == "afemale")			//== Arbitor
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Arbitor armor mines are concussion mines, the also cloak so that enemy will never see them.\", 10);", 0);
-   		}
-   		if (%armor == "marmor" || %armor == "mfemale")			//== Mercinary
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>Mercinary armor carries standard anti-personel mines.\", 10);", 0);
-   		}
-   		if (%armor == "earmor" || %armor == "efemale")			//== Engineer
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>The Engineer armor mines are not quite mines, they will however alert you to enemies with in 25m.\", 10);", 0);
-   		}
-   		if (%armor == "barmor" || %armor == "bfemale")			//== Goliath
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>The Goliath mines are standard anti-personel mines.\", 10);", 0);
-   		}
-   		if (%armor == "harmor")						//== Base Heavy
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>The Heavy's mines are standard anti-personel mines.\", 10);", 0);
-   		}
-   		if (%armor == "darmor")						//== Dreadnaught
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>The Dreadnauhght armors mine are special, the are small Point Defence Laser turrets that will detonate after 25 seconds.\", 10);", 0);
-   		}
-   		if (%armor == "jarmor")						//== Juggernaught
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>The Juggernaught does not carry any mines.\", 10);", 0);
-   		}
-   		if (%armor == "parmor")
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1>You do not have any mines.\", 10);", 0);
-   		}
-   	}
-   	else if (%opt == "grenade") //===================================================================================== Grenades
-   	{
-		if ($Shifter::Debug) echo ("Armor = " @ %armor);
-   		
-		if (%armor == "-1")
-		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> You are either dead or in observer mode.\", 10);", 0);
-		}
-		if (%armor == "spyarmor" || %armor == "spyfemale") 		//== Chemeleon
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> Chemeleon grenades are Plastique, they will stick to any surface and detonate in 15 seconds.\", 10);", 0);
-   		}
-   		if (%armor == "sarmor" || %armor == "sfemale") 			//== Scout
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The scout grenades are Fire Bomb grenades...\", 10);", 0);
-   		}
-   		if (%armor == "larmor" || %armor == "lfemale") 			//== Assasin
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> Assassin grenades are more like mines, but they look just like repair packs.\", 10);", 0);
-   		}
-   		if (%armor == "aarmor" || %armor == "afemale")			//== Arbitor
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> Arbitor grenades will poison the enemy.\", 10);", 0);
-   		}
-   		if (%armor == "marmor" || %armor == "mfemale")			//== Mercinary
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Merc armor has only standard grenades.\", 10);", 0);
-   		}
-   		if (%armor == "earmor" || %armor == "efemale")			//== Engineer
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The engineer grenage does a good deal of shock damage but will also EMP the enemy.\", 10);", 0);
-   		}
-   		if (%armor == "barmor" || %armor == "bfemale")			//== Goliath
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Goliath grenades are Concussion grenades, they will do a good bit of damage and bang the enemy around aswell.\", 10);", 0);
-   		}
-   		if (%armor == "harmor")									//== Base Heavy
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Heavy's grenade is much like a mortar shell.\", 10);", 0);
-   		}
-   		if (%armor == "darmor")									//== Dreadnaught
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Dreadnaught grenade is much like a mortar shell.\", 10);", 0);
-   		}
-   		if (%armor == "jarmor")									//== Juggernaught
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Juggernaught does not carry grenades.\", 10);", 0);
-   		}
-   		if (%armor == "parmor")
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> You do not have grenades.\", 10);", 0);
-   		}
-   	}
-   	else if (%opt == "beacon") //===================================================================================== Beacon
-   	{
-		if ($Shifter::Debug) echo ("Armor = " @ %armor);
-   		
-		if (%armor == "-1")
-		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> You are either dead or in observer mode.\", 10);", 0);
-		}
-		if (%armor == "spyarmor" || %armor == "spyfemale") 		//== Chemeleon
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Chemeleon beacons look much like cameras, however when deployed can be detonated from any command station or laptop.\", 10);", 0);
-   		}
-   		if (%armor == "sarmor" || %armor == "sfemale") 			//== Scout
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Scout armor beacon is a small pulse sensor for scouting out awawy from the base.\", 10);", 0);
-   		}
-   		if (%armor == "larmor" || %armor == "lfemale") 			//== Assasin
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Assassin beacons are Deployable Sensor Jammers.\", 10);", 0);
-   		}
-   		if (%armor == "aarmor" || %armor == "afemale")			//== Arbitor
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Arbitor beacons will allow you to cloak for about 15 seconds.\", 10);", 0);
-   		}
-   		if (%armor == "marmor" || %armor == "mfemale")			//== Mercinary
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Mercinary armor carries a booster that will create a force behind you that will launch you in the direction that you are facing.\", 10);", 0);
-   		}
-   		if (%armor == "earmor" || %armor == "efemale")			//== Engineer
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> The Engineer beacon is a camera unit that you can use to spy on the enemy with.\", 10);", 0);
-   		}
-   		if (%armor == "barmor" || %armor == "bfemale")			//== Goliath
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> Goliath beacons are Fire Bomb grenades, they will explode and catch players on fire.\", 10);", 0);
-   		}
-   		if (%armor == "harmor")									//== Base Heavy
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> With standard heavy armor, you have Nuke Bomb grenades, much like mortar shells.\", 10);", 0);
-   		}
-   		if (%armor == "darmor")									//== Dreadnaught
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> Dreadnaught beacons are an emergency force shield, your will be better protected for a few seconds.\", 10);", 0);
-   		}
-   		if (%armor == "jarmor")									//== Juggernaught
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> Juggernaught armor does not carry any beacons.\", 10);", 0);
-   		}
-   		if (%armor == "parmor")
-   		{
-   			   schedule("bottomprint(" @ %clientId @ ", \"<jc><f1> You do not have any beacons.\", 10);", 0);
-   		}
-   	}
-
 //=========================================================================================================================================   
-   else if(%opt == "fteamchange")
+   //else
+	if(%opt == "fteamchange")
    {
 	if ($debug) echo("fteamchange");
 		%clientId.ptc = %cl;
@@ -1999,8 +1757,8 @@ function processMenuOptions(%clientId, %option)
       
    else if(%opt == "vkick")
    {
-      %cl.voteTarget = true;
-      Admin::startVote(%clientId, "kick " @ Client::getName(%cl), "kick", %cl);
+	%cl.voteTarget = true;
+	Admin::startVote(%clientId, "kick " @ Client::getName(%cl), "kick", %cl);
    }
    else if(%opt == "vadmin")
    {
@@ -2023,6 +1781,20 @@ function processMenuOptions(%clientId, %option)
    else if(%opt == "dtd")
       Admin::setTeamDamageEnable(%clientId, false);
    
+
+   else if(%opt == "etk")
+   {	
+	$Shifter::TeamKillOn = True;
+	schedule ("BottomPrintAll(\"<F1><jc>::::Team Kill Is In Effect::::\",5);",0.5);
+        messageAll(0, Client::getName(%clientId) @ " turned TKs on.~wteleport2.wav");
+   }
+   else if(%opt == "dtk")
+   {
+	$Shifter::TeamKillOn = False;
+	schedule ("BottomPrintAll(\"<F1><jc>::::Team Kill Disabled For THIS Mission::::\",5);",0.5);
+        messageAll(0, Client::getName(%clientId) @ " turned TKs off for THIS mission. ~wteleport2.wav");
+   }
+
    else if(%opt == "cffa")
    {
 	Admin::setModeFFA(%clientId);
@@ -2073,17 +1845,6 @@ function processMenuOptions(%clientId, %option)
       return;
    }
    
-   else if(%opt == "botmenu") //============================================================================================== Bot Menu
-   {
-         Client::buildMenu(%clientId, "Bot Menu:", "selbotaction", true);
-         Client::addMenuItem(%clientId, "1Spawn A Bot", "spawnbot");
-	     Client::addMenuItem(%clientId, "2Remove Bot", "removebot");
-	     if(%clientId.isSuperAdmin)
-		 	Client::addMenuItem(%clientId, "3Killem All", "kbaffirm");
-         
-		 return;
-   }
-   
    else if(%opt == "ban") //================================================================================================== Ban Player
    {
       Client::buildMenu(%clientId, "Confirm Ban:", "baffirm", true);
@@ -2096,6 +1857,8 @@ function processMenuOptions(%clientId, %option)
 	Player::setArmor(%cl,larmor);
 	armorChange(%cl);
 	Player::blowUp(%cl);
+
+
 	remoteKill(%cl);
 	messageAll(0, Client::getName(%cl) @ " spontaneously combusted.");
 	return; 
@@ -2268,9 +2031,11 @@ function processMenuKAffirm(%clientId, %opt)
 {
 	echo("ADMINMSG: **** " @ Client::getName(getWord(%opt, 1)) @ " Kicked By " @ Client::getName(%clientId));
 
-   if(getWord(%opt, 0) == "yes")
-      Admin::kick(%clientId, getWord(%opt, 1));
-   Game::menuRequest(%clientId);
+	if(getWord(%opt, 0) == "yes")
+	{
+		Admin::kick(%clientId, getWord(%opt, 1));
+	}
+	Game::menuRequest(%clientId);
 }
 
 function processMenuBAffirm(%clientId, %opt)
@@ -2324,13 +2089,21 @@ function processMenuRAffirm(%clientId, %opt)
 {
    if(%opt == "yes" && %clientId.isAdmin)
    {
-	 echo("ADMINMSG: **** Server Reset By " @ Client::getName(%clientId));
-
+		echo("ADMINMSG: **** Server Reset By " @ Client::getName(%clientId));
       messageAll(0, Client::getName(%clientId) @ " reset the server to default settings.");
+		$noFakeDeath = false;
       exec("serverConfig.cs");
-       	 Server::storeData();
-      	 echo("ADMINMSG: **** Default config stored");
-      	 Server::refreshData();
+		if ($Shifter::DetPackLimit == ""){ $Shifter::DetPackLimit = "15"; }
+		if ($Shifter::NukeLimit == ""){ $Shifter::NukeLimit = "15"; }
+		$TeamItemMax[SuicidePack] = $Shifter::DetPackLimit;
+		$TeamItemMax[MFGLAmmo] = $Shifter::NukeLimit;
+		$Server::Info = $Server::Info @ "\nRunning Shifter_v1G " @ $greyflcn::newdate;
+		//if($dedicated) 
+		if(!$noTabChange) $ModList = "Shifter_v1G";
+		$Server::MODInfo = $Server::MODInfo @ "\nRunning Shifter_v1G " @ $greyflcn::newdate;
+		Server::storeData();
+		echo("ADMINMSG: **** Default config stored");
+		Server::refreshData();
    }
    Game::menuRequest(%clientId);
 }
@@ -2356,13 +2129,22 @@ function processMenuMAffirm(%clientId, %opt)
 {
    if(%opt == "yes" && %clientId.isAdmin)
    {
-	 echo("ADMINMSG: **** Server set to match configuration By " @ Client::getName(%clientId));
-	 messageAll(0, Client::getName(%clientId) @ " set the server to match settings.");
-     	 exec("matchConfig.cs");
-     	 Server::storeData();
-      	 echo("ADMINMSG: **** Match config stored");
-      	 Server::refreshData();
-    
+	 	echo("ADMINMSG: **** Server set to match configuration By " @ Client::getName(%clientId));
+	 	messageAll(0, Client::getName(%clientId) @ " set the server to match settings.");
+		$noFakeDeath = true;
+     	exec("matchConfig.cs");
+		if ($Shifter::DetPackLimit == ""){ $Shifter::DetPackLimit = "15"; }
+		if ($Shifter::NukeLimit == ""){ $Shifter::NukeLimit = "15"; }
+		$TeamItemMax[SuicidePack] = $Shifter::DetPackLimit;
+		$TeamItemMax[MFGLAmmo] = $Shifter::NukeLimit;
+		$Server::Info = $Server::Info @ "\nRunning Shifter_v1G " @ $greyflcn::newdate;
+		//if($dedicated) 
+		if(!$noTabChange) $ModList = "Shifter_v1G";
+		$Server::MODInfo = $Server::MODInfo @ "\nRunning Shifter_v1G " @ $greyflcn::newdate;
+		$match::ceaseFireBegin = true;
+		Server::storeData();
+		echo("ADMINMSG: **** Match config stored");
+		Server::refreshData();
    }
    Game::menuRequest(%clientId);
 }
@@ -2372,32 +2154,32 @@ function processMenuMAffirm(%clientId, %opt)
 
 function checkTeams()
 {
-      %numTeams = getNumTeams();
-      %numPlayers = getNumClients();
-      for(%i=0;%i<%numTeams;%i=%i+1)
-         	%numTeamPlayers[%i] = 0;
-			
-      for(%i=0;%i<%numPlayers;%i=%i+1)
-      {
-         	%pl = getClientByIndex(%i);
-         	if(%pl != %playerId)
-         	{
-            		%team = Client::getTeam(%pl);
-            		%numTeamPlayers[%team] = %numTeamPlayers[%team] + 1;
-         	}
-      }
+	%numTeams = getNumTeams();
+	%numPlayers = getNumClients();
+	for(%i=0;%i<%numTeams;%i=%i+1)
+		%numTeamPlayers[%i] = 0;
+
+	for(%i=0;%i<%numPlayers;%i=%i+1)
+	{
+		%pl = getClientByIndex(%i);
+		if(%pl != %playerId)
+		{
+			%team = Client::getTeam(%pl);
+			%numTeamPlayers[%team] = %numTeamPlayers[%team] + 1;
+		}
+	}
       %lowPlayer = %numTeamPlayers[0];
       %lowTeam = 0;
 
-      for(%i=1;%i<%numTeams;%i=%i+1)
-      {
-         	if(%numTeamPlayers[%i] < %lowPlayer)
-         	{
-            		%lowTeam = %i;
-            		%lowPlayer = %numTeamPlayers;
-         	}
-      }
-      return %lowTeam;
+	for(%i=1;%i<%numTeams;%i=%i+1)
+	{
+		if(%numTeamPlayers[%i] < %lowPlayer)
+		{
+			%lowTeam = %i;
+			%lowPlayer = %numTeamPlayers;
+		}
+	}
+	return %lowTeam;
 } 
 
 function DistanceToTarget (%clientId, %targetId)
@@ -2433,7 +2215,16 @@ function MatchAssign()
 
 function beginMatchMode()
 {
-             exec("matchConfig.cs");
+	$noFakeDeath = true;
+	exec("matchConfig.cs");
+	if ($Shifter::DetPackLimit == ""){ $Shifter::DetPackLimit = "15"; }
+		if ($Shifter::NukeLimit == ""){ $Shifter::NukeLimit = "15"; }
+		$TeamItemMax[SuicidePack] = $Shifter::DetPackLimit;
+		$TeamItemMax[MFGLAmmo] = $Shifter::NukeLimit;
+		$Server::Info = $Server::Info @ "\nRunning Shifter_v1G " @ $greyflcn::newdate;
+		if(!$noTabChange) $ModList = "Shifter_v1G " @ $greyflcn::newdate;
+		$Server::MODInfo = $Server::MODInfo @ "\nRunning Shifter_v1G " @ $greyflcn::newdate;
+		$match::ceaseFireBegin = true;
      	 Server::storeData();
       	 echo("ADMINMSG: **** Match config enabled");
       	 Server::refreshData();

@@ -60,17 +60,6 @@ function AI::onDroneKilled(%aiName)
 		$TeamItemCount[%team @ "HoloPack"]--;
 		return;
 	}
-	
-	if(!$SinglePlayer)
-	{
-		//%aiId = AI::getId(%aiName);
-		//%team = GameBase::getTeam(%aiId);
-		//schedule("AI::setupAI(" @ %aiName @ ", " @ %team @ ");", 8 );
-	}
-	else
-	{
-		echo("Non training callback called from Training");
-	}
 }
 
 function  Hologram::RandomMove(%aiName, %distance) 

@@ -1069,3 +1069,33 @@ SoundData SoundMortaReload
    wavFileName = "flyer_mount.wav";
    profile = Profile3dNear;
 };
+
+SoundData quietExp4
+{
+   wavFileName = "explo4.wav";
+   profile     = Profile3dNear;
+};
+
+SoundData QuietDryFire
+{
+   wavFileName = "Dryfire1.wav";
+   profile = Profile3dNearLoop;
+};
+
+SoundData RepExp
+{
+   wavFileName = "explo4.wav";
+   profile     = Profile3dMedium;
+};
+
+SoundData quietIonExp
+{
+   wavFileName = "turretexp.wav";
+   profile     = Profile3dNear;
+};
+
+SoundData soundShieldHit
+{
+   wavFileName = "shieldhit.wav";
+   profile     = Profile3dNear;
+};
