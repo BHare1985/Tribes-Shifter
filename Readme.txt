@@ -13,27 +13,19 @@ Created by: KiLL(-) & enV.3zer0
    Today enV.3zer0 is the current modder of Shifter and is currently helping out yet another programmer to join the history of Shifter.
 
 
-ShifterK 8-3-03 Updates
+ShifterK 8-8-03 Updates
 ------------------------------------------
-· Added a repetitive trigger for Sticky and Auto Usages
-· Made an option to have a custom password typed in
-· Re-did Deploy cheat detection to work better
-· Re-did the Gameplay modes :: Match,Scrimage,Practice,Builder
-· Added a LeaderAll Admin command, the command is !la 
-· Made it so Create and Destroy D is only aviable in Practice mode 
-· Males are now as fast as Females, and Have no difference what so ever 
-· Support for AutowayPoint to Flags
+· Fixed a Bug with Builder Mode
+· Made it so !DA and !RA Commands work without practice mode
+· Increase the power of Wireguided Rockets
+· Added a AutoJugg Detection Script
 
 Added Notes
 -----------
-I highly recommend this download for it detects alot of more cheats.
-Anything that schedules a "use" or "deploy" will be detected.
-This means Sticky, Osiris, Force rocket, Force Mortar
-or anything where the computer is trying to help you with schedules.
-
-Also, Scrimage is a great way to set up a scrim, you dont even have
-change the map. The time and score and everything gets reset, be sure
-to not look at the D or be inside of it to prevent crashes when destroyed.
+I added a Auto-JJ Detection for this.
+Also I made it so that after 5 Global Cheat things, You are banned.
+You can customize this with the $Shifter::CheatBan = "true";
+In serverDefaults.cs
 
 
 If you need help with running a server, please visit:

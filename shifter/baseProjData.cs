@@ -1192,7 +1192,7 @@ GrenadeData GodHammerMortar
    mass               = 200.0;
    elasticity         = 0.55;
    damageClass        = 1;       // 0 impact, 1, radius
-   damageValue        = 1.0;
+   damageValue        = 2.5;
    damageType         = $MortarDamageType;
    explosionRadius    = 20.0;
    kickBackStrength   = 150.0;

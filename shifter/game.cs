@@ -602,7 +602,7 @@ function Game::initialMissionDrop(%clientId)
 		bottomprint(%clientid, "<F1><jc>::::MIXED SCRIM::::",10);
 		return;
 	}
-		else if($GameMode == "Scrimage")
+		else if($GameMode == "Scrimmage")
 	{
 		%clientId.observerMode = "observerFly";
 		%clientid.notready = "true";
@@ -616,7 +616,7 @@ function Game::initialMissionDrop(%clientId)
 		%camSpawn = Game::pickObserverSpawn(%clientId);
 		Observer::setFlyMode(%clientId, GameBase::getPosition(%camSpawn), 
 		GameBase::getRotation(%camSpawn), true, true);
-		bottomprint(%clientid, "<F1><jc>::::: Scrimage ::::",10);
+		bottomprint(%clientid, "<F1><jc>::::: Scrimmage ::::",10);
 		return;
 	}
 	else if($GameMode == "Practice")

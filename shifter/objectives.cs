@@ -989,7 +989,6 @@ function TowerSwitch::getObjectiveString(%this, %forTeam)
 //=========================================================================================================== Player Touches A Tower Switch
 function TowerSwitch::onCollision(%this, %object)
 {
-	if($GameMode) return;
    if($debug) echo("switch collision ", %object);
    if(getObjectType(%object) != "Player")
       return;
@@ -1457,7 +1456,6 @@ function flagcheck(%flag)
 //======================================================================================================================= Touching The Flag
 function Flag::onCollision(%this, %object)
 {
-	if($GameMode) return;
 	if(getObjectType(%object) != "Player")
 		return;
 

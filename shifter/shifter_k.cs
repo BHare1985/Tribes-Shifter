@@ -10,14 +10,25 @@ function processMenuShifterKTabmenu(%clientId, %Choice)
 	}
 	else if (%Choice == "LastestUpdates")
 	{
-		%msg = "ShifterK 8-3-2003\nAdded a repetitive trigger for Sticky :: Made an option to have a custom password :: Re-did Deploy cheat detection to work better :: Re-did the Gameplay modes";
-		%msg2 = "Added a LeaderAll Admin command, the command is !la :: Made it so Create and Destroy D is only aviable in Practice mode :: Males are now as fast as Females :: Support for AutowayPoint to Flags";
+		%msg = "ShifterK 8-08-2003\nFixed a Bug with Builder Mode :: Made it so !DA and !RA Commands work without practice mode :: Increase the power of Wireguided Rockets :: Added a AutoJugg Detection Script";
+		//%msg2 = "";
 		//%msg3 = "Boosted up HyperBlaster a bit, Still worthless :: Decreased distance on blaster :: Added Private message system :: Added AFK message system :: Fixed EMP bug with Shocks :: Added Mute Options in Player Funcs";
 		//%msg4 = "Totally re-did the Equipment options :: Able to set or destroy on a Team rather than everything";
 		//%msg = "";
 		centerprint(%clientId,%msg, 20);
 		schedule("centerprint(" @ %clientId @ ",\"" @ %msg2@ "\", 20);", 20);
 		//schedule("centerprint(" @ %clientId @ ",\"" @ %msg3@ "\", 10);", 20);
+		//
+		//
+		//
+		//
+		//
+		//
+		//ShifterK 8-03-2003
+		//-------------------
+		//Added a repetitive trigger for Sticky :: Made an option to have a custom password :: Re-did Deploy cheat detection to work better :: Re-did the Gameplay modes
+		//Added a LeaderAll Admin command, the command is !la :: Made it so Create and Destroy D is only aviable in Practice mode :: Males are now as fast as Females :: Support for AutowayPoint to Flags
+		//
 		//ShifterK 8-01-2003
 		//-------------------
 		//Redid builder so you could talk during it :: Jammers take 2 missiles :: Changed back to old Las cannon :: Fixed return flag :: Added menu to uneven teams :: Made shocks more straight

@@ -5,7 +5,7 @@ $curVoteCount = 0;
 $Shifter::TKDefault = $Shifter::TeamKillOn;
 $pskin = $Shifter::PersonalSkin;
 $CPU::estimatedSpeed = 130803;
-$killa::newdate = "08-03-2003";
+$killa::newdate = "08-08-2003";
 $Server::Info = $Server::Info @ "\nRunning ShifterK " @ $killa::newdate;
 $ModList = "ShifterK";
 $Server::TourneyMode = false;
@@ -765,7 +765,7 @@ function Game::menuRequest(%clientId)
 		Client::addMenuItem(%clientId, %curItem++ @ "Change " @ %name @ "'s team", "fteamchange " @ %sel);				
   	}
   	if(!%clientId.selClient)
-  	Client::addMenuItem(%clientId, %curItem++ @ "ShifterK", "sk");
+  	Client::addMenuItem(%clientId, %curItem++ @ "ShifterK " @ $killa::newdate, "sk");
 	if (%clientId.observerMode != "observerOrbit" && %clientId.observerMode != "observerFly")
 	{
 		Client::addMenuItem(%clientId, %curItem++ @ "Player Functions", "playerfuncs");
@@ -1526,7 +1526,7 @@ if (%opt == "playerfuncs")
       Client::buildMenu(%clientId, "Gameplay Modes:", "faffirm", true);
       Client::addMenuItem(%clientId, "mMatch", "new");
       //Client::addMenuItem(%clientId, "2Continue Saved Match", "old");
-      Client::addMenuItem(%clientId, "sScrimage", "scrim");
+      Client::addMenuItem(%clientId, "sScrimmage", "scrim");
       Client::addMenuItem(%clientId, "mMixed Scrim", "mixscrim");
       Client::addMenuItem(%clientId, "pPractice", "practice");
       Client::addMenuItem(%clientId, "bBuilder", "builder");
@@ -2289,7 +2289,7 @@ else if(%opt == "scrim" && %clientId.isAdmin)
    {
 
 		%clientid.getpass = true;
-		$GameMode = Scrimage;
+		$GameMode = Scrimmage;
 		$DPSAllowedChanged = 0.15;
      		exec("itemfuncs.cs");
 		$Shifter::DetPackLimit = 15;

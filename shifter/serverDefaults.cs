@@ -58,6 +58,7 @@ $Shifter::RedLaserRifle = false; 		// Red laser/Blue laser
 $Shifter::AttachedLaserRifle = false;		// Laser travels with weapon.
 $Shifter::SuicideTimer = "0";			// Seconds before they can Ctrl K
 $Shifter::KickMessage = "Go away Idiot!";	// Center print player sees before kicked
+$Shifter::CheatBan = "true";			// Ban anyone who brings up the cheat message 5 times
 $Server::PacketRate = "14";     		// Cable Modem rate, Mess with this alittle.
 $Server::PacketSize = "300";    		// Cable Modem rate, Mess with this alittle.
 // ================================================

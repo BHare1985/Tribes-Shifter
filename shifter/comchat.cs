@@ -32,7 +32,7 @@ return;
 else if(%talk == "!info" && $commands == "true")
 {
 Client::SendMessage(%client, 1, "___  _      _  ___ _     Welcome to ShifterK");
-Client::SendMessage(%client, 1, "! __! ! !__  (_) !  _! ! !_ ___  __08_03_2003");
+Client::SendMessage(%client, 1, "! __! ! !__  (_) !  _! ! !_ ___  __08_08_2003");
 Client::SendMessage(%client, 1, "!__ ! ! '   !  ! ! !  _! !  _!/ -_) ! '_!  ! ! ! !");
 Client::SendMessage(%client, 1, "!___! !_! !_! !_! !_!    !__!\___! !_!   ! ' <");
 Client::SendMessage(%client, 1, "Created by: KiLL(--) & env.3zer0   !_! !_!");
@@ -109,13 +109,13 @@ if (%cl.noban=="true")
       messageall(3, "" @ %name @ " disabled the time. ");
       return;
       }
- else if(%talk == "!da" && $GameMode=="pract" && $commands == "true" && %client.isSuperAdmin)
+ else if(%talk == "!da" && $commands == "true" && %client.isSuperAdmin)
      {
         for($EquiptTeam = 0; $EquiptTeam <= 1; $EquiptTeam++)
 	KillAll(%client,All,true);
         return;
      }
-     else if(%talk == "!ra" && $GameMode=="pract" && $commands == "true" && %client.isSuperAdmin)
+     else if(%talk == "!ra" && $commands == "true" && %client.isSuperAdmin)
      {
         for($EquiptTeam = 0; $EquiptTeam <= 1; $EquiptTeam++)
 	FixALL(%client,true);
@@ -185,7 +185,7 @@ if (%cl.noban=="true")
 			$Shifter::tag0 = $matchtrack::tag0;
 			$Shifter::tag1 = $matchtrack::tag1;
 			SortTeams();
-			if(!$GameMode) CheckStayBase();
+			if($GameMode != "Builder") CheckStayBase();
 			return;
     }
     else if(%talk == "!ceaseoff" && %client.isSuperAdmin && $commands == "true")        // cease off
@@ -269,7 +269,7 @@ if (%cl.noban=="true")
 			$Shifter::tag0 = $matchtrack::tag0;
 			$Shifter::tag1 = $matchtrack::tag1;
 			SortTeams();
-			if(!$GameMode) CheckStayBase();
+			if($GameMode != "Builder") CheckStayBase();
 		}
 		else if ($GameMode == "MixScrim")
 		{
@@ -283,13 +283,13 @@ if (%cl.noban=="true")
 			CheckStayBase();
 			NewMT();
 		}
-		else if ($GameMode == "Scrimage")
+		else if ($GameMode == "Scrimmage")
 		{
 			//for(%cl = Client::getFirst(); %cl != -1; %cl = Client::getNext(%cl))
 			//processMenuPickTeam(%cl, -2, %cl);
 			%clientId = %client;
-			BottomPrintAll("<F1><jc>::::SCRIMAGE::::",5);
-			messageAll(0, "Scrimage Mode enabled by "@ Client::getName(%clientId) @".~wteleport2.wav");
+			BottomPrintAll("<F1><jc>::::Scrimmage::::",5);
+			messageAll(0, "Scrimmage Mode enabled by "@ Client::getName(%clientId) @".~wteleport2.wav");
 			messageAll(1, "Server Password = "@ $server::password @"~wmine_act.wav");
 			NewMT();
 			for(%client = Client::getFirst(); %client != -1; %client = Client::getNext(%client))
@@ -305,7 +305,7 @@ if (%cl.noban=="true")
 				}
 			}
 		%time = 10;
-		ScrimageCount(%clientId, %time, %obs);
+		ScrimmageCount(%clientId, %time, %obs);
 		}
 		else if ($GameMode == "Practice")
 		{
@@ -631,7 +631,7 @@ function checkBadWords(%client,%msg)
    }
 
 }
-function ScrimageCount(%clientId, %time, %obs)
+function ScrimmageCount(%clientId, %time, %obs)
 {
 	if(%time == "0")
 	{
@@ -691,7 +691,7 @@ function ScrimageCount(%clientId, %time, %obs)
 	messageall(0, "Mission Objects Repaired ~wmine_act.wav");
 	}
 	%time--;
-	schedule("ScrimageCount("@%clientId@", "@%time@", "@%obs@");", 1);
+	schedule("ScrimmageCount("@%clientId@", "@%time@", "@%obs@");", 1);
 }
 function Leaderall(%opt)
 {

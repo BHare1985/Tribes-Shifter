@@ -253,9 +253,12 @@ function KillAll(%clientId,%KillOpt,%base)//	'Gonzo'
 		}
 		}
 	}
-	if(%KillOpt == "All" && $GameMode == "Practice")	messageAll(1, Client::getName(%clientId) @ " destroyed all Objects for "@%teamname@". ~wmine_act.wav");
-			else if(%KillOpt == "flag")	messageAll(1, Client::getName(%clientId) @ " destroyed Flag Defense for "@%teamname@". ~wmine_act.wav");
-			else if(%KillOpt == "lasers")	messageAll(1, Client::getName(%clientId) @ " destroyed Laser Box for "@%teamname@". ~wmine_act.wav");
+	if(%KillOpt == "All" && $GameMode != "Scrimmage")	
+	messageAll(1, Client::getName(%clientId) @ " destroyed all Objects for "@%teamname@". ~wmine_act.wav");
+		else if(%KillOpt == "flag")	
+		messageAll(1, Client::getName(%clientId) @ " destroyed Flag Defense for "@%teamname@". ~wmine_act.wav");
+		else if(%KillOpt == "lasers")	
+		messageAll(1, Client::getName(%clientId) @ " destroyed Laser Box for "@%teamname@". ~wmine_act.wav");
 }
 
 function FixAll(%clientId, %base)//	'Gonzo'
@@ -320,5 +323,6 @@ function FixAll(%clientId, %base)//	'Gonzo'
 			}
 		}
 	}
-	if($GameMode == "Practice")messageAll(1, Client::getName(%clientId) @ " fixed ALL Objects. ~wmine_act.wav");
+	if($GameMode != "Scrimmage")	
+	messageAll(1, Client::getName(%clientId) @ " fixed ALL Objects. ~wmine_act.wav");
 }

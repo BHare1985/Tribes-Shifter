@@ -1114,7 +1114,7 @@ function MfglImage::onFire(%player, %slot)
 			ixApplyKickback(%player, 500, 70);
 	 
 			%client = GameBase::getOwnerClient(%player);
-			if(!$GameMode)
+			if($GameMode != "Builder")
 			{
 				$TeamItemCount[GameBase::getTeam(%player) @ "MFGLAmmo"]++;
 				if($Server::TourneyMode == true)

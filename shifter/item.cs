@@ -914,6 +914,46 @@ function remoteUseItem(%player,%type)
 		{ 							
 		%TimeBetweenDeploys[%clientId] = (%Timeofthisdeploy[%clientId] - $Timeoflastdeploy[%clientId]); // Count the Time bewteen deploys
 		//Messageall(0,Client::getname(%clientId)@" This deploy: "@%Timeofthisdeploy[%clientId]);
+		//Messageall(0,Client::getname(%clientId)@" Time Between: "@%TimeBetweenDeploys[%clientId]);
+		if(%TimeBetweenDeploys[%clientId] > 3.11999 && %TimeBetweenDeploys[%clientId] < 3.8)
+		{
+		$JuggCount1[%clientId]="true";
+		$JuggStart[%clientId] = getSimTime();
+		//Messageall(0,"Bam1");
+		}
+		if(%TimeBetweenDeploys[%clientId] > 0.179999 && %TimeBetweenDeploys[%clientId] < 0.27999 && $JuggCount1[%clientId]=="true")
+		{
+		$JuggCount2[%clientId]="true";
+		//Messageall(0,"Bam2");
+		}
+		if(%TimeBetweenDeploys[%clientId] > 0.059999 && %TimeBetweenDeploys[%clientId] < 0.17 && $JuggCount2[%clientId]=="true")
+		{
+		$JuggCount3[%clientId]="true";
+		%JuggFinished[%clientId] = getSimTime();
+		//Messageall(0,"Bam3");
+		}
+		%JuggTime[%clientId] = %JuggFinished[%clientId] - $JuggStart[%clientId];
+		
+		if($JuggCount1[%clientId]=="true" && $JuggCount2[%clientId]=="true" && $JuggCount3[%clientId]=="true" && %JuggTime[%clientId] < 0.5 && %JuggTime[%clientId] > 0.01)
+		{
+		Client::sendMessage(%clientId, 0, "This server Doesn't Allow Jugg-Jump Scripts~wteleport");
+		centerprint(%clientId, "This server Doesn't Allow Jugg-Jump Scripts!", 5.0);
+		$warn[%clientId]++;
+		CheckOsiWarnings(%clientId);
+		
+		//Messageall(0, %JuggTime @"");
+		$JuggCount1[%clientId]="";
+		$JuggCount2[%clientId]="";
+		$JuggCount3[%clientId]="";
+		$JuggStart[%clientId] = "";
+		}
+		else if(%JuggTime > 0.5)
+		{
+		$JuggCount1[%clientId]="";
+		$JuggCount2[%clientId]="";
+		$JuggCount3[%clientId]="";
+		$JuggStart[%clientId] = "";
+		}
 		//Messageall(0,Client::getname(%clientId)@" Last Deploy: "@$Timeoflastdeploy[%clientId]);
 			if(%TimeBetweenDeploys[%clientId] >0.50)							// If Time between deploys is more than half second
 			{									       //Reset Timer
@@ -1036,8 +1076,21 @@ else
 function CheckOsiWarnings(%clientId)
 {
 	 if($warn[%clientId] >= 3)
-      		   messageallexcept(%clientId,1, Client::getName(%clientId) @ " is using a cheat. BAN THE FAGGOT!!~wteleport2.wav");	
-      		   //messageall(1, Client::getName(%clientId) @ " is using a deploy cheat. BAN THE FAGGOT!!~wteleport2.wav");	
+	 {
+      		   messageallexcept(%clientId,1, Client::getName(%clientId) @ " is using a cheat.~wteleport2.wav");
+      		   if($Shifter::CheatBan == "true")
+      		   {
+      		   $CheatBan[%clientId]++;
+      		  	  if($CheatBan[%clientId] >= 5)
+      		 	  {
+      		 	  %ip = Client::getTransportAddress(%clientId);
+      			  BanList::add(%ip, 1800);
+      			  MessageAll(0, Client::getName(%clientId) @ " was banned for cheating.");
+			  KickPlayer(%clientId, "You were banned for cheating");
+			  }
+      		   }
+      		   
+      	 }	
 }
 function fireGH(%player)
 {
@@ -1052,7 +1105,7 @@ function fireGH(%player)
 				echo("GODHAMM: Invalid use by " @ Client::getName(%player));
 				Client::sendMessage(%player,1,"That will not work here!~waccess_denied.wav");
 				return;
-              }
+           		}
 			%client = GameBase::getOwnerClient(%player);
 			%trans = GameBase::getMuzzleTransform(%player);
 			%vel = Item::getVelocity(%player);
@@ -1123,7 +1176,7 @@ function remoteDropItem(%client,%type)
 	%armor = Player::getArmor(%client);
 	
 	//echo(%player.dropcount);
-	if(!$GameMode)
+	if($GameMode != "Builder")
 	{
 		if(( $Shifter::dropccheck == false || $Shifter::dropccheck == "") && %player.dropcount > 50)
 		{

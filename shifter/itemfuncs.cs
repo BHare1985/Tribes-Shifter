@@ -554,7 +554,7 @@ function deployable(%player,%item,%type,%name,%angle,%freq,%prox,%noinside,%area
 			Client::sendMessage(%client,0,"" @ %name @ " deployed");
 			//GameBase::startFadeIn(%turret);
 			playSound(SoundPickupBackpack,%pos);
-			if(!$GameMode)
+			if($GameMode != "Builder")
 				$TeamItemCount[%playerteam @ "" @ %count @ ""]++;
 			else
 			{
